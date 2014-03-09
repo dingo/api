@@ -92,11 +92,31 @@ class ApiException extends HttpException {
 	}
 
 	/**
+	 * Get the exception message.
+	 * 
+	 * @return string
+	 */
+	public function message()
+	{
+		return $this->message;
+	}
+
+	/**
 	 * Get the errors message bag.
 	 * 
 	 * @return \Illuminate\Support\MessageBag
 	 */
 	public function getErrors()
+	{
+		return $this->errors;
+	}
+
+	/**
+	 * Get the errors message bag.
+	 * 
+	 * @return \Illuminate\Support\MessageBag
+	 */
+	public function errors()
 	{
 		return $this->errors;
 	}
