@@ -4,6 +4,7 @@ use Closure;
 use Exception;
 use Dingo\Api\ApiException;
 use Illuminate\Http\Request;
+use Dingo\Api\Http\InternalRequest;
 use Dingo\Api\Http\Response as ApiResponse;
 use Illuminate\Routing\Router as IlluminateRouter;
 
@@ -48,7 +49,14 @@ class Router extends IlluminateRouter {
 		// new instance of \Dingo\Api\Http\Response.
 		if ($this->routingForApi())
 		{
-			return ApiResponse::makeFromExisting($response)->process();
+			$response = ApiResponse::makeFromExisting($response)->process();
+
+			// If the request is an internal request then we'll disable the API now as
+			// well as it will cause the parent request to generate an ApiResponse.
+			if ($request instanceof InternalRequest)
+			{
+				$this->disableApi();
+			}
 		}
 
 		return $response;
