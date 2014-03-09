@@ -1,0 +1,20 @@
+{
+    "name": "dingo/api",
+    "description": "A RESTful API package for the Laravel framework.",
+    "authors": [
+        {
+            "name": "Jason Lewis",
+            "email": "jason.lewis1991@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": "4.1.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Dingo\\Api": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
