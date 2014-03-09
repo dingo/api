@@ -350,7 +350,9 @@ class Dispatcher {
 		$this->request->replace($this->originalRequestInput);
 
 		// Unset the parameters and the version that were sent for this request.
-		unset($this->version, $this->parameters);
+		$this->version = null;
+
+		$this->parameters = [];
 
 		return $response->getOriginalContent();
 	}
