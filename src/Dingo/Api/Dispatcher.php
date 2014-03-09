@@ -305,17 +305,15 @@ class Dispatcher {
 		{
 			$response = $this->router->dispatch($request);
 
-			// If we did not get an OK response then we'll throw an ApiException and
-			// then catch it next. If the original content given to the response
-			// is an array then we'll treat this as a conventional
-			// message/errors array and throw them with the
-			// new exception.
 			if ( ! $response->isOk())
 			{
 				$original = $response->getOriginalContent();
 
 				$message = $errors = null;
 
+				// If the original content given to the response is an array we'll look for
+				// the "message" and "errors" keys. We can then give these to the
+				// exception we are getting ready to throw.
 				if (is_array($original))
 				{
 					foreach (['message', 'errors'] as $key)
@@ -329,32 +327,38 @@ class Dispatcher {
 		}
 		catch (HttpException $exception)
 		{
-			$statusCode = $exception->getStatusCode();
+			$this->refreshRequestStack();
 
 			if ( ! $message = $exception->getMessage())
 			{
-				$message = sprintf('%d %s', $statusCode, Response::$statusTexts[$statusCode]);
+				$message = sprintf('%d %s', $exception->getStatusCode(), Response::$statusTexts[$exception->getStatusCode()]);
 			}
 
-			// If our exception is already an instance of ApiException we'll grab the
-			// errors from it as well.
-			$errors = ($exception instanceof ApiException) ? $exception->getErrors() : null;
+			$errors = $exception instanceof ApiException ? $exception->getErrors() : null;
 
-			throw new ApiException($statusCode, $message, $errors, $exception->getPrevious(), $exception->getHeaders(), $exception->getCode());
+			throw new ApiException($exception->getStatusCode(), $message, $errors, $exception->getPrevious(), $exception->getHeaders(), $exception->getCode());
 		}
 
-		// We can now pop the last request of the request stack and reset the original
-		// input back to what it was.
+		$this->refreshRequestStack();
+
+		return $response->getOriginalContent();
+	}
+
+	/**
+	 * Refresh the request stack by popping the last request from the stack,
+	 * replacing the input, and resetting the version and parameters.
+	 * 
+	 * @return void
+	 */
+	protected function refreshRequestStack()
+	{
 		array_pop($this->requestStack);
 
 		$this->request->replace($this->originalRequestInput);
 
-		// Unset the parameters and the version that were sent for this request.
 		$this->version = null;
 
 		$this->parameters = [];
-
-		return $response->getOriginalContent();
 	}
 
 	/**
