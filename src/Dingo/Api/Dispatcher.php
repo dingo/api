@@ -271,7 +271,7 @@ class Dispatcher {
 			$request->headers->set('host', $this->domain);
 		}
 
-		// If no version was explicityly set for this request then we'll grab the default
+		// If no version was explicitly set for this request then we'll grab the default
 		// API version from the API router.
 		if ( ! $this->version)
 		{
