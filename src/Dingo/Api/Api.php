@@ -104,7 +104,7 @@ class Api {
 		{
 			return true;
 		}
-		elseif (preg_match('#/'.$this->prefix.'(/?.*?)#', $this->request->getPathInfo()))
+		elseif (preg_match('#^/'.$this->prefix.'(/?.*?)#', $this->request->getPathInfo()))
 		{
 			return true;
 		}
