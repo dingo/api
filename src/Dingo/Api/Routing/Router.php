@@ -1,21 +1,57 @@
 <?php namespace Dingo\Api\Routing;
 
 use Closure;
-use Exception;
-use Dingo\Api\ApiException;
+use Dingo\Api\Api;
+use BadMethodCallException;
 use Illuminate\Http\Request;
+use Dingo\Api\Http\Response;
 use Dingo\Api\Http\InternalRequest;
-use Dingo\Api\Http\Response as ApiResponse;
-use Illuminate\Routing\Router as IlluminateRouter;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
-class Router extends IlluminateRouter {
+class Router extends \Illuminate\Routing\Router {
+
+	/**
+	 * API instance.
+	 * 
+	 * @param \Dingo\Api\Api
+	 */
+	protected $api;
 
 	/**
 	 * Indicates if newly added routes are API routes.
 	 * 
 	 * @var bool
 	 */
-	protected $api = false;
+	protected $apiRouting = false;
+
+	/**
+	 * Register an API group.
+	 * 
+	 * @param  array  $options
+	 * @param  \Closure  $callback
+	 * @return void
+	 */
+	public function api($options, Closure $callback)
+	{
+		$this->enableApiRouting();
+
+		if ( ! isset($options['version']))
+		{
+			throw new BadMethodCallException('Unable to register API without an API version.');
+		}
+
+		// If the current request handles the version specified then we can go ahead and
+		// register any routes for this API version. If not then we'll simply skip
+		// the route registration for this version.
+		if ($this->api->currentRequestHandlesVersion($options['version']))
+		{
+			unset($options['version']);
+
+			$this->api->setRequestOptions($options) and $this->group($options, $callback);
+		}
+
+		$this->disableApiRouting();
+	}
 
 	/**
 	 * Dispatch the request to the application and return either a regular response
@@ -30,14 +66,14 @@ class Router extends IlluminateRouter {
 		{
 			$response = parent::dispatch($request);
 		}
-		catch (ApiException $exception)
+		catch (HttpExceptionInterface $exception)
 		{
-			// If we catch an exception and we are routing for the API then we'll handle
-			// the exception, otherwise we don't want to interfere with the exception
-			// handling.
-			if ($this->routingForApi())
+			// If an exception is caught and we are currently routing an API request then
+			// we'll handle this exception by building a new response from it. This
+			// allows the API to gracefully handle its own exceptions.
+			if ($this->routingForApi() and ! $request instanceof InternalRequest)
 			{
-				$response = $this->handleResponseException($exception);
+				$response = $this->api->handleException($exception);
 			}
 			else
 			{
@@ -45,42 +81,22 @@ class Router extends IlluminateRouter {
 			}
 		}
 
-		// If the current request is being treated as an API request then we'll return a
-		// new instance of \Dingo\Api\Http\Response.
 		if ($this->routingForApi())
 		{
-			$response = ApiResponse::makeFromExisting($response)->process();
+			$response = Response::makeFromExisting($response)->morph();
 
-			// If the request is an internal request then we'll disable the API now as
-			// well as it will cause the parent request to generate an ApiResponse.
+			// If the request that was dispatched is an internal request then we need to
+			// disable the API routing so that the parent request is not treated in
+			// the same way. This prevents it from generating an Api Response for
+			// the parent request. Another internal request will still result
+			// in API routing being enabled.
 			if ($request instanceof InternalRequest)
 			{
-				$this->disableApi();
+				$this->disableApiRouting();
 			}
 		}
 
 		return $response;
-	}
-
-	/**
-	 * Handle an ApiException thrown when fetching the response.
-	 * 
-	 * @param  \Dingo\Api\ApiException  $exception
-	 * @return \Dingo\Api\Http\Response
-	 */
-	protected function handleResponseException(ApiException $exception)
-	{
-		$errors = $exception->getErrors();
-
-		// If we have errors then we'll return an array as our response here with both
-		// the message and the errors, that way our dispatcher can re-throw the
-		// exception when it gets this response.
-		if ( ! $errors->isEmpty())
-		{
-			return new ApiResponse([$exception->getMessage(), $errors], $exception->getStatusCode());
-		}
-
-		return new ApiResponse($exception->getMessage(), $exception->getStatusCode());
 	}
 
 	/**
@@ -112,7 +128,7 @@ class Router extends IlluminateRouter {
 	 */
 	public function routingForApi()
 	{
-		return $this->api;
+		return $this->apiRouting or $this->api->currentRequestTargettingApi();
 	}
 
 	/**
@@ -120,9 +136,9 @@ class Router extends IlluminateRouter {
 	 * 
 	 * @return \Dingo\Api\Routing\Router
 	 */
-	public function enableApi()
+	public function enableApiRouting()
 	{
-		$this->api = true;
+		$this->apiRouting = true;
 
 		return $this;
 	}
@@ -132,11 +148,22 @@ class Router extends IlluminateRouter {
 	 * 
 	 * @return \Dingo\Api\Routing\Router
 	 */
-	public function disableApi()
+	public function disableApiRouting()
 	{
-		$this->api = false;
+		$this->apiRouting = false;
 
 		return $this;
+	}
+
+	/**
+	 * Set the current request instance.
+	 * 
+	 * @param  \Illuminate\Http\Request  $request
+	 * @return void
+	 */
+	public function setApi(Api $api)
+	{
+		$this->api = $api;
 	}
 
 }

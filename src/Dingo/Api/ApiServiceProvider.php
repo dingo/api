@@ -19,7 +19,7 @@ class ApiServiceProvider extends ServiceProvider {
 		// to inject an instance of the registered API dispatcher.
 		$this->app['Dingo\Api\Dispatcher'] = function($app)
 		{
-			return $app['dingo.api'];
+			return $app['dingo.api.dispatcher'];
 		};
 	}
 
@@ -30,15 +30,27 @@ class ApiServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		$this->registerRouter();
-	
+		$this->registerApi();
+
 		$this->registerDispatcher();
 
-		// The API filter is applied automatically to routes that should be treated
-		// as API requests.
+		$this->registerRouter();
+
+		$this->registerExceptionHandler();
+
+		// Register an API filter that enables the API routing when it is attached 
+		// to a route, this will ensure that the response is correctly formatted
+		// for any consumers.
 		$this->app['router']->filter('api', function()
 		{
-			$this->app['router']->enableApi();
+			$this->app['router']->enableApiRouting();
+		});
+
+		// We'll also register a booting event so that we can set our API instance
+		// on the router.
+		$this->app->booting(function($app)
+		{
+			$app['router']->setApi($app['dingo.api']);
 		});
 	}
 
@@ -63,19 +75,36 @@ class ApiServiceProvider extends ServiceProvider {
 	}
 
 	/**
+	 * Register the API.
+	 * 
+	 * @return void
+	 */
+	protected function registerApi()
+	{
+		$this->app['dingo.api'] = $this->app->share(function($app)
+		{
+			return new Api($app['request'], $app['dingo.api.exception'], $app['config']['api::vendor'], $app['config']['api::version']);
+		});
+	}
+
+	/**
 	 * Register the API dispatcher.
 	 * 
 	 * @return void
 	 */
 	protected function registerDispatcher()
 	{
-		$this->app['dingo.api'] = $this->app->share(function($app)
+		$this->app['dingo.api.dispatcher'] = $this->app->share(function($app)
 		{
-			$dispatcher = new Dispatcher($app['request'], $app['router'], $app['config']['api::vendor']);
+			return new Dispatcher($app['request'], $app['router'], $app['dingo.api']);
+		});
+	}
 
-			$dispatcher->defaultsTo($app['config']['api::version']);
-
-			return $dispatcher;
+	protected function registerExceptionHandler()
+	{
+		$this->app['dingo.api.exception'] = $this->app->share(function($app)
+		{
+			return new ExceptionHandler;
 		});
 	}
 

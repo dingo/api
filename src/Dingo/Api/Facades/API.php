@@ -1,5 +1,6 @@
 <?php namespace Dingo\Api\Facades;
 
+use Closure;
 use Illuminate\Support\Facades\Facade;
 
 /**
@@ -12,6 +13,17 @@ class API extends Facade {
 	 *
 	 * @return string
 	 */
-	protected static function getFacadeAccessor() { return 'dingo.api'; }
+	protected static function getFacadeAccessor() { return 'dingo.api.dispatcher'; }
+
+	/**
+	 * Bind an exception handler.
+	 * 
+	 * @param  \Closure  $callback
+	 * @return void
+	 */
+	public static function error(Closure $callback)
+	{
+		return static::$app['dingo.api.exception']->register($callback);
+	}
 
 }

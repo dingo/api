@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Dingo\Api\Routing\Router;
 use Dingo\Api\Http\InternalRequest;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class Dispatcher {
 
@@ -24,11 +24,11 @@ class Dispatcher {
 	protected $router;
 
 	/**
-	 * The API vendor.
+	 * The API instance.
 	 * 
-	 * @var string
+	 * @var \Dingo\Api\Api
 	 */
-	protected $vendor;
+	protected $api;
 
 	/**
 	 * Original request input array.
@@ -59,78 +59,18 @@ class Dispatcher {
 	protected $parameters = [];
 
 	/**
-	 * Indicates the default API version.
-	 * 
-	 * @var string
-	 */
-	protected $defaultVersion;
-
-	/**
-	 * API domain.
-	 * 
-	 * @var string
-	 */
-	protected $domain;
-
-	/**
-	 * API prefix.
-	 * 
-	 * @var string
-	 */
-	protected $prefix;
-
-	/**
 	 * Create a new dispatcher instance.
 	 * 
 	 * @param  \Illuminate\Http\Request  $request
 	 * @param  \Dingo\Api\Routing\Router  $router
-	 * @param  string  $vendor
+	 * @param  \Dingo\Api\Api  $api
 	 * @return void
 	 */
-	public function __construct(Request $request, Router $router, $vendor)
+	public function __construct(Request $request, Router $router, Api $api)
 	{
 		$this->request = $request;
 		$this->router = $router;
-		$this->vendor = $vendor;
-	}
-
-	/**
-	 * Set the API domain.
-	 * 
-	 * @param  string  $domain
-	 * @return \Dingo\Api\Dispatcher
-	 */
-	public function domain($domain)
-	{
-		$this->domain = $domain;
-
-		return $this;
-	}
-
-	/**
-	 * Set the API prefix.
-	 * 
-	 * @param  string  $prefix
-	 * @return \Dingo\Api\Dispatcher
-	 */
-	public function prefix($prefix)
-	{
-		$this->prefix = $prefix;
-
-		return $this;
-	}
-
-	/**
-	 * Set the default API version.
-	 * 
-	 * @param  string  $version
-	 * @return \Dingo\Api\Dispatcher
-	 */
-	public function defaultsTo($version)
-	{
-		$this->defaultVersion = $version;
-
-		return $this;
+		$this->api = $api;
 	}
 
 	/**
@@ -257,25 +197,21 @@ class Dispatcher {
 			${$parameter} = $this->request->{$parameter}->all();
 		}
 
-		// If a prefix was set for the API then we'll prefix our URI.
-		if ($this->prefix)
+		if ($this->api->hasPrefix())
 		{
-			$uri = "{$this->prefix}/{$uri}";
+			$uri = "{$this->api->getPrefix()}/{$uri}";
 		}
 
 		$request = InternalRequest::create($uri, $verb, $this->parameters, $cookies, $files, $server);
 
-		// If  adomain was set for the API then we'll set the host header.
-		if ($this->domain)
+		if ($this->api->hasDomain())
 		{
-			$request->headers->set('host', $this->domain);
+			$request->headers->set('host', $this->api->getDomain());
 		}
 
-		// If no version was explicitly set for this request then we'll grab the default
-		// API version from the API router.
-		if ( ! $this->version)
+		if ( ! isset($this->version))
 		{
-			$this->version = $this->defaultVersion;
+			$this->version = $this->api->getDefaultVersion();
 		}
 
 		$request->headers->set('accept', $this->buildAcceptHeader());
@@ -290,11 +226,11 @@ class Dispatcher {
 	 */
 	protected function buildAcceptHeader()
 	{
-		return "application/vnd.{$this->vendor}.{$this->version}+json";
+		return "application/vnd.{$this->api->getVendor()}.{$this->version}+json";
 	}
 
 	/**
-	 * Attempt to dispatch an internal request to the API.
+	 * Attempt to dispatch an internal request.
 	 * 
 	 * @param  \Dingo\Api\Http\InternalRequest  $request
 	 * @return mixed
@@ -304,39 +240,12 @@ class Dispatcher {
 		try
 		{
 			$response = $this->router->dispatch($request);
-
-			if ( ! $response->isOk())
-			{
-				$original = $response->getOriginalContent();
-
-				$message = $errors = null;
-
-				// If the original content given to the response is an array we'll look for
-				// the "message" and "errors" keys. We can then give these to the
-				// exception we are getting ready to throw.
-				if (is_array($original))
-				{
-					foreach (['message', 'errors'] as $key)
-					{
-						if (array_key_exists($key, $original)) ${$key} = $original[$key];
-					}
-				}
-
-				throw new ApiException($response->getStatusCode(), $message, $errors);
-			}
 		}
-		catch (HttpException $exception)
+		catch (HttpExceptionInterface $exception)
 		{
 			$this->refreshRequestStack();
 
-			if ( ! $message = $exception->getMessage())
-			{
-				$message = sprintf('%d %s', $exception->getStatusCode(), Response::$statusTexts[$exception->getStatusCode()]);
-			}
-
-			$errors = $exception instanceof ApiException ? $exception->getErrors() : null;
-
-			throw new ApiException($exception->getStatusCode(), $message, $errors, $exception->getPrevious(), $exception->getHeaders(), $exception->getCode());
+			throw $exception;
 		}
 
 		$this->refreshRequestStack();
@@ -371,66 +280,6 @@ class Dispatcher {
 	protected function buildRequestIdentifier($verb, $uri)
 	{
 		return "{$verb} {$uri}";
-	}
-
-	/**
-	 * Group routes for a given API version.
-	 * 
-	 * @param  string|array  $version
-	 * @param  \Closure  $callback
-	 * @return void
-	 */
-	public function group($version, Closure $callback)
-	{
-		$this->router->enableApi();
-
-		// If the current request handles the version specified then we can go ahead and
-		// register any routes for this API version. If not then we'll simply skip
-		// the route registration for this version.
-		if ($this->requestHandlesVersion($version))
-		{
-			$options = [];
-
-			foreach (['domain', 'prefix'] as $option)
-			{
-				if ($this->{$option}) $options[$option] = $this->{$option};
-			}
-
-			$this->router->group($options, $callback);
-		}
-
-		$this->router->disableApi();
-	}
-
-	/**
-	 * Determine if the current request will handle the version specified.
-	 * 
-	 * @param  string  $version
-	 * @return bool
-	 */
-	protected function requestHandlesVersion($version)
-	{
-		$versions = (array) $version;
-
-		// Attempt to parse the version from the requests Accept header using a
-		// simple regular expression.
-		$accept = $this->request->header('accept');
-
-		preg_match('#application/vnd\.'.$this->vendor.'.(v\d)\+(json)#', $accept, $matches);
-
-		if ( ! empty($matches))
-		{
-			list ($accept, $requestedVersion, $requestedFormat) = $matches;
-
-			return in_array($requestedVersion, $versions);
-		}
-
-		// If we didn't get any matches then we need to check if the version we were
-		// given matches the default version.
-		else
-		{
-			return in_array($this->defaultVersion, $versions);
-		}
 	}
 
 }

@@ -1,11 +1,10 @@
 <?php namespace Dingo\Api\Http;
 
 use Illuminate\Support\MessageBag;
-use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Support\Contracts\JsonableInterface;
 use Illuminate\Support\Contracts\ArrayableInterface;
 
-class Response extends IlluminateResponse {
+class Response extends \Illuminate\Http\Response {
 
 	/**
 	 * Make an API response from an existing Illuminate response.
@@ -13,7 +12,7 @@ class Response extends IlluminateResponse {
 	 * @param  \Illuminate\Http\Response  $response
 	 * @return \Dingo\Api\Http\Response
 	 */
-	public static function makeFromExisting(IlluminateResponse $response)
+	public static function makeFromExisting(\Illuminate\Http\Response $response)
 	{
 		return new static($response->getOriginalContent(), $response->getStatusCode(), $response->headers->all());
 	}
@@ -23,7 +22,7 @@ class Response extends IlluminateResponse {
 	 * 
 	 * @return \Dingo\Api\Http\Response
 	 */
-	public function process()
+	public function morph()
 	{
 		// If a response is an indexed array consisting of two keys then it's assumed that
 		// the first key is an error message and the second key is an instance of
