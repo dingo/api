@@ -57,7 +57,7 @@ class ExceptionHandler {
 	 * @param  \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface  $exception
 	 * @return bool
 	 */
-	public function handlesException(HttpExceptionInterface $exception)
+	public function willHandle(HttpExceptionInterface $exception)
 	{
 		foreach ($this->handlers as $hint => $handler)
 		{
