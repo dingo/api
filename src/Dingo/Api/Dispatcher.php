@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Dingo\Api\Routing\Router;
 use Dingo\Api\Http\InternalRequest;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class Dispatcher {
@@ -240,6 +241,11 @@ class Dispatcher {
 		try
 		{
 			$response = $this->router->dispatch($request);
+
+			if ( ! $response->isOk())
+			{
+				throw new HttpException($response->getStatusCode(), $response->getOriginalContent());
+			}
 		}
 		catch (HttpExceptionInterface $exception)
 		{

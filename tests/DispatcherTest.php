@@ -7,9 +7,10 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
-		$this->request = m::mock('Illuminate\Http\Request');
+		$this->request = new Illuminate\Http\Request;
 		$this->router = m::mock('Dingo\Api\Routing\Router');
-		$this->dispatcher = new Dingo\Api\Dispatcher($this->request, $this->router, 'testing');
+		$this->api = m::mock('Dingo\Api\Api');
+		$this->dispatcher = new Dingo\Api\Dispatcher($this->request, $this->router, $this->api);
 	}
 
 
@@ -19,128 +20,65 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 	}
 
 
-	public function testRegisterApiGroupWithoutDomainOrPrefix()
-	{
-		$this->router->shouldReceive('enableApi')->once();
-		$this->router->shouldReceive('disableApi')->once();
-		$this->request->shouldReceive('header')->once()->with('accept')->andReturn('application/vnd.testing.v1+json');
-
-		$group = function(){};
-
-		$this->router->shouldReceive('group')->with([], $group);
-
-		$this->dispatcher->group('v1', $group);
-	}
-
-
-	public function testRegisterApiGroupWithDomainAndPrefix()
-	{
-		$this->router->shouldReceive('enableApi')->once();
-		$this->router->shouldReceive('disableApi')->once();
-		$this->request->shouldReceive('header')->once()->with('accept')->andReturn('application/vnd.testing.v1+json');
-
-		$group = function(){};
-
-		$this->router->shouldReceive('group')->with(['domain' => 'testing', 'prefix' => 'testing'], $group);
-
-		$this->dispatcher->domain('testing')->prefix('testing')->group('v1', $group);
-	}
-
-
-	public function testRegisterApiGroupWhenNoVersionSentWithAcceptHeader()
-	{
-		$this->router->shouldReceive('enableApi')->once();
-		$this->router->shouldReceive('disableApi')->once();
-		$this->request->shouldReceive('header')->once()->with('accept')->andReturn('application/vnd.testing+json');
-
-		$group = function(){};
-
-		$this->router->shouldReceive('group')->with([], $group);
-
-		$this->dispatcher->defaultsTo('v1');
-		$this->dispatcher->group('v1', $group);
-	}
-
-
 	public function testInternalRequests()
 	{
-		$request = new Illuminate\Http\Request;
-		$dispatcher = new Dingo\Api\Dispatcher($request, $this->router, 'testing');
-
 		$this->router->shouldReceive('dispatch')->andReturn(new Dingo\Api\Http\Response('test', 200));
 
-		$this->assertEquals('test', $dispatcher->get('test'));
-		$this->assertEquals('test', $dispatcher->post('test'));
-		$this->assertEquals('test', $dispatcher->put('test'));
-		$this->assertEquals('test', $dispatcher->patch('test'));
-		$this->assertEquals('test', $dispatcher->head('test'));
-		$this->assertEquals('test', $dispatcher->delete('test'));
+		$this->api->shouldReceive('hasPrefix')->times(6)->andReturn(false);
+		$this->api->shouldReceive('hasDomain')->times(6)->andReturn(false);
+		$this->api->shouldReceive('getDefaultVersion')->times(6)->andReturn('v1');
+		$this->api->shouldReceive('getVendor')->times(6)->andReturn('testing');
+
+		$this->assertEquals('test', $this->dispatcher->get('test'));
+		$this->assertEquals('test', $this->dispatcher->post('test'));
+		$this->assertEquals('test', $this->dispatcher->put('test'));
+		$this->assertEquals('test', $this->dispatcher->patch('test'));
+		$this->assertEquals('test', $this->dispatcher->head('test'));
+		$this->assertEquals('test', $this->dispatcher->delete('test'));
 	}
 
 
 	public function testInternalRequestWithVersionAndParameters()
 	{
-		$request = new Illuminate\Http\Request;
-		$dispatcher = new Dingo\Api\Dispatcher($request, $this->router, 'testing');
-
 		$this->router->shouldReceive('dispatch')->andReturn(new Dingo\Api\Http\Response('test', 200));
 
-		$this->assertEquals('test', $dispatcher->version('v1')->with(['foo' => 'bar'])->get('test'));
+		$this->api->shouldReceive('hasPrefix')->once()->andReturn(false);
+		$this->api->shouldReceive('hasDomain')->once()->andReturn(false);
+		$this->api->shouldReceive('getVendor')->once()->andReturn('testing');
+
+		$this->assertEquals('test', $this->dispatcher->version('v1')->with(['foo' => 'bar'])->get('test'));
 	}
 
 
 	public function testInternalRequestWithPrefixAndDomain()
 	{
-		$request = new Illuminate\Http\Request;
-		$dispatcher = new Dingo\Api\Dispatcher($request, $this->router, 'testing');
-
 		$this->router->shouldReceive('dispatch')->andReturn(new Dingo\Api\Http\Response('test', 200));
 
-		$dispatcher->domain('testing')->prefix('testing');
+		$this->api->shouldReceive('hasPrefix')->once()->andReturn(true);
+		$this->api->shouldReceive('getPrefix')->once()->andReturn('testing');
+		$this->api->shouldReceive('hasDomain')->once()->andReturn(true);
+		$this->api->shouldReceive('getDomain')->once()->andReturn('testing');
+		$this->api->shouldReceive('getDefaultVersion')->once()->andReturn('v1');
+		$this->api->shouldReceive('getVendor')->once()->andReturn('testing');
 
-		$this->assertEquals('test', $dispatcher->get('test'));
+		$this->assertEquals('test', $this->dispatcher->get('test'));
 	}
 
 
 	/**
-	 * @expectedException Dingo\Api\ApiException
+	 * @expectedException Symfony\Component\HttpKernel\Exception\HttpException
 	 */
 	public function testInternalRequestThrowsException()
 	{
-		$request = new Illuminate\Http\Request;
-		$dispatcher = new Dingo\Api\Dispatcher($request, $this->router, 'testing');
-
 		$this->router->shouldReceive('dispatch')->andReturn(new Dingo\Api\Http\Response('test', 500));
 
-		$dispatcher->get('test');
+		$this->api->shouldReceive('hasPrefix')->once()->andReturn(false);
+		$this->api->shouldReceive('hasDomain')->once()->andReturn(false);
+		$this->api->shouldReceive('getDefaultVersion')->once()->andReturn('v1');
+		$this->api->shouldReceive('getVendor')->once()->andReturn('testing');
+
+		$this->dispatcher->get('test');
 	}
-
-
-	public function testInternalRequestThrowsExceptionAndBuildsErrors()
-	{
-		$request = new Illuminate\Http\Request;
-		$dispatcher = new Dingo\Api\Dispatcher($request, $this->router, 'testing');
-
-		$this->router->shouldReceive('dispatch')->andReturn(new Dingo\Api\Http\Response([
-			'message' => 'test',
-			'errors' => new Illuminate\Support\MessageBag
-		], 500));
-
-		try
-		{
-			$dispatcher->get('test');
-		}
-		catch (Dingo\Api\ApiException $exception)
-		{
-			$this->assertInstanceOf('Illuminate\Support\MessageBag', $exception->getErrors());
-			$this->assertEquals(500, $exception->getStatusCode());
-			$this->assertEquals('test', $exception->getMessage());
-
-			return;
-		}
-
-		$this->fail('Expected Dingo\Api\ApiException to be thrown.');
-	}
-
+	
 
 }
