@@ -85,4 +85,14 @@ class ExceptionHandler {
 		return $exception->getClass()->getName();
 	}
 
+	/**
+	 * Get the exception handlers.
+	 * 
+	 * @return array
+	 */
+	public function getHandlers()
+	{
+		return $this->handlers;
+	}
+
 }
