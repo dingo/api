@@ -122,7 +122,7 @@ class Api {
 	{
 		// If the exception handler will handle the given exception then we'll fire
 		// the callback registered to the handler and return the response.
-		if ($this->exceptionHandler->handlesException($exception))
+		if ($this->exceptionHandler->willHandle($exception))
 		{
 			$response = $this->exceptionHandler->handle($exception);
 
