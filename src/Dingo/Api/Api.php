@@ -100,11 +100,11 @@ class Api {
 	 */
 	public function currentRequestTargettingApi()
 	{
-		if ($this->request->header('host') == $this->domain)
+		if ( ! is_null($this->domain) and $this->request->header('host') == $this->domain)
 		{
 			return true;
 		}
-		elseif (preg_match('#^/'.$this->prefix.'(/?.*?)#', $this->request->getPathInfo()))
+		elseif ( ! is_null($this->prefix) and preg_match('#^/'.$this->prefix.'(/?.*?)#', $this->request->getPathInfo()))
 		{
 			return true;
 		}
