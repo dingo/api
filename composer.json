@@ -9,7 +9,8 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "illuminate/support": "4.1.*"
+        "illuminate/support": "4.1.*",
+        "dingo/oauth": "dev-master"
     },
     "require-dev": {
         "illuminate/routing": "4.1.*",
