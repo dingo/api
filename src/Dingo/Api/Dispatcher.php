@@ -104,66 +104,72 @@ class Dispatcher {
 	 * Perform API GET request.
 	 * 
 	 * @param  string  $uri
+	 * @param  array  $parameters
 	 * @return mixed
 	 */
-	public function get($uri)
+	public function get($uri, $parameters = [])
 	{
-		return $this->queueRequest('get', $uri);
+		return $this->queueRequest('get', $uri, $parameters);
 	}
 
 	/**
 	 * Perform API POST request.
 	 * 
 	 * @param  string  $uri
+	 * @param  array  $parameters
 	 * @return mixed
 	 */
-	public function post($uri)
+	public function post($uri, $parameters = [])
 	{
-		return $this->queueRequest('post', $uri);
+		return $this->queueRequest('post', $uri, $parameters);
 	}
 
 	/**
 	 * Perform API PUT request.
 	 * 
 	 * @param  string  $uri
+	 * @param  array  $parameters
 	 * @return mixed
 	 */
-	public function put($uri)
+	public function put($uri, $parameters = [])
 	{
-		return $this->queueRequest('put', $uri);
+		return $this->queueRequest('put', $uri, $parameters);
 	}
 
 	/**
 	 * Perform API PATCH request.
 	 * 
 	 * @param  string  $uri
+	 * @param  array  $parameters
 	 * @return mixed
 	 */
-	public function patch($uri)
+	public function patch($uri, $parameters = [])
 	{
-		return $this->queueRequest('patch', $uri);
+		return $this->queueRequest('patch', $uri, $parameters);
 	}
 
 	/**
 	 * Perform API HEAD request.
 	 * 
 	 * @param  string  $uri
+	 * @param  array  $parameters
 	 * @return mixed
 	 */
-	public function head($uri)
+	public function head($uri, $parameters = [])
 	{
-		return $this->queueRequest('head', $uri);
+		return $this->queueRequest('head', $uri, $parameters);
 	}
 
 	/**
 	 * Perform API DELETE request.
 	 * 
 	 * @param  string  $uri
+	 * @param  array  $parameters
 	 * @return mixed
 	 */
-	public function delete($uri)
+	public function delete($uri, $parameters = [])
 	{
-		return $this->queueRequest('delete', $uri);
+		return $this->queueRequest('delete', $uri, $parameters);
 	}
 
 	/**
@@ -171,13 +177,14 @@ class Dispatcher {
 	 * 
 	 * @param  string  $verb
 	 * @param  string  $uri
+	 * @param  array  $parameters
 	 * @return mixed
 	 */
-	protected function queueRequest($verb, $uri)
+	protected function queueRequest($verb, $uri, $parameters)
 	{
 		$identifier = $this->buildRequestIdentifier($verb, $uri);
 
-		$this->requestStack[$identifier] = $this->createRequest($verb, $uri);
+		$this->requestStack[$identifier] = $this->createRequest($verb, $uri, $parameters);
 
 		$this->request->replace($this->requestStack[$identifier]->input());
 
@@ -203,7 +210,9 @@ class Dispatcher {
 			$uri = "{$this->api->getPrefix()}/{$uri}";
 		}
 
-		$request = InternalRequest::create($uri, $verb, $this->parameters, $cookies, $files, $server);
+		$parameters = array_merge($this->parameters, $parameters);
+
+		$request = InternalRequest::create($uri, $verb, $parameters, $cookies, $files, $server);
 
 		if ($this->api->hasDomain())
 		{
