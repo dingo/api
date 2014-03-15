@@ -38,6 +38,8 @@ class ApiServiceProvider extends ServiceProvider {
 
 		$this->registerExceptionHandler();
 
+		$this->registerAuthorization();
+
 		// Register an API filter that enables the API routing when it is attached 
 		// to a route, this will ensure that the response is correctly formatted
 		// for any consumers.
@@ -100,11 +102,29 @@ class ApiServiceProvider extends ServiceProvider {
 		});
 	}
 
+	/**
+	 * Register the exception handler.
+	 * 
+	 * @return void
+	 */
 	protected function registerExceptionHandler()
 	{
 		$this->app['dingo.api.exception'] = $this->app->share(function($app)
 		{
 			return new ExceptionHandler;
+		});
+	}
+
+	/**
+	 * Register the API authorization.
+	 * 
+	 * @return void
+	 */
+	protected function registerAuthorization()
+	{
+		$this->app['dingo.api.authorization'] = $this->app->share(function($app)
+		{
+			return new Authorization($app['dingo.oauth.server']);
 		});
 	}
 

@@ -26,4 +26,15 @@ class API extends Facade {
 		return static::$app['dingo.api.exception']->register($callback);
 	}
 
+	/**
+	 * Issue an access token to the API.
+	 * 
+	 * @param  array  $payload
+	 * @return mixed
+	 */
+	public static function token(array $payload)
+	{
+		return static::$app['dingo.api.authorization']->token($payload);
+	}
+
 }
