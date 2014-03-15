@@ -60,7 +60,7 @@ class Authorization {
 		{
 			$statusCode = $this->exceptionStatusCodes[$this->authServer->getExceptionType($exception->getCode())];
 
-			return new Response(['message' => $exception->getMessage()], $statusCode);
+			return new Response($exception->getMessage(), $statusCode);
 		}
 	}
 
