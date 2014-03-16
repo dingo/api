@@ -190,6 +190,20 @@ class Router extends \Illuminate\Routing\Router {
 
 			$version = array_get(last($this->groupStack), 'version', '');
 
+			// If the group itself is marked as protected then we'll adjust the
+			// route to mark it as protected unless it's already specified
+			// on the route.
+			if (count($this->groupStack) > 0)
+			{
+				$action = $route->getAction();
+				
+				$protected = array_get(last($this->groupStack), 'protected', false);
+
+				$action['protected'] = isset($action['protected']) ? $action['protected'] : $protected;
+
+				$route->setAction($action);
+			}
+
 			return $this->getApiCollection($version)->add($route);
 		}
 

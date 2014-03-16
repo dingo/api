@@ -27,7 +27,6 @@ class ApiServiceProvider extends ServiceProvider {
 		// for any consumers.
 		$this->app['router']->filter('api', function()
 		{
-			return 'here';
 			$this->app['router']->enableApiRouting();
 		});
 	}
@@ -46,6 +45,8 @@ class ApiServiceProvider extends ServiceProvider {
 		$this->registerExceptionHandler();
 
 		$this->registerAuthorization();
+
+		$this->app->middleware(new Middleware\Authentication($this->app));
 
 		// We'll also register a booting event so that we can set our exception handler
 		// instance, default API version and the API vendor on the router.
