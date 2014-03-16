@@ -70,9 +70,9 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 	public function testDispatchingRequestTargetsApiButFailsToFindRouteFallsThroughToRouterCollection()
 	{
-		$this->router->get('foo', function() { return 'bar'; });
+		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function() {});
 
-		$this->router->api(['version' => 'v1'], function() {});
+		$this->router->get('foo', function() { return 'bar'; });
 
 		$this->assertEquals('bar', $this->router->dispatch(Illuminate\Http\Request::create('foo', 'GET'))->getContent());
 	}
@@ -135,15 +135,14 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 	public function testExceptionHandledAndResponseIsReturnedUsingResourceException()
 	{
-		$exception = new Dingo\Api\Exception\ResourceException('testing');
+		$exception = new Dingo\Api\Exception\ResourceException('testing', ['foo' => 'bar']);
 
 		$this->exceptionHandler->shouldReceive('willHandle')->with($exception)->andReturn(false);
 
 		$response = $this->router->handleException($exception);
-
 		$this->assertInstanceOf('Dingo\Api\Http\Response', $response);
-		$this->assertEquals('["testing",{}]', $response->getContent());
-		$this->assertInstanceOf('Illuminate\Support\MessageBag', $response->getOriginalContent()[1]);
+		$this->assertEquals('{"message":"testing","errors":{}}', $response->getContent());
+		$this->assertInstanceOf('Illuminate\Support\MessageBag', $response->getOriginalContent()['errors']);
 		$this->assertEquals(422, $response->getStatusCode());
 	}
 
