@@ -192,16 +192,14 @@ class Router extends \Illuminate\Routing\Router {
 
 			$version = array_get(last($this->groupStack), 'version', '');
 
-			// If the group itself is marked as protected then we'll adjust the
-			// route to mark it as protected unless it's already specified
-			// on the route.
-			if (count($this->groupStack) > 0)
+			// Since the groups action gets merged with the routes we need to make
+			// sure that if the route supplied its own protection that we grab
+			// that protection status from the array after the merge.
+			$action = $route->getAction();
+
+			if (count($this->groupStack) > 0 and isset($action['protected']))
 			{
-				$action = $route->getAction();
-
-				$protected = array_get(last($this->groupStack), 'protected', false);
-
-				$action['protected'] = isset($action['protected']) ? $action['protected'] : $protected;
+				$action['protected'] = is_array($action['protected']) ? last($action['protected']) : $action['protected'];
 
 				$route->setAction($action);
 			}
@@ -210,6 +208,62 @@ class Router extends \Illuminate\Routing\Router {
 		}
 
 		return $this->routes->add($route);
+	}
+
+	/**
+	 * Create a new route instance.
+	 *
+	 * @param  array|string  $methods
+	 * @param  string  $uri
+	 * @param  mixed   $action
+	 * @return \Illuminate\Routing\Route
+	 */
+	protected function createRoute($methods, $uri, $action)
+	{
+		$route = parent::createRoute($methods, $uri, $action);
+
+		// If we are routing for the API and routing to a controller we'll check to
+		// see if the controller is one of the API controllers. If it is then we
+		// need to perform checks on the protection state of the methods.
+		if ($this->routingForApi() and $this->routingToController($action))
+		{
+			list ($class, $method) = explode('@', $route->getActionName());
+
+			$controller = $this->container->make($class);
+
+			if ($controller instanceof \Dingo\Api\Routing\Controller)
+			{
+				$action = $this->controllerMethodProtected($route, $controller, $method);
+
+				$route->setAction($action);
+			}
+		}
+
+		return $route;
+	}
+
+	/**
+	 * Adjust the protected state of a controller method.
+	 * 
+	 * @param  \Illuminate\Routing\Route  $route
+	 * @param  \Dingo\Api\Routing\Controller  $controller
+	 * @param  string  $method
+	 * @return array
+	 */
+	protected function controllerMethodProtected($route, $controller, $method)
+	{
+		$action = $route->getAction();
+
+		if (in_array($method, $controller->getProtectedMethods()))
+		{
+			$action['protected'] = true;
+		}
+		elseif (in_array($method, $controller->getUnprotectedMethods()))
+		{
+			$action['protected'] = false;
+		}
+
+		return $action;
 	}
 
 	/**
@@ -385,6 +439,16 @@ class Router extends \Illuminate\Routing\Router {
 	public function getApiVendor()
 	{
 		return $this->apiVendor;
+	}
+
+	/**
+	 * Get a controller inspector instance.
+	 *
+	 * @return \Dingo\Api\Routing\ControllerInspector
+	 */
+	public function getInspector()
+	{
+		return $this->inspector ?: $this->inspector = new ControllerInspector;
 	}
 
 }
