@@ -7,9 +7,16 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
-		$this->api = m::mock('Dingo\Api\Api');
+		$this->exceptionHandler = m::mock('Dingo\Api\ExceptionHandler');
 		$this->router = new Dingo\Api\Routing\Router(new Illuminate\Events\Dispatcher);
-		$this->router->setApi($this->api);
+		$this->router->setExceptionHandler($this->exceptionHandler);
+		$this->router->setDefaultApiVersion('v1');
+		$this->router->setApiVendor('testing');
+
+		$this->router->filter('api', function()
+		{
+			$this->router->enableApiRouting();
+		});
 	}
 
 
@@ -21,16 +28,15 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 	public function testRegisteringApiRouteGroup()
 	{
-		$this->api->shouldReceive('currentRequestHandlesVersion')->with('v1')->andReturn(true);
-		$this->api->shouldReceive('setRequestOptions')->with([])->andReturn(true);
-		$this->api->shouldReceive('currentRequestTargettingApi')->andReturn(true);
-
 		$this->router->api(['version' => 'v1'], function()
 		{
 			$this->router->get('foo', function() { return 'bar'; });
 		});
+
+		$request = Illuminate\Http\Request::create('foo', 'GET');
+		$request->headers->set('accept', 'application/vnd.testing.v1+json');
 		
-		$this->assertEquals('{"message":"bar"}', $this->router->dispatch(Illuminate\Http\Request::create('foo', 'GET'))->getContent());
+		$this->assertEquals('{"message":"bar"}', $this->router->dispatch($request)->getContent());
 	}
 
 
@@ -45,10 +51,6 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 	public function testRouterDispatchesInternalRequests()
 	{
-		$this->api->shouldReceive('currentRequestHandlesVersion')->with('v1')->andReturn(true);
-		$this->api->shouldReceive('setRequestOptions')->with([])->andReturn(true);
-		$this->api->shouldReceive('currentRequestTargettingApi')->andReturn(true);
-
 		$this->router->api(['version' => 'v1'], function()
 		{
 			$this->router->get('foo', function() { return 'bar'; });
@@ -58,15 +60,38 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 	}
 
 
+	public function testAddingRouteFallsThroughToRouterCollection()
+	{
+		$this->router->get('foo', function() { return 'bar'; });
+
+		$this->assertCount(1, $this->router->getRoutes());
+	}
+
+
+	public function testDispatchingRequestTargetsApiButFailsToFindRouteFallsThroughToRouterCollection()
+	{
+		$this->router->get('foo', function() { return 'bar'; });
+
+		$this->router->api(['version' => 'v1'], function() {});
+
+		$this->assertEquals('bar', $this->router->dispatch(Illuminate\Http\Request::create('foo', 'GET'))->getContent());
+	}
+
+
+	/**
+	 * @expectedException RuntimeException
+	 */
+	public function testGettingUnkownApiCollectionThrowsException()
+	{
+		$this->router->getApiCollection('v1');
+	}
+
+
 	public function testRouterCatchesHttpExceptionsAndCreatesResponse()
 	{
-		$this->api->shouldReceive('currentRequestHandlesVersion')->with('v1')->andReturn(true);
-		$this->api->shouldReceive('setRequestOptions')->with([])->andReturn(true);
-		$this->api->shouldReceive('currentRequestTargettingApi')->andReturn(true);
-
 		$exception = new Symfony\Component\HttpKernel\Exception\HttpException(404);
 
-		$this->api->shouldReceive('handleException')->with($exception)->andReturn(new Illuminate\Http\Response('test', 404));
+		$this->exceptionHandler->shouldReceive('willHandle')->with($exception)->andReturn(false);
 
 		$this->router->api(['version' => 'v1'], function() use ($exception)
 		{
@@ -76,8 +101,67 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 		$response = $this->router->dispatch(Illuminate\Http\Request::create('foo', 'GET'));
 		
 		$this->assertEquals(404, $response->getStatusCode());
-		$this->assertEquals('{"message":"test"}', $response->getContent());
+		$this->assertEquals('{"message":"404 Not Found"}', $response->getContent());
 	}
+
+
+	public function testExceptionHandledAndResponseIsReturned()
+	{
+		$exception = new Symfony\Component\HttpKernel\Exception\HttpException(404, 'testing');
+
+		$this->exceptionHandler->shouldReceive('willHandle')->with($exception)->andReturn(false);
+
+		$response = $this->router->handleException($exception);
+
+		$this->assertInstanceOf('Dingo\Api\Http\Response', $response);
+		$this->assertEquals('testing', $response->getContent());
+		$this->assertEquals(404, $response->getStatusCode());
+	}
+
+
+	public function testExceptionHandledAndResponseIsReturnedWithMissingMessage()
+	{
+		$exception = new Symfony\Component\HttpKernel\Exception\HttpException(404);
+
+		$this->exceptionHandler->shouldReceive('willHandle')->with($exception)->andReturn(false);
+
+		$response = $this->router->handleException($exception);
+
+		$this->assertInstanceOf('Dingo\Api\Http\Response', $response);
+		$this->assertEquals('404 Not Found', $response->getContent());
+		$this->assertEquals(404, $response->getStatusCode());
+	}
+
+
+	public function testExceptionHandledAndResponseIsReturnedUsingResourceException()
+	{
+		$exception = new Dingo\Api\Exception\ResourceException('testing');
+
+		$this->exceptionHandler->shouldReceive('willHandle')->with($exception)->andReturn(false);
+
+		$response = $this->router->handleException($exception);
+
+		$this->assertInstanceOf('Dingo\Api\Http\Response', $response);
+		$this->assertEquals('["testing",{}]', $response->getContent());
+		$this->assertInstanceOf('Illuminate\Support\MessageBag', $response->getOriginalContent()[1]);
+		$this->assertEquals(422, $response->getStatusCode());
+	}
+
+
+	public function testExceptionHandledByExceptionHandler()
+	{
+		$exception = new Symfony\Component\HttpKernel\Exception\HttpException(404);
+
+		$this->exceptionHandler->shouldReceive('willHandle')->with($exception)->andReturn(true);
+		$this->exceptionHandler->shouldReceive('handle')->with($exception)->andReturn(new Dingo\Api\Http\Response('testing', 404));
+
+		$response = $this->router->handleException($exception);
+
+		$this->assertInstanceOf('Dingo\Api\Http\Response', $response);
+		$this->assertEquals('testing', $response->getContent());
+		$this->assertEquals(404, $response->getStatusCode());
+	}
+
 
 
 	/**
@@ -85,10 +169,6 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testRouterCatchesHttpExceptionsAndRethrowsForInternalRequest()
 	{
-		$this->api->shouldReceive('currentRequestHandlesVersion')->with('v1')->andReturn(true);
-		$this->api->shouldReceive('setRequestOptions')->with([])->andReturn(true);
-		$this->api->shouldReceive('currentRequestTargettingApi')->andReturn(true);
-
 		$this->router->api(['version' => 'v1'], function()
 		{
 			$this->router->get('foo', function() { throw new Symfony\Component\HttpKernel\Exception\HttpException(404); });

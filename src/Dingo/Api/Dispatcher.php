@@ -25,13 +25,6 @@ class Dispatcher {
 	protected $router;
 
 	/**
-	 * The API instance.
-	 * 
-	 * @var \Dingo\Api\Api
-	 */
-	protected $api;
-
-	/**
 	 * Original request input array.
 	 * 
 	 * @var array
@@ -67,11 +60,10 @@ class Dispatcher {
 	 * @param  \Dingo\Api\Api  $api
 	 * @return void
 	 */
-	public function __construct(Request $request, Router $router, Api $api)
+	public function __construct(Request $request, Router $router)
 	{
 		$this->request = $request;
 		$this->router = $router;
-		$this->api = $api;
 	}
 
 	/**
@@ -198,30 +190,34 @@ class Dispatcher {
 	 * @param  string  $uri
 	 * @return \Dingo\Api\Http\InternalRequest
 	 */
-	protected function createRequest($verb, $uri)
+	protected function createRequest($verb, $uri, $parameters)
 	{
 		foreach (['cookies', 'files', 'server'] as $parameter)
 		{
 			${$parameter} = $this->request->{$parameter}->all();
 		}
 
-		if ($this->api->hasPrefix())
+		if ( ! isset($this->version))
 		{
-			$uri = "{$this->api->getPrefix()}/{$uri}";
+			$this->version = $this->router->getDefaultApiVersion();
+		}
+
+		// Once we have a version we can go ahead and grab the API collection,
+		// if one exists, from the router.
+		$api = $this->router->getApiCollection($this->version);
+
+		if ($prefix = $api->option('prefix'))
+		{
+			$uri = "{$prefix}/{$uri}";
 		}
 
 		$parameters = array_merge($this->parameters, $parameters);
 
 		$request = InternalRequest::create($uri, $verb, $parameters, $cookies, $files, $server);
 
-		if ($this->api->hasDomain())
+		if ($domain = $api->option('domain'))
 		{
-			$request->headers->set('host', $this->api->getDomain());
-		}
-
-		if ( ! isset($this->version))
-		{
-			$this->version = $this->api->getDefaultVersion();
+			$request->headers->set('host', $domain);
 		}
 
 		$request->headers->set('accept', $this->buildAcceptHeader());
@@ -236,7 +232,7 @@ class Dispatcher {
 	 */
 	protected function buildAcceptHeader()
 	{
-		return "application/vnd.{$this->api->getVendor()}.{$this->version}+json";
+		return "application/vnd.{$this->router->getApiVendor()}.{$this->version}+json";
 	}
 
 	/**
@@ -249,6 +245,8 @@ class Dispatcher {
 	{
 		try
 		{
+			$this->router->enableApiRouting();
+
 			$response = $this->router->dispatch($request);
 
 			if ( ! $response->isOk())

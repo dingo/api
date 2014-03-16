@@ -21,6 +21,15 @@ class ApiServiceProvider extends ServiceProvider {
 		{
 			return $app['dingo.api.dispatcher'];
 		};
+
+		// Register an API filter that enables the API routing when it is attached 
+		// to a route, this will ensure that the response is correctly formatted
+		// for any consumers.
+		$this->app['router']->filter('api', function()
+		{
+			return 'here';
+			$this->app['router']->enableApiRouting();
+		});
 	}
 
 	/**
@@ -30,8 +39,6 @@ class ApiServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		$this->registerApi();
-
 		$this->registerDispatcher();
 
 		$this->registerRouter();
@@ -40,19 +47,15 @@ class ApiServiceProvider extends ServiceProvider {
 
 		$this->registerAuthorization();
 
-		// Register an API filter that enables the API routing when it is attached 
-		// to a route, this will ensure that the response is correctly formatted
-		// for any consumers.
-		$this->app['router']->filter('api', function()
-		{
-			$this->app['router']->enableApiRouting();
-		});
-
-		// We'll also register a booting event so that we can set our API instance
-		// on the router.
+		// We'll also register a booting event so that we can set our exception handler
+		// instance, default API version and the API vendor on the router.
 		$this->app->booting(function($app)
 		{
-			$app['router']->setApi($app['dingo.api']);
+			$app['router']->setExceptionHandler($app['dingo.api.exception']);
+
+			$app['router']->setDefaultApiVersion($app['config']['api::version']);
+
+			$app['router']->setApiVendor($app['config']['api::vendor']);
 		});
 	}
 
@@ -77,19 +80,6 @@ class ApiServiceProvider extends ServiceProvider {
 	}
 
 	/**
-	 * Register the API.
-	 * 
-	 * @return void
-	 */
-	protected function registerApi()
-	{
-		$this->app['dingo.api'] = $this->app->share(function($app)
-		{
-			return new Api($app['request'], $app['dingo.api.exception'], $app['config']['api::vendor'], $app['config']['api::version']);
-		});
-	}
-
-	/**
 	 * Register the API dispatcher.
 	 * 
 	 * @return void
@@ -98,7 +88,7 @@ class ApiServiceProvider extends ServiceProvider {
 	{
 		$this->app['dingo.api.dispatcher'] = $this->app->share(function($app)
 		{
-			return new Dispatcher($app['request'], $app['router'], $app['dingo.api']);
+			return new Dispatcher($app['request'], $app['router']);
 		});
 	}
 
