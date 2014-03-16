@@ -25,9 +25,16 @@ class ApiServiceProvider extends ServiceProvider {
 		// Register an API filter that enables the API routing when it is attached 
 		// to a route, this will ensure that the response is correctly formatted
 		// for any consumers.
-		$this->app['router']->filter('api', function()
+		$this->app['router']->filter('api', function($route, $request)
 		{
 			$this->app['router']->enableApiRouting();
+
+			$authorization = $this->app['dingo.api.authorization'];
+
+			if ($response = $authorization->authorize($this->app['router'], $this->app['dingo.oauth.resource']))
+			{
+				return $response;
+			}
 		});
 	}
 
@@ -45,8 +52,6 @@ class ApiServiceProvider extends ServiceProvider {
 		$this->registerExceptionHandler();
 
 		$this->registerAuthorization();
-
-		$this->app->middleware(new Middleware\Authentication($this->app));
 
 		// We'll also register a booting event so that we can set our exception handler
 		// instance, default API version and the API vendor on the router.

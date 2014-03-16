@@ -65,6 +65,37 @@ class Authorization {
 	}
 
 	/**
+	 * Authorize the current request.
+	 * 
+	 * @param  \Dingo\Api\Routing\Router  $router
+	 * @param  \League\OAuth2\Server\Resource  $resource
+	 * @return null|\Dingo\Api\Http\Response
+	 */
+	public function authorize($router, $resource)
+	{
+		if ($route = $router->current())
+		{
+			$actions = $route->getAction();
+
+			// If we are routing for the API and the current route is marked as protected then
+			// we'll ensure that a valid access token was sent along.
+			if ($router->routingForApi() and isset($actions['protected']) and $actions['protected'] === true)
+			{
+				try
+				{
+					$resource->isValid();
+				}
+				catch (InvalidAccessTokenException $exception)
+				{
+					$response = new Response('Access token was missing or is invalid.', 403);
+
+					return $response->morph();
+				}
+			}
+		}
+	}
+
+	/**
 	 * Get the authorization server instance.
 	 * 
 	 * @return \League\OAuth2\Server\Authorization
