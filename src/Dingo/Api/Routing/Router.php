@@ -164,9 +164,9 @@ class Router extends \Illuminate\Routing\Router {
 			$message = sprintf('%d %s', $exception->getStatusCode(), Response::$statusTexts[$exception->getStatusCode()]);
 		}
 
-		if ($exception instanceof ResourceException)
+		if ($exception instanceof ResourceException and $exception->hasErrors())
 		{
-			$message = [$message, $exception->errors()];
+			$message = ['message' => $message, 'errors' => $exception->errors()];
 		}
 
 		return new Response($message, $exception->getStatusCode());
