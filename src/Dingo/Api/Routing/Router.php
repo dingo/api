@@ -107,7 +107,7 @@ class Router extends \Illuminate\Routing\Router {
 			// If an exception is caught and we are currently routing an API request then
 			// we'll handle this exception by building a new response from it. This
 			// allows the API to gracefully handle its own exceptions.
-			if ($this->routingForApi() and ! $request instanceof InternalRequest)
+			if ($this->routingForApi() or $this->requestTargettingApi($request) and ! $request instanceof InternalRequest)
 			{
 				$response = $this->handleException($exception);
 			}
@@ -124,7 +124,7 @@ class Router extends \Illuminate\Routing\Router {
 			}
 		}
 
-		if ($this->routingForApi())
+		if ($this->routingForApi() or $this->requestTargettingApi($request))
 		{
 			$response = Response::makeFromExisting($response)->morph();
 
@@ -196,7 +196,7 @@ class Router extends \Illuminate\Routing\Router {
 			if (count($this->groupStack) > 0)
 			{
 				$action = $route->getAction();
-				
+
 				$protected = array_get(last($this->groupStack), 'protected', false);
 
 				$action['protected'] = isset($action['protected']) ? $action['protected'] : $protected;

@@ -31,21 +31,24 @@ class Authentication implements HttpKernelInterface {
 	{
 		$response = $this->app->handle($request, $type, $catch);
 
-		$actions = $this->app['router']->getCurrentRoute()->getAction();
-
-		// If we are routing for the API and the current route is marked as protected then
-		// we'll ensure that a valid access token was sent along.
-		if ($this->app['router']->routingForApi() and isset($actions['protected']) and $actions['protected'] === true)
+		if ($route = $this->app['router']->current())
 		{
-			try
-			{
-				$this->app['dingo.oauth.resource']->isValid();
-			}
-			catch (InvalidAccessTokenException $exception)
-			{
-				$response = new Response('Access token was missing or is invalid.', 403);
+			$actions = $route->getAction();
 
-				$response->morph();
+			// If we are routing for the API and the current route is marked as protected then
+			// we'll ensure that a valid access token was sent along.
+			if ($this->app['router']->routingForApi() and isset($actions['protected']) and $actions['protected'] === true)
+			{
+				try
+				{
+					$this->app['dingo.oauth.resource']->isValid();
+				}
+				catch (InvalidAccessTokenException $exception)
+				{
+					$response = new Response('Access token was missing or is invalid.', 403);
+
+					$response->morph();
+				}
 			}
 		}
 
