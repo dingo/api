@@ -1,6 +1,7 @@
 <?php namespace Dingo\Api\Facades;
 
 use Closure;
+use Dingo\Api\Http\InternalRequest;
 use Illuminate\Support\Facades\Facade;
 
 /**
@@ -35,6 +36,16 @@ class API extends Facade {
 	public static function token(array $payload)
 	{
 		return static::$app['dingo.api.authorization']->token($payload);
+	}
+
+	/**
+	 * Determine if a request is internal.
+	 * 
+	 * @return bool
+	 */
+	public static function internal()
+	{
+		return static::$app['router']->getCurrentRequest() instanceof InternalRequest;
 	}
 
 }
