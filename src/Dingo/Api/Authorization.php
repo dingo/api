@@ -1,8 +1,10 @@
 <?php namespace Dingo\Api;
 
 use Dingo\Api\Http\Response;
+use Dingo\Api\Http\InternalRequest;
 use League\Oauth2\Server\Exception\ClientException;
 use League\OAuth2\Server\Authorization as AuthorizationServer;
+use League\Oauth2\Server\Exception\InvalidAccessTokenException;
 
 class Authorization {
 
@@ -73,6 +75,8 @@ class Authorization {
 	 */
 	public function authorize($router, $resource)
 	{
+		if ($router->getCurrentRequest() instanceof InternalRequest) return;
+
 		if ($route = $router->current())
 		{
 			$actions = $route->getAction();
