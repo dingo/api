@@ -5,10 +5,10 @@ use League\OAuth2\Server\Resource;
 use League\Oauth2\Server\Exception\InvalidAccessTokenException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class OAuthProvider implements ProviderInterface {
+class OAuth2Provider implements ProviderInterface {
 
 	/**
-	 * Create a new Dingo\Api\Auth\OAuthProvider instance.
+	 * Create a new Dingo\Api\Auth\OAuth2Provider instance.
 	 * 
 	 * @param  \Illuminate\Auth\AuthManager  $auth
 	 * @param  \League\OAuth2\Server\Resource  $resource
