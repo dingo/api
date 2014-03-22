@@ -3,6 +3,8 @@
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Contracts\JsonableInterface;
 use Illuminate\Support\Contracts\ArrayableInterface;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 class Response extends \Illuminate\Http\Response {
 
@@ -39,11 +41,11 @@ class Response extends \Illuminate\Http\Response {
 	{
 		if ($this->original instanceof JsonableInterface)
 		{
-			$this->content = $this->original->toJson();
+			$this->content = $this->morphJsonableInterface($this->original);
 		}
 		elseif (is_string($this->original))
 		{
-			$this->content = json_encode(['message' => $this->original]);
+			$this->content = $this->encode(['message' => $this->original]);
 		}
 		else
 		{
@@ -57,14 +59,14 @@ class Response extends \Illuminate\Http\Response {
 				});
 			}
 
-			$this->content = json_encode($this->content);
+			$this->content = $this->encode($this->content);
 		}
 
 		return $this;
 	}
 
 	/**
-	 * If content implements the ArrayableInterface it will be morphed to it's
+	 * If content implements the ArrayableInterface it will be morphed to its
 	 * array value.
 	 * 
 	 * @param  array|\Illuminate\Support\Contracts\ArrayableInterface  $content
@@ -73,6 +75,44 @@ class Response extends \Illuminate\Http\Response {
 	protected function morphArrayableInterface($content)
 	{
 		return $content instanceof ArrayableInterface ? $content->toArray() : $content;
+	}
+
+	/**
+	 * If content implements the JsonableInterface it will be morphed to its
+	 * JSON value.
+	 * 
+	 * @param  \Illuminate\Support\Contracts\JsonableInterface  $content
+	 * @return string
+	 */
+	protected function morphJsonableInterface($content)
+	{
+		if ($content instanceof EloquentModel)
+		{
+			$key = snake_case(class_basename($content));
+
+			return $this->encode([$key => $content->toArray()]);
+		}
+		elseif ($content instanceof EloquentCollection)
+		{
+			$key = snake_case(str_plural(class_basename($content->first())));
+
+			return $this->encode([$key => $content->toArray()]);
+		}
+		else
+		{
+			return $content->toJson();
+		}
+	}
+
+	/**
+	 * Encode the content to its JSON representation.
+	 * 
+	 * @param  string  $content
+	 * @return string
+	 */
+	protected function encode($content)
+	{
+		return json_encode($content);
 	}
 
 }
