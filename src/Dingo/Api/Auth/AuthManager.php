@@ -21,7 +21,7 @@ class AuthManager extends Manager {
 	 */
 	public function createOAuth2Driver()
 	{
-		return new Provider(new OAuth2Provider($this->app['auth'], $this->app['dingo.oauth.resource']));
+		return new Provider(new OAuth2Provider($this->app['auth'], $this->app['dingo.oauth2.resource']));
 	}
 
 }

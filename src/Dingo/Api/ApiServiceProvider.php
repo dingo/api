@@ -146,7 +146,7 @@ class ApiServiceProvider extends ServiceProvider {
 	{
 		$this->app['dingo.api.authorization'] = $this->app->share(function($app)
 		{
-			return new Authorization($app['dingo.oauth.authorization']);
+			return new Authorization($app['dingo.oauth2.authorization']);
 		});
 	}
 
