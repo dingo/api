@@ -1,10 +1,7 @@
 <?php namespace Dingo\Api;
 
 use Dingo\Api\Http\Response;
-use Dingo\Api\Http\InternalRequest;
 use League\Oauth2\Server\Exception\ClientException;
-use League\OAuth2\Server\Authorization as AuthorizationServer;
-use League\Oauth2\Server\Exception\InvalidAccessTokenException;
 
 class Authorization {
 
@@ -13,7 +10,7 @@ class Authorization {
 	 * 
 	 * @var \League\OAuth2\Server\Authorization
 	 */
-	protected $authServer;
+	protected $server;
 
 	/**
 	 * Array of exception status codes.
@@ -21,29 +18,29 @@ class Authorization {
 	 * @var array
 	 */
 	protected $exceptionStatusCodes = [
-        'invalid_request'           =>  400,
-        'unauthorized_client'       =>  400,
-        'access_denied'             =>  401,
-        'unsupported_response_type' =>  400,
-        'invalid_scope'             =>  400,
-        'server_error'              =>  500,
-        'temporarily_unavailable'   =>  400,
-        'unsupported_grant_type'    =>  501,
-        'invalid_client'            =>  401,
-        'invalid_grant'             =>  400,
-        'invalid_credentials'       =>  400,
-        'invalid_refresh'           =>  400,
-    ];
+		'invalid_request'           =>  400,
+		'unauthorized_client'       =>  400,
+		'access_denied'             =>  401,
+		'unsupported_response_type' =>  400,
+		'invalid_scope'             =>  400,
+		'server_error'              =>  500,
+		'temporarily_unavailable'   =>  400,
+		'unsupported_grant_type'    =>  501,
+		'invalid_client'            =>  401,
+		'invalid_grant'             =>  400,
+		'invalid_credentials'       =>  400,
+		'invalid_refresh'           =>  400,
+	];
 
-    /**
-     * Create a new Dingo\Api\Authorization instance.
-     * 
-     * @param  \Leage\OAuth2\Server\Authorization  $authServer
-     * @return void
-     */
-	public function __construct(AuthorizationServer $authServer)
+	/**
+	 * Create a new Dingo\Api\Authorization instance.
+	 * 
+	 * @param  \Leage\OAuth2\Server\Authorization  $server
+	 * @return void
+	*/
+	public function __construct(\League\OAuth2\Server\Authorization $server)
 	{
-		$this->authServer = $authServer;
+		$this->server = $server;
 	}
 
 	/**
@@ -54,59 +51,17 @@ class Authorization {
 	 */
 	public function token(array $payload)
 	{
+		return $this->server->issueAccessToken($payload);
 		try
 		{
-			return new Response($this->authServer->issueAccessToken($payload));
+			return new Response($this->server->issueAccessToken($payload));
 		}
 		catch (ClientException $exception)
 		{
-			$statusCode = $this->exceptionStatusCodes[$this->authServer->getExceptionType($exception->getCode())];
+			$statusCode = $this->exceptionStatusCodes[$this->server->getExceptionType($exception->getCode())];
 
 			return new Response($exception->getMessage(), $statusCode);
 		}
-	}
-
-	/**
-	 * Authorize the current request.
-	 * 
-	 * @param  \Dingo\Api\Routing\Router  $router
-	 * @param  \League\OAuth2\Server\Resource  $resource
-	 * @return null|\Dingo\Api\Http\Response
-	 */
-	public function authorize($router, $resource)
-	{
-		if ($router->getCurrentRequest() instanceof InternalRequest) return;
-
-		if ($route = $router->current())
-		{
-			$actions = $route->getAction();
-
-			// If we are routing for the API and the current route is marked as protected then
-			// we'll ensure that a valid access token was sent along.
-			if ($router->routingForApi() and isset($actions['protected']) and $actions['protected'] === true)
-			{
-				try
-				{
-					$resource->isValid();
-				}
-				catch (InvalidAccessTokenException $exception)
-				{
-					$response = new Response('Access token was missing or is invalid.', 403);
-
-					return $response->morph();
-				}
-			}
-		}
-	}
-
-	/**
-	 * Get the authorization server instance.
-	 * 
-	 * @return \League\OAuth2\Server\Authorization
-	 */
-	public function getAuthServer()
-	{
-		return $this->authServer;
 	}
 
 }

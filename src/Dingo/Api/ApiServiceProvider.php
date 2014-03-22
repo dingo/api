@@ -1,8 +1,10 @@
 <?php namespace Dingo\Api;
 
+use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
-use Dingo\Api\Routing\ApiRouter;
+use Dingo\Api\Auth\AuthManager;
 use Illuminate\Support\ServiceProvider;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class ApiServiceProvider extends ServiceProvider {
 
@@ -22,9 +24,9 @@ class ApiServiceProvider extends ServiceProvider {
 			return $app['dingo.api.dispatcher'];
 		};
 
-		$this->app['Dingo\Api\Authorization'] = function($app)
+		$this->app['Dingo\Api\Authentication'] = function($app)
 		{
-			return $app['dingo.api.authorization'];
+			return $app['dingo.api.authentication'];
 		};
 
 		// Register an API filter that enables the API routing when it is attached 
@@ -34,11 +36,13 @@ class ApiServiceProvider extends ServiceProvider {
 		{
 			$this->app['router']->enableApiRouting();
 
-			$authorization = $this->app['dingo.api.authorization'];
-
-			if ($response = $authorization->authorize($this->app['router'], $this->app['dingo.oauth.resource']))
+			try
 			{
-				return $response;
+				$this->app['dingo.api.authentication']->authenticate();
+			}
+			catch (UnauthorizedHttpException $exception)
+			{
+				return new Response($exception->getMessage(), $exception->getStatusCode());
 			}
 		});
 	}
@@ -56,7 +60,7 @@ class ApiServiceProvider extends ServiceProvider {
 
 		$this->registerExceptionHandler();
 
-		$this->registerAuthorization();
+		$this->registerAuthentication();
 
 		// We'll also register a booting event so that we can set our exception handler
 		// instance, default API version and the API vendor on the router.
@@ -117,6 +121,21 @@ class ApiServiceProvider extends ServiceProvider {
 	}
 
 	/**
+	 * Register the API authentication.
+	 * 
+	 * @return void
+	 */
+	protected function registerAuthentication()
+	{
+		$this->app['dingo.api.authentication'] = $this->app->share(function($app)
+		{
+			$manager = new AuthManager($app);
+
+			return new Authentication($app['router'], $manager, $app['config']['api::auth']);
+		});
+	}
+
+	/**
 	 * Register the API authorization.
 	 * 
 	 * @return void
@@ -125,7 +144,7 @@ class ApiServiceProvider extends ServiceProvider {
 	{
 		$this->app['dingo.api.authorization'] = $this->app->share(function($app)
 		{
-			return new Authorization($app['dingo.oauth.server']);
+			return new Authorization($app['dingo.oauth.authorization']);
 		});
 	}
 

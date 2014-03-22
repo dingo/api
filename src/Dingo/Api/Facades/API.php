@@ -39,6 +39,16 @@ class API extends Facade {
 	}
 
 	/**
+	 * Get the authenticated API user.
+	 * 
+	 * @return \Illuminate\Auth\GenericUser|\Illuminate\Database\Eloquent\Model
+	 */
+	public static function user()
+	{
+		return static::$app['dingo.api.authentication']->getUser();
+	}
+
+	/**
 	 * Determine if a request is internal.
 	 * 
 	 * @return bool
