@@ -20,7 +20,7 @@ If you're using OAuth 2.0 to authenticate requests then you'll also need to add 
 
 ### Optional Aliases
 
-These aliases are optional but do make life easier and provide you with a terser syntax when working with the API.
+These aliases are optional but do make life easier and provide you with a terser syntax when working with the API:
 
 	"API"        => "Dingo\Api\Facades\API",
 	"Controller" => "Dingo\Api\Routing\Controller",
@@ -28,11 +28,19 @@ These aliases are optional but do make life easier and provide you with a terser
 
 The `Controller` and `Response` aliases give you easier access to certain methods which are covered in more detail later.
 
+### Publishing Configuration
+
+You can publish the packages configuration and modify it to better suit your application:
+
+    php artisan config:publish dingo/api
+
+The configuration files will be published to `app/config/packages/dingo/api`.
+
 ## Usage
 
 ### Defining Routes
 
-Before routes are defined they need to be wrapped in an API group. This group lets the API know, among other things, the version of the API that these routes will respond to.
+Before routes are defined they need to be wrapped in an API group. This group lets the API know, among other things, the version of the API that these routes will respond to:
 
 	Route::api(['version' => 'v1'], function()
 	{
@@ -41,7 +49,7 @@ Before routes are defined they need to be wrapped in an API group. This group le
 
 > API versions are always defined using the `v<versionNumber>` syntax.
 
-Inside our group we can define routes as we normally would.
+Inside our group we can define routes as we normally would:
 
 	Route::api(['version' => 'v1'], function()
 	{
@@ -77,7 +85,7 @@ By default your API will be accessible to everyone. Usually this isn't desirable
 
 Protection can be enabled for all routes within a group:
 
-	Route::api(['version' => 'v1', 'protection' => true], function()
+	Route::api(['version' => 'v1', 'protected' => true], function()
 	{
 		// Route definitions.
 	});
@@ -86,7 +94,7 @@ Or it can be enabled for only a specific route:
 
 	Route::api(['version' => 'v1'], function()
 	{
-		Route::get('users', ['protection' => true, function()
+		Route::get('users', ['protected' => true, function()
 		{
 			return User::all();
 		}]);
@@ -96,7 +104,7 @@ Or it can be disabled for specific routes:
 
 	Route::api(['version' => 'v1', 'protected' => true], function()
 	{
-		Route::get('users', ['protection' => false, function()
+		Route::get('users', ['protected' => false, function()
 		{
 			return User::all();
 		}]);
@@ -127,7 +135,7 @@ Or you can fill the `$protected` and `$unprotected` properties:
 
 ### Responses
 
-When returning data from your API you'll want it to be formatted so that consumers are able to parse it correctly. There is usually no need to return a `Illuminate\Http\Response` object from any of your routes. Simply returning an array or an Eloquent object is a much better approach.
+When returning data from your API you'll want it to be formatted so that consumers can easily read and understand it. There is usually no need to return an `Illuminate\Http\Response` object from any of your routes. Simply returning an array or an Eloquent object is a much better approach:
 
 	Route::api(['version' => 'v1', 'prefix' => 'api'], function()
 	{
@@ -139,28 +147,30 @@ When returning data from your API you'll want it to be formatted so that consume
 
 When you hit the `example.com/api/users` endpoint the API will automatically convert the Eloquent collection into its JSON representation:
 
-	[
-		{
-			"id": 1,
-			"name": "Jason",
-			"location": "Australia"
-		},
-		{
-			"id": 2,
-			"name": "Dayle",
-			"location": "Wales"
-		},
-		{
-			"id": 3,
-			"name": "Shawn",
-			"location": "The Netherlands"
-		}
-	]
+	{
+		"users": [
+			{
+				"id": 1,
+				"name": "Jason",
+				"location": "Australia"
+			},
+			{
+				"id": 2,
+				"name": "Dayle",
+				"location": "Wales"
+			},
+			{
+				"id": 3,
+				"name": "Shawn",
+				"location": "The Netherlands"
+			}
+		]
+	}
 
 ### Errors
 
 When creating or updating records with your API you'll often need to return errors when something goes wrong. All error handling should be done via
-exceptions. The following exceptions can and should be thrown when you encounter an error that you need to alert the consumer of.
+exceptions. The following exceptions can and should be thrown when you encounter an error that you need to alert the consumer of:
 
 	Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException
 	Symfony\Component\HttpKernel\Exception\BadRequestHttpException
@@ -178,7 +188,7 @@ exceptions. The following exceptions can and should be thrown when you encounter
 	Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
 	Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException
 
-You may have noticed these are all Symfony exceptions and they extend from Symfony's `HttpException`. As an example you might throw a `ConflictHttpException` when you attempt to update a row that has since been updated prior to this request.
+You may have noticed these are all Symfony exceptions and they extend from Symfony's `HttpException`. As an example you might throw a `ConflictHttpException` when you attempt to update a row that has since been updated prior to this request:
 
 	Route::api(['version' => 'v1', 'prefix' => 'api'], function()
 	{
@@ -201,14 +211,14 @@ The API would catch this exception and return it as a response with the HTTP sta
 		"message": "User was updated prior to your request."
 	}
 
-The API also provides a couple of its own exceptions which you may throw.
+The API also provides a couple of its own exceptions which you may throw:
 
 	Dingo\Api\Exception\DeleteResourceFailedException
 	Dingo\Api\Exception\ResourceException
 	Dingo\Api\Exception\StoreResourceFailedException
 	Dingo\Api\Exception\UpdateResourceFailedException
 
-These exceptions allow you to pass along any validation errors that occured when trying to create, update, or delete resources. As an example you might throw a `StoreResourceFailedException` when you encounter validation errors when trying to create a new user.
+These exceptions allow you to pass along any validation errors that occured when trying to create, update, or delete resources. As an example you might throw a `StoreResourceFailedException` when you encounter validation errors when trying to create a new user:
 
 	Route::api(['version' => 'v1', 'prefix' => 'api'], function()
 	{
@@ -275,3 +285,45 @@ Here is how you'd send an internal request to get the Eloquent collection of all
 
 ### Authentication and Authorization
 
+The API comes with built in authentication and authorization. As shown earlier, authentication can be enabled for entire groups or for a specific endpoint. By default both `basic` and `oauth2` authentication are enabled, this can be modified in the `app/config/packages/dingo/api/config.php` configuration file once you've published it.
+
+The flow for authenticating requests is as follows:
+
+	         Client Requests API
+	                 ↓
+	 API Determines If Route Is Protected
+	                 ↓
+	 API Determines Type Of Authentication
+	                 ↓
+	  API Attempts To Authenticate Request
+	                 ↓
+	API Throws Error If Authentication Fails
+	       And Denies Client Access
+	                 ↓
+	 Client Accesses Endpoint If Successful
+
+Once inside a protected endpoint you can retrieve the authenticated user:
+
+	Route::api(['version' => 'v1', 'prefix' => 'api', 'protected' => true], function()
+	{
+		Route::get('user', function()
+		{
+			return API::user();
+		});
+	});
+
+> The API does not maintain sessions and thus each request must be authenticated.
+
+The `API::user` method returns either an Eloquent model or an instance of `Illuminate\Auth\GenericUser` depending on how the driver you choose in `app/config/auth.php`.
+
+#### Issuing OAuth 2.0 Tokens
+
+OAuth 2.0 tokens can be issued from an unprotected POST endpoint on your API.
+
+	Route::api(['version' => 'v1', 'prefix' => 'api'], function()
+	{
+		Route::post('token', ['protected' => false, function()
+		{
+			return API::token(Input::only('grant_type', 'client_id', 'client_secret', 'username', 'password'));
+		}]);
+	});
