@@ -25,6 +25,21 @@ return [
 	|
 	*/
 
-	'version' => 'v1'
+	'version' => 'v1',
+
+	/*
+	|--------------------------------------------------------------------------
+	| Authentication Providers
+	|--------------------------------------------------------------------------
+	|
+	| You can attempt to authenticate requests using different providers.
+	| Available providers: "basic", "oauth"
+	|
+	*/
+
+	'auth' => [
+		'basic',
+		'oauth'
+	]
 
 ];
