@@ -72,7 +72,7 @@ class Authentication {
 
 			if ($exception === null)
 			{
-				$exception = new UnauthorizedHttpException(null, 'No credentials supplied.');
+				$exception = new UnauthorizedHttpException(null, 'Authentication required.');
 			}
 
 			throw $exception;
