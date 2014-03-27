@@ -6,7 +6,6 @@ use Dingo\Api\Routing\Router;
 use Illuminate\Routing\Route;
 use Dingo\Api\Auth\AuthManager;
 use Dingo\Api\Http\InternalRequest;
-use League\Oauth2\Server\Exception\ClientException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class Authentication {

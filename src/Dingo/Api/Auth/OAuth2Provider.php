@@ -1,8 +1,8 @@
 <?php namespace Dingo\Api\Auth;
 
 use Illuminate\Auth\AuthManager;
-use League\OAuth2\Server\Resource;
-use League\Oauth2\Server\Exception\InvalidAccessTokenException;
+use Dingo\OAuth2\Server\Resource;
+use Dingo\OAuth2\Exception\InvalidTokenException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class OAuth2Provider implements ProviderInterface {
@@ -11,7 +11,7 @@ class OAuth2Provider implements ProviderInterface {
 	 * Create a new Dingo\Api\Auth\OAuth2Provider instance.
 	 * 
 	 * @param  \Illuminate\Auth\AuthManager  $auth
-	 * @param  \League\OAuth2\Server\Resource  $resource
+	 * @param  \Dingo\OAuth2\Server\Resource  $resource
 	 * @return void
 	 */
 	public function __construct(AuthManager $auth, Resource $resource)
@@ -29,13 +29,13 @@ class OAuth2Provider implements ProviderInterface {
 	{
 		try
 		{
-			$this->resource->isValid();
+			$token = $this->resource->validate();
 
-			$this->auth->onceUsingId($this->resource->getOwnerId());
+			$this->auth->onceUsingId($token->getUserId());
 
 			return $this->auth->getUser();
 		}
-		catch (InvalidAccessTokenException $exception)
+		catch (InvalidTokenException $exception)
 		{
 			throw new UnauthorizedHttpException('Bearer', 'Access token was missing or is invalid.');
 		}

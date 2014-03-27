@@ -33,13 +33,13 @@ return [
 	|--------------------------------------------------------------------------
 	|
 	| You can attempt to authenticate requests using different providers.
-	| Available providers: "basic", "oauth"
+	| Available providers: "basic", "oauth2"
 	|
 	*/
 
 	'auth' => [
 		'basic',
-		'oauth'
+		'oauth2'
 	]
 
 ];
