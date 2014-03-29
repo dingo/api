@@ -15,6 +15,7 @@
         "illuminate/routing": "4.1.*",
         "illuminate/events": "4.1.*",
         "illuminate/auth": "4.1.*",
+        "illuminate/database": "4.1.*",
         "mockery/mockery": "0.9.*"
     },
     "autoload": {
