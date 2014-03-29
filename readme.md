@@ -83,6 +83,8 @@ If we want our API to be accessible at `api.example.com` we'd use a subdomain:
 
 By default your API will be accessible to everyone. Usually this isn't desirable as some endpoints may contain sensitive information or they may even create or update records in a database.
 
+> Authentication is covered in more detail later in this guide.
+
 Protection can be enabled for all routes within a group:
 
 	Route::api(['version' => 'v1', 'protected' => true], function()
@@ -314,16 +316,42 @@ Once inside a protected endpoint you can retrieve the authenticated user:
 
 > The API does not maintain sessions and thus each request must be authenticated.
 
-The `API::user` method returns either an Eloquent model or an instance of `Illuminate\Auth\GenericUser` depending on how the driver you choose in `app/config/auth.php`.
+The `API::user` method returns either an Eloquent model or an instance of `Illuminate\Auth\GenericUser` depending on which driver you have chosen in `app/config/auth.php`.
+
+#### Pretending To Be A User
+
+When performing internal requests to your API you might want to access a protected endpoint which makes use of the `API::user` method. You can easily tell the API to *be* a given user:
+
+    Route::get('user/{id}/posts', function($id)
+    {
+    	$user = User::find($id);
+
+    	$posts = API::be($user)->get('user/posts');
+
+    	return View::make('user.posts')->with('posts', $posts);
+    });
+
+The protected API route might look like this (excluded the API group for simplicity):
+
+	Route::get('user/posts', ['protected' => true, function()
+	{
+		return API::user()->posts;
+	}]);
+
+Because the API route is protected we are able to safely use `API::user` to fetch this users posts. Our regular route can internally call this API route and act on behalf of the user.
 
 #### Issuing OAuth 2.0 Tokens
 
-OAuth 2.0 tokens can be issued from an unprotected POST endpoint on your API.
+> This package makes use of the [dingo/oauth2-server](https://github.com/dingo/oauth2-server) package. Please refer to that package on how to setup and configure your OAuth 2.0 server.
+
+OAuth 2.0 tokens can be issued from an unprotected POST endpoint on your API:
 
 	Route::api(['version' => 'v1', 'prefix' => 'api'], function()
 	{
 		Route::post('token', ['protected' => false, function()
 		{
-			return API::token(Input::only('grant_type', 'client_id', 'client_secret', 'username', 'password'));
+			$payload = Input::only('grant_type', 'client_id', 'client_secret', 'username', 'password');
+
+			return API::token($payload);
 		}]);
 	});
