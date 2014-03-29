@@ -9,7 +9,8 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->request = new Illuminate\Http\Request;
 		$this->router = m::mock('Dingo\Api\Routing\Router');
-		$this->dispatcher = new Dingo\Api\Dispatcher($this->request, $this->router);
+		$this->auth = m::mock('Dingo\Api\Authentication');
+		$this->dispatcher = new Dingo\Api\Dispatcher($this->request, $this->router, $this->auth);
 	}
 
 
@@ -28,6 +29,8 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 		$this->router->shouldReceive('getApiCollection')->times(6)->with('v1')->andReturn(new Dingo\Api\Routing\ApiCollection('v1', ['prefix' => 'api']));
 		$this->router->shouldReceive('enableApiRouting')->times(6);
 
+		$this->auth->shouldReceive('setUser')->times(6)->with(null);
+
 		$this->assertEquals('test', $this->dispatcher->get('test'));
 		$this->assertEquals('test', $this->dispatcher->post('test'));
 		$this->assertEquals('test', $this->dispatcher->put('test'));
@@ -45,6 +48,8 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 		$this->router->shouldReceive('getApiCollection')->once()->with('v1')->andReturn(new Dingo\Api\Routing\ApiCollection('v1', ['prefix' => 'api']));
 		$this->router->shouldReceive('enableApiRouting')->once();
 
+		$this->auth->shouldReceive('setUser')->once()->with(null);
+
 		$this->assertEquals('test', $this->dispatcher->version('v1')->with(['foo' => 'bar'])->get('test'));
 	}
 
@@ -57,6 +62,8 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 		$this->router->shouldReceive('getApiVendor')->once()->andReturn('testing');
 		$this->router->shouldReceive('getApiCollection')->once()->with('v1')->andReturn(new Dingo\Api\Routing\ApiCollection('v1', ['domain' => 'testing']));
 		$this->router->shouldReceive('enableApiRouting')->once();
+
+		$this->auth->shouldReceive('setUser')->once()->with(null);
 
 		$this->assertEquals('test', $this->dispatcher->get('test'));
 	}
@@ -73,6 +80,8 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 		$this->router->shouldReceive('getApiVendor')->once()->andReturn('testing');
 		$this->router->shouldReceive('getApiCollection')->once()->with('v1')->andReturn(new Dingo\Api\Routing\ApiCollection('v1', ['domain' => 'testing']));
 		$this->router->shouldReceive('enableApiRouting')->once();
+
+		$this->auth->shouldReceive('setUser')->once()->with(null);
 
 		$this->dispatcher->get('test');
 	}
