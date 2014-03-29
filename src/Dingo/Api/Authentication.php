@@ -11,7 +11,35 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 class Authentication {
 
 	/**
-	 * Authenticated user.
+	 * API router instance.
+	 * 
+	 * @var \Dingo\Api\Routing\Router
+	 */
+	protected $router;
+
+	/**
+	 * Illuminate auth instance.
+	 * 
+	 * @var \Illuminate\Auth\AuthManager
+	 */
+	protected $auth;
+
+	/**
+	 * Array of authentication providers.
+	 * 
+	 * @var array
+	 */
+	protected $providers;
+
+	/**
+	 * Authenticated user ID.
+	 * 
+	 * @var int
+	 */
+	protected $userId;
+
+	/**
+	 * Authenticated user instance.
 	 * 
 	 * @var \Illuminate\Auth\GenericUser|\Illuminate\Database\Eloquent\Model
 	 */
@@ -41,7 +69,7 @@ class Authentication {
 	{
 		$request = $this->router->getCurrentRequest();
 
-		if ( ! $this->router->routingForApi() or $request instanceof InternalRequest)
+		if ( ! $this->router->routingForApi() or $request instanceof InternalRequest or ! is_null($this->user))
 		{
 			return;
 		}
@@ -101,12 +129,17 @@ class Authentication {
 	 */
 	public function getUser()
 	{
+		if ($this->user)
+		{
+			return $this->user;
+		}
+
 		if ( ! $this->auth->check())
 		{
 			$this->auth->onceUsingId($this->userId);
 		}
 
-		return $this->auth->user();
+		return $this->user = $this->auth->user();
 	}
 
 	/**
@@ -117,6 +150,19 @@ class Authentication {
 	public function user()
 	{
 		return $this->getUser();
+	}
+
+	/**
+	 * Set the authenticated user.
+	 * 
+	 * @param  \Illuminate\Auth\GenericUser|\Illuminate\Database\Eloquent\Model  $user
+	 * @return \Dingo\Api\Authentication
+	 */
+	public function setUser($user)
+	{
+		$this->user = $user;
+
+		return $this;
 	}
 
 }

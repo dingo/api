@@ -1,10 +1,13 @@
 <?php namespace Dingo\Api;
 
 use Closure;
+use RuntimeException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Dingo\Api\Routing\Router;
+use Illuminate\Auth\GenericUser;
 use Dingo\Api\Http\InternalRequest;
+use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
@@ -23,6 +26,13 @@ class Dispatcher {
 	 * @var \Dingo\Api\Routing\Router
 	 */
 	protected $router;
+
+	/**
+	 * API authentication instance.
+	 * 
+	 * @var \Dingo\Api\Authentication
+	 */
+	protected $auth;
 
 	/**
 	 * Original request input array.
@@ -57,13 +67,32 @@ class Dispatcher {
 	 * 
 	 * @param  \Illuminate\Http\Request  $request
 	 * @param  \Dingo\Api\Routing\Router  $router
-	 * @param  \Dingo\Api\Api  $api
+	 * @param  \Dingo\Api\Authentication  $auth
 	 * @return void
 	 */
-	public function __construct(Request $request, Router $router)
+	public function __construct(Request $request, Router $router, Authentication $auth)
 	{
 		$this->request = $request;
 		$this->router = $router;
+		$this->auth = $auth;
+	}
+
+	/**
+	 * Internal request will be authenticated as the given user.
+	 * 
+	 * @param  \Illuminate\Auth\GenericUser|\Illuminate\Database\Eloquent\Model  $user
+	 * @return \Dingo\Api\Dispatcher
+	 */
+	public function be($user)
+	{
+		if ( ! $user instanceof Model and ! $user instanceof GenericUser)
+		{
+			throw new RuntimeException('User must be an instance of either Illuminate\Database\Eloquent\Model or Illuminate\Auth\GenericUser.');
+		}
+
+		$this->auth->setUser($user);
+
+		return $this;
 	}
 
 	/**
@@ -267,13 +296,16 @@ class Dispatcher {
 	}
 
 	/**
-	 * Refresh the request stack by popping the last request from the stack,
-	 * replacing the input, and resetting the version and parameters.
+	 * Refresh the request stack by resetting the authentication,
+	 * popping the last request from the stack, replacing the
+	 * input, and resetting the version and parameters.
 	 * 
 	 * @return void
 	 */
 	protected function refreshRequestStack()
 	{
+		$this->auth->setUser(null);
+
 		array_pop($this->requestStack);
 
 		$this->request->replace($this->originalRequestInput);
