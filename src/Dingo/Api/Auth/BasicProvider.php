@@ -3,12 +3,12 @@
 use Illuminate\Auth\AuthManager;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class BasicProvider implements ProviderInterface {
+class BasicProvider extends Provider {
 
 	/**
 	 * Create a new Dingo\Api\Auth\BasicProvider instance.
 	 * 
-	 * @param  \Illuminate\auth\AuthManager  $auth
+	 * @param  \Illuminate\Auth\AuthManager  $auth
 	 * @return void
 	 */
 	public function __construct(AuthManager $auth)
@@ -19,7 +19,7 @@ class BasicProvider implements ProviderInterface {
 	/**
 	 * Authenticate request with Basic.
 	 * 
-	 * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Auth\GenericUser
+	 * @return int
 	 */
 	public function authenticate()
 	{
@@ -28,7 +28,7 @@ class BasicProvider implements ProviderInterface {
 			throw new UnauthorizedHttpException('Basic', 'Invalid credentials.');
 		}
 
-		return $this->auth->getUser();
+		return $this->auth->user()->id;
 	}
 
 	/**

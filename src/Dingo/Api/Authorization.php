@@ -33,7 +33,7 @@ class Authorization {
 	{
 		try
 		{
-			return $this->server->issueToken($payload);
+			return $this->server->issueAccessToken($payload);
 		}
 		catch (ClientException $exception)
 		{

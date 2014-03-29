@@ -1,29 +1,27 @@
 <?php namespace Dingo\Api\Auth;
 
-use Illuminate\Auth\AuthManager;
 use Dingo\OAuth2\Server\Resource;
 use Dingo\OAuth2\Exception\InvalidTokenException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class OAuth2Provider implements ProviderInterface {
+class OAuth2Provider extends Provider {
 
 	/**
 	 * Create a new Dingo\Api\Auth\OAuth2Provider instance.
 	 * 
-	 * @param  \Illuminate\Auth\AuthManager  $auth
+	 * @param  \Illuminate\Auth\Guard  $auth
 	 * @param  \Dingo\OAuth2\Server\Resource  $resource
 	 * @return void
 	 */
-	public function __construct(AuthManager $auth, Resource $resource)
+	public function __construct(Resource $resource)
 	{
-		$this->auth = $auth;
 		$this->resource = $resource;
 	}
 
 	/**
 	 * Authenticate request with OAuth2.
 	 * 
-	 * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Auth\GenericUser
+	 * @return int
 	 */
 	public function authenticate()
 	{
@@ -31,9 +29,7 @@ class OAuth2Provider implements ProviderInterface {
 		{
 			$token = $this->resource->validate();
 
-			$this->auth->onceUsingId($token->getUserId());
-
-			return $this->auth->getUser();
+			return $token->getUserId();
 		}
 		catch (InvalidTokenException $exception)
 		{

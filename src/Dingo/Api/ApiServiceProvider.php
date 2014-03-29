@@ -131,9 +131,14 @@ class ApiServiceProvider extends ServiceProvider {
 	{
 		$this->app['dingo.api.authentication'] = $this->app->share(function($app)
 		{
-			$manager = new AuthManager($app);
+			$providers = [];
 
-			return new Authentication($app['router'], $manager, $app['config']['api::auth']);
+			foreach ($app['config']['api::auth'] as $provider => $resolver)
+			{
+				$providers[$provider] = $resolver($app);
+			}
+
+			return new Authentication($app['router'], $app['auth'], $providers);
 		});
 	}
 

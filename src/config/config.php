@@ -33,13 +33,18 @@ return [
 	|--------------------------------------------------------------------------
 	|
 	| You can attempt to authenticate requests using different providers.
-	| Available providers: "basic", "oauth2"
 	|
 	*/
 
 	'auth' => [
-		'basic',
-		'oauth2'
+		'basic' => function($app)
+		{
+			return new Dingo\Api\Auth\BasicProvider($app['auth']);
+		},
+		'oauth2' => function($app)
+		{
+			return new Dingo\Api\Auth\OAuth2Provider($app['dingo.oauth2.resource']);
+		}
 	]
 
 ];
