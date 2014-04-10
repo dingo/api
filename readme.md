@@ -320,6 +320,8 @@ Or you can fill the `$protected` and `$unprotected` properties:
 
 #### OAuth 2.0 Scopes
 
+> The [dingo/oauth2-server](https://github.com/dingo/oauth2-server) package covers scopes in more detail.
+
 To have finer control over the protected routes you should be using scopes. Access tokens can be issued with certain scopes that allow a client to make requests to API endpoints that might otherwise be unaccessible.
 
 Scopes can be set for an entire API group:
@@ -354,9 +356,35 @@ If the method name is missing the scope will be applied to all methods on the co
 
 	}
 
-You can also pass an array of scopes to any of the above.
+You can also pass an array of scopes to any of the above methods.
 
-> The [dingo/oauth2-server](https://github.com/dingo/oauth2-server) package covers scopes in more detail.
+It's also easy to customize the response of a particular endpoint based on the scopes the access token has.
+
+	Route::api(['version' => 'v1', 'prefix' => 'api', 'protected' => true], function()
+	{
+		Route::get('user/{id}', function($id)
+		{
+			$user = User::find($id);
+
+			$hidden = ['password'];
+
+			if ( ! API::token()->hasScope('read_users_age'))
+			{
+				$hidden[] = 'age';
+			}
+
+			if ( ! API::token()->hasScope('read_users_email'))
+			{
+				$hidden[] = 'email';
+			}
+
+			$user->setHidden($hidden);
+
+			return $user;
+		});
+	});
+
+Now only an access tokens with the `read_users_age` scope can see the users age and access tokens with the `read_users_email` can see the users e-mail.
 
 #### Pretending To Be A User
 
@@ -392,6 +420,6 @@ OAuth 2.0 tokens can be issued from an unprotected POST endpoint on your API:
 		{
 			$payload = Input::only('grant_type', 'client_id', 'client_secret', 'username', 'password', 'scope');
 
-			return API::token($payload);
+			return API::issueToken($payload);
 		}]);
 	});
