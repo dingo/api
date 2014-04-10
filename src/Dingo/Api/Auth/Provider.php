@@ -22,9 +22,10 @@ abstract class Provider {
 	/**
 	 * Authenticate request.
 	 * 
+	 * @param  array  $scopes
 	 * @return int
 	 */
-	abstract public function authenticate();
+	abstract public function authenticate(array $scopes);
 
 	/**
 	 * Get the providers authorization method.

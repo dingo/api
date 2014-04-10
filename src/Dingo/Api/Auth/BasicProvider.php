@@ -19,9 +19,10 @@ class BasicProvider extends Provider {
 	/**
 	 * Authenticate request with Basic.
 	 * 
+	 * @param  array  $scopes
 	 * @return int
 	 */
-	public function authenticate()
+	public function authenticate(array $scopes)
 	{
 		if ($response = $this->auth->onceBasic() and $response->getStatusCode() === 401)
 		{

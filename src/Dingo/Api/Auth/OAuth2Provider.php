@@ -21,19 +21,20 @@ class OAuth2Provider extends Provider {
 	/**
 	 * Authenticate request with OAuth2.
 	 * 
+	 * @param  array  $scopes
 	 * @return int
 	 */
-	public function authenticate()
+	public function authenticate(array $scopes)
 	{
 		try
 		{
-			$token = $this->resource->validateRequest();
+			$token = $this->resource->validateRequest($scopes);
 
 			return $token->getUserId();
 		}
 		catch (InvalidTokenException $exception)
 		{
-			throw new UnauthorizedHttpException('Bearer', 'Access token was missing or is invalid.');
+			throw new UnauthorizedHttpException('Bearer', $exception->getMessage());
 		}
 	}
 

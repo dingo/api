@@ -69,22 +69,29 @@ class Authentication {
 	{
 		$request = $this->router->getCurrentRequest();
 
-		if ( ! $this->router->routingForApi() or $request instanceof InternalRequest or ! is_null($this->user))
+		if ($request instanceof InternalRequest or ! is_null($this->user))
 		{
-			return;
+			return null;
 		}
 
 		if ($route = $this->router->getCurrentRoute() and $this->routeIsProtected($route))
 		{
 			$exceptionStack = [];
 
+			// If authenticating via OAuth2 a route can be protected by defining its scopes.
+			// We'll grab the scopes for this route and pass them through to the
+			// authentication providers.
+			$scopes = $this->getRouteScopes($route);
+
+			// Spin through each of the registered authentication providers and attempt to
+			// authenticate when one of them.
 			foreach ($this->providers as $provider)
 			{
 				try
 				{
 					$provider->validateAuthorizationHeader($request);
 
-					return $this->userId = $provider->authenticate();
+					return $this->userId = $provider->authenticate($scopes);
 				}
 				catch (UnauthorizedHttpException $exception)
 				{
@@ -120,6 +127,19 @@ class Authentication {
 		$actions = $route->getAction();
 
 		return isset($actions['protected']) and $actions['protected'] === true;
+	}
+
+	/**
+	 * Get the routes scopes.
+	 * 
+	 * @param  \Illuminate\Routing\Route  $route
+	 * @return array
+	 */
+	protected function getRouteScopes(Route $route)
+	{
+		$actions = $route->getAction();
+
+		return isset($actions['scopes']) ? (array) $actions['scopes'] : [];
 	}
 
 	/**
