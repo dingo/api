@@ -24,11 +24,6 @@ class ApiServiceProvider extends ServiceProvider {
 			return $app['dingo.api.dispatcher'];
 		};
 
-		$this->app['Dingo\Api\Authorization'] = function($app)
-		{
-			return $app['dingo.api.authorization'];
-		};
-
 		// Register an API filter that enables the API routing when it is attached 
 		// to a route, this will ensure that the response is correctly formatted
 		// for any consumers.
