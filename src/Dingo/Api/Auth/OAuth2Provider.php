@@ -27,7 +27,7 @@ class OAuth2Provider extends Provider {
 	{
 		try
 		{
-			$token = $this->resource->validate();
+			$token = $this->resource->validateRequest();
 
 			return $token->getUserId();
 		}
