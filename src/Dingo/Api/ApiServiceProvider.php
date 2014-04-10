@@ -3,6 +3,8 @@
 use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
 use Dingo\Api\Auth\AuthManager;
+use Dingo\Api\Auth\BasicProvider;
+use Dingo\Api\Auth\OAuth2Provider;
 use Illuminate\Support\ServiceProvider;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
@@ -128,25 +130,17 @@ class ApiServiceProvider extends ServiceProvider {
 		{
 			$providers = [];
 
-			foreach ($app['config']['api::auth'] as $provider => $resolver)
+			$resolvers = [
+				'basic'  => function($app) { return new BasicProvider($app['auth']); },
+				'oauth2' => function($app) { return new OAuth2Provider($app['dingo.oauth.resource']); }
+			];
+
+			foreach ($app['config']['api::auth'] as $provider)
 			{
-				$providers[$provider] = $resolver($app);
+				$providers[$provider] = $resolvers[$provider]($app);
 			}
 
 			return new Authentication($app['router'], $app['auth'], $providers);
-		});
-	}
-
-	/**
-	 * Register the API authorization.
-	 * 
-	 * @return void
-	 */
-	protected function registerAuthorization()
-	{
-		$this->app['dingo.api.authorization'] = $this->app->share(function($app)
-		{
-			return new Authorization($app['dingo.oauth.authorization']);
 		});
 	}
 

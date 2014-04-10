@@ -32,19 +32,13 @@ return [
 	| Authentication Providers
 	|--------------------------------------------------------------------------
 	|
-	| You can attempt to authenticate requests using different providers.
+	| The authentication providers that should be used when attempting to
+	| authenticate an incoming API request.
+	|
+	| Available: "basic", "oauth2"
 	|
 	*/
 
-	'auth' => [
-		'basic' => function($app)
-		{
-			return new Dingo\Api\Auth\BasicProvider($app['auth']);
-		},
-		'oauth2' => function($app)
-		{
-			return new Dingo\Api\Auth\OAuth2Provider($app['dingo.oauth.resource']);
-		}
-	]
+	'auth' => ['basic']
 
 ];
