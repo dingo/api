@@ -35,7 +35,7 @@ class API extends Facade {
 	 */
 	public static function token(array $payload)
 	{
-		return static::$app['dingo.api.authorization']->token($payload);
+		return static::$app['dingo.oauth.authorization']->issueAccessToken($payload);
 	}
 
 	/**
