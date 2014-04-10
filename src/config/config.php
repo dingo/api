@@ -43,7 +43,7 @@ return [
 		},
 		'oauth2' => function($app)
 		{
-			return new Dingo\Api\Auth\OAuth2Provider($app['dingo.oauth2.resource']);
+			return new Dingo\Api\Auth\OAuth2Provider($app['dingo.oauth.resource']);
 		}
 	]
 
