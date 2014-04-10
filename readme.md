@@ -79,62 +79,6 @@ If we want our API to be accessible at `api.example.com` we'd use a subdomain:
 		// Route definitions.
 	});
 
-#### Protecting Routes
-
-By default your API will be accessible to everyone. Usually this isn't desirable as some endpoints may contain sensitive information or they may even create or update records in a database.
-
-> Authentication is covered in more detail later in this guide.
-
-Protection can be enabled for all routes within a group:
-
-	Route::api(['version' => 'v1', 'protected' => true], function()
-	{
-		// Route definitions.
-	});
-
-Or it can be enabled for only a specific route:
-
-	Route::api(['version' => 'v1'], function()
-	{
-		Route::get('users', ['protected' => true, function()
-		{
-			return User::all();
-		}]);
-	});
-
-Or it can be disabled for specific routes:
-
-	Route::api(['version' => 'v1', 'protected' => true], function()
-	{
-		Route::get('users', ['protected' => false, function()
-		{
-			return User::all();
-		}]);
-	});
-
-When using controllers you can use the `protect` and `unprotect` methods from within your constructor:
-
-	class UsersController extends Controller {
-
-		public function __construct()
-		{
-			$this->unprotect('index');
-		}
-
-	}
-
-Or you can fill the `$protected` and `$unprotected` properties:
-
-	class UsersController extends Controller {
-
-		protected $unprotected = ['index'];
-
-	}
-
-> Remember if you're using RESTful controllers then the methods will be `getIndex`, etc.
-
-> Protecting or unprotecting methods in controllers is only available if your controllers are extending `Dingo\Api\Routing\Controller`.
-
 ### Responses
 
 When returning data from your API you'll want it to be formatted so that consumers can easily read and understand it. There is usually no need to return an `Illuminate\Http\Response` object from any of your routes. Simply returning an array or an Eloquent object is a much better approach:
@@ -287,7 +231,9 @@ Here is how you'd send an internal request to get the Eloquent collection of all
 
 ### Authentication and Authorization
 
-The API comes with built in authentication and authorization. As shown earlier, authentication can be enabled for entire groups or for a specific endpoint. By default both `basic` and `oauth2` authentication are enabled, this can be modified in the `app/config/packages/dingo/api/config.php` configuration file once you've published it.
+The API comes with built in authentication and authorization. As shown earlier, authentication can be enabled for entire groups or for a specific endpoint. By default `basic` authentication is enabled, this can be modified in the `app/config/packages/dingo/api/config.php` configuration file once you've published it.
+
+You can enable `oauth2` authentication however you must require [`dingo/oauth2-server`](https://github.com/dingo/oauth2-server).
 
 The flow for authenticating requests is as follows:
 
@@ -314,9 +260,103 @@ Once inside a protected endpoint you can retrieve the authenticated user:
 		});
 	});
 
-> The API does not maintain sessions and thus each request must be authenticated.
+> The API does not maintain sessions and thus each request must be properly authenticated.
 
 The `API::user` method returns either an Eloquent model or an instance of `Illuminate\Auth\GenericUser` depending on which driver you have chosen in `app/config/auth.php`.
+
+#### Protecting Routes
+
+By default your API will be accessible to everyone. Usually this isn't desirable as some endpoints may contain sensitive information or they may even create or update records in a database.
+
+Protection can be enabled for all routes within a group:
+
+	Route::api(['version' => 'v1', 'protected' => true], function()
+	{
+		// Route definitions.
+	});
+
+Or it can be enabled for only a specific route:
+
+	Route::api(['version' => 'v1'], function()
+	{
+		Route::get('users', ['protected' => true, function()
+		{
+			return User::all();
+		}]);
+	});
+
+Or it can be disabled for specific routes:
+
+	Route::api(['version' => 'v1', 'protected' => true], function()
+	{
+		Route::get('users', ['protected' => false, function()
+		{
+			return User::all();
+		}]);
+	});
+
+When using controllers you can use the `protect` and `unprotect` methods from within your constructor:
+
+	class UsersController extends Controller {
+
+		public function __construct()
+		{
+			$this->unprotect('index');
+		}
+
+	}
+
+Or you can fill the `$protected` and `$unprotected` properties:
+
+	class UsersController extends Controller {
+
+		protected $unprotected = ['index'];
+
+	}
+
+> Remember if you're using RESTful controllers then the methods will be `getIndex`, etc.
+
+> Protecting or unprotecting methods in controllers is only available if your controllers are extending `Dingo\Api\Routing\Controller`.
+
+#### OAuth 2.0 Scopes
+
+To have finer control over the protected routes you should be using scopes. Access tokens can be issued with certain scopes that allow a client to make requests to API endpoints that might otherwise be unaccessible.
+
+Scopes can be set for an entire API group:
+
+	Route::api(['version' => 'v1', 'prefix' => 'api', 'protected' => true, 'scopes' => 'read'], function()
+	{
+		// All endpoints are now protected and only access tokens with the "read" scope will be give access.
+	});
+
+Or for a specific route:
+
+	Route::api(['version' => 'v1', 'prefix' => 'api', 'protected' => true], function()
+	{
+		Route::get('user', ['scopes' => 'read', function()
+		{
+			// This endpoint will only allow access tokens with the "read" scope.
+		}]);
+	});
+
+Scopes can also be set from within a controllers constructor:
+
+	public function __construct()
+	{
+		$this->scope('read', 'index');
+	}
+
+If the method name is missing the scope will be applied to all methods on the controller. You can also fill the `$scopedMethods` property.
+
+	class UsersController extends Controller {
+
+		protected $scopedMethods = ['index' => 'read'];
+
+	}
+
+You can also pass an array of scopes to any of the above.
+
+> The [dingo/oauth2-server](https://github.com/dingo/oauth2-server) package covers scopes in more detail.
 
 #### Pretending To Be A User
 
@@ -350,7 +390,7 @@ OAuth 2.0 tokens can be issued from an unprotected POST endpoint on your API:
 	{
 		Route::post('token', ['protected' => false, function()
 		{
-			$payload = Input::only('grant_type', 'client_id', 'client_secret', 'username', 'password');
+			$payload = Input::only('grant_type', 'client_id', 'client_secret', 'username', 'password', 'scope');
 
 			return API::token($payload);
 		}]);

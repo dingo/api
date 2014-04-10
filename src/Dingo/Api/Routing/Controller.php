@@ -26,6 +26,13 @@ abstract class Controller extends \Illuminate\Routing\Controller {
 	protected $protected = [];
 
 	/**
+	 * Array of controller method scopes.
+	 * 
+	 * @var array
+	 */
+	protected $scopedMethods = [];
+
+	/**
 	 * Create a new controller instance.
 	 * 
 	 * @param  \Dingo\Api\Dispatcher  $api
@@ -37,25 +44,53 @@ abstract class Controller extends \Illuminate\Routing\Controller {
 	}
 
 	/**
+	 * Set the scopes for all or a subset of methods.
+	 * 
+	 * @param  string|array  $scopes
+	 * @param  string|array  $methods
+	 * @return \Dingo\Api\Routing\Controller
+	 */
+	protected function scope($scopes, $methods = null)
+	{
+		if (is_null($methods))
+		{
+			$this->scopedMethods['*'] = (array) $scopes;
+		}
+		else
+		{
+			foreach ((array) $methods as $method)
+			{
+				$this->scopedMethods[$method] = (array) $scopes;
+			}
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Unprotect controller methods.
 	 * 
 	 * @param  array  $methods
-	 * @return void
+	 * @return \Dingo\Api\Routing\Controller
 	 */
 	protected function unprotect($methods)
 	{
 		$this->unprotected = array_merge($this->unprotected, is_array($methods) ? $methods : func_get_args());
+
+		return $this;
 	}
 
 	/**
 	 * Protect controller methods.
 	 * 
 	 * @param  array  $methods
-	 * @return void
+	 * @return \Dingo\Api\Routing\Controller
 	 */
 	protected function protect($methods)
 	{
 		$this->protected = array_merge($this->protected, is_array($methods) ? $methods : func_get_args());
+
+		return $this;
 	}
 
 	/**
@@ -76,6 +111,16 @@ abstract class Controller extends \Illuminate\Routing\Controller {
 	public function getUnprotectedMethods()
 	{
 		return $this->unprotected;
+	}
+
+	/**
+	 * Get the scoped methods.
+	 * 
+	 * @return array
+	 */
+	public function getScopedMethods()
+	{
+		return $this->scopedMethods;
 	}
 
 }

@@ -224,7 +224,8 @@ class Router extends \Illuminate\Routing\Router {
 
 		// If we are routing for the API and routing to a controller we'll check to
 		// see if the controller is one of the API controllers. If it is then we
-		// need to perform checks on the protection state of the methods.
+		// need to check if the method is protected and get any scopes
+		// associated with the method.
 		if ($this->routingForApi() and $this->routingToController($action))
 		{
 			list ($class, $method) = explode('@', $route->getActionName());
@@ -233,11 +234,51 @@ class Router extends \Illuminate\Routing\Router {
 
 			if ($controller instanceof \Dingo\Api\Routing\Controller)
 			{
-				$action = $this->controllerMethodProtected($route, $controller, $method);
+				$route = $this->controllerMethodProtected($route, $controller, $method);
 
-				$route->setAction($action);
+				$route = $this->controllerMethodScopes($route, $controller, $method);
 			}
 		}
+
+		return $route;
+	}
+
+	/**
+	 * Adjust the scopes of a controller method. Scopes defined
+	 * on the controller are merged with those defined
+	 * in the route definition.
+	 * 
+	 * @param  \Illuminate\Routing\Route  $route
+	 * @param  \Dingo\Api\Routing\Controller  $controller
+	 * @param  string  $method
+	 * @return \Illuminate\Routing\Route
+	 */
+	protected function controllerMethodScopes($route, $controller, $method)
+	{
+		$action = $route->getAction();
+
+		if ( ! isset($action['scopes']))
+		{
+			$action['scopes'] = [];
+		}
+
+		$action['scopes'] = (array) $action['scopes'];
+
+		$scopedMethods = $controller->getScopedMethods();
+
+		// A wildcard can be used to attach scopes to all controller methods so
+		// we'll merge any scopes here
+		if (isset($scopedMethods['*']))
+		{
+			$action['scopes'] = array_merge($action['scopes'], $scopedMethods['*']);
+		}
+
+		if (isset($scopedMethods[$method]))
+		{
+			$action['scopes'] = array_merge($action['scopes'], $scopedMethods[$method]);
+		}
+
+		$route->setAction($action);
 
 		return $route;
 	}
@@ -248,7 +289,7 @@ class Router extends \Illuminate\Routing\Router {
 	 * @param  \Illuminate\Routing\Route  $route
 	 * @param  \Dingo\Api\Routing\Controller  $controller
 	 * @param  string  $method
-	 * @return array
+	 * @return \Illuminate\Routing\Route
 	 */
 	protected function controllerMethodProtected($route, $controller, $method)
 	{
@@ -263,7 +304,9 @@ class Router extends \Illuminate\Routing\Router {
 			$action['protected'] = false;
 		}
 
-		return $action;
+		$route->setAction($action);
+
+		return $route;
 	}
 
 	/**
