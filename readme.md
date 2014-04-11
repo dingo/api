@@ -514,6 +514,7 @@ public function getUsers()
 
 	return View::make('users.all')->with('users', $users);
 }
+```
 
 And the `Authentication` instances allows you to interact with the authenticated user inside a protected endpoint.
 
