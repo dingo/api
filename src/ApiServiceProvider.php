@@ -17,7 +17,7 @@ class ApiServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		$this->package('dingo/api');
+		$this->package('dingo/api', 'api', __DIR__);
 
 		// When a controller type hints the dispatcher we'll make sure Laravel knows
 		// to inject an instance of the registered API dispatcher.
@@ -31,13 +31,8 @@ class ApiServiceProvider extends ServiceProvider {
 			return $app['dingo.api.authentication'];
 		};
 
-		// Register an API filter that enables the API routing when it is attached 
-		// to a route, this will ensure that the response is correctly formatted
-		// for any consumers.
 		$this->app['router']->filter('api', function($route, $request)
 		{
-			$this->app['router']->enableApiRouting();
-
 			try
 			{
 				$this->app['dingo.api.authentication']->authenticate();

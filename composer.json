@@ -24,8 +24,8 @@
         "dingo/oauth2-server-laravel": "Allows OAuth 2.0 authentication to protect your API."
     },
     "autoload": {
-        "psr-0": {
-            "Dingo\\Api": "src/"
+        "psr-4": {
+            "Dingo\\Api\\": "src"
         }
     },
     "minimum-stability": "stable"
