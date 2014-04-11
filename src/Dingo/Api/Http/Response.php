@@ -88,13 +88,13 @@ class Response extends \Illuminate\Http\Response {
 	{
 		if ($content instanceof EloquentModel)
 		{
-			$key = snake_case(class_basename($content));
+			$key = $content->getTable();
 
 			return $this->encode([$key => $content->toArray()]);
 		}
 		elseif ($content instanceof EloquentCollection)
 		{
-			$key = snake_case(str_plural(class_basename($content->first())));
+			$key = str_plural($content->first()->getTable());
 
 			return $this->encode([$key => $content->toArray()]);
 		}
