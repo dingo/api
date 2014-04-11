@@ -1,6 +1,7 @@
 <?php namespace Dingo\Api\Routing;
 
 use Dingo\Api\Dispatcher;
+use Dingo\Api\Authentication;
 
 abstract class Controller extends \Illuminate\Routing\Controller {
 
@@ -10,6 +11,13 @@ abstract class Controller extends \Illuminate\Routing\Controller {
 	 * @var \Dingo\Api\Dispatcher
 	 */
 	protected $api;
+
+	/**
+	 * API authentication instance.
+	 * 
+	 * @var \Dingo\Api\Authentication
+	 */
+	protected $auth;
 
 	/**
 	 * Array of unprotected controller methods.
@@ -36,11 +44,13 @@ abstract class Controller extends \Illuminate\Routing\Controller {
 	 * Create a new controller instance.
 	 * 
 	 * @param  \Dingo\Api\Dispatcher  $api
+	 * @param  \Dingo\Api\Authentication  $auth
 	 * @return void
 	 */
-	public function __construct(Dispatcher $api)
+	public function __construct(Dispatcher $api, Authentication $auth)
 	{
 		$this->api = $api;
+		$this->auth = $auth;
 	}
 
 	/**
