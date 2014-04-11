@@ -4,17 +4,19 @@ This is an API package for the Laravel framework. It allows you to build a flexi
 
 ## Installation
 
-To install the package add it to your `composer.json`:
+The package can be installed with Composer, either by modifying your `composer.json` directly or using the `composer require` command.
 
-	"require": {
-		"dingo/api": "1.0.*"
-	}
+```
+composer require dingo/api:dev-master
+```
+
+> Note that this package is still under development and has not been tagged as stable.
 
 Once the package is installed you'll need to add it to your providers in `app/config/app.php`:
 
 	"Dingo\Api\ApiServiceProvider"
 
-If you're using OAuth 2.0 to authenticate requests then you'll also need to add the `OAuth2ServiceProvider`:
+If you're using [OAuth 2.0](https://github.com/dingo/oauth2-server-laravel) to authenticate requests then you'll also need to add the `OAuth2ServiceProvider`:
 
 	"Dingo\OAuth2\OAuth2ServiceProvider"
 
@@ -40,7 +42,7 @@ The configuration files will be published to `app/config/packages/dingo/api`.
 
 ### Defining Routes
 
-Before routes are defined they need to be wrapped in an API group. This group lets the API know, among other things, the version of the API that these routes will respond to:
+Before routes are defined they need to be wrapped in an API group. This group lets the API know, among other things, the version of the API that these routes will respond to.
 
 	Route::api(['version' => 'v1'], function()
 	{
@@ -49,7 +51,7 @@ Before routes are defined they need to be wrapped in an API group. This group le
 
 > API versions are always defined using the `v<versionNumber>` syntax.
 
-Inside our group we can define routes as we normally would:
+Inside the API group you can use the usual route definitions, `Route::get`, `Route::controller`, `Route::resource`, etc.
 
 	Route::api(['version' => 'v1'], function()
 	{
@@ -59,20 +61,20 @@ Inside our group we can define routes as we normally would:
 		});
 	});
 
-Just remember that the first matched route is the route that will be served first. Ordering your routes correctly is extremely important.
+Just remember that the first matched route is the route that will be served first. Ordering your routes correctly is *extremely* important.
 
-#### Prefixing and Subdomains
+### Prefixes and Subdomains
 
-APIs are normally served from a subdomain or using a prefix. API groups accept the same `domain` and `prefix` keys as regular route groups.
+An API is normally served from a subdomain or using a prefix. API groups accept the same `domain` and `prefix` keys as regular route groups.
 
-If we want our API to be accessible at `example.com/api` we'd use a prefix:
+If we want our API to be accessible at `example.com/api` we'd use a prefix.
 
 	Route::api(['version' => 'v1', 'prefix' => 'api'], function()
 	{
 		// Route definitions.
 	});
 
-If we want our API to be accessible at `api.example.com` we'd use a subdomain:
+If we want our API to be accessible at `api.example.com` we'd use a subdomain.
 
 	Route::api(['version' => 'v1', 'domain' => 'api.example.com'], function()
 	{
@@ -81,7 +83,7 @@ If we want our API to be accessible at `api.example.com` we'd use a subdomain:
 
 ### Responses
 
-When returning data from your API you'll want it to be formatted so that consumers can easily read and understand it. There is usually no need to return an `Illuminate\Http\Response` object from any of your routes. Simply returning an array or an Eloquent object is a much better approach:
+When returning data from your API you'll want it to be formatted so that consumers can easily read and understand it. Simply returning an array or an Eloquent object will convert it its JSON representation.
 
 	Route::api(['version' => 'v1', 'prefix' => 'api'], function()
 	{
@@ -91,7 +93,7 @@ When returning data from your API you'll want it to be formatted so that consume
 		});
 	});
 
-When you hit the `example.com/api/users` endpoint the API will automatically convert the Eloquent collection into its JSON representation:
+When you hit the `example.com/api/users` endpoint the API will automatically convert the Eloquent collection into its JSON representation.
 
 	{
 		"users": [
@@ -116,7 +118,7 @@ When you hit the `example.com/api/users` endpoint the API will automatically con
 ### Errors
 
 When creating or updating records with your API you'll often need to return errors when something goes wrong. All error handling should be done via
-exceptions. The following exceptions can and should be thrown when you encounter an error that you need to alert the consumer of:
+exceptions. The following exceptions can and should be thrown when you encounter an error that you need to alert the consumer of.
 
 	Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException
 	Symfony\Component\HttpKernel\Exception\BadRequestHttpException
@@ -134,7 +136,9 @@ exceptions. The following exceptions can and should be thrown when you encounter
 	Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
 	Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException
 
-You may have noticed these are all Symfony exceptions and they extend from Symfony's `HttpException`. As an example you might throw a `ConflictHttpException` when you attempt to update a row that has since been updated prior to this request:
+You may have noticed these are all Symfony exceptions and they extend from Symfony's `HttpException`.
+
+As an example you might throw a `ConflictHttpException` when you attempt to update a record that has since been updated prior to this request.
 
 	Route::api(['version' => 'v1', 'prefix' => 'api'], function()
 	{
@@ -151,20 +155,20 @@ You may have noticed these are all Symfony exceptions and they extend from Symfo
 		});
 	});
 
-The API would catch this exception and return it as a response with the HTTP status code 409. This response would be represented by the following JSON:
+The API will automatically catch thrown exceptions and convert them into a JSON representation as well as adjusting the HTTP status code. The above exception would have the following JSON representation.
 
 	{
 		"message": "User was updated prior to your request."
 	}
 
-The API also provides a couple of its own exceptions which you may throw:
+The API also provides a couple of its own exceptions which you may throw when dealing with resources.
 
 	Dingo\Api\Exception\DeleteResourceFailedException
 	Dingo\Api\Exception\ResourceException
 	Dingo\Api\Exception\StoreResourceFailedException
 	Dingo\Api\Exception\UpdateResourceFailedException
 
-These exceptions allow you to pass along any validation errors that occured when trying to create, update, or delete resources. As an example you might throw a `StoreResourceFailedException` when you encounter validation errors when trying to create a new user:
+These exceptions are a little special in that they allow you to pass along any validation errors that occured when trying to create, update, or delete resources. As an example you might throw a `StoreResourceFailedException` when you encounter errors when trying to validate the creation of a new user:
 
 	Route::api(['version' => 'v1', 'prefix' => 'api'], function()
 	{
@@ -175,7 +179,9 @@ These exceptions allow you to pass along any validation errors that occured when
 				'password' => ['required', 'min:7']
 			];
 
-			$validator = Validator::make(Input::only('username', 'password'), $rules);
+			$payload = Input::only('username', 'password');
+
+			$validator = Validator::make($payload, $rules);
 
 			if ($validator->fails())
 			{
@@ -186,7 +192,7 @@ These exceptions allow you to pass along any validation errors that occured when
 		});
 	});
 
-The API would catch this exception and return it as a response with the HTTP status code 422. This response would be represented by the following JSON:
+The API would catch this exception and return it as a JSON response with the HTTP status code 422. This response would have the following JSON representation.
 
 	{
 		"message": "Could not create new user.",
@@ -200,40 +206,11 @@ The API would catch this exception and return it as a response with the HTTP sta
 		}
 	}
 
-### Internal Requests
-
-Having your application consume your own API is extremely useful and has a number of benefits:
-
-1. You can build your application on top of a solid API.
-2. The API will return the actual data and not its JSON representation.
-3. You can catch thrown exceptions and deal with errors.
-
-Here is how you'd send an internal request to get the Eloquent collection of all users:
-
-	Route::get('/', function()
-	{
-		$users = API::get('users');
-
-		return View::make('index')->with('users', $users);
-	});
-
-> You don't need to include the API prefix or domain when internally calling an API endpoint.
-
-#### Internal Request With Parameters
-
-	API::with(['name' => 'Jason', 'location' => 'Australia'])->post('users');
-
-	API::post('users', ['name' => 'Jason', 'location' => 'Australia']);
-
-#### Targetting A Specific Version
-
-	API::version('v2')->get('users');
-
 ### Authentication and Authorization
 
-The API comes with built in authentication and authorization. As shown earlier, authentication can be enabled for entire groups or for a specific endpoint. By default `basic` authentication is enabled, this can be modified in the `app/config/packages/dingo/api/config.php` configuration file once you've published it.
+The API comes with built in authentication. Authentication can be enabled for entire API groups or for a specific endpoint. By default `basic` authentication is enabled, this can be modified in the `app/config/packages/dingo/api/config.php` configuration file once you've published it.
 
-You can enable `oauth2` authentication however you must require [`dingo/oauth2-server`](https://github.com/dingo/oauth2-server).
+> You can enable `oauth2` authentication however you must require [`dingo/oauth2-server`](https://github.com/dingo/oauth2-server).
 
 The flow for authenticating requests is as follows:
 
@@ -246,36 +223,20 @@ The flow for authenticating requests is as follows:
 	  API Attempts To Authenticate Request
 	                 ↓
 	API Throws Error If Authentication Fails
-	       And Denies Client Access
+	          And Denies Access
 	                 ↓
-	 Client Accesses Endpoint If Successful
-
-Once inside a protected endpoint you can retrieve the authenticated user:
-
-	Route::api(['version' => 'v1', 'prefix' => 'api', 'protected' => true], function()
-	{
-		Route::get('user', function()
-		{
-			return API::user();
-		});
-	});
-
-> The API does not maintain sessions and thus each request must be properly authenticated.
-
-The `API::user` method returns either an Eloquent model or an instance of `Illuminate\Auth\GenericUser` depending on which driver you have chosen in `app/config/auth.php`.
+	   If Successful Access Is Granted
 
 #### Protecting Routes
 
-By default your API will be accessible to everyone. Usually this isn't desirable as some endpoints may contain sensitive information or they may even create or update records in a database.
-
-Protection can be enabled for all routes within a group:
+Protection can be enabled for all routes within a group.
 
 	Route::api(['version' => 'v1', 'protected' => true], function()
 	{
 		// Route definitions.
 	});
 
-Or it can be enabled for only a specific route:
+Or it can be enabled for only a specific route.
 
 	Route::api(['version' => 'v1'], function()
 	{
@@ -285,7 +246,7 @@ Or it can be enabled for only a specific route:
 		}]);
 	});
 
-Or it can be disabled for specific routes:
+Or it can be disabled for specific routes.
 
 	Route::api(['version' => 'v1', 'protected' => true], function()
 	{
@@ -295,7 +256,7 @@ Or it can be disabled for specific routes:
 		}]);
 	});
 
-When using controllers you can use the `protect` and `unprotect` methods from within your constructor:
+When using controllers you can use the `protect` and `unprotect` methods from within your constructor.
 
 	class UsersController extends Controller {
 
@@ -306,38 +267,64 @@ When using controllers you can use the `protect` and `unprotect` methods from wi
 
 	}
 
-Or you can fill the `$protected` and `$unprotected` properties:
+> Protecting or unprotecting methods in controllers is only available if your controllers are extending `Dingo\Api\Routing\Controller`.
 
-	class UsersController extends Controller {
+#### Authenticated User
 
-		protected $unprotected = ['index'];
+Once inside a protected endpoint you can retrieve the authenticated user.
+
+	Route::api(['version' => 'v1', 'prefix' => 'api', 'protected' => true], function()
+	{
+		Route::get('user', function()
+		{
+			return API::user();
+		});
+	});
+
+The `API::user` method returns either an Eloquent model or an instance of `Illuminate\Auth\GenericUser` depending on which driver you have chosen in `app/config/auth.php`.
+
+If you're using controllers you can type-hint `Dingo\Api\Authentication` and the dependency will be automatically resolved by Laravel's IoC container.
+
+	class UserController extends Controller {
+
+		protected $auth;
+
+		public function __construct(Dingo\Api\Authentication $auth)
+		{
+			$this->auth = $auth;
+
+			$this->protect('index');
+		}
+
+		public function index()
+		{
+			return $this->auth->user();
+		}
 
 	}
 
-> Remember if you're using RESTful controllers then the methods will be `getIndex`, etc.
+### OAuth 2.0
 
-> Protecting or unprotecting methods in controllers is only available if your controllers are extending `Dingo\Api\Routing\Controller`.
+This package makes use of the [dingo/oauth2-server](https://github.com/dingo/oauth2-server) package. Please refer to that package on how to setup and configure your OAuth 2.0 server.
 
 #### OAuth 2.0 Scopes
-
-> The [dingo/oauth2-server](https://github.com/dingo/oauth2-server) package covers scopes in more detail.
 
 To have finer control over the protected routes you should be using scopes. Access tokens can be issued with certain scopes that allow a client to make requests to API endpoints that might otherwise be unaccessible.
 
 Scopes can be set for an entire API group:
 
-	Route::api(['version' => 'v1', 'prefix' => 'api', 'protected' => true, 'scopes' => 'read'], function()
+	Route::api(['version' => 'v1', 'prefix' => 'api', 'protected' => true, 'scopes' => 'read_user_data'], function()
 	{
-		// All endpoints are now protected and only access tokens with the "read" scope will be give access.
+		// All endpoints are now protected and only access tokens with the "read_user_data" scope will be give access.
 	});
 
 Or for a specific route:
 
 	Route::api(['version' => 'v1', 'prefix' => 'api', 'protected' => true], function()
 	{
-		Route::get('user', ['scopes' => 'read', function()
+		Route::get('user', ['scopes' => 'read_user_data', function()
 		{
-			// This endpoint will only allow access tokens with the "read" scope.
+			// This endpoint will only allow access tokens with the "read_user_data" scope.
 		}]);
 	});
 
@@ -345,18 +332,10 @@ Scopes can also be set from within a controllers constructor:
 
 	public function __construct()
 	{
-		$this->scope('read', 'index');
+		$this->scope('read_user_data', 'index');
 	}
 
-If the method name is missing the scope will be applied to all methods on the controller. You can also fill the `$scopedMethods` property.
-
-	class UsersController extends Controller {
-
-		protected $scopedMethods = ['index' => 'read'];
-
-	}
-
-You can also pass an array of scopes to any of the above methods.
+If the method name is missing the scope will be applied to all methods on the controller. You can also pass an array of scopes to any of the above methods.
 
 It's also easy to customize the response of a particular endpoint based on the scopes the access token has.
 
@@ -384,11 +363,54 @@ It's also easy to customize the response of a particular endpoint based on the s
 		});
 	});
 
-Now only an access tokens with the `read_users_age` scope can see the users age and access tokens with the `read_users_email` can see the users e-mail.
+Now only an access tokens with the `read_users_age` scope can see the users age and access tokens with the `read_users_email` can see the users e-mail. An access token with both scopes will be able to see all the users data.
+
+#### Issuing OAuth 2.0 Access Tokens
+
+OAuth 2.0 access tokens can be issued from an unprotected `POST` endpoint on your API:
+
+	Route::api(['version' => 'v1', 'prefix' => 'api'], function()
+	{
+		Route::post('token', ['protected' => false, function()
+		{
+			$payload = Input::only('grant_type', 'client_id', 'client_secret', 'username', 'password', 'scope');
+
+			return API::issueToken($payload);
+		}]);
+	});
+
+### Internal Requests
+
+Having your application consume your own API is extremely useful and has a number of benefits:
+
+1. You can build your application on top of a solid API.
+2. The API will return the actual data and not its JSON representation.
+3. You can catch thrown exceptions and deal with errors.
+
+Here is how you'd send an internal request to get the Eloquent collection of all users.
+
+	Route::get('/', function()
+	{
+		$users = API::get('users');
+
+		return View::make('index')->with('users', $users);
+	});
+
+> You don't need to include the API prefix or domain when internally calling an API endpoint.
+
+#### Internal Request With Parameters
+
+	API::with(['name' => 'Jason', 'location' => 'Australia'])->post('users');
+
+	API::post('users', ['name' => 'Jason', 'location' => 'Australia']);
+
+#### Targetting A Specific Version
+
+	API::version('v2')->get('users');
 
 #### Pretending To Be A User
 
-When performing internal requests to your API you might want to access a protected endpoint which makes use of the `API::user` method. You can easily tell the API to *be* a given user:
+When performing internal requests to your API you might want to access a protected endpoint which makes use of the `API::user` method. You can easily tell the API to *be* a given user.
 
     Route::get('user/{id}/posts', function($id)
     {
@@ -401,25 +423,34 @@ When performing internal requests to your API you might want to access a protect
 
 The protected API route might look like this (excluded the API group for simplicity):
 
-	Route::get('user/posts', ['protected' => true, function()
+	Route::api(['version' => 'v1', 'protected' => true], function()
 	{
-		return API::user()->posts;
-	}]);
+		Route::get('user/posts', function()
+		{
+			return API::user()->posts;
+		});
+	});
 
 Because the API route is protected we are able to safely use `API::user` to fetch this users posts. Our regular route can internally call this API route and act on behalf of the user.
 
-#### Issuing OAuth 2.0 Tokens
+### Automatic Dependency Resolution for Dispatcher and Authentication
 
-> This package makes use of the [dingo/oauth2-server](https://github.com/dingo/oauth2-server) package. Please refer to that package on how to setup and configure your OAuth 2.0 server.
+When using controllers you can type-hint both `Dingo\Api\Dispatcher` and `Dingo\Api\Authentication` to have the dependencies automatically resolved by Laravel's IoC container. If you swapped out the `Controller` facade in `app/config/app.php` with `Dingo\Api\Routing\Controller` then this is already done for you.
 
-OAuth 2.0 tokens can be issued from an unprotected POST endpoint on your API:
+> You'll need to type-hint them yourself if you overload the constructor.
 
-	Route::api(['version' => 'v1', 'prefix' => 'api'], function()
+The `Dispatcher` instances allow you to internally dispatch API requests.
+
+	public function getUsers()
 	{
-		Route::post('token', ['protected' => false, function()
-		{
-			$payload = Input::only('grant_type', 'client_id', 'client_secret', 'username', 'password', 'scope');
+		$users = $this->api->get('users');
 
-			return API::issueToken($payload);
-		}]);
-	});
+		return View::make('users.all')->with('users', $users);
+	}
+
+And the `Authentication` instances allows you to interact with the authenticated user inside a protected endpoint.
+
+	public function index()
+	{
+		return $this->auth->user();
+	}

@@ -1,6 +1,8 @@
 {
     "name": "dingo/api",
     "description": "A RESTful API package for the Laravel framework.",
+    "keywords": ["restful", "api", "laravel", "dingo"],
+    "license": "BSD-3-Clause",
     "authors": [
         {
             "name": "Jason Lewis",
@@ -17,6 +19,9 @@
         "illuminate/auth": "4.1.*",
         "illuminate/database": "4.1.*",
         "mockery/mockery": "0.9.*"
+    },
+    "suggest": {
+        "dingo/oauth2-server-laravel": "Allows OAuth 2.0 authentication to protect your API."
     },
     "autoload": {
         "psr-0": {
