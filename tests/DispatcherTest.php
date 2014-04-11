@@ -8,7 +8,9 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 	public function setUp()
 	{
 		$this->request = new Illuminate\Http\Request;
-		$this->router = m::mock('Dingo\Api\Routing\Router');
+		$this->router = new Dingo\Api\Routing\Router(new Illuminate\Events\Dispatcher);
+		$this->router->setDefaultApiVersion('v1');
+		$this->router->setApiVendor('test');
 		$this->auth = m::mock('Dingo\Api\Authentication');
 		$this->dispatcher = new Dingo\Api\Dispatcher($this->request, $this->router, $this->auth);
 	}
@@ -22,31 +24,31 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 
 	public function testInternalRequests()
 	{
-		$this->router->shouldReceive('dispatch')->andReturn(new Dingo\Api\Http\Response('test', 200));
+		$this->router->api(['version' => 'v1'], function()
+		{
+			$this->router->get('test', function(){ return 'test'; });
+			$this->router->post('test', function(){ return 'test'; });
+			$this->router->put('test', function(){ return 'test'; });
+			$this->router->patch('test', function(){ return 'test'; });
+			$this->router->delete('test', function(){ return 'test'; });
+		});
 
-		$this->router->shouldReceive('getDefaultApiVersion')->times(6)->andReturn('v1');
-		$this->router->shouldReceive('getApiVendor')->times(6)->andReturn('testing');
-		$this->router->shouldReceive('getApiCollection')->times(6)->with('v1')->andReturn(new Dingo\Api\Routing\ApiCollection('v1', ['prefix' => 'api']));
-		$this->router->shouldReceive('enableApiRouting')->times(6);
-
-		$this->auth->shouldReceive('setUser')->times(6)->with(null);
+		$this->auth->shouldReceive('setUser')->times(5)->with(null);
 
 		$this->assertEquals('test', $this->dispatcher->get('test'));
 		$this->assertEquals('test', $this->dispatcher->post('test'));
 		$this->assertEquals('test', $this->dispatcher->put('test'));
 		$this->assertEquals('test', $this->dispatcher->patch('test'));
-		$this->assertEquals('test', $this->dispatcher->head('test'));
 		$this->assertEquals('test', $this->dispatcher->delete('test'));
 	}
 
 
 	public function testInternalRequestWithVersionAndParameters()
 	{
-		$this->router->shouldReceive('dispatch')->andReturn(new Dingo\Api\Http\Response('test', 200));
-
-		$this->router->shouldReceive('getApiVendor')->once()->andReturn('testing');
-		$this->router->shouldReceive('getApiCollection')->once()->with('v1')->andReturn(new Dingo\Api\Routing\ApiCollection('v1', ['prefix' => 'api']));
-		$this->router->shouldReceive('enableApiRouting')->once();
+		$this->router->api(['version' => 'v1'], function()
+		{
+			$this->router->get('test', function(){ return 'test'; });
+		});
 
 		$this->auth->shouldReceive('setUser')->once()->with(null);
 
@@ -54,14 +56,25 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 	}
 
 
-	public function testInternalRequestWithPrefixAndDomain()
+	public function testInternalRequestWithPrefix()
 	{
-		$this->router->shouldReceive('dispatch')->andReturn(new Dingo\Api\Http\Response('test', 200));
+		$this->router->api(['version' => 'v1', 'prefix' => 'baz'], function()
+		{
+			$this->router->get('test', function(){ return 'test'; });
+		});
 
-		$this->router->shouldReceive('getDefaultApiVersion')->once()->andReturn('v1');
-		$this->router->shouldReceive('getApiVendor')->once()->andReturn('testing');
-		$this->router->shouldReceive('getApiCollection')->once()->with('v1')->andReturn(new Dingo\Api\Routing\ApiCollection('v1', ['domain' => 'testing']));
-		$this->router->shouldReceive('enableApiRouting')->once();
+		$this->auth->shouldReceive('setUser')->once()->with(null);
+
+		$this->assertEquals('test', $this->dispatcher->get('test'));
+	}
+
+
+	public function testInternalRequestWithDomain()
+	{
+		$this->router->api(['version' => 'v1', 'domain' => 'foo.bar'], function()
+		{
+			$this->router->get('test', function(){ return 'test'; });
+		});
 
 		$this->auth->shouldReceive('setUser')->once()->with(null);
 
@@ -74,16 +87,49 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testInternalRequestThrowsException()
 	{
-		$this->router->shouldReceive('dispatch')->andReturn(new Dingo\Api\Http\Response('test', 500));
-
-		$this->router->shouldReceive('getDefaultApiVersion')->once()->andReturn('v1');
-		$this->router->shouldReceive('getApiVendor')->once()->andReturn('testing');
-		$this->router->shouldReceive('getApiCollection')->once()->with('v1')->andReturn(new Dingo\Api\Routing\ApiCollection('v1', ['domain' => 'testing']));
-		$this->router->shouldReceive('enableApiRouting')->once();
+		$this->router->api(['version' => 'v1'], function() {});
 
 		$this->auth->shouldReceive('setUser')->once()->with(null);
 
 		$this->dispatcher->get('test');
+	}
+
+
+	/**
+	 * @expectedException Symfony\Component\HttpKernel\Exception\HttpException
+	 */
+	public function testInternalRequestThrowsExceptionWhenResponseIsNotOkay()
+	{
+		$this->router->api(['version' => 'v1'], function()
+		{
+			$this->router->get('test', function()
+			{
+				return new Illuminate\Http\Response('test', 401);
+			});
+		});
+
+		$this->auth->shouldReceive('setUser')->once()->with(null);
+
+		$this->dispatcher->get('test');
+	}
+
+
+	/**
+	 * @expectedException \RuntimeException
+	 */
+	public function testPretendingToBeUserWithInvalidParameterThrowsException()
+	{
+		$this->dispatcher->be('foo');
+	}
+
+
+	public function testPretendingToBeUserSetsUserOnAuthentication()
+	{
+		$user = m::mock('Illuminate\Database\Eloquent\Model');
+
+		$this->auth->shouldReceive('setUser')->once()->with($user);
+
+		$this->dispatcher->be($user);
 	}
 	
 

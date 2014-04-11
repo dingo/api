@@ -56,7 +56,7 @@ class ApiCollection extends RouteCollection {
 		{
 			return true;
 		}
-		elseif ($this->option('prefix') and starts_with($request->getPathInfo(), "/{$this->option('prefix')}"))
+		elseif ($this->option('prefix') and starts_with($request->getPathInfo(), trim($this->option('prefix'), '/')))
 		{
 			return true;
 		}

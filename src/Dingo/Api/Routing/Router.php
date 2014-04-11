@@ -21,13 +21,6 @@ class Router extends \Illuminate\Routing\Router {
 	protected $apiCollections = [];
 
 	/**
-	 * Indicates if newly added routes are API routes.
-	 * 
-	 * @var bool
-	 */
-	protected $apiRouting = false;
-
-	/**
 	 * The default API version.
 	 * 
 	 * @var string
@@ -49,6 +42,13 @@ class Router extends \Illuminate\Routing\Router {
 	protected $exceptionHandler;
 
 	/**
+	 * Array of cached API requests.
+	 * 
+	 * @var array
+	 */
+	protected $cachedApiRequests = [];
+
+	/**
 	 * Register an API group.
 	 * 
 	 * @param  array  $options
@@ -62,12 +62,12 @@ class Router extends \Illuminate\Routing\Router {
 			throw new BadMethodCallException('Unable to register API without an API version.');
 		}
 
-		$this->enableApiRouting();
-
 		// Once we have the version from the options we'll check to see if an API
 		// collection already exists for this verison. If it doesn't then we'll
 		// create a new collection.
 		$version = $options['version'];
+
+		$options['api'] = true;
 
 		if ( ! isset($this->apiCollections[$version]))
 		{
@@ -75,8 +75,6 @@ class Router extends \Illuminate\Routing\Router {
 		}
 		
 		$this->group($options, $callback);
-
-		$this->disableApiRouting();
 	}
 
 	/**
@@ -107,36 +105,23 @@ class Router extends \Illuminate\Routing\Router {
 			// If an exception is caught and we are currently routing an API request then
 			// we'll handle this exception by building a new response from it. This
 			// allows the API to gracefully handle its own exceptions.
-			if (($this->routingForApi() or $this->requestTargettingApi($request)) and ! $request instanceof InternalRequest)
+			if ($this->requestTargettingApi($request) and ! $request instanceof InternalRequest)
 			{
 				$response = $this->handleException($exception);
 			}
 
 			// If the request was an internal request then we will rethrow the exception
 			// so that developers can easily catch them and adjust ther esponse
-			// themselves. We also disable API routing so that the parent
-			// request isn't treated as an API request.
+			// themselves.
 			else
 			{
-				$this->disableApiRouting();
-
 				throw $exception;
 			}
 		}
 
-		if ($this->routingForApi() or $this->requestTargettingApi($request))
+		if ($this->requestTargettingApi($request))
 		{
 			$response = Response::makeFromExisting($response)->morph();
-
-			// If the request that was dispatched is an internal request then we need to
-			// disable the API routing so that the parent request is not treated in
-			// the same way. This prevents it from generating an Api Response for
-			// the parent request. Another internal request will still result
-			// in API routing being enabled.
-			if ($request instanceof InternalRequest)
-			{
-				$this->disableApiRouting();
-			}
 		}
 
 		return $response;
@@ -186,7 +171,7 @@ class Router extends \Illuminate\Routing\Router {
 	{
 		$route = $this->createRoute($methods, $uri, $action);
 
-		if ($this->routingForApi())
+		if ($this->routingForApi($route))
 		{
 			$route->before('api');
 
@@ -226,7 +211,7 @@ class Router extends \Illuminate\Routing\Router {
 		// see if the controller is one of the API controllers. If it is then we
 		// need to check if the method is protected and get any scopes
 		// associated with the method.
-		if ($this->routingForApi() and $this->routingToController($action))
+		if ($this->routingForApi($route) and $this->routingToController($action))
 		{
 			list ($class, $method) = explode('@', $route->getActionName());
 
@@ -317,7 +302,7 @@ class Router extends \Illuminate\Routing\Router {
 	 */
 	protected function findRoute($request)
 	{
-		if ($this->routingForApi() or $this->requestTargettingApi($request))
+		if ($this->requestTargettingApi($request))
 		{
 			$version = $this->getRequestVersion($request);
 
@@ -345,12 +330,22 @@ class Router extends \Illuminate\Routing\Router {
 	 */
 	public function requestTargettingApi($request)
 	{
-		if (empty($this->apiCollections)) return false;
-
-		return array_first($this->apiCollections, function($key, $value) use ($request)
+		if (empty($this->apiCollections))
 		{
-			return $value->matches($request);
+			return false;
+		}
+
+		if (in_array($request, $this->cachedApiRequests))
+		{
+			return true;
+		}
+
+		$collection = array_first($this->apiCollections, function($key, $collection) use ($request)
+		{
+			return $collection->matches($request);
 		}, false);
+
+		return $collection instanceof ApiCollection;
 	}
 
 	/**
@@ -388,37 +383,16 @@ class Router extends \Illuminate\Routing\Router {
 	}
 
 	/**
-	 * Determine if the current request is an API request.
+	 * Determine if a route is an API route.
 	 * 
+	 * @param  \Illuminate\Routing\Route
 	 * @return bool
 	 */
-	public function routingForApi()
+	public function routingForApi($route)
 	{
-		return $this->apiRouting;
-	}
+		$action = $route->getAction();
 
-	/**
-	 * Enable API request.
-	 * 
-	 * @return \Dingo\Api\Routing\Router
-	 */
-	public function enableApiRouting()
-	{
-		$this->apiRouting = true;
-
-		return $this;
-	}
-
-	/**
-	 * Disable API request.
-	 * 
-	 * @return \Dingo\Api\Routing\Router
-	 */
-	public function disableApiRouting()
-	{
-		$this->apiRouting = false;
-
-		return $this;
+		return isset($action['api']) and $action['api'] === true;
 	}
 
 	/**

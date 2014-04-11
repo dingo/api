@@ -15,7 +15,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 		$this->router->filter('api', function()
 		{
-			$this->router->enableApiRouting();
+			
 		});
 	}
 
@@ -40,6 +40,19 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 	}
 
 
+	public function testApiRouteGroupActionsApplyToRoutes()
+	{
+		$this->router->api(['version' => 'v1', 'protected' => true], function()
+		{
+			$this->router->get('foo', function() { return 'bar'; });
+		});
+
+		$route = $this->router->getApiCollection('v1')->getRoutes()[0];
+
+		$this->assertTrue($route->getAction()['protected']);
+	}
+
+
 	/**
 	 * @expectedException BadMethodCallException
 	 */
@@ -60,6 +73,31 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 	}
 
 
+	public function testRouterFindsCollectionCurrentRequestIsTargetting()
+	{
+		$this->router->api(['version' => 'v1'], function()
+		{
+			$this->router->get('/', function()
+			{
+				return 'foo';
+			});
+		});
+
+		$this->router->api(['version' => 'v2'], function()
+		{
+			$this->router->get('/', function()
+			{
+				return 'bar';
+			});
+		});
+
+		$request = Illuminate\Http\Request::create('/', 'GET');
+		$request->headers->set('accept', 'application/vnd.testing.v2+json');
+
+		$response = $this->router->dispatch($request);
+	}
+
+
 	public function testAddingRouteFallsThroughToRouterCollection()
 	{
 		$this->router->get('foo', function() { return 'bar'; });
@@ -75,6 +113,71 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 		$this->router->get('foo', function() { return 'bar'; });
 
 		$this->assertEquals('bar', $this->router->dispatch(Illuminate\Http\Request::create('foo', 'GET'))->getContent());
+	}
+
+
+	public function testRoutingToControllerWithWildcardScopes()
+	{
+		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
+		{
+			$this->router->get('foo', 'WildcardScopeControllerStub@index');
+		});
+
+		$route = $this->router->getApiCollection('v1')->getRoutes()[0];
+
+		$this->assertEquals(['foo', 'bar'], $route->getAction()['scopes']);
+	}
+
+
+	public function testRoutingToControllerWithIndividualScopes()
+	{
+		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
+		{
+			$this->router->get('foo', 'IndividualScopeControllerStub@index');
+		});
+
+		$route = $this->router->getApiCollection('v1')->getRoutes()[0];
+
+		$this->assertEquals(['foo', 'bar'], $route->getAction()['scopes']);
+	}
+
+
+	public function testRoutingToControllerMergesGroupScopes()
+	{
+		$this->router->api(['version' => 'v1', 'prefix' => 'api', 'scopes' => 'baz'], function()
+		{
+			$this->router->get('foo', 'WildcardScopeControllerStub@index');
+		});
+
+		$route = $this->router->getApiCollection('v1')->getRoutes()[0];
+
+		$this->assertEquals(['baz', 'foo', 'bar'], $route->getAction()['scopes']);
+	}
+
+
+	public function testRoutingToControllerWithProtectedMethod()
+	{
+		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
+		{
+			$this->router->get('foo', 'ProtectedControllerStub@index');
+		});
+
+		$route = $this->router->getApiCollection('v1')->getRoutes()[0];
+
+		$this->assertTrue($route->getAction()['protected']);
+	}
+
+
+	public function testRoutingToControllerWithUnprotectedMethod()
+	{
+		$this->router->api(['version' => 'v1', 'prefix' => 'api', 'protected' => true], function()
+		{
+			$this->router->get('foo', 'UnprotectedControllerStub@index');
+		});
+
+		$route = $this->router->getApiCollection('v1')->getRoutes()[0];
+
+		$this->assertFalse($route->getAction()['protected']);
 	}
 
 
@@ -162,7 +265,6 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 	}
 
 
-
 	/**
 	 * @expectedException Symfony\Component\HttpKernel\Exception\HttpException
 	 */
@@ -176,5 +278,50 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 		$this->router->dispatch(Dingo\Api\Http\InternalRequest::create('foo', 'GET'));
 	}
 
+
+}
+
+
+class WildcardScopeControllerStub extends Dingo\Api\Routing\Controller {
+
+	public function __construct()
+	{
+		$this->scope(['foo', 'bar']);
+	}
+
+	public function index() {}
+
+}
+
+class IndividualScopeControllerStub extends Dingo\Api\Routing\Controller {
+
+	public function __construct()
+	{
+		$this->scope(['foo', 'bar'], 'index');
+	}
+
+	public function index() {}
+
+}
+
+class ProtectedControllerStub extends Dingo\Api\Routing\Controller {
+
+	public function __construct()
+	{
+		$this->protect('index');
+	}
+
+	public function index() {}
+
+}
+
+class UnprotectedControllerStub extends Dingo\Api\Routing\Controller {
+
+	public function __construct()
+	{
+		$this->unprotect('index');
+	}
+
+	public function index() {}
 
 }

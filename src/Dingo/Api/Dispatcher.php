@@ -170,18 +170,6 @@ class Dispatcher {
 	}
 
 	/**
-	 * Perform API HEAD request.
-	 * 
-	 * @param  string  $uri
-	 * @param  array  $parameters
-	 * @return mixed
-	 */
-	public function head($uri, $parameters = [])
-	{
-		return $this->queueRequest('head', $uri, $parameters);
-	}
-
-	/**
 	 * Perform API DELETE request.
 	 * 
 	 * @param  string  $uri
@@ -274,8 +262,6 @@ class Dispatcher {
 	{
 		try
 		{
-			$this->router->enableApiRouting();
-
 			$response = $this->router->dispatch($request);
 
 			if ( ! $response->isOk())
