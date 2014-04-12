@@ -63,25 +63,25 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 	public function testPrefixOnApiRoutes()
 	{
-        $this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
-        {
-            $this->router->get('foo', function() { return 'bar'; });
-        });
+		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
+		{
+			$this->router->get('foo', function() { return 'bar'; });
+		});
 
-        $route = $this->router->getApiCollection('v1')->getRoutes()[0];
+		$route = $this->router->getApiCollection('v1')->getRoutes()[0];
 
-        $this->assertEquals('api', $route->getAction()['prefix']);
+		$this->assertEquals('api', $route->getAction()['prefix']);
 	}
 
-    public function testRouterDispatchesInternalRequests()
-    {
-        $this->router->api(['version' => 'v1'], function()
-        {
-            $this->router->get('foo', function() { return 'bar'; });
-        });
+	public function testRouterDispatchesInternalRequests()
+	{
+		$this->router->api(['version' => 'v1'], function()
+		{
+			$this->router->get('foo', function() { return 'bar'; });
+		});
 
-        $this->assertEquals('{"message":"bar"}', $this->router->dispatch(Dingo\Api\Http\InternalRequest::create('foo', 'GET'))->getContent());
-    }
+		$this->assertEquals('{"message":"bar"}', $this->router->dispatch(Dingo\Api\Http\InternalRequest::create('foo', 'GET'))->getContent());
+	}
 
 	public function testRouterFindsCollectionCurrentRequestIsTargeting()
 	{

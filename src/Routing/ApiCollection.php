@@ -68,28 +68,28 @@ class ApiCollection extends RouteCollection {
 		return false;
 	}
 
-    /**
-     * Matches domain name if is set on route group
-     *
-     * @param $request
-     * @return bool
-     */
-    protected function matchDomain($request)
-    {
-        return $this->option('domain') and $request->header('host') == $this->option('domain');
-    }
+	/**
+	 * Matches domain name if is set on route group
+	 *
+	 * @param $request
+	 * @return bool
+	 */
+	protected function matchDomain($request)
+	{
+		return $this->option('domain') and $request->header('host') == $this->option('domain');
+	}
 
-    /**
-     * Matches prefix if is set in route group
-     *
-     * @param $request
-     * @return bool
-     */
-    protected function matchPrefix($request)
-    {
-        $path = explode('/', trim($request->getPathInfo(), '/'));
+	/**
+	 * Matches prefix if is set in route group
+	 *
+	 * @param $request
+	 * @return bool
+	 */
+	protected function matchPrefix($request)
+	{
+		$path = explode('/', trim($request->getPathInfo(), '/'));
 
-        return ($path[0] === $this->option('prefix') and $this->option('prefix'));
-    }
+		return ($path[0] === $this->option('prefix') and $this->option('prefix'));
+	}
 
 }
