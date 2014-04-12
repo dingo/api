@@ -160,7 +160,7 @@ class Router extends \Illuminate\Routing\Router {
 	}
 
 	/**
-	 * Add a new route to either the routers collection or the API collection.
+	 * Add a new route to either the routers collection or an API collection.
 	 * 
 	 * @param  array|string  $methods
 	 * @param  string  $uri
@@ -173,26 +173,37 @@ class Router extends \Illuminate\Routing\Router {
 
 		if ($this->routingForApi($route))
 		{
-			$route->before('api');
-
-			$version = array_get(last($this->groupStack), 'version', '');
-
-			// Since the groups action gets merged with the routes we need to make
-			// sure that if the route supplied its own protection that we grab
-			// that protection status from the array after the merge.
-			$action = $route->getAction();
-
-			if (count($this->groupStack) > 0 and isset($action['protected']))
-			{
-				$action['protected'] = is_array($action['protected']) ? last($action['protected']) : $action['protected'];
-
-				$route->setAction($action);
-			}
-
-			return $this->getApiCollection($version)->add($route);
+			return $this->addApiRoute($route);
 		}
 
 		return $this->routes->add($route);
+	}
+
+	/**
+	 * Add a new route to an API collection.
+	 * 
+	 * @param  \Illuminate\Routing\Route  $route
+	 * @return \Illuminate\Routing\Route
+	 */
+	protected function addApiRoute($route)
+	{
+		$route->before('api');
+
+		$version = array_get(last($this->groupStack), 'version', '');
+
+		// Since the groups action gets merged with the routes we need to make
+		// sure that if the route supplied its own protection that we grab
+		// that protection status from the array after the merge.
+		$action = $route->getAction();
+
+		if (count($this->groupStack) > 0 and isset($action['protected']))
+		{
+			$action['protected'] = is_array($action['protected']) ? last($action['protected']) : $action['protected'];
+
+			$route->setAction($action);
+		}
+
+		return $this->getApiCollection($version)->add($route);
 	}
 
 	/**
@@ -213,16 +224,29 @@ class Router extends \Illuminate\Routing\Router {
 		// associated with the method.
 		if ($this->routingForApi($route) and $this->routingToController($action))
 		{
-			list ($class, $method) = explode('@', $route->getActionName());
+			$route = $this->adjustApiController($route);
+		}
 
-			$controller = $this->container->make($class);
+		return $route;
+	}
 
-			if ($controller instanceof \Dingo\Api\Routing\Controller)
-			{
-				$route = $this->controllerMethodProtected($route, $controller, $method);
+	/**
+	 * Adjust the controller if it's an API controller.
+	 * 
+	 * @param  \Illuminate\Routing\Route  $route
+	 * @return \Illuminate\Routing\Route
+	 */
+	protected function adjustApiController($route)
+	{
+		list ($class, $method) = explode('@', $route->getActionName());
 
-				$route = $this->controllerMethodScopes($route, $controller, $method);
-			}
+		$controller = $this->container->make($class);
+
+		if ($controller instanceof \Dingo\Api\Routing\Controller)
+		{
+			$route = $this->controllerMethodProtected($route, $controller, $method);
+
+			$route = $this->controllerMethodScopes($route, $controller, $method);
 		}
 
 		return $route;
