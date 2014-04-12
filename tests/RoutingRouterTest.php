@@ -61,17 +61,44 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 		$this->router->api([], function(){});
 	}
 
-	public function testPrefixOnApiRoutes()
+
+	public function testApiRoutesWithPrefix()
 	{
 		$this->router->api(['version' => 'v1', 'prefix' => 'foo/bar'], function()
+		{
+			$this->router->get('foo', function() { return 'foo'; });
+		});
+
+		$this->router->api(['version' => 'v2', 'prefix' => 'foo/bar'], function()
 		{
 			$this->router->get('foo', function() { return 'bar'; });
 		});
 
-		$route = $this->router->getApiCollection('v1')->getRoutes()[0];
-
-		$this->assertEquals('foo/bar', $route->getAction()['prefix']);
+		$request = Illuminate\Http\Request::create('/foo/bar/foo', 'GET');
+		$request->headers->set('accept', 'application/vnd.testing.v2+json');
+		
+		$this->assertEquals('{"message":"bar"}', $this->router->dispatch($request)->getContent());
 	}
+
+
+	public function testApiRoutesWithDomains()
+	{
+		$this->router->api(['version' => 'v1', 'domain' => 'foo.bar'], function()
+		{
+			$this->router->get('foo', function() { return 'foo'; });
+		});
+
+		$this->router->api(['version' => 'v2', 'domain' => 'foo.bar'], function()
+		{
+			$this->router->get('foo', function() { return 'bar'; });
+		});
+
+		$request = Illuminate\Http\Request::create('http://foo.bar/foo', 'GET');
+		$request->headers->set('accept', 'application/vnd.testing.v1+json');
+		
+		$this->assertEquals('{"message":"foo"}', $this->router->dispatch($request)->getContent());
+	}
+
 
 	public function testRouterDispatchesInternalRequests()
 	{
@@ -82,6 +109,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals('{"message":"bar"}', $this->router->dispatch(Dingo\Api\Http\InternalRequest::create('foo', 'GET'))->getContent());
 	}
+
 
 	public function testRouterFindsCollectionCurrentRequestIsTargeting()
 	{

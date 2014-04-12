@@ -69,9 +69,9 @@ class ApiCollection extends RouteCollection {
 	}
 
 	/**
-	 * Matches domain name if is set on route group
+	 * Matches domain if is set on route group.
 	 *
-	 * @param $request
+	 * @param  \Illuminate\Http\Request  $request
 	 * @return bool
 	 */
 	protected function matchDomain($request)
@@ -80,9 +80,9 @@ class ApiCollection extends RouteCollection {
 	}
 
 	/**
-	 * Matches prefix if is set in route group
+	 * Matches prefix if is set in route group.
 	 *
-	 * @param $request
+	 * @param  \Illuminate\Http\Request  $request
 	 * @return bool
 	 */
 	protected function matchPrefix($request)
