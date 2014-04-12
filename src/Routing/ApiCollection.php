@@ -87,9 +87,27 @@ class ApiCollection extends RouteCollection {
 	 */
 	protected function matchPrefix($request)
 	{
-		$path = explode('/', trim($request->getPathInfo(), '/'));
+		if ( ! $prefix = $this->option('prefix'))
+		{
+			return false;
+		}
 
-		return ($path[0] === $this->option('prefix') and $this->option('prefix'));
+		$prefix = $this->filterAndExplode($this->option('prefix'));
+
+		$path = $this->filterAndExplode($request->getPathInfo());
+
+		return $prefix == array_slice($path, 0, count($prefix));
+	}
+
+	/**
+	 * Explode array on slash and remove empty values.
+	 * 
+	 * @param  array  $array
+	 * @return array
+	 */
+	protected function filterAndExplode($array)
+	{
+		return array_filter(explode('/', $array));
 	}
 
 }

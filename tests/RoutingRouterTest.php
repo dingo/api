@@ -63,14 +63,14 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 	public function testPrefixOnApiRoutes()
 	{
-		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
+		$this->router->api(['version' => 'v1', 'prefix' => 'foo/bar'], function()
 		{
 			$this->router->get('foo', function() { return 'bar'; });
 		});
 
 		$route = $this->router->getApiCollection('v1')->getRoutes()[0];
 
-		$this->assertEquals('api', $route->getAction()['prefix']);
+		$this->assertEquals('foo/bar', $route->getAction()['prefix']);
 	}
 
 	public function testRouterDispatchesInternalRequests()
