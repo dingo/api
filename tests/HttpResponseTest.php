@@ -1,65 +1,82 @@
 <?php
 
+use Mockery as m;
+use Dingo\Api\Http\Response;
+
 class HttpResponseTest extends PHPUnit_Framework_TestCase {
+
+
+	public function setUp()
+	{
+		Response::setFormatters(['json' => $this->formatter = m::mock('Dingo\Api\Http\ResponseFormat\JsonResponseFormat')]);
+
+		$this->formatter->shouldReceive('getContentType')->andReturn('foo');
+	}
+
+
+	public function tearDown()
+	{
+		m::close();
+
+		Response::setFormatters([]);
+	}
 
 
 	public function testMorphingEloquentModel()
 	{
-		$response = with(new Dingo\Api\Http\Response(new UserEloquentModelStub))->morph();
+		$this->formatter->shouldReceive('formatEloquentModel')->once()->andReturn('test');
 
-		$this->assertEquals('{"user":{"foo":"bar"}}', $response->getContent());
+		with(new Response(new EloquentModelStub))->morph();
 	}
 
 
 	public function testMorphingEloquentCollection()
 	{
-		$collection = new Illuminate\Database\Eloquent\Collection;
-		$collection->push(new UserEloquentModelStub);
-		$collection->push(new UserEloquentModelStub);
+		$this->formatter->shouldReceive('formatEloquentCollection')->once()->andReturn('test');
 
-		$response = with(new Dingo\Api\Http\Response($collection))->morph();
-
-		$this->assertEquals('{"users":[{"foo":"bar"},{"foo":"bar"}]}', $response->getContent());
+		with(new Response(new EloquentCollectionStub))->morph();
 	}
 
 
 	public function testMorphingJsonableInterface()
 	{
-		$messages = new Illuminate\Support\MessageBag(['foo' => 'bar']);
+		$this->formatter->shouldReceive('formatJsonableInterface')->once()->andReturn('test');
 
-		$response = with(new Dingo\Api\Http\Response($messages))->morph();
-
-		$this->assertEquals('{"foo":["bar"]}', $response->getContent());
+		with(new Response(new JsonableStub))->morph();
 	}
 
 
 	public function testMorphingString()
 	{
-		$response = with(new Dingo\Api\Http\Response('foo'))->morph();
+		$this->formatter->shouldReceive('formatString')->once();
 
-		$this->assertEquals('{"message":"foo"}', $response->getContent());
+		with(new Response('foo'))->morph();
 	}
 
 
 	public function testMorphingArrayableInterface()
 	{
-		$messages = new Illuminate\Support\MessageBag(['foo' => 'bar']);
+		$this->formatter->shouldReceive('formatArrayableInterface')->once()->andReturn('test');
 
-		$response = with(new Dingo\Api\Http\Response(['foo' => 'bar', 'baz' => $messages]))->morph();
-
-		$this->assertEquals('{"foo":"bar","baz":{"foo":["bar"]}}', $response->getContent());
+		with(new Response(['foo' => 'bar']))->morph();
 	}
 
 
-}
-
-class UserEloquentModelStub extends Illuminate\Database\Eloquent\Model {
-
-	protected $table = 'user';
-
-	public function toArray()
+	public function testMorphingUnknownType()
 	{
-		return ['foo' => 'bar'];
+		$this->formatter->shouldReceive('formatUnknown')->once()->andReturn('test');
+
+		with(new Response(1))->morph();
 	}
+
+
+	/**
+	 * @expectedException \RuntimeException
+	 */
+	public function testGettingUnregisteredFormatterThrowsException()
+	{
+		Response::getFormatter('test');
+	}
+
 
 }

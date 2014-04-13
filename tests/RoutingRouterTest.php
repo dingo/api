@@ -1,6 +1,7 @@
 <?php
 
 use Mockery as m;
+use Dingo\Api\Http\Response;
 
 class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
@@ -13,10 +14,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 		$this->router->setDefaultApiVersion('v1');
 		$this->router->setApiVendor('testing');
 
-		$this->router->filter('api', function()
-		{
-			
-		});
+		Response::setFormatters(['json' => new Dingo\Api\Http\ResponseFormat\JsonResponseFormat]);
 	}
 
 

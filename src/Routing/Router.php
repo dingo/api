@@ -35,6 +35,20 @@ class Router extends \Illuminate\Routing\Router {
 	protected $apiVendor;
 
 	/**
+	 * Requested API version.
+	 * 
+	 * @var string
+	 */
+	protected $requestedVersion;
+
+	/**
+	 * Requested format defaults to JSON.
+	 * 
+	 * @var string
+	 */
+	protected $requestedFormat = 'json';
+
+	/**
 	 * Exception handler instance.
 	 * 
 	 * @var \Dingo\Api\ExceptionHandler
@@ -121,7 +135,7 @@ class Router extends \Illuminate\Routing\Router {
 
 		if ($this->requestTargettingApi($request))
 		{
-			$response = Response::makeFromExisting($response)->morph();
+			$response = Response::makeFromExisting($response)->morph($this->requestedFormat);
 		}
 
 		return $response;
@@ -328,11 +342,11 @@ class Router extends \Illuminate\Routing\Router {
 	{
 		if ($this->requestTargettingApi($request))
 		{
-			$version = $this->getRequestVersion($request);
+			$this->parseAcceptHeader($request);
 
 			try
 			{
-				$this->current = $route = $this->getApiCollection($version)->match($request);
+				$this->current = $route = $this->getApiCollection($this->requestedVersion)->match($request);
 
 				return $this->substituteBindings($route);
 			}
@@ -373,21 +387,21 @@ class Router extends \Illuminate\Routing\Router {
 	}
 
 	/**
-	 * Get the version from the request.
+	 * Parse the requests accept header.
 	 * 
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return string
 	 */
-	protected function getRequestVersion($request)
+	protected function parseAcceptHeader($request)
 	{
 		if (preg_match('#application/vnd\.'.$this->apiVendor.'.(v\d)\+(json)#', $request->header('accept'), $matches))
 		{
-			list ($accept, $version, $format) = $matches;
-
-			return $version;
+			list ($accept, $this->requestedVersion, $this->requestedFormat) = $matches;
 		}
-
-		return $this->defaultApiVersion;
+		else
+		{
+			$this->requestedVersion = $this->defaultApiVersion;
+		}
 	}
 
 	/**

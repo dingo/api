@@ -39,6 +39,21 @@ return [
 	|
 	*/
 
-	'auth' => ['basic']
+	'auth' => ['basic'],
+
+	/*
+	|--------------------------------------------------------------------------
+	| Response Formats
+	|--------------------------------------------------------------------------
+	|
+	| Responses can be returned in multiple formats by registering different
+	| response formatters. You can also customize an existing response
+	| formatter.
+	|
+	*/
+
+	'formats' => [
+		'json' => new Dingo\Api\Http\ResponseFormat\JsonResponseFormat
+	]
 
 ];

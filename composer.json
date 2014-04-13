@@ -26,7 +26,8 @@
     "autoload": {
         "psr-4": {
             "Dingo\\Api\\": "src"
-        }
+        },
+        "files": ["tests/stubs.php"]
     },
     "minimum-stability": "stable"
 }

@@ -31,6 +31,12 @@ class ApiServiceProvider extends ServiceProvider {
 			return $app['dingo.api.authentication'];
 		};
 
+		// Set the static formatters on the response class so that requested formats
+		// can be formatted and returned correctly.
+		$formats = array_map('value', $this->app['config']['api::formats']);
+
+		Response::setFormatters($formats);
+
 		$this->app['router']->filter('api', function($route, $request)
 		{
 			try

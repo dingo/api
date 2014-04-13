@@ -1,6 +1,7 @@
 <?php
 
 use Mockery as m;
+use Dingo\Api\Http\Response;
 
 class DispatcherTest extends PHPUnit_Framework_TestCase {
 
@@ -13,11 +14,15 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 		$this->router->setApiVendor('test');
 		$this->auth = m::mock('Dingo\Api\Authentication');
 		$this->dispatcher = new Dingo\Api\Dispatcher($this->request, $this->router, $this->auth);
+
+		Response::setFormatters(['json' => new Dingo\Api\Http\ResponseFormat\JsonResponseFormat]);
 	}
 
 
 	public function tearDown()
 	{
+		Response::setFormatters([]);
+
 		m::close();
 	}
 

@@ -1,5 +1,6 @@
 <?php namespace Dingo\Api\Http;
 
+use RuntimeException;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Contracts\JsonableInterface;
 use Illuminate\Support\Contracts\ArrayableInterface;
@@ -7,6 +8,13 @@ use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 class Response extends \Illuminate\Http\Response {
+
+	/**
+	 * Array of registered formatters.
+	 * 
+	 * @var array
+	 */
+	protected static $formatters = [];
 
 	/**
 	 * Make an API response from an existing Illuminate response.
@@ -24,95 +32,83 @@ class Response extends \Illuminate\Http\Response {
 	 * 
 	 * @return \Dingo\Api\Http\Response
 	 */
-	public function morph()
+	public function morph($format = 'json')
 	{
-		$this->headers->set('content-type', 'application/json');
+		$formatter = static::getFormatter($format);
 
-		return $this->morphJsonResponse();
-	}
+		$response = $this->original;
 
-	/**
-	 * Morph the response to it's JSON representation by checking the type
-	 * of response that's going to be returned.
-	 * 
-	 * @return \Dingo\Api\Http\Response
-	 */
-	protected function morphJsonResponse()
-	{
-		if ($this->original instanceof JsonableInterface)
+		// First we'll attempt to format the response if it's either an Eloquent
+		// model or an Eloquent collection.
+		if ($response instanceof EloquentModel)
 		{
-			$this->content = $this->morphJsonableInterface($this->original);
+			$response = $formatter->formatEloquentModel($response);
 		}
-		elseif (is_string($this->original))
+		elseif ($response instanceof EloquentCollection)
 		{
-			$this->content = $this->encode(['message' => $this->original]);
+			$response = $formatter->formatEloquentCollection($response);
 		}
 		else
 		{
-			$this->content = $this->morphArrayableInterface($this->original);
-
-			if (is_array($this->content))
+			// Next we'll attempt to format the response if it's a string,
+			// an array or an object implementing ArrayableInterface,
+			// an object implementing JsonableInterface or an
+			// unknown type.
+			if (is_string($response))
 			{
-				array_walk_recursive($this->content, function(&$value)
-				{
-					$value = $this->morphArrayableInterface($value);
-				});
+				$response = $formatter->formatString($response);
 			}
-
-			$this->content = $this->encode($this->content);
+			elseif (is_array($response) or $response instanceof ArrayableInterface)
+			{
+				$response = $formatter->formatArrayableInterface($response);
+			}
+			elseif ($response instanceof JsonableInterface)
+			{
+				$response = $formatter->formatJsonableInterface($response);
+			}
+			else
+			{
+				$response = $formatter->formatUnknown($response);
+			}
 		}
+
+		// Set the "Content-Type" header of the response to that which
+		// is defined by the formatter being used.
+		$this->headers->set('content-type', $formatter->getContentType());
+
+		// Directly set the property because using setContent results in
+		// the original content also being updated.
+		$this->content = $response;
 
 		return $this;
 	}
 
 	/**
-	 * If content implements the ArrayableInterface it will be morphed to its
-	 * array value.
+	 * Get the formatter based on the requested format type.
 	 * 
-	 * @param  array|\Illuminate\Support\Contracts\ArrayableInterface  $content
-	 * @return array
+	 * @param  string  $format
+	 * @return \Dingo\Api\Http\Format\FormatInterface
+	 * @throws \RuntimeException
 	 */
-	protected function morphArrayableInterface($content)
+	public static function getFormatter($format)
 	{
-		return $content instanceof ArrayableInterface ? $content->toArray() : $content;
+		if ( ! isset(static::$formatters[$format]))
+		{
+			throw new RuntimeException('Response formatter "'.$format.'" has not been registered.');
+		}
+
+		return static::$formatters[$format];
 	}
 
 	/**
-	 * If content implements the JsonableInterface it will be morphed to its
-	 * JSON value.
+	 * Set the response formatters.
 	 * 
-	 * @param  \Illuminate\Support\Contracts\JsonableInterface  $content
-	 * @return string
+	 * @param  array  $formatters
+	 * @return void
 	 */
-	protected function morphJsonableInterface($content)
+	public static function setFormatters(array $formatters)
 	{
-		if ($content instanceof EloquentModel)
-		{
-			$key = $content->getTable();
-
-			return $this->encode([$key => $content->toArray()]);
-		}
-		elseif ($content instanceof EloquentCollection)
-		{
-			$key = str_plural($content->first()->getTable());
-
-			return $this->encode([$key => $content->toArray()]);
-		}
-		else
-		{
-			return $content->toJson();
-		}
-	}
-
-	/**
-	 * Encode the content to its JSON representation.
-	 * 
-	 * @param  string  $content
-	 * @return string
-	 */
-	protected function encode($content)
-	{
-		return json_encode($content);
+		static::$formatters = $formatters;
 	}
 
 }
