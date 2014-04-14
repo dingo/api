@@ -12,6 +12,7 @@ class EloquentModelStub extends Illuminate\Database\Eloquent\Model {
 
 }
 
+
 class EloquentCollectionStub extends Illuminate\Database\Eloquent\Collection {
 
 	public function __construct()
@@ -23,6 +24,12 @@ class EloquentCollectionStub extends Illuminate\Database\Eloquent\Collection {
 	}
 
 }
+
+
+class EmptyEloquentCollectionStub extends Illuminate\Database\Eloquent\Collection {
+
+}
+
 
 class JsonableStub implements Illuminate\Support\Contracts\JsonableInterface {
 

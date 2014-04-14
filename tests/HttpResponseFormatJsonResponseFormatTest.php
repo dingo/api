@@ -37,6 +37,14 @@ class HttpResponseFormatJsonResponseFormatTest extends PHPUnit_Framework_TestCas
 	}
 
 
+	public function testMorphingEmptyEloquentCollection()
+	{
+		$response = with(new Response(new EmptyEloquentCollectionStub))->morph();
+
+		$this->assertEquals('[]', $response->getContent());
+	}
+
+
 	public function testMorphingJsonableInterface()
 	{
 		$response = with(new Response(new JsonableStub))->morph();

@@ -25,6 +25,11 @@ class JsonResponseFormat implements ResponseFormatInterface {
 	 */
 	public function formatEloquentCollection($collection)
 	{
+		if ($collection->isEmpty())
+		{
+			return $this->encode([]);
+		}
+
 		$key = str_plural($collection->first()->getTable());
 
 		return $this->encode([$key => $collection->toArray()]);
