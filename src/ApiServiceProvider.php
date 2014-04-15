@@ -135,7 +135,7 @@ class ApiServiceProvider extends ServiceProvider {
 			$providers = [];
 
 			$resolvers = [
-				'basic'  => function($app) { return new BasicProvider($app['auth']); },
+				'basic'  => function($app) { return new BasicProvider($app['auth'], $app['config']['api::username_column']); },
 				'oauth2' => function($app) { return new OAuth2Provider($app['dingo.oauth.resource']); }
 			];
 
