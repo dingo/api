@@ -43,6 +43,20 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Username Column for Basic Authentication Provider
+	|--------------------------------------------------------------------------
+	|
+	| Name of column to use when attempting to authenticate an incoming
+	| API request with basic authentication provider.
+	|
+	| Default: "email"
+	|
+	*/
+
+	'username_column' => 'email',
+
+	/*
+	|--------------------------------------------------------------------------
 	| Response Formats
 	|--------------------------------------------------------------------------
 	|

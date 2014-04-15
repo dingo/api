@@ -11,9 +11,10 @@ class BasicProvider extends Provider {
 	 * @param  \Illuminate\Auth\AuthManager  $auth
 	 * @return void
 	 */
-	public function __construct(AuthManager $auth)
+	public function __construct(AuthManager $auth, $username_column)
 	{
 		$this->auth = $auth;
+		$this->username_column =  $username_column;
 	}
 
 	/**
@@ -24,7 +25,7 @@ class BasicProvider extends Provider {
 	 */
 	public function authenticate(array $scopes)
 	{
-		if ($response = $this->auth->onceBasic() and $response->getStatusCode() === 401)
+		if ($response = $this->auth->onceBasic($this->username_column) and $response->getStatusCode() === 401)
 		{
 			throw new UnauthorizedHttpException('Basic', 'Invalid credentials.');
 		}
