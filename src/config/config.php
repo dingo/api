@@ -43,11 +43,13 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
-	| Username Column for Basic Provider
+	| Username Column for Basic Authentication Provider
 	|--------------------------------------------------------------------------
 	|
-	| Username column to use when attempting to authenticate an incoming
-	| API request with basic provider.
+	| Name of column to use when attempting to authenticate an incoming
+	| API request with basic authentication provider.
+	|
+	| Default: "email"
 	|
 	*/
 
