@@ -81,7 +81,7 @@ class Router extends \Illuminate\Routing\Router {
 		// create a new collection.
 		$version = $options['version'];
 
-		$options['api'] = true;
+		$options[] = 'api';
 
 		if ( ! isset($this->apiCollections[$version]))
 		{
@@ -430,7 +430,7 @@ class Router extends \Illuminate\Routing\Router {
 	{
 		$action = $route->getAction();
 
-		return isset($action['api']) and $action['api'] === true;
+		return in_array('api', $action, true);
 	}
 
 	/**

@@ -129,9 +129,9 @@ class Authentication {
 	 */
 	protected function routeIsProtected(Route $route)
 	{
-		$actions = $route->getAction();
+		$action = $route->getAction();
 
-		return isset($actions['protected']) and $actions['protected'] === true;
+		return in_array('protected', $action, true) or (isset($action['protected']) and $action['protected'] === true);
 	}
 
 	/**
@@ -142,9 +142,9 @@ class Authentication {
 	 */
 	protected function getRouteScopes(Route $route)
 	{
-		$actions = $route->getAction();
+		$action = $route->getAction();
 
-		return isset($actions['scopes']) ? (array) $actions['scopes'] : [];
+		return isset($action['scopes']) ? (array) $action['scopes'] : [];
 	}
 
 	/**
