@@ -14,6 +14,7 @@
         "illuminate/support": "4.1.*"
     },
     "require-dev": {
+        "dingo/oauth2-server": "0.2.*",
         "illuminate/routing": "4.1.*",
         "illuminate/events": "4.1.*",
         "illuminate/auth": "4.1.*",

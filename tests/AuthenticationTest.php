@@ -70,15 +70,17 @@ class AuthenticationTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testAuthenticationFailsWhenNoAuthorizationHeaderIsSet()
 	{
+		$request = Request::create('foo', 'GET');
+
 		$provider = $this->getProviderMock();
-		$provider->shouldReceive('validateAuthorizationHeader')->once()->andThrow(new Exception);
+		$provider->shouldReceive('authenticate')->once()->with($request)->andThrow(new Exception);
 
 		$auth = new Authentication($this->router, $this->getAuthMock(), [$provider]);
 
 		$this->router->filter('api', function() use ($auth) { return $auth->authenticate(); });
 		$this->router->get('foo', ['before' => 'api', 'protected' => true, function(){ return 'foo'; }]);
 
-		$this->router->dispatch(Request::create('foo', 'GET'));
+		$this->router->dispatch($request);
 	}
 
 
@@ -87,31 +89,33 @@ class AuthenticationTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testAuthenticationFailsWhenProviderFailsToAuthenticateUser()
 	{
+		$request = Request::create('foo', 'GET');
+
 		$provider = $this->getProviderMock();
-		$provider->shouldReceive('validateAuthorizationHeader')->once();
-		$provider->shouldReceive('authenticate')->once()->with([])->andThrow(new Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException('foo'));
+		$provider->shouldReceive('authenticate')->once()->with($request)->andThrow(new Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException('foo'));
 
 		$auth = new Authentication($this->router, $this->getAuthMock(), [$provider]);
 
 		$this->router->filter('api', function() use ($auth) { return $auth->authenticate(); });
 		$this->router->get('foo', ['before' => 'api', 'protected' => true, function(){ return 'foo'; }]);
 
-		$this->router->dispatch(Request::create('foo', 'GET'));
+		$this->router->dispatch($request);
 	}
 
 
 	public function testAuthenticationSucceedsAndReturnsUserId()
 	{
-		$provider = $this->getProviderMock();
-		$provider->shouldReceive('validateAuthorizationHeader')->once();
-		$provider->shouldReceive('authenticate')->once()->with([])->andReturn(1);
+		$request = Request::create('foo', 'GET');
 
-		$auth = new Authentication($this->router, $this->getAuthMock(), [$provider]);
+		$provider = $this->getProviderMock();
+		$provider->shouldReceive('authenticate')->once()->with($request)->andReturn(1);
+
+		$auth = new Authentication($this->router, $this->getAuthMock(), ['basic' => $provider]);
 
 		$this->router->filter('api', function() use ($auth) { return $auth->authenticate(); });
 		$this->router->get('foo', ['before' => 'api', 'protected' => true, function(){ return 'foo'; }]);
 
-		$response = $this->router->dispatch(Request::create('foo', 'GET'));
+		$response = $this->router->dispatch($request);
 
 		$this->assertEquals(1, $response->getContent());
 	}
@@ -129,11 +133,12 @@ class AuthenticationTest extends PHPUnit_Framework_TestCase {
 
 	public function testGettingUserUsesAuthenticatedUserIdToLogUserIn()
 	{
-		$provider = $this->getProviderMock();
-		$provider->shouldReceive('validateAuthorizationHeader')->once();
-		$provider->shouldReceive('authenticate')->once()->with([])->andReturn(1);
+		$request = Request::create('foo', 'GET');
 
-		$auth = new Authentication($this->router, $authManager = $this->getAuthMock(), [$provider]);
+		$provider = $this->getProviderMock();
+		$provider->shouldReceive('authenticate')->once()->with($request)->andReturn(1);
+
+		$auth = new Authentication($this->router, $authManager = $this->getAuthMock(), ['basic' => $provider]);
 
 		$authManager->shouldReceive('check')->once()->andReturn(false);
 		$authManager->shouldReceive('onceUsingId')->once()->with(1)->andReturn(true);
@@ -142,9 +147,44 @@ class AuthenticationTest extends PHPUnit_Framework_TestCase {
 		$this->router->filter('api', function() use ($auth) { $auth->authenticate(); });
 		$this->router->get('foo', ['before' => 'api', 'protected' => true, function(){ return 'foo'; }]);
 
-		$this->router->dispatch(Request::create('foo', 'GET'));
+		$this->router->dispatch($request);
 
 		$this->assertEquals('foo', $auth->user());
+	}
+
+
+	public function testAuthenticatingViaOAuth2GrabsRouteScopesAndAuthenticationSucceeds()
+	{
+		$request = Request::create('foo', 'GET');
+
+		$provider = $this->getProviderMock();
+		$provider->shouldReceive('setScopes')->once()->with(['foo', 'bar']);
+		$provider->shouldReceive('authenticate')->once()->with($request)->andReturn(1);
+
+		$auth = new Authentication($this->router, $this->getAuthMock(), ['oauth2' => $provider]);
+
+		$this->router->filter('api', function() use ($auth) { return $auth->authenticate(); });
+		$this->router->get('foo', ['before' => 'api', 'protected' => true, 'scopes' => ['foo', 'bar'], function(){ return 'foo'; }]);
+
+		$response = $this->router->dispatch($request);
+
+		$this->assertEquals(1, $response->getContent());
+	}
+
+
+	public function testAuthenticatingWithCustomProvider()
+	{
+		$request = Request::create('foo', 'GET');
+
+		$auth = new Authentication($this->router, $this->getAuthMock(), []);
+		$auth->extend('foo', new CustomProviderStub);
+
+		$this->router->filter('api', function() use ($auth) { return $auth->authenticate(); });
+		$this->router->get('foo', ['before' => 'api', 'protected' => true, function(){ return 'foo'; }]);
+
+		$response = $this->router->dispatch($request);
+
+		$this->assertEquals(1, $response->getContent());
 	}
 
 
@@ -156,8 +196,18 @@ class AuthenticationTest extends PHPUnit_Framework_TestCase {
 
 	protected function getProviderMock()
 	{
-		return m::mock('Dingo\Api\Auth\Provider')	;
+		return m::mock('Dingo\Api\Auth\AuthorizationProvider');
 	}
 
+
+}
+
+
+class CustomProviderStub implements Dingo\Api\Auth\ProviderInterface {
+
+	public function authenticate(Illuminate\Http\Request $request)
+	{
+		return 1;
+	}
 
 }

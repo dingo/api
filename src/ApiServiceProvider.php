@@ -1,5 +1,6 @@
 <?php namespace Dingo\Api;
 
+use Closure;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
 use Dingo\Api\Auth\AuthManager;
@@ -135,13 +136,25 @@ class ApiServiceProvider extends ServiceProvider {
 			$providers = [];
 
 			$resolvers = [
-				'basic'  => function($app) { return new BasicProvider($app['auth']); },
-				'oauth2' => function($app) { return new OAuth2Provider($app['dingo.oauth.resource']); }
+				'basic'  => function($app, $options) { return new BasicProvider($app['auth'], $options); },
+				'oauth2' => function($app, $options) { return new OAuth2Provider($app['dingo.oauth.resource'], $options); }
 			];
 
-			foreach ($app['config']['api::auth'] as $provider)
+			foreach ($app['config']['api::auth'] as $key => $value)
 			{
-				$providers[$provider] = $resolvers[$provider]($app);
+				list ($provider, $options) = [$key, $value];
+
+				if ( ! is_string($key))
+				{
+					list ($provider, $options) = [$value, []];
+				}
+
+				if ($options instanceof Closure)
+				{
+					$options = call_user_func($options, $app);
+				}
+
+				$providers[$provider] = $resolvers[$provider]($app, $options);
 			}
 
 			return new Authentication($app['router'], $app['auth'], $providers);

@@ -3,7 +3,14 @@
 use Exception;
 use Illuminate\Http\Request;
 
-abstract class Provider {
+abstract class AuthorizationProvider implements ProviderInterface {
+
+	/**
+	 * Array of provider speicifc options.
+	 * 
+	 * @var array
+	 */
+	protected $options = [];
 
 	/**
 	 * Validate the requests authorization header for the provider.
@@ -18,14 +25,6 @@ abstract class Provider {
 			throw new Exception;
 		}
 	}
-
-	/**
-	 * Authenticate request.
-	 * 
-	 * @param  array  $scopes
-	 * @return int
-	 */
-	abstract public function authenticate(array $scopes);
 
 	/**
 	 * Get the providers authorization method.
