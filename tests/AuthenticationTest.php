@@ -66,7 +66,6 @@ class AuthenticationTest extends PHPUnit_Framework_TestCase {
 
 	/**
 	 * @expectedException \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
-	 * @expectedExceptionMessage Failed to authenticate because of an invalid or missing authorization header.
 	 */
 	public function testAuthenticationFailsWhenNoAuthorizationHeaderIsSet()
 	{
