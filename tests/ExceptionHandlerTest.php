@@ -61,8 +61,3 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase {
 
 
 }
-
-
-class StubHttpException extends Symfony\Component\HttpKernel\Exception\HttpException {
-
-}
