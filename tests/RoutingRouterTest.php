@@ -315,4 +315,15 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 	}
 
 
+	public function testRouterIgnoresRouteGroupsWithAnApiPrefix()
+	{
+		$this->router->group(['prefix' => 'api'], function()
+		{
+			$this->router->get('foo', function() { return 'foo'; });
+		});
+
+		$this->assertEquals('foo', $this->router->dispatch(Illuminate\Http\Request::create('api/foo', 'GET'))->getContent());
+	}
+
+
 }

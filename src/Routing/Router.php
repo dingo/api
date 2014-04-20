@@ -428,9 +428,9 @@ class Router extends \Illuminate\Routing\Router {
 	 */
 	public function routingForApi($route)
 	{
-		$action = $route->getAction();
+		$key = array_search('api', $route->getAction(), true);
 
-		return in_array('api', $action, true);
+		return is_numeric($key);
 	}
 
 	/**
