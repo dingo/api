@@ -11,8 +11,8 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 		$this->exceptionHandler = m::mock('Dingo\Api\ExceptionHandler');
 		$this->router = new Dingo\Api\Routing\Router(new Illuminate\Events\Dispatcher);
 		$this->router->setExceptionHandler($this->exceptionHandler);
-		$this->router->setDefaultApiVersion('v1');
-		$this->router->setApiVendor('testing');
+		$this->router->setDefaultVersion('v1');
+		$this->router->setVendor('testing');
 
 		Response::setFormatters(['json' => new Dingo\Api\Http\ResponseFormat\JsonResponseFormat]);
 	}
@@ -45,7 +45,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 			$this->router->get('foo', function() { return 'bar'; });
 		});
 
-		$route = $this->router->getApiCollection('v1')->getRoutes()[0];
+		$route = $this->router->getApiRouteCollection('v1')->getRoutes()[0];
 
 		$this->assertTrue($route->getAction()['protected']);
 	}
@@ -159,7 +159,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 			$this->router->get('foo', 'WildcardScopeControllerStub@index');
 		});
 
-		$route = $this->router->getApiCollection('v1')->getRoutes()[0];
+		$route = $this->router->getApiRouteCollection('v1')->getRoutes()[0];
 
 		$this->assertEquals(['foo', 'bar'], $route->getAction()['scopes']);
 	}
@@ -172,7 +172,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 			$this->router->get('foo', 'IndividualScopeControllerStub@index');
 		});
 
-		$route = $this->router->getApiCollection('v1')->getRoutes()[0];
+		$route = $this->router->getApiRouteCollection('v1')->getRoutes()[0];
 
 		$this->assertEquals(['foo', 'bar'], $route->getAction()['scopes']);
 	}
@@ -185,7 +185,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 			$this->router->get('foo', 'WildcardScopeControllerStub@index');
 		});
 
-		$route = $this->router->getApiCollection('v1')->getRoutes()[0];
+		$route = $this->router->getApiRouteCollection('v1')->getRoutes()[0];
 
 		$this->assertEquals(['baz', 'foo', 'bar'], $route->getAction()['scopes']);
 	}
@@ -198,7 +198,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 			$this->router->get('foo', 'ProtectedControllerStub@index');
 		});
 
-		$route = $this->router->getApiCollection('v1')->getRoutes()[0];
+		$route = $this->router->getApiRouteCollection('v1')->getRoutes()[0];
 
 		$this->assertTrue($route->getAction()['protected']);
 	}
@@ -211,7 +211,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 			$this->router->get('foo', 'UnprotectedControllerStub@index');
 		});
 
-		$route = $this->router->getApiCollection('v1')->getRoutes()[0];
+		$route = $this->router->getApiRouteCollection('v1')->getRoutes()[0];
 
 		$this->assertFalse($route->getAction()['protected']);
 	}
@@ -222,7 +222,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testGettingUnkownApiCollectionThrowsException()
 	{
-		$this->router->getApiCollection('v1');
+		$this->router->getApiRouteCollection('v1');
 	}
 
 

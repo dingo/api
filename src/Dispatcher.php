@@ -216,12 +216,12 @@ class Dispatcher {
 
 		if ( ! isset($this->version))
 		{
-			$this->version = $this->router->getDefaultApiVersion();
+			$this->version = $this->router->getDefaultVersion();
 		}
 
 		// Once we have a version we can go ahead and grab the API collection,
 		// if one exists, from the router.
-		$api = $this->router->getApiCollection($this->version);
+		$api = $this->router->getApiRouteCollection($this->version);
 
 		if ($prefix = $api->option('prefix'))
 		{
@@ -249,7 +249,7 @@ class Dispatcher {
 	 */
 	protected function buildAcceptHeader()
 	{
-		return "application/vnd.{$this->router->getApiVendor()}.{$this->version}+json";
+		return 'application/vnd'.$this->router->getVendor().'.'.$this->version.'+json';
 	}
 
 	/**
@@ -310,7 +310,7 @@ class Dispatcher {
 	 */
 	protected function buildRequestIdentifier($verb, $uri)
 	{
-		return "{$verb} {$uri}";
+		return $verb.' '.$uri;
 	}
 
 }

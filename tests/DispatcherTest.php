@@ -10,8 +10,8 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->request = new Illuminate\Http\Request;
 		$this->router = new Dingo\Api\Routing\Router(new Illuminate\Events\Dispatcher);
-		$this->router->setDefaultApiVersion('v1');
-		$this->router->setApiVendor('test');
+		$this->router->setDefaultVersion('v1');
+		$this->router->setVendor('test');
 		$this->auth = m::mock('Dingo\Api\Authentication');
 		$this->dispatcher = new Dingo\Api\Dispatcher($this->request, $this->router, $this->auth);
 

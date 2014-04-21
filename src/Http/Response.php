@@ -4,10 +4,11 @@ use RuntimeException;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Contracts\JsonableInterface;
 use Illuminate\Support\Contracts\ArrayableInterface;
+use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
-class Response extends \Illuminate\Http\Response {
+class Response extends IlluminateResponse {
 
 	/**
 	 * Array of registered formatters.

@@ -8,45 +8,46 @@ use Dingo\Api\Http\Response;
 use Dingo\Api\ExceptionHandler;
 use Dingo\Api\Http\InternalRequest;
 use Dingo\Api\Exception\ResourceException;
+use Illuminate\Routing\Router as IlluminateRouter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
-class Router extends \Illuminate\Routing\Router {
+class Router extends IlluminateRouter {
 
 	/**
-	 * API collections.
+	 * The API route collections.
 	 * 
 	 * @param array
 	 */
-	protected $apiCollections = [];
+	protected $api = [];
 
 	/**
 	 * The default API version.
 	 * 
 	 * @var string
 	 */
-	protected $defaultApiVersion;
+	protected $defaultVersion;
 
 	/**
 	 * The default API prefix.
 	 * 
 	 * @var string
 	 */
-	protected $defaultApiPrefix;
+	protected $defaultPrefix;
 
 	/**
 	 * The default API domain.
 	 * 
 	 * @var string
 	 */
-	protected $defaultApiDomain;
+	protected $defaultDomain;
 
 	/**
 	 * The API vendor.
 	 * 
 	 * @var string
 	 */
-	protected $apiVendor;
+	protected $vendor;
 
 	/**
 	 * Requested API version.
@@ -96,32 +97,22 @@ class Router extends \Illuminate\Routing\Router {
 
 		if ( ! isset($options['prefix']))
 		{
-			$options['prefix'] = $this->defaultApiPrefix;
+			$options['prefix'] = $this->defaultPrefix;
 		}
 
 		if ( ! isset($options['domain']))
 		{
-			$options['domain'] = $this->defaultApiDomain;
+			$options['domain'] = $this->defaultDomain;
 		}
 
 		// If a collection for this version does not already exist we'll
 		// create a new collection for this version.
-		if ( ! isset($this->apiCollections[$version]))
+		if ( ! isset($this->api[$version]))
 		{
-			$this->apiCollections[$version] = $this->newApiCollection($version, array_except($options, ['version']));
+			$this->api[$version] = new ApiRouteCollection($version, array_except($options, 'version'));
 		}
 		
 		$this->group($options, $callback);
-	}
-
-	/**
-	 * Instantiate a new \Dingo\Api\Routing\ApiCollection instance.
-	 * 
-	 * @return \Dingo\Api\Routing\ApiCollection
-	 */
-	protected function newApiCollection($version, array $options)
-	{
-		return new ApiCollection($version, $options);
 	}
 
 	/**
@@ -240,7 +231,7 @@ class Router extends \Illuminate\Routing\Router {
 			$route->setAction($action);
 		}
 
-		return $this->getApiCollection($version)->add($route);
+		return $this->getApiRouteCollection($version)->add($route);
 	}
 
 	/**
@@ -261,19 +252,19 @@ class Router extends \Illuminate\Routing\Router {
 		// associated with the method.
 		if ($this->routingForApi($route) and $this->routingToController($action))
 		{
-			$route = $this->adjustApiController($route);
+			$route = $this->adjustRouteForApiController($route);
 		}
 
 		return $route;
 	}
 
 	/**
-	 * Adjust the controller if it's an API controller.
+	 * Adjust the routes action for an API controller.
 	 * 
 	 * @param  \Illuminate\Routing\Route  $route
 	 * @return \Illuminate\Routing\Route
 	 */
-	protected function adjustApiController($route)
+	protected function adjustRouteForApiController($route)
 	{
 		list ($class, $method) = explode('@', $route->getActionName());
 
@@ -369,7 +360,7 @@ class Router extends \Illuminate\Routing\Router {
 
 			try
 			{
-				$this->current = $route = $this->getApiCollection($this->requestedVersion)->match($request);
+				$this->current = $route = $this->getApiRouteCollection($this->requestedVersion)->match($request);
 
 				return $this->substituteBindings($route);
 			}
@@ -389,9 +380,11 @@ class Router extends \Illuminate\Routing\Router {
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return bool
 	 */
-	public function requestTargettingApi($request)
+	public function requestTargettingApi($request = null)
 	{
-		if (empty($this->apiCollections))
+		$request = $request ?: $this->currentRequest;
+
+		if (empty($this->api))
 		{
 			return false;
 		}
@@ -401,12 +394,9 @@ class Router extends \Illuminate\Routing\Router {
 			return true;
 		}
 
-		$collection = array_first($this->apiCollections, function($key, $collection) use ($request)
-		{
-			return $collection->matches($request);
-		}, false);
+		$collection = array_first($this->api, function($k, $c) use ($request) { return $c->matchesRequest($request); }, false);
 
-		return $collection instanceof ApiCollection;
+		return $collection instanceof ApiRouteCollection;
 	}
 
 	/**
@@ -417,30 +407,30 @@ class Router extends \Illuminate\Routing\Router {
 	 */
 	protected function parseAcceptHeader($request)
 	{
-		if (preg_match('#application/vnd\.'.$this->apiVendor.'.(v\d)\+(json)#', $request->header('accept'), $matches))
+		if (preg_match('#application/vnd\.'.$this->vendor.'.(v\d)\+(json)#', $request->header('accept'), $matches))
 		{
 			list ($accept, $this->requestedVersion, $this->requestedFormat) = $matches;
 		}
 		else
 		{
-			$this->requestedVersion = $this->defaultApiVersion;
+			$this->requestedVersion = $this->defaultVersion;
 		}
 	}
 
 	/**
-	 * Get an API collection for a given version.
+	 * Get an API route collection for a given version.
 	 * 
 	 * @param  string  $version
-	 * @return \Dingo\Api\Routing\ApiCollection
+	 * @return \Dingo\Api\Routing\ApiRouteCollection
 	 */
-	public function getApiCollection($version)
+	public function getApiRouteCollection($version)
 	{
-		if ( ! isset($this->apiCollections[$version]))
+		if ( ! isset($this->api[$version]))
 		{
-			throw new RuntimeException('There is no API collection for the version "'.$version.'".');
+			throw new RuntimeException('There is no API route collection for the version "'.$version.'".');
 		}
 
-		return $this->apiCollections[$version];
+		return $this->api[$version];
 	}
 
 	/**
@@ -480,12 +470,12 @@ class Router extends \Illuminate\Routing\Router {
 	/**
 	 * Set the default API version.
 	 * 
-	 * @param  string  $defaultApiVersion
+	 * @param  string  $defaultVersion
 	 * @return void
 	 */
-	public function setDefaultApiVersion($defaultApiVersion)
+	public function setDefaultVersion($defaultVersion)
 	{
-		$this->defaultApiVersion = $defaultApiVersion;
+		$this->defaultVersion = $defaultVersion;
 	}
 
 	/**
@@ -493,20 +483,20 @@ class Router extends \Illuminate\Routing\Router {
 	 * 
 	 * @return string
 	 */
-	public function getDefaultApiVersion()
+	public function getDefaultVersion()
 	{
-		return $this->defaultApiVersion;
+		return $this->defaultVersion;
 	}
 
 	/**
 	 * Set the default API prefix.
 	 * 
-	 * @param  string  $defaultApiPrefix
+	 * @param  string  $defaultPrefix
 	 * @return void
 	 */
-	public function setDefaultApiPrefix($defaultApiPrefix)
+	public function setDefaultPrefix($defaultPrefix)
 	{
-		$this->defaultApiPrefix = $defaultApiPrefix;
+		$this->defaultPrefix = $defaultPrefix;
 	}
 
 	/**
@@ -514,20 +504,20 @@ class Router extends \Illuminate\Routing\Router {
 	 * 
 	 * @return string
 	 */
-	public function getDefaultApiPrefix()
+	public function getDefaultPrefix()
 	{
-		return $this->defaultApiPrefix;
+		return $this->defaultPrefix;
 	}
 
 	/**
 	 * Set the default API domain.
 	 * 
-	 * @param  string  $defaultApiDomain
+	 * @param  string  $defaultDomain
 	 * @return void
 	 */
-	public function setDefaultApiDomain($defaultApiDomain)
+	public function setDefaultDomain($defaultDomain)
 	{
-		$this->defaultApiDomain = $defaultApiDomain;
+		$this->defaultDomain = $defaultDomain;
 	}
 
 	/**
@@ -535,20 +525,20 @@ class Router extends \Illuminate\Routing\Router {
 	 * 
 	 * @return string
 	 */
-	public function getDefaultApiDomain()
+	public function getDefaultDomain()
 	{
-		return $this->defaultApiDomain;
+		return $this->defaultDomain;
 	}
 
 	/**
 	 * Set the API vendor.
 	 * 
-	 * @param  string  $apiVendor
+	 * @param  string  $vendor
 	 * @return void
 	 */
-	public function setApiVendor($apiVendor)
+	public function setVendor($vendor)
 	{
-		$this->apiVendor = $apiVendor;
+		$this->vendor = $vendor;
 	}
 
 	/**
@@ -556,9 +546,9 @@ class Router extends \Illuminate\Routing\Router {
 	 * 
 	 * @return string
 	 */
-	public function getApiVendor()
+	public function getVendor()
 	{
-		return $this->apiVendor;
+		return $this->vendor;
 	}
 
 	/**

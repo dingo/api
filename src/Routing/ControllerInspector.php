@@ -1,8 +1,9 @@
 <?php namespace Dingo\Api\Routing;
 
 use ReflectionMethod;
+use Illuminate\Routing\ControllerInspector as IlluminateControllerInspector;
 
-class ControllerInspector extends \Illuminate\Routing\ControllerInspector {
+class ControllerInspector extends IlluminateControllerInspector {
 
 	/**
 	 * Determine if the given controller method is routable.

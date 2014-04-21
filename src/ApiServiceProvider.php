@@ -72,13 +72,13 @@ class ApiServiceProvider extends ServiceProvider {
 		{
 			$app['router']->setExceptionHandler($app['dingo.api.exception']);
 
-			$app['router']->setDefaultApiVersion($app['config']['api::version']);
+			$app['router']->setDefaultVersion($app['config']['api::version']);
 
-			$app['router']->setDefaultApiPrefix($app['config']['api::prefix']);
+			$app['router']->setDefaultPrefix($app['config']['api::prefix']);
 
-			$app['router']->setDefaultApiDomain($app['config']['api::domain']);
+			$app['router']->setDefaultDomain($app['config']['api::domain']);
 
-			$app['router']->setApiVendor($app['config']['api::vendor']);
+			$app['router']->setVendor($app['config']['api::vendor']);
 		});
 	}
 

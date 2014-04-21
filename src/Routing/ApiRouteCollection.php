@@ -2,24 +2,24 @@
 
 use Illuminate\Routing\RouteCollection;
 
-class ApiCollection extends RouteCollection {
+class ApiRouteCollection extends RouteCollection {
 
 	/**
-	 * API version.
+	 * Version of this collection of routes.
 	 *
 	 * @var string
 	 */
 	protected $version;
 
 	/**
-	 * API options.
+	 * Options specified on this collection of routes.
 	 *
 	 * @var array
 	 */
 	protected $options;
 
 	/**
-	 * Create a new dispatcher instance.
+	 * Create a new API route collection instance.
 	 *
 	 * @param  string  $version
 	 * @param  array  $options
@@ -45,12 +45,13 @@ class ApiCollection extends RouteCollection {
 
 	/**
 	 * Determine if the routes within the collection will be a match for
-	 * the current request.
+	 * the current request. If not prefix or domain is set on the
+	 * collection then it's assumed it will be a match.
 	 *
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return bool
 	 */
-	public function matches($request)
+	public function matchesRequest($request)
 	{
 		if ($this->matchDomain($request))
 		{

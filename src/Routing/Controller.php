@@ -2,8 +2,9 @@
 
 use Dingo\Api\Dispatcher;
 use Dingo\Api\Authentication;
+use Illuminate\Routing\Controller as IlluminateController;
 
-abstract class Controller extends \Illuminate\Routing\Controller {
+abstract class Controller extends IlluminateController {
 
 	/**
 	 * API dispatcher instance.
