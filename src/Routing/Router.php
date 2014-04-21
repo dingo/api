@@ -28,6 +28,20 @@ class Router extends \Illuminate\Routing\Router {
 	protected $defaultApiVersion;
 
 	/**
+	 * The default API prefix.
+	 * 
+	 * @var string
+	 */
+	protected $defaultApiPrefix;
+
+	/**
+	 * The default API domain.
+	 * 
+	 * @var string
+	 */
+	protected $defaultApiDomain;
+
+	/**
 	 * The API vendor.
 	 * 
 	 * @var string
@@ -76,13 +90,22 @@ class Router extends \Illuminate\Routing\Router {
 			throw new BadMethodCallException('Unable to register API without an API version.');
 		}
 
-		// Once we have the version from the options we'll check to see if an API
-		// collection already exists for this verison. If it doesn't then we'll
-		// create a new collection.
 		$version = $options['version'];
 
 		$options[] = 'api';
 
+		if ( ! isset($options['prefix']))
+		{
+			$options['prefix'] = $this->defaultApiPrefix;
+		}
+
+		if ( ! isset($options['domain']))
+		{
+			$options['domain'] = $this->defaultApiDomain;
+		}
+
+		// If a collection for this version does not already exist we'll
+		// create a new collection for this version.
 		if ( ! isset($this->apiCollections[$version]))
 		{
 			$this->apiCollections[$version] = $this->newApiCollection($version, array_except($options, ['version']));
@@ -473,6 +496,48 @@ class Router extends \Illuminate\Routing\Router {
 	public function getDefaultApiVersion()
 	{
 		return $this->defaultApiVersion;
+	}
+
+	/**
+	 * Set the default API prefix.
+	 * 
+	 * @param  string  $defaultApiPrefix
+	 * @return void
+	 */
+	public function setDefaultApiPrefix($defaultApiPrefix)
+	{
+		$this->defaultApiPrefix = $defaultApiPrefix;
+	}
+
+	/**
+	 * Get the default API prefix.
+	 * 
+	 * @return string
+	 */
+	public function getDefaultApiPrefix()
+	{
+		return $this->defaultApiPrefix;
+	}
+
+	/**
+	 * Set the default API domain.
+	 * 
+	 * @param  string  $defaultApiDomain
+	 * @return void
+	 */
+	public function setDefaultApiDomain($defaultApiDomain)
+	{
+		$this->defaultApiDomain = $defaultApiDomain;
+	}
+
+	/**
+	 * Get the default API domain.
+	 * 
+	 * @return string
+	 */
+	public function getDefaultApiDomain()
+	{
+		return $this->defaultApiDomain;
 	}
 
 	/**

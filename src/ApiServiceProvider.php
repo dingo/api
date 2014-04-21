@@ -74,6 +74,10 @@ class ApiServiceProvider extends ServiceProvider {
 
 			$app['router']->setDefaultApiVersion($app['config']['api::version']);
 
+			$app['router']->setDefaultApiPrefix($app['config']['api::prefix']);
+
+			$app['router']->setDefaultApiDomain($app['config']['api::domain']);
+
 			$app['router']->setApiVendor($app['config']['api::vendor']);
 		});
 	}
