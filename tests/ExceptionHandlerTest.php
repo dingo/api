@@ -35,7 +35,7 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->exceptionHandler->register(function(StubHttpException $e)
 		{
-			return new Illuminate\Http\Response('foo');
+			return new Illuminate\Http\Response('foo', 404);
 		});
 
 		$response = $this->exceptionHandler->handle(new StubHttpException(404, 'bar'));

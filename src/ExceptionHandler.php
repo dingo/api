@@ -43,10 +43,10 @@ class ExceptionHandler {
 
 				if ( ! $response instanceof Response)
 				{
-					$response = new Response($response);
+					$response = new Response($response, $exception->getStatusCode());
 				}
 
-				return $response->setStatusCode($exception->getStatusCode());
+				return $response;
 			}
 		}
 	}
