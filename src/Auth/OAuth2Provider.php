@@ -1,5 +1,6 @@
 <?php namespace Dingo\Api\Auth;
 
+use Exception;
 use Illuminate\Http\Request;
 use Dingo\OAuth2\Server\Resource;
 use Dingo\OAuth2\Exception\InvalidTokenException;
@@ -42,7 +43,20 @@ class OAuth2Provider extends AuthorizationProvider {
 	 */
 	public function authenticate(Request $request)
 	{
-		$this->validateAuthorizationHeader($request);
+		try
+		{
+			$this->validateAuthorizationHeader($request);
+		}
+		catch (Exception $exception)
+		{
+			// If we catch an exception here it means the header was missing so we'll
+			// now look for the access token in the query string. If we don't have
+			// the query string either then we'll re-throw the exception.
+			if ( ! $request->query('access_token', false))
+			{
+				throw $exception;
+			}
+		}
 
 		try
 		{
@@ -52,7 +66,7 @@ class OAuth2Provider extends AuthorizationProvider {
 		}
 		catch (InvalidTokenException $exception)
 		{
-			throw new UnauthorizedHttpException('Bearer', $exception->getMessage());
+			throw new UnauthorizedHttpException('Bearer', $exception->getMessage(), $exception);
 		}
 	}
 

@@ -40,14 +40,7 @@ class ApiServiceProvider extends ServiceProvider {
 
 		$this->app['router']->filter('api', function($route, $request)
 		{
-			try
-			{
-				$this->app['dingo.api.authentication']->authenticate();
-			}
-			catch (UnauthorizedHttpException $exception)
-			{
-				return new Response($exception->getMessage(), $exception->getStatusCode());
-			}
+			$this->app['dingo.api.authentication']->authenticate();
 		});
 	}
 
