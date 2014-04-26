@@ -11,7 +11,6 @@ class AuthAuthorizationProviderTest extends PHPUnit_Framework_TestCase {
 		$provider = new AuthorizationProviderStub;
 		$request = Illuminate\Http\Request::create('/', 'GET');
 		$request->headers->set('authorization', 'bar');
-
 		$provider->validateAuthorizationHeader($request);
 	}
 
@@ -21,17 +20,8 @@ class AuthAuthorizationProviderTest extends PHPUnit_Framework_TestCase {
 		$provider = new AuthorizationProviderStub;
 		$request = Illuminate\Http\Request::create('/', 'GET');
 		$request->headers->set('authorization', 'foo');
-
 		$this->assertNull($provider->validateAuthorizationHeader($request));
 	}
 
-
-}
-
-class AuthorizationProviderStub extends Dingo\Api\Auth\AuthorizationProvider {
-
-	public function authenticate(Illuminate\Http\Request $request) {}
-
-	public function getAuthorizationMethod() { return 'foo'; }
 
 }

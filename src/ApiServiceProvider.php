@@ -3,9 +3,7 @@
 use Closure;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
-use Dingo\Api\Auth\AuthManager;
-use Dingo\Api\Auth\BasicProvider;
-use Dingo\Api\Auth\OAuth2Provider;
+use Dingo\Api\Auth\ProviderManager;
 use Illuminate\Support\ServiceProvider;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
@@ -29,7 +27,7 @@ class ApiServiceProvider extends ServiceProvider {
 
 		$this->app['Dingo\Api\Authentication'] = function($app)
 		{
-			return $app['dingo.api.authentication'];
+			return $app['dingo.api.auth'];
 		};
 
 		// Set the static formatters on the response class so that requested formats
@@ -40,7 +38,7 @@ class ApiServiceProvider extends ServiceProvider {
 
 		$this->app['router']->filter('api', function($route, $request)
 		{
-			$this->app['dingo.api.authentication']->authenticate();
+			$this->app['dingo.api.auth']->authenticate();
 		});
 	}
 
@@ -104,7 +102,7 @@ class ApiServiceProvider extends ServiceProvider {
 	{
 		$this->app['dingo.api.dispatcher'] = $this->app->share(function($app)
 		{
-			return new Dispatcher($app['request'], $app['url'], $app['router'], $app['dingo.api.authentication']);
+			return new Dispatcher($app['request'], $app['url'], $app['router'], $app['dingo.api.auth']);
 		});
 	}
 
@@ -128,14 +126,14 @@ class ApiServiceProvider extends ServiceProvider {
 	 */
 	protected function registerAuthentication()
 	{
-		$this->app['dingo.api.authentication'] = $this->app->share(function($app)
+		$this->app['dingo.api.auth.manager'] = $this->app->share(function($app)
+		{
+			return new ProviderManager($app);
+		});
+
+		$this->app['dingo.api.auth'] = $this->app->share(function($app)
 		{
 			$providers = [];
-
-			$resolvers = [
-				'basic'  => function($app, $options) { return new BasicProvider($app['auth'], $options); },
-				'oauth2' => function($app, $options) { return new OAuth2Provider($app['dingo.oauth.resource'], $options); }
-			];
 
 			foreach ($app['config']['api::auth'] as $key => $value)
 			{
@@ -151,7 +149,7 @@ class ApiServiceProvider extends ServiceProvider {
 					$options = call_user_func($options, $app);
 				}
 
-				$providers[$provider] = $resolvers[$provider]($app, $options);
+				$providers[$provider] = $app['dingo.api.auth.manager']->driver($provider)->setOptions($options);
 			}
 
 			return new Authentication($app['router'], $app['auth'], $providers);

@@ -19,9 +19,7 @@ class AuthBasicProviderTest extends PHPUnit_Framework_TestCase {
 	public function testValidatingAuthorizationHeaderFailsAndThrowsException()
 	{
 		$request = Request::create('foo', 'GET');
-
 		$provider = new BasicProvider($this->getAuthMock(), []);
-
 		$provider->authenticate($request);
 	}
 
@@ -33,14 +31,9 @@ class AuthBasicProviderTest extends PHPUnit_Framework_TestCase {
 	{
 		$request = Request::create('foo', 'GET');
 		$request->headers->set('authorization', 'Basic foo');
-
 		$provider = new BasicProvider($auth = $this->getAuthMock(), []);
-
-		$auth->shouldReceive('onceBasic')->once()->with('email')->andReturn(m::mock([
-			'getStatusCode' => 401
-		]));
-
-		$provider->authenticate($request);
+		$auth->shouldReceive('onceBasic')->once()->with('email')->andReturn(m::mock(['getStatusCode' => 401]));
+		$provider->authenticate($request, m::mock('Illuminate\Routing\Route'));
 	}
 
 
@@ -48,16 +41,12 @@ class AuthBasicProviderTest extends PHPUnit_Framework_TestCase {
 	{
 		$request = Request::create('foo', 'GET');
 		$request->headers->set('authorization', 'Basic foo');
-
+		
 		$provider = new BasicProvider($auth = $this->getAuthMock(), []);
 
-		$auth->shouldReceive('onceBasic')->once()->with('email')->andReturn(m::mock([
-			'getStatusCode' => 200
-		]));
-
+		$auth->shouldReceive('onceBasic')->once()->with('email')->andReturn(m::mock(['getStatusCode' => 200]));
 		$auth->shouldReceive('user')->once()->andReturn((object) ['id' => 1]);
-
-		$this->assertEquals(1, $provider->authenticate($request));
+		$this->assertEquals(1, $provider->authenticate($request, m::mock('Illuminate\Routing\Route')));
 	}
 
 
@@ -66,15 +55,12 @@ class AuthBasicProviderTest extends PHPUnit_Framework_TestCase {
 		$request = Request::create('foo', 'GET');
 		$request->headers->set('authorization', 'Basic foo');
 
-		$provider = new BasicProvider($auth = $this->getAuthMock(), ['identifier' => 'username']);
+		$provider = new BasicProvider($auth = $this->getAuthMock());
+		$provider->setOptions(['identifier' => 'username']);
 
-		$auth->shouldReceive('onceBasic')->once()->with('username')->andReturn(m::mock([
-			'getStatusCode' => 200
-		]));
-
+		$auth->shouldReceive('onceBasic')->once()->with('username')->andReturn(m::mock(['getStatusCode' => 200]));
 		$auth->shouldReceive('user')->once()->andReturn((object) ['id' => 1]);
-
-		$this->assertEquals(1, $provider->authenticate($request));
+		$this->assertEquals(1, $provider->authenticate($request, m::mock('Illuminate\Routing\Route')));
 	}
 
 

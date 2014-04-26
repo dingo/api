@@ -2,6 +2,7 @@
 
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
 use Dingo\OAuth2\Server\Resource;
 use Dingo\OAuth2\Exception\InvalidTokenException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -16,32 +17,24 @@ class OAuth2Provider extends AuthorizationProvider {
 	protected $resource;
 
 	/**
-	 * Array of request scopes.
-	 * 
-	 * @var array
-	 */
-	protected $scopes = [];
-
-	/**
 	 * Create a new Dingo\Api\Auth\OAuth2Provider instance.
 	 * 
 	 * @param  \Dingo\OAuth2\Server\Resource  $resource
-	 * @param  array  $options
 	 * @return void
 	 */
-	public function __construct(Resource $resource, array $options)
+	public function __construct(Resource $resource)
 	{
 		$this->resource = $resource;
-		$this->options = $options;
 	}
 
 	/**
-	 * Authenticate request with OAuth2.
+	 * Authenticate request with the OAuth 2.0 resource server.
 	 * 
 	 * @param  \Illuminate\Http\Request  $request
+	 * @param  \Illuminate\Routing\Route  $route
 	 * @return int
 	 */
-	public function authenticate(Request $request)
+	public function authenticate(Request $request, Route $route)
 	{
 		try
 		{
@@ -58,9 +51,11 @@ class OAuth2Provider extends AuthorizationProvider {
 			}
 		}
 
+		$scopes = $this->getRouteScopes($route);
+
 		try
 		{
-			$token = $this->resource->validateRequest($this->scopes);
+			$token = $this->resource->validateRequest($scopes);
 
 			return $token->getUserId();
 		}
@@ -68,6 +63,19 @@ class OAuth2Provider extends AuthorizationProvider {
 		{
 			throw new UnauthorizedHttpException('Bearer', $exception->getMessage(), $exception);
 		}
+	}
+
+	/**
+	 * Get the routes scopes.
+	 * 
+	 * @param  \Illuminate\Routing\Route  $route
+	 * @return array
+	 */
+	protected function getRouteScopes(Route $route)
+	{
+		$action = $route->getAction();
+
+		return isset($action['scopes']) ? (array) $action['scopes'] : [];
 	}
 
 	/**

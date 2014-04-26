@@ -3,10 +3,10 @@
 use Exception;
 use Illuminate\Http\Request;
 
-abstract class AuthorizationProvider implements ProviderInterface {
+abstract class AuthorizationProvider extends Provider {
 
 	/**
-	 * Array of provider speicifc options.
+	 * Array of provider specific options.
 	 * 
 	 * @var array
 	 */

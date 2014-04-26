@@ -92,3 +92,20 @@ class InternalControllerActionRoutingStub extends Illuminate\Routing\Controller 
 	}
 
 }
+
+class AuthorizationProviderStub extends Dingo\Api\Auth\AuthorizationProvider {
+
+	public function authenticate(Illuminate\Http\Request $request, Illuminate\Routing\Route $route) {}
+
+	public function getAuthorizationMethod() { return 'foo'; }
+
+}
+
+class CustomProviderStub extends Dingo\Api\Auth\Provider {
+
+	public function authenticate(Illuminate\Http\Request $request, Illuminate\Routing\Route $route)
+	{
+		return 1;
+	}
+
+}

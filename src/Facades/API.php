@@ -55,7 +55,7 @@ class API extends Facade {
 	 */
 	public static function user()
 	{
-		return static::$app['dingo.api.authentication']->getUser();
+		return static::$app['dingo.api.auth']->getUser();
 	}
 
 	/**

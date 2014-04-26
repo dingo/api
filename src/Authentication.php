@@ -6,8 +6,6 @@ use Dingo\Api\Routing\Router;
 use Illuminate\Routing\Route;
 use Illuminate\Auth\AuthManager;
 use Dingo\Api\Http\InternalRequest;
-use Dingo\Api\Auth\ProviderInterface;
-use Dingo\Api\Auth\AuthorizationProvider;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class Authentication {
@@ -83,15 +81,14 @@ class Authentication {
 
 		$exceptionStack = [];
 
-		$this->registerOAuth2Scopes($route);
-
 		// Spin through each of the registered authentication providers and attempt to
-		// authenticate through one of them.
+		// authenticate through one of them. This allows a developer to implement
+		// and allow a number of different authentication mechanisms.
 		foreach ($this->providers as $provider)
 		{
 			try
 			{
-				return $this->userId = $provider->authenticate($request);
+				return $this->userId = $provider->authenticate($request, $route);
 			}
 			catch (UnauthorizedHttpException $exception)
 			{
@@ -113,27 +110,6 @@ class Authentication {
 		}
 
 		throw $exception;
-	}
-
-	/**
-	 * Register the OAuth 2.0 scopes on the "oauth2" provider.
-	 * 
-	 * @param  \Illuminate\Routing\Route  $route
-	 * @return void
-	 */
-	protected function registerOAuth2Scopes(Route $route)
-	{
-		// If authenticating via OAuth2 a route can be protected by defining its scopes.
-		// We'll grab the scopes for this route and pass them through to the
-		// authentication providers.
-		if (isset($this->providers['oauth2']))
-		{
-			$action = $route->getAction();
-
-			$scopes = isset($action['scopes']) ? (array) $action['scopes'] : [];
-
-			$this->providers['oauth2']->setScopes($scopes);
-		}
 	}
 
 	/**
@@ -188,20 +164,6 @@ class Authentication {
 	public function setUser($user)
 	{
 		$this->user = $user;
-
-		return $this;
-	}
-
-	/**
-	 * Extend the authentication layer by registering a custom provider.
-	 * 
-	 * @param  string  $key
-	 * @param  \Dingo\Api\Auth\ProviderInterface  $provider
-	 * @return \Dingo\Api\Authentication
-	 */
-	public function extend($key, ProviderInterface $provider)
-	{
-		$this->providers[$key] = $provider;
 
 		return $this;
 	}

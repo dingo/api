@@ -1,6 +1,7 @@
 <?php namespace Dingo\Api\Auth;
 
 use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
 use Illuminate\Auth\AuthManager;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
@@ -24,22 +25,21 @@ class BasicProvider extends AuthorizationProvider {
 	 * Create a new Dingo\Api\Auth\BasicProvider instance.
 	 * 
 	 * @param  \Illuminate\Auth\AuthManager  $auth
-	 * @param  array  $options
 	 * @return void
 	 */
-	public function __construct(AuthManager $auth, array $options)
+	public function __construct(AuthManager $auth)
 	{
 		$this->auth = $auth;
-		$this->options = array_merge($this->options, $options);
 	}
 
 	/**
 	 * Authenticate request with Basic.
 	 * 
 	 * @param  \Illuminate\Http\Request  $request
+	 * @param  \Illuminate\Routing\Route  $route
 	 * @return int
 	 */
-	public function authenticate(Request $request)
+	public function authenticate(Request $request, Route $route)
 	{
 		$this->validateAuthorizationHeader($request);
 

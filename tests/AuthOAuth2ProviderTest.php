@@ -2,6 +2,7 @@
 
 use Mockery as m;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
 use Dingo\Api\Auth\OAuth2Provider;
 use Dingo\OAuth2\Exception\InvalidTokenException;
 
@@ -20,9 +21,7 @@ class AuthOAuth2ProviderTest extends PHPUnit_Framework_TestCase {
 	public function testValidatingAuthorizationHeaderFailsAndThrowsException()
 	{
 		$request = Request::create('foo', 'GET');
-
 		$provider = new OAuth2Provider($this->getResourceMock(), []);
-
 		$provider->authenticate($request);
 	}
 
@@ -38,7 +37,7 @@ class AuthOAuth2ProviderTest extends PHPUnit_Framework_TestCase {
 		$provider = new OAuth2Provider($resource = $this->getResourceMock(), []);
 		$resource->shouldReceive('validateRequest')->once()->with([])->andThrow(new InvalidTokenException('foo', 'foo', 403));
 
-		$provider->authenticate($request);
+		$provider->authenticate($request, new Route('/foo', 'GET', []));
 	}
 
 
@@ -48,13 +47,9 @@ class AuthOAuth2ProviderTest extends PHPUnit_Framework_TestCase {
 		$request->headers->set('authorization', 'Bearer foo');
 
 		$provider = new OAuth2Provider($resource = $this->getResourceMock(), []);
-		$resource->shouldReceive('validateRequest')->once()->with(['foo', 'bar'])->andReturn(m::mock([
-			'getUserId' => 1
-		]));
+		$resource->shouldReceive('validateRequest')->once()->with(['foo', 'bar'])->andReturn(m::mock(['getUserId' => 1]));
 
-		$provider->setScopes(['foo', 'bar']);
-
-		$this->assertEquals(1, $provider->authenticate($request));
+		$this->assertEquals(1, $provider->authenticate($request, new Route('/foo', 'GET', ['scopes' => ['foo', 'bar']])));
 	}
 
 
