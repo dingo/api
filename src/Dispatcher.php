@@ -63,6 +63,13 @@ class Dispatcher {
 	protected $parameters = [];
 
 	/**
+	 * Indicates whether the authenticated user is persisted.
+	 * 
+	 * @var bool
+	 */
+	protected $persistAuthenticationUser = true;
+
+	/**
 	 * Create a new dispatcher instance.
 	 * 
 	 * @param  \Illuminate\Http\Request  $request
@@ -91,6 +98,18 @@ class Dispatcher {
 		}
 
 		$this->auth->setUser($user);
+
+		return $this;
+	}
+
+	/**
+	 * Only authenticate with the given user for a single request.
+	 * 
+	 * @return \Dingo\Api\Dispatcher
+	 */
+	public function once()
+	{
+		$this->persistAuthenticationUser = false;
 
 		return $this;
 	}
@@ -290,7 +309,12 @@ class Dispatcher {
 	 */
 	protected function refreshRequestStack()
 	{
-		$this->auth->setUser(null);
+		if ( ! $this->persistAuthenticationUser)
+		{
+			$this->auth->setUser(null);
+
+			$this->persistAuthenticationUser = true;
+		}
 
 		array_pop($this->requestStack);
 

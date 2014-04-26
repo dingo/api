@@ -43,8 +43,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 			$this->router->delete('test', function(){ return 'test'; });
 		});
 
-		$this->auth->shouldReceive('setUser')->times(5)->with(null);
-
 		$this->assertEquals('test', $this->dispatcher->get('test'));
 		$this->assertEquals('test', $this->dispatcher->post('test'));
 		$this->assertEquals('test', $this->dispatcher->put('test'));
@@ -60,8 +58,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 			$this->router->get('test', function(){ return 'test'; });
 		});
 
-		$this->auth->shouldReceive('setUser')->once()->with(null);
-
 		$this->assertEquals('test', $this->dispatcher->version('v1')->with(['foo' => 'bar'])->get('test'));
 	}
 
@@ -72,8 +68,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 		{
 			$this->router->get('test', function(){ return 'test'; });
 		});
-
-		$this->auth->shouldReceive('setUser')->once()->with(null);
 
 		$this->assertEquals('test', $this->dispatcher->get('test'));
 	}
@@ -86,8 +80,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 			$this->router->get('test', function(){ return 'test'; });
 		});
 
-		$this->auth->shouldReceive('setUser')->once()->with(null);
-
 		$this->assertEquals('test', $this->dispatcher->get('test'));
 	}
 
@@ -98,8 +90,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 	public function testInternalRequestThrowsException()
 	{
 		$this->router->api(['version' => 'v1'], function() {});
-
-		$this->auth->shouldReceive('setUser')->once()->with(null);
 
 		$this->dispatcher->get('test');
 	}
@@ -117,8 +107,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 				return new Illuminate\Http\Response('test', 401);
 			});
 		});
-
-		$this->auth->shouldReceive('setUser')->once()->with(null);
 
 		$this->dispatcher->get('test');
 	}
@@ -140,6 +128,22 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 		$this->auth->shouldReceive('setUser')->once()->with($user);
 
 		$this->dispatcher->be($user);
+	}
+
+
+	public function testPretendingToBeUserForSingleRequest()
+	{
+		$user = m::mock('Illuminate\Database\Eloquent\Model');
+
+		$this->auth->shouldReceive('setUser')->once()->with($user);
+		$this->auth->shouldReceive('setUser')->once()->with(null);
+
+		$this->router->api(['version' => 'v1'], function()
+		{
+			$this->router->get('test', function(){ return 'test'; });
+		});
+
+		$this->dispatcher->be($user)->once()->get('test');
 	}
 	
 
