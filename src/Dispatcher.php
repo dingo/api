@@ -164,7 +164,7 @@ class Dispatcher {
 
 		$route = $this->router->getApiRouteCollection($version)->getByName($name);
 
-		$uri = $this->url->route($name, $routeParameters, false, $route);
+		$uri = ltrim($this->url->route($name, $routeParameters, false, $route), '/');
 
 		return $this->queueRequest($route->methods()[0], $uri, $parameters);
 	}
@@ -183,7 +183,7 @@ class Dispatcher {
 
 		$route = $this->router->getApiRouteCollection($version)->getByAction($action);
 
-		$uri = $this->url->route($action, $actionParameters, false, $route);
+		$uri = ltrim($this->url->route($action, $actionParameters, false, $route), '/');
 
 		return $this->queueRequest($route->methods()[0], $uri, $parameters);
 	}
@@ -291,7 +291,7 @@ class Dispatcher {
 		// if one exists, from the router.
 		$api = $this->router->getApiRouteCollection($this->version);
 
-		if ($prefix = $api->option('prefix'))
+		if ($prefix = $api->option('prefix') and ! starts_with($uri, $prefix))
 		{
 			$uri = "{$prefix}/{$uri}";
 		}

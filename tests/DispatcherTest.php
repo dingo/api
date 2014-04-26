@@ -158,14 +158,14 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 				return 'foo';
 			}]);
 
-			$this->router->get('test/{foo}', ['as' => 'testparameters', function($parameter)
+			$this->router->get('test/{foo}', ['as' => 'parameters', function($parameter)
 			{
 				return $parameter;
 			}]);
 		});
 
 		$this->assertEquals('foo', $this->dispatcher->route('test'));
-		$this->assertEquals('bar', $this->dispatcher->route('testparameters', 'bar'));
+		$this->assertEquals('bar', $this->dispatcher->route('parameters', 'bar'));
 	}
 
 
@@ -173,9 +173,22 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->router->api(['version' => 'v1'], function()
 		{
-			$this->router->get('test', 'InternalControllerActionRoutingStub@index');
+			$this->router->get('foo', 'InternalControllerActionRoutingStub@index');
 		});
 
+		$this->assertEquals('foo', $this->dispatcher->action('InternalControllerActionRoutingStub@index'));
+	}
+
+
+	public function testInternalRequestUsingRouteNameAndControllerActionDoesNotDoublePrefix()
+	{
+		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
+		{
+			$this->router->get('foo', ['as' => 'foo', function() { return 'foo'; }]);
+			$this->router->get('bar', 'InternalControllerActionRoutingStub@index');
+		});
+
+		$this->assertEquals('foo', $this->dispatcher->route('foo'));
 		$this->assertEquals('foo', $this->dispatcher->action('InternalControllerActionRoutingStub@index'));
 	}
 	
