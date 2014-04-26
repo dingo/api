@@ -18,9 +18,9 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 		$this->router = new Router(new EventsDispatcher);
 		$this->router->setDefaultVersion('v1');
 		$this->router->setVendor('test');
-		$this->auth = m::mock('Dingo\Api\Authentication');
+		$this->shield = m::mock('Dingo\Api\Auth\Shield');
 		$this->url = new UrlGenerator($this->router->getRoutes(), $this->request);
-		$this->dispatcher = new Dispatcher($this->request, $this->url, $this->router, $this->auth);
+		$this->dispatcher = new Dispatcher($this->request, $this->url, $this->router, $this->shield);
 
 		Response::setFormatters(['json' => new JsonResponseFormat]);
 	}
@@ -127,7 +127,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 	{
 		$user = m::mock('Illuminate\Database\Eloquent\Model');
 
-		$this->auth->shouldReceive('setUser')->once()->with($user);
+		$this->shield->shouldReceive('setUser')->once()->with($user);
 
 		$this->dispatcher->be($user);
 	}
@@ -137,8 +137,8 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 	{
 		$user = m::mock('Illuminate\Database\Eloquent\Model');
 
-		$this->auth->shouldReceive('setUser')->once()->with($user);
-		$this->auth->shouldReceive('setUser')->once()->with(null);
+		$this->shield->shouldReceive('setUser')->once()->with($user);
+		$this->shield->shouldReceive('setUser')->once()->with(null);
 
 		$this->router->api(['version' => 'v1'], function()
 		{

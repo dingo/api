@@ -218,8 +218,6 @@ class Router extends IlluminateRouter {
 	 */
 	protected function addApiRoute($route)
 	{
-		$route->before('api');
-
 		// Since the groups action gets merged with the routes we need to make
 		// sure that if the route supplied its own protection that we grab
 		// that protection status from the array after the merge.
@@ -402,9 +400,7 @@ class Router extends IlluminateRouter {
 			return true;
 		}
 
-		$collection = array_first($this->api, function($k, $c) use ($request) { return $c->matchesRequest($request); }, false);
-
-		return $collection instanceof ApiRouteCollection;
+		return $this->getApiRouteCollectionFromRequest($request) instanceof ApiRouteCollection;
 	}
 
 	/**
@@ -423,6 +419,17 @@ class Router extends IlluminateRouter {
 		{
 			$this->requestedVersion = $this->defaultVersion;
 		}
+	}
+
+	/**
+	 * Get a matching API route collection from the request.
+	 * 
+	 * @param  \Illuminate\Http\Request  $request
+	 * @return null|\Dingo\Api\Routing\ApiRouteCollection
+	 */
+	public function getApiRouteCollectionFromRequest(Request $request)
+	{
+		return array_first($this->api, function($k, $c) use ($request) { return $c->matchesRequest($request); }, null);
 	}
 
 	/**
@@ -557,6 +564,26 @@ class Router extends IlluminateRouter {
 	public function getVendor()
 	{
 		return $this->vendor;
+	}
+
+	/**
+	 * Get the requested version.
+	 * 
+	 * @return string
+	 */
+	public function getRequestedVersion()
+	{
+		return $this->requestedVersion;
+	}
+
+	/**
+	 * Get the requested format.
+	 * 
+	 * @return string
+	 */
+	public function getRequestedFormat()
+	{
+		return $this->requestedFormat;
 	}
 
 	/**

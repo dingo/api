@@ -1,6 +1,7 @@
 <?php namespace Dingo\Api;
 
 use Closure;
+use Dingo\Api\Auth\Shield;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
 use Dingo\Api\Auth\ProviderManager;
@@ -35,11 +36,6 @@ class ApiServiceProvider extends ServiceProvider {
 		$formats = array_map('value', $this->app['config']['api::formats']);
 
 		Response::setFormatters($formats);
-
-		$this->app['router']->filter('api', function($route, $request)
-		{
-			$this->app['dingo.api.auth']->authenticate();
-		});
 	}
 
 	/**
@@ -56,6 +52,8 @@ class ApiServiceProvider extends ServiceProvider {
 		$this->registerExceptionHandler();
 
 		$this->registerAuthentication();
+
+		$this->registerMiddlewares();
 
 		// We'll also register a booting event so that we can set our exception handler
 		// instance, default API version and the API vendor on the router.
@@ -152,8 +150,18 @@ class ApiServiceProvider extends ServiceProvider {
 				$providers[$provider] = $app['dingo.api.auth.manager']->driver($provider)->setOptions($options);
 			}
 
-			return new Authentication($app['router'], $app['auth'], $providers);
+			return new Shield($app['auth'], $providers);
 		});
+	}
+
+	/**
+	 * Register the middlewares.
+	 * 
+	 * @return void
+	 */
+	protected function registerMiddlewares()
+	{
+		$this->app->middleware('Dingo\Api\Http\Middleware\Authentication');
 	}
 
 }

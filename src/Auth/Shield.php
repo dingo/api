@@ -1,6 +1,7 @@
-<?php namespace Dingo\Api;
+<?php namespace Dingo\Api\Auth;
 
 use Exception;
+use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
 use Illuminate\Routing\Route;
@@ -8,14 +9,7 @@ use Illuminate\Auth\AuthManager;
 use Dingo\Api\Http\InternalRequest;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class Authentication {
-
-	/**
-	 * API router instance.
-	 * 
-	 * @var \Dingo\Api\Routing\Router
-	 */
-	protected $router;
+class Shield {
 
 	/**
 	 * Illuminate auth instance.
@@ -48,14 +42,12 @@ class Authentication {
     /**
      * Create a new Dingo\Api\Authentication instance.
      * 
-     * @param  \Dingo\Api\Routing\Router  $router
      * @param  \Illuminate\Auth\AuthManager  $auth
      * @param  array  $providers
      * @return void
      */
-	public function __construct(Router $router, AuthManager $auth, array $providers)
+	public function __construct(AuthManager $auth, array $providers)
 	{
-		$this->router = $router;
 		$this->auth = $auth;
 		$this->providers = $providers;
 	}
@@ -65,20 +57,8 @@ class Authentication {
 	 * 
 	 * @return null|\Dingo\Api\Http\Response
 	 */
-	public function authenticate()
+	public function authenticate(Request $request, Route $route)
 	{
-		$request = $this->router->getCurrentRequest();
-
-		if ($request instanceof InternalRequest or ! is_null($this->user))
-		{
-			return null;
-		}
-
-		if (  ! $route = $this->router->getCurrentRoute() or ! $this->routeIsProtected($route))
-		{
-			return null;
-		}
-
 		$exceptionStack = [];
 
 		// Spin through each of the registered authentication providers and attempt to
@@ -113,29 +93,15 @@ class Authentication {
 	}
 
 	/**
-	 * Determine if a route is protected.
-	 * 
-	 * @param  \Illuminate\Routing\Route  $route
-	 * @return bool
-	 */
-	protected function routeIsProtected(Route $route)
-	{
-		$action = $route->getAction();
-
-		return in_array('protected', $action, true) or (isset($action['protected']) and $action['protected'] === true);
-	}
-
-	/**
 	 * Get the authenticated user.
 	 * 
 	 * @return \Illuminate\Auth\GenericUser|\Illuminate\Database\Eloquent\Model
 	 */
 	public function getUser()
 	{
-		if ($this->user)
-		{
-			return $this->user;
-		}
+		if ($this->user) return $this->user;
+
+		if ( ! $this->userId) return null;
 
 		if ( ! $this->auth->check())
 		{
