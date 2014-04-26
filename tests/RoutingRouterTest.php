@@ -30,29 +30,39 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 	}
 
 
-	public function testRegisteringApiRouteGroup()
+	public function testRegisteringApiRouteCollection()
 	{
-		$this->router->api(['version' => 'v1'], function()
-		{
-			$this->router->get('foo', function() { return 'bar'; });
-		});
+		$this->router->api(['version' => 'v1'], function() { $this->router->get('foo', function() { return 'bar'; }); });
+		$request = Request::create('foo', 'GET');
+		$this->assertInstanceOf('Dingo\Api\Routing\ApiRouteCollection', $this->router->getApiRouteCollection('v1'));
+	}
 
+
+	public function testRegisterApiRouteCollectionWithMultipleVersions()
+	{
+		$this->router->api(['version' => ['v1', 'v2']], function() { $this->router->get('foo', function() { return 'bar'; }); });
+		$request = Request::create('foo', 'GET');
+		$this->assertInstanceOf('Dingo\Api\Routing\ApiRouteCollection', $this->router->getApiRouteCollection('v1'));
+		$this->assertInstanceOf('Dingo\Api\Routing\ApiRouteCollection', $this->router->getApiRouteCollection('v2'));
+	}
+
+
+	public function testRegisterApiRouteCollectionWithMultipleVersionsAndDifferentResponseForSameUri()
+	{
+		$this->router->api(['version' => 'v1'], function() { $this->router->get('foo', function() { return 'foo'; }); });
+		$this->router->api(['version' => 'v2'], function() { $this->router->get('foo', function() { return 'bar'; }); });
 		$request = Request::create('foo', 'GET');
 		$request->headers->set('accept', 'application/vnd.testing.v1+json');
-		
+		$this->assertEquals('{"message":"foo"}', $this->router->dispatch($request)->getContent());
+		$request->headers->set('accept', 'application/vnd.testing.v2+json');
 		$this->assertEquals('{"message":"bar"}', $this->router->dispatch($request)->getContent());
 	}
 
 
-	public function testApiRouteGroupActionsApplyToRoutes()
+	public function testApiRouteCollectionOptionsApplyToRoutes()
 	{
-		$this->router->api(['version' => 'v1', 'protected' => true], function()
-		{
-			$this->router->get('foo', function() { return 'bar'; });
-		});
-
+		$this->router->api(['version' => 'v1', 'protected' => true], function() { $this->router->get('foo', function() { return 'bar'; }); });
 		$route = $this->router->getApiRouteCollection('v1')->getRoutes()[0];
-
 		$this->assertTrue($route->getAction()['protected']);
 	}
 

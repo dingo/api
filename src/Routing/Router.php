@@ -91,7 +91,7 @@ class Router extends IlluminateRouter {
 			throw new BadMethodCallException('Unable to register API without an API version.');
 		}
 
-		$version = $options['version'];
+		$options['version'] = (array) $options['version'];
 
 		$options[] = 'api';
 
@@ -107,9 +107,12 @@ class Router extends IlluminateRouter {
 
 		// If a collection for this version does not already exist we'll
 		// create a new collection for this version.
-		if ( ! isset($this->api[$version]))
+		foreach ($options['version'] as $version)
 		{
-			$this->api[$version] = new ApiRouteCollection($version, array_except($options, 'version'));
+			if ( ! isset($this->api[$version]))
+			{
+				$this->api[$version] = new ApiRouteCollection($version, array_except($options, 'version'));
+			}
 		}
 		
 		$this->group($options, $callback);
@@ -217,8 +220,6 @@ class Router extends IlluminateRouter {
 	{
 		$route->before('api');
 
-		$version = array_get(last($this->groupStack), 'version', '');
-
 		// Since the groups action gets merged with the routes we need to make
 		// sure that if the route supplied its own protection that we grab
 		// that protection status from the array after the merge.
@@ -231,7 +232,14 @@ class Router extends IlluminateRouter {
 			$route->setAction($action);
 		}
 
-		return $this->getApiRouteCollection($version)->add($route);
+		$versions = array_get(last($this->groupStack), 'version', []);
+
+		foreach ($versions as $version)
+		{
+			$this->getApiRouteCollection($version)->add($route);
+		}
+
+		return $route;
 	}
 
 	/**
