@@ -76,48 +76,63 @@ class Authentication {
 			return null;
 		}
 
-		if ($route = $this->router->getCurrentRoute() and $this->routeIsProtected($route))
+		if (  ! $route = $this->router->getCurrentRoute() or ! $this->routeIsProtected($route))
 		{
-			$exceptionStack = [];
+			return null;
+		}
 
-			// If authenticating via OAuth2 a route can be protected by defining its scopes.
-			// We'll grab the scopes for this route and pass them through to the
-			// authentication providers.
-			if (isset($this->providers['oauth2']))
+		$exceptionStack = [];
+
+		$this->registerOAuth2Scopes($route);
+
+		// Spin through each of the registered authentication providers and attempt to
+		// authenticate through one of them.
+		foreach ($this->providers as $provider)
+		{
+			try
 			{
-				$scopes = $this->getRouteScopes($route);
-
-				$this->providers['oauth2']->setScopes($scopes);
+				return $this->userId = $provider->authenticate($request);
 			}
-
-			// Spin through each of the registered authentication providers and attempt to
-			// authenticate through one of them.
-			foreach ($this->providers as $provider)
+			catch (UnauthorizedHttpException $exception)
 			{
-				try
-				{
-					return $this->userId = $provider->authenticate($request);
-				}
-				catch (UnauthorizedHttpException $exception)
-				{
-					$exceptionStack[] = $exception;
-				}
-				catch (Exception $exception)
-				{
-					// We won't add this exception to the stack as it's thrown when the provider
-					// is unable to authenticate due to the correct authorization header not
-					// being set. We will throw an exception for this below.
-				}
+				$exceptionStack[] = $exception;
 			}
-
-			$exception = array_shift($exceptionStack);
-
-			if ($exception === null)
+			catch (Exception $exception)
 			{
-				$exception = new UnauthorizedHttpException(null, 'Failed to authenticate because of bad credentials or an invalid authorization header.');
+				// We won't add this exception to the stack as it's thrown when the provider
+				// is unable to authenticate due to the correct authorization header not
+				// being set. We will throw an exception for this below.
 			}
+		}
 
-			throw $exception;
+		$exception = array_shift($exceptionStack);
+
+		if ($exception === null)
+		{
+			$exception = new UnauthorizedHttpException(null, 'Failed to authenticate because of bad credentials or an invalid authorization header.');
+		}
+
+		throw $exception;
+	}
+
+	/**
+	 * Register the OAuth 2.0 scopes on the "oauth2" provider.
+	 * 
+	 * @param  \Illuminate\Routing\Route  $route
+	 * @return void
+	 */
+	protected function registerOAuth2Scopes(Route $route)
+	{
+		// If authenticating via OAuth2 a route can be protected by defining its scopes.
+		// We'll grab the scopes for this route and pass them through to the
+		// authentication providers.
+		if (isset($this->providers['oauth2']))
+		{
+			$action = $route->getAction();
+
+			$scopes = isset($action['scopes']) ? (array) $action['scopes'] : [];
+
+			$this->providers['oauth2']->setScopes($scopes);
 		}
 	}
 
@@ -132,19 +147,6 @@ class Authentication {
 		$action = $route->getAction();
 
 		return in_array('protected', $action, true) or (isset($action['protected']) and $action['protected'] === true);
-	}
-
-	/**
-	 * Get the routes scopes.
-	 * 
-	 * @param  \Illuminate\Routing\Route  $route
-	 * @return array
-	 */
-	protected function getRouteScopes(Route $route)
-	{
-		$action = $route->getAction();
-
-		return isset($action['scopes']) ? (array) $action['scopes'] : [];
 	}
 
 	/**
