@@ -7,6 +7,7 @@ use Illuminate\Http\Response;
 use Dingo\Api\Routing\Router;
 use Illuminate\Auth\GenericUser;
 use Dingo\Api\Http\InternalRequest;
+use Illuminate\Routing\UrlGenerator;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -19,6 +20,13 @@ class Dispatcher {
 	 * @var \Illuminate\Http\Request
 	 */
 	protected $request;
+
+	/**
+	 * Illuminate url generator instance.
+	 * 
+	 * @var \Illuminate\Routing\UrlGenerator
+	 */
+	protected $url;
 
 	/**
 	 * API router instance.
@@ -73,13 +81,15 @@ class Dispatcher {
 	 * Create a new dispatcher instance.
 	 * 
 	 * @param  \Illuminate\Http\Request  $request
+	 * @param  \Illuminate\Routing\UrlGenerator  $url
 	 * @param  \Dingo\Api\Routing\Router  $router
 	 * @param  \Dingo\Api\Authentication  $auth
 	 * @return void
 	 */
-	public function __construct(Request $request, Router $router, Authentication $auth)
+	public function __construct(Request $request, UrlGenerator $url, Router $router, Authentication $auth)
 	{
 		$this->request = $request;
+		$this->url = $url;
 		$this->router = $router;
 		$this->auth = $auth;
 	}
@@ -130,21 +140,59 @@ class Dispatcher {
 	/**
 	 * Set the parameters to be sent on the next API request.
 	 * 
-	 * @param  array  $parameters
+	 * @param  string|array  $parameters
 	 * @return \Dingo\Api\Dispatcher
 	 */
-	public function with(array $parameters)
+	public function with($parameters)
 	{
-		$this->parameters = $parameters;
+		$this->parameters = is_array($parameters) ? $parameters : func_get_args();
 
 		return $this;
+	}
+
+	/**
+	 * Perform an API request to a named route.
+	 * 
+	 * @param  string  $name
+	 * @param  string|array  $routeParameters
+	 * @param  string|array  $parameters
+	 * @return mixed
+	 */
+	public function route($name, $routeParameters = [], $parameters = [])
+	{
+		$version = $this->version ?: $this->router->getDefaultVersion();
+
+		$route = $this->router->getApiRouteCollection($version)->getByName($name);
+
+		$uri = $this->url->route($name, $routeParameters, false, $route);
+
+		return $this->queueRequest($route->methods()[0], $uri, $parameters);
+	}
+
+	/**
+	 * Perform an API request to a controller action.
+	 * 
+	 * @param  string  $name
+	 * @param  string|array  $actionParameters
+	 * @param  string|array  $parameters
+	 * @return mixed
+	 */
+	public function action($action, $actionParameters = [], $parameters = [])
+	{
+		$version = $this->version ?: $this->router->getDefaultVersion();
+
+		$route = $this->router->getApiRouteCollection($version)->getByAction($action);
+
+		$uri = $this->url->route($action, $actionParameters, false, $route);
+
+		return $this->queueRequest($route->methods()[0], $uri, $parameters);
 	}
 
 	/**
 	 * Perform API GET request.
 	 * 
 	 * @param  string  $uri
-	 * @param  array  $parameters
+	 * @param  string|array  $parameters
 	 * @return mixed
 	 */
 	public function get($uri, $parameters = [])
@@ -156,7 +204,7 @@ class Dispatcher {
 	 * Perform API POST request.
 	 * 
 	 * @param  string  $uri
-	 * @param  array  $parameters
+	 * @param  string|array  $parameters
 	 * @return mixed
 	 */
 	public function post($uri, $parameters = [])
@@ -168,7 +216,7 @@ class Dispatcher {
 	 * Perform API PUT request.
 	 * 
 	 * @param  string  $uri
-	 * @param  array  $parameters
+	 * @param  string|array  $parameters
 	 * @return mixed
 	 */
 	public function put($uri, $parameters = [])
@@ -180,7 +228,7 @@ class Dispatcher {
 	 * Perform API PATCH request.
 	 * 
 	 * @param  string  $uri
-	 * @param  array  $parameters
+	 * @param  string|array  $parameters
 	 * @return mixed
 	 */
 	public function patch($uri, $parameters = [])
@@ -192,7 +240,7 @@ class Dispatcher {
 	 * Perform API DELETE request.
 	 * 
 	 * @param  string  $uri
-	 * @param  array  $parameters
+	 * @param  string|array  $parameters
 	 * @return mixed
 	 */
 	public function delete($uri, $parameters = [])
@@ -205,7 +253,7 @@ class Dispatcher {
 	 * 
 	 * @param  string  $verb
 	 * @param  string  $uri
-	 * @param  array  $parameters
+	 * @param  string|array  $parameters
 	 * @return mixed
 	 */
 	protected function queueRequest($verb, $uri, $parameters)
@@ -224,6 +272,7 @@ class Dispatcher {
 	 * 
 	 * @param  string  $verb
 	 * @param  string  $uri
+	 * @param  string|array  $parameters
 	 * @return \Dingo\Api\Http\InternalRequest
 	 */
 	protected function createRequest($verb, $uri, $parameters)
@@ -247,7 +296,7 @@ class Dispatcher {
 			$uri = "{$prefix}/{$uri}";
 		}
 
-		$parameters = array_merge($this->parameters, $parameters);
+		$parameters = array_merge($this->parameters, (array) $parameters);
 
 		$request = InternalRequest::create($uri, $verb, $parameters, $cookies, $files, $server);
 

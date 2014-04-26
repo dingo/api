@@ -104,7 +104,7 @@ class ApiServiceProvider extends ServiceProvider {
 	{
 		$this->app['dingo.api.dispatcher'] = $this->app->share(function($app)
 		{
-			return new Dispatcher($app['request'], $app['router'], $app['dingo.api.authentication']);
+			return new Dispatcher($app['request'], $app['url'], $app['router'], $app['dingo.api.authentication']);
 		});
 	}
 

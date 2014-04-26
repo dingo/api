@@ -5,6 +5,7 @@ use Dingo\Api\Dispatcher;
 use Dingo\Api\Http\Response;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Router;
+use Illuminate\Routing\UrlGenerator;
 use Illuminate\Events\Dispatcher as EventsDispatcher;
 use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
 
@@ -18,7 +19,8 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 		$this->router->setDefaultVersion('v1');
 		$this->router->setVendor('test');
 		$this->auth = m::mock('Dingo\Api\Authentication');
-		$this->dispatcher = new Dispatcher($this->request, $this->router, $this->auth);
+		$this->url = new UrlGenerator($this->router->getRoutes(), $this->request);
+		$this->dispatcher = new Dispatcher($this->request, $this->url, $this->router, $this->auth);
 
 		Response::setFormatters(['json' => new JsonResponseFormat]);
 	}
@@ -144,6 +146,37 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 		});
 
 		$this->dispatcher->be($user)->once()->get('test');
+	}
+
+
+	public function testInternalRequestUsingRouteName()
+	{
+		$this->router->api(['version' => 'v1'], function()
+		{
+			$this->router->get('test', ['as' => 'test', function()
+			{
+				return 'foo';
+			}]);
+
+			$this->router->get('test/{foo}', ['as' => 'testparameters', function($parameter)
+			{
+				return $parameter;
+			}]);
+		});
+
+		$this->assertEquals('foo', $this->dispatcher->route('test'));
+		$this->assertEquals('bar', $this->dispatcher->route('testparameters', 'bar'));
+	}
+
+
+	public function testInternalRequestUsingControllerAction()
+	{
+		$this->router->api(['version' => 'v1'], function()
+		{
+			$this->router->get('test', 'InternalControllerActionRoutingStub@index');
+		});
+
+		$this->assertEquals('foo', $this->dispatcher->action('InternalControllerActionRoutingStub@index'));
 	}
 	
 

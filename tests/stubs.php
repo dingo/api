@@ -83,3 +83,12 @@ class UnprotectedControllerStub extends Dingo\Api\Routing\Controller {
 class StubHttpException extends Symfony\Component\HttpKernel\Exception\HttpException {
 
 }
+
+class InternalControllerActionRoutingStub extends Illuminate\Routing\Controller {
+
+	public function index()
+	{
+		return 'foo';
+	}
+
+}
