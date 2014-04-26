@@ -1,25 +1,31 @@
 <?php
 
 use Mockery as m;
+use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
+use Dingo\Api\Routing\Router;
+use Illuminate\Events\Dispatcher;
+use Dingo\Api\Http\InternalRequest;
+use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
 
 class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 
 	public function setUp()
 	{
-		$this->exceptionHandler = m::mock('Dingo\Api\ExceptionHandler');
-		$this->router = new Dingo\Api\Routing\Router(new Illuminate\Events\Dispatcher);
-		$this->router->setExceptionHandler($this->exceptionHandler);
+		$this->router = new Router(new Dispatcher);
+		$this->router->setExceptionHandler($this->exceptionHandler = m::mock('Dingo\Api\ExceptionHandler'));
 		$this->router->setDefaultVersion('v1');
 		$this->router->setVendor('testing');
 
-		Response::setFormatters(['json' => new Dingo\Api\Http\ResponseFormat\JsonResponseFormat]);
+		Response::setFormatters(['json' => new JsonResponseFormat]);
 	}
 
 
 	public function tearDown()
 	{
+		Response::setFormatters([]);
+
 		m::close();
 	}
 
@@ -31,7 +37,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 			$this->router->get('foo', function() { return 'bar'; });
 		});
 
-		$request = Illuminate\Http\Request::create('foo', 'GET');
+		$request = Request::create('foo', 'GET');
 		$request->headers->set('accept', 'application/vnd.testing.v1+json');
 		
 		$this->assertEquals('{"message":"bar"}', $this->router->dispatch($request)->getContent());
@@ -72,7 +78,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 			$this->router->get('foo', function() { return 'bar'; });
 		});
 
-		$request = Illuminate\Http\Request::create('/foo/bar/foo', 'GET');
+		$request = Request::create('/foo/bar/foo', 'GET');
 		$request->headers->set('accept', 'application/vnd.testing.v2+json');
 		
 		$this->assertEquals('{"message":"bar"}', $this->router->dispatch($request)->getContent());
@@ -91,7 +97,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 			$this->router->get('foo', function() { return 'bar'; });
 		});
 
-		$request = Illuminate\Http\Request::create('http://foo.bar/foo', 'GET');
+		$request = Request::create('http://foo.bar/foo', 'GET');
 		$request->headers->set('accept', 'application/vnd.testing.v1+json');
 		
 		$this->assertEquals('{"message":"foo"}', $this->router->dispatch($request)->getContent());
@@ -105,7 +111,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 			$this->router->get('foo', function() { return 'bar'; });
 		});
 
-		$this->assertEquals('{"message":"bar"}', $this->router->dispatch(Dingo\Api\Http\InternalRequest::create('foo', 'GET'))->getContent());
+		$this->assertEquals('{"message":"bar"}', $this->router->dispatch(InternalRequest::create('foo', 'GET'))->getContent());
 	}
 
 
@@ -127,7 +133,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 			});
 		});
 
-		$request = Illuminate\Http\Request::create('/', 'GET');
+		$request = Request::create('/', 'GET');
 		$request->headers->set('accept', 'application/vnd.testing.v2+json');
 
 		$response = $this->router->dispatch($request);
@@ -148,7 +154,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 		$this->router->get('foo', function() { return 'bar'; });
 
-		$this->assertEquals('bar', $this->router->dispatch(Illuminate\Http\Request::create('foo', 'GET'))->getContent());
+		$this->assertEquals('bar', $this->router->dispatch(Request::create('foo', 'GET'))->getContent());
 	}
 
 
@@ -237,7 +243,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 			$this->router->get('foo', function() use ($exception) { throw $exception; });
 		});
 
-		$response = $this->router->dispatch(Illuminate\Http\Request::create('foo', 'GET'));
+		$response = $this->router->dispatch(Request::create('foo', 'GET'));
 		
 		$this->assertEquals(404, $response->getStatusCode());
 		$this->assertEquals('{"message":"404 Not Found"}', $response->getContent());
@@ -291,7 +297,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 		$exception = new Symfony\Component\HttpKernel\Exception\HttpException(404);
 
 		$this->exceptionHandler->shouldReceive('willHandle')->with($exception)->andReturn(true);
-		$this->exceptionHandler->shouldReceive('handle')->with($exception)->andReturn(new Dingo\Api\Http\Response('testing', 404));
+		$this->exceptionHandler->shouldReceive('handle')->with($exception)->andReturn(new Response('testing', 404));
 
 		$response = $this->router->handleException($exception);
 
@@ -311,7 +317,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 			$this->router->get('foo', function() { throw new Symfony\Component\HttpKernel\Exception\HttpException(404); });
 		});
 
-		$this->router->dispatch(Dingo\Api\Http\InternalRequest::create('foo', 'GET'));
+		$this->router->dispatch(InternalRequest::create('foo', 'GET'));
 	}
 
 
@@ -322,7 +328,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 			$this->router->get('foo', function() { return 'foo'; });
 		});
 
-		$this->assertEquals('foo', $this->router->dispatch(Illuminate\Http\Request::create('api/foo', 'GET'))->getContent());
+		$this->assertEquals('foo', $this->router->dispatch(Request::create('api/foo', 'GET'))->getContent());
 	}
 
 

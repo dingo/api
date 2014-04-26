@@ -1,21 +1,26 @@
 <?php
 
 use Mockery as m;
+use Dingo\Api\Dispatcher;
 use Dingo\Api\Http\Response;
+use Illuminate\Http\Request;
+use Dingo\Api\Routing\Router;
+use Illuminate\Events\Dispatcher as EventsDispatcher;
+use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
 
 class DispatcherTest extends PHPUnit_Framework_TestCase {
 
 
 	public function setUp()
 	{
-		$this->request = new Illuminate\Http\Request;
-		$this->router = new Dingo\Api\Routing\Router(new Illuminate\Events\Dispatcher);
+		$this->request = new Request;
+		$this->router = new Router(new EventsDispatcher);
 		$this->router->setDefaultVersion('v1');
 		$this->router->setVendor('test');
 		$this->auth = m::mock('Dingo\Api\Authentication');
-		$this->dispatcher = new Dingo\Api\Dispatcher($this->request, $this->router, $this->auth);
+		$this->dispatcher = new Dispatcher($this->request, $this->router, $this->auth);
 
-		Response::setFormatters(['json' => new Dingo\Api\Http\ResponseFormat\JsonResponseFormat]);
+		Response::setFormatters(['json' => new JsonResponseFormat]);
 	}
 
 

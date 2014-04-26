@@ -26,7 +26,7 @@ class HttpResponseTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->formatter->shouldReceive('formatEloquentModel')->once()->andReturn('test');
 
-		with(new Response(new EloquentModelStub))->morph();
+		(new Response(new EloquentModelStub))->morph();
 	}
 
 
@@ -34,7 +34,7 @@ class HttpResponseTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->formatter->shouldReceive('formatEloquentCollection')->once()->andReturn('test');
 
-		with(new Response(new EloquentCollectionStub))->morph();
+		(new Response(new EloquentCollectionStub))->morph();
 	}
 
 
@@ -42,7 +42,7 @@ class HttpResponseTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->formatter->shouldReceive('formatJsonableInterface')->once()->andReturn('test');
 
-		with(new Response(new JsonableStub))->morph();
+		(new Response(new JsonableStub))->morph();
 	}
 
 
@@ -50,7 +50,7 @@ class HttpResponseTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->formatter->shouldReceive('formatString')->once();
 
-		with(new Response('foo'))->morph();
+		(new Response('foo'))->morph();
 	}
 
 
@@ -58,7 +58,7 @@ class HttpResponseTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->formatter->shouldReceive('formatArrayableInterface')->once()->andReturn('test');
 
-		with(new Response(['foo' => 'bar']))->morph();
+		(new Response(['foo' => 'bar']))->morph();
 	}
 
 
@@ -66,7 +66,7 @@ class HttpResponseTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->formatter->shouldReceive('formatUnknown')->once()->andReturn('test');
 
-		with(new Response(1))->morph();
+		(new Response(1))->morph();
 	}
 
 
