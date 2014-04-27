@@ -207,6 +207,27 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals('bar', $this->dispatcher->version('v2')->get('foo'));
 	}
+
+
+	public function testInternalRequestWithPrefixAndNestedInternalRequest()
+	{
+		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
+		{
+			$this->router->get('foo', function() { return 'foo'; });
+		});
+
+		$this->router->api(['version' => 'v2', 'prefix' => 'api'], function()
+		{
+			$this->router->get('foo', function() { return 'bar'; });
+		});
+
+		$this->router->api(['version' => 'v3', 'prefix' => 'api'], function()
+		{
+			$this->router->get('foo', function() { return 'baz'.$this->dispatcher->version('v2')->get('foo'); });
+		});
+
+		$this->assertEquals('bazbar', $this->dispatcher->version('v3')->get('foo'));
+	}
 	
 
 }
