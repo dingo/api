@@ -191,6 +191,22 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('foo', $this->dispatcher->route('foo'));
 		$this->assertEquals('foo', $this->dispatcher->action('InternalControllerActionRoutingStub@index'));
 	}
+
+
+	public function testInternalRequestWithMultipleVersionsCallsCorrectVersion()
+	{
+		$this->router->api(['version' => 'v1'], function()
+		{
+			$this->router->get('foo', function() { return 'foo'; });
+		});
+
+		$this->router->api(['version' => 'v2'], function()
+		{
+			$this->router->get('foo', function() { return 'bar'; });
+		});
+
+		$this->assertEquals('bar', $this->dispatcher->version('v2')->get('foo'));
+	}
 	
 
 }
