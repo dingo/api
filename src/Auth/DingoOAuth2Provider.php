@@ -7,7 +7,7 @@ use Dingo\OAuth2\Server\Resource;
 use Dingo\OAuth2\Exception\InvalidTokenException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class OAuth2Provider extends AuthorizationProvider {
+class DingoOAuth2Provider extends AuthorizationProvider {
 
 	/**
 	 * OAuth 2.0 resource server instance.
@@ -86,19 +86,6 @@ class OAuth2Provider extends AuthorizationProvider {
 	public function getAuthorizationMethod()
 	{
 		return 'bearer';
-	}
-
-	/**
-	 * Set the OAuth 2.0 request scopes.
-	 * 
-	 * @param  array  $scopes
-	 * @return \Dingo\Api\Auth\OAuth2Provider
-	 */
-	public function setScopes(array $scopes)
-	{
-		$this->scopes = $scopes;
-
-		return $this;
 	}
 
 }
