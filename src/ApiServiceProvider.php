@@ -161,7 +161,7 @@ class ApiServiceProvider extends ServiceProvider {
 	 */
 	protected function registerMiddlewares()
 	{
-		$this->app->middleware('Dingo\Api\Http\Middleware\Authentication');
+		$this->app->middleware('Dingo\Api\Http\Middleware\Authentication', [$this->app]);
 	}
 
 }

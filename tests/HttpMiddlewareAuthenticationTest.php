@@ -24,17 +24,18 @@ class HttpMiddlewareAuthenticationTest extends PHPUnit_Framework_TestCase {
 	{
 		$response = new Response;
 		$app = m::mock('Symfony\Component\HttpKernel\HttpKernelInterface');
-		$middleware = new Authentication($app);
+		$container = m::mock('Illuminate\Container\Container');
+		$middleware = new Authentication($app, $container);
 		$request = InternalRequest::create('/', 'GET');
 
-		$app->shouldReceive('boot')->once();
+		$container->shouldReceive('boot')->once();
 		$app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn($response);
 		$this->assertEquals($response, $middleware->handle($request));
 
 		$request = Request::create('/', 'GET');
 
-		$app->shouldReceive('boot')->once();
-		$app->shouldReceive('make')->once()->with('dingo.api.auth')->andReturn(m::mock(['user' => true]));
+		$container->shouldReceive('boot')->once();
+		$container->shouldReceive('make')->once()->with('dingo.api.auth')->andReturn(m::mock(['user' => true]));
 		$app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn($response);
 
 		$this->assertEquals($response, $middleware->handle($request));
@@ -45,13 +46,14 @@ class HttpMiddlewareAuthenticationTest extends PHPUnit_Framework_TestCase {
 	{
 		$response = new Response;
 		$app = m::mock('Symfony\Component\HttpKernel\HttpKernelInterface');
+		$container = m::mock('Illuminate\Container\Container');
 		$router = m::mock('Dingo\Api\Routing\Router');
-		$middleware = new Authentication($app);
+		$middleware = new Authentication($app, $container);
 		$request = Request::create('/', 'GET');
 
-		$app->shouldReceive('boot')->once();
-		$app->shouldReceive('make')->once()->with('dingo.api.auth')->andReturn(m::mock(['user' => false]));
-		$app->shouldReceive('make')->once()->with('router')->andReturn($router);
+		$container->shouldReceive('boot')->once();
+		$container->shouldReceive('make')->once()->with('dingo.api.auth')->andReturn(m::mock(['user' => false]));
+		$container->shouldReceive('make')->once()->with('router')->andReturn($router);
 		$app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn($response);
 
 		$router->shouldReceive('getApiRouteCollectionFromRequest')->once()->with($request)->andReturn(null);
@@ -64,14 +66,15 @@ class HttpMiddlewareAuthenticationTest extends PHPUnit_Framework_TestCase {
 	{
 		$response = new Response;
 		$app = m::mock('Symfony\Component\HttpKernel\HttpKernelInterface');
+		$container = m::mock('Illuminate\Container\Container');
 		$router = m::mock('Dingo\Api\Routing\Router');
 		$collection = m::mock('Dingo\Api\Routing\ApiRouteCollection');
-		$middleware = new Authentication($app);
+		$middleware = new Authentication($app, $container);
 		$request = Request::create('/', 'GET');
 
-		$app->shouldReceive('boot')->once();
-		$app->shouldReceive('make')->once()->with('dingo.api.auth')->andReturn(m::mock(['user' => false]));
-		$app->shouldReceive('make')->once()->with('router')->andReturn($router);
+		$container->shouldReceive('boot')->once();
+		$container->shouldReceive('make')->once()->with('dingo.api.auth')->andReturn(m::mock(['user' => false]));
+		$container->shouldReceive('make')->once()->with('router')->andReturn($router);
 		$app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn($response);
 
 		$router->shouldReceive('getApiRouteCollectionFromRequest')->once()->with($request)->andReturn($collection);
@@ -86,15 +89,16 @@ class HttpMiddlewareAuthenticationTest extends PHPUnit_Framework_TestCase {
 	{
 		$response = new Response;
 		$app = m::mock('Symfony\Component\HttpKernel\HttpKernelInterface');
+		$container = m::mock('Illuminate\Container\Container');
 		$router = m::mock('Dingo\Api\Routing\Router');
 		$collection = m::mock('Dingo\Api\Routing\ApiRouteCollection');
-		$middleware = new Authentication($app);
+		$middleware = new Authentication($app, $container);
 		$request = Request::create('/', 'GET');
 		$route = new Route('GET', '/', ['protected' => false]);
 
-		$app->shouldReceive('boot')->once();
-		$app->shouldReceive('make')->once()->with('dingo.api.auth')->andReturn(m::mock(['user' => false]));
-		$app->shouldReceive('make')->once()->with('router')->andReturn($router);
+		$container->shouldReceive('boot')->once();
+		$container->shouldReceive('make')->once()->with('dingo.api.auth')->andReturn(m::mock(['user' => false]));
+		$container->shouldReceive('make')->once()->with('router')->andReturn($router);
 		$app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn($response);
 
 		$router->shouldReceive('getApiRouteCollectionFromRequest')->once()->with($request)->andReturn($collection);
@@ -109,17 +113,18 @@ class HttpMiddlewareAuthenticationTest extends PHPUnit_Framework_TestCase {
 	{
 		$response = new Response;
 		$app = m::mock('Symfony\Component\HttpKernel\HttpKernelInterface');
+		$container = m::mock('Illuminate\Container\Container');
 		$router = m::mock('Dingo\Api\Routing\Router');
 		$collection = m::mock('Dingo\Api\Routing\ApiRouteCollection');
-		$middleware = new Authentication($app);
+		$middleware = new Authentication($app, $container);
 		$request = Request::create('/', 'GET');
 		$route = new Route('GET', '/', ['protected']);
 		$shield = m::mock('Dingo\Api\Auth\Shield');
 
-		$app->shouldReceive('boot')->once();
-		$app->shouldReceive('make')->once()->once('dingo.api.auth')->andReturn(m::mock(['user' => false]));
-		$app->shouldReceive('make')->twice()->with('router')->andReturn($router);
-		$app->shouldReceive('make')->once()->once('dingo.api.auth')->andReturn($shield);
+		$container->shouldReceive('boot')->once();
+		$container->shouldReceive('make')->once()->once('dingo.api.auth')->andReturn(m::mock(['user' => false]));
+		$container->shouldReceive('make')->twice()->with('router')->andReturn($router);
+		$container->shouldReceive('make')->once()->once('dingo.api.auth')->andReturn($shield);
 
 		$router->shouldReceive('getApiRouteCollectionFromRequest')->once()->with($request)->andReturn($collection);
 
@@ -139,17 +144,18 @@ class HttpMiddlewareAuthenticationTest extends PHPUnit_Framework_TestCase {
 	{
 		$response = new Response;
 		$app = m::mock('Symfony\Component\HttpKernel\HttpKernelInterface');
+		$container = m::mock('Illuminate\Container\Container');
 		$router = m::mock('Dingo\Api\Routing\Router');
 		$collection = m::mock('Dingo\Api\Routing\ApiRouteCollection');
-		$middleware = new Authentication($app);
+		$middleware = new Authentication($app, $container);
 		$request = Request::create('/', 'GET');
 		$route = new Route('GET', '/', ['protected']);
 		$shield = m::mock('Dingo\Api\Auth\Shield');
 
-		$app->shouldReceive('boot')->once();
-		$app->shouldReceive('make')->once()->once('dingo.api.auth')->andReturn(m::mock(['user' => false]));
-		$app->shouldReceive('make')->once()->with('router')->andReturn($router);
-		$app->shouldReceive('make')->once()->once('dingo.api.auth')->andReturn($shield);
+		$container->shouldReceive('boot')->once();
+		$container->shouldReceive('make')->once()->once('dingo.api.auth')->andReturn(m::mock(['user' => false]));
+		$container->shouldReceive('make')->once()->with('router')->andReturn($router);
+		$container->shouldReceive('make')->once()->once('dingo.api.auth')->andReturn($shield);
 		$app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn($response);
 
 		$router->shouldReceive('getApiRouteCollectionFromRequest')->once()->with($request)->andReturn($collection);

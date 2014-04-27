@@ -3,6 +3,7 @@
 use Dingo\Api\Http\Response;
 use Illuminate\Routing\Route;
 use Dingo\Api\Http\InternalRequest;
+use Illuminate\Container\Container;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -17,14 +18,23 @@ class Authentication implements HttpKernelInterface {
 	protected $app;
 
 	/**
+	 * Laravel application container.
+	 * 
+	 * @var \Illuminate\Container\Container
+	 */
+	protected $container;
+
+	/**
 	 * Create a new authentication middleware instance.
 	 * 
 	 * @param  \Symfony\Component\HttpKernel\HttpKernelInterface  $app
+	 * @param  \Illuminate\Container\Container  $container
 	 * @return void
 	 */
-	public function __construct(HttpKernelInterface $app)
+	public function __construct(HttpKernelInterface $app, Container $container)
 	{
 		$this->app = $app;
+		$this->container = $container;
 	}
 
 	/**
@@ -41,14 +51,14 @@ class Authentication implements HttpKernelInterface {
 		// Our middleware needs to ensure that Laravel is booted before we
 		// can do anything. This gives us access to all the booted
 		// service providers and other container bindings.
-		$this->app->boot();
+		$this->container->boot();
 
-		if ($request instanceof InternalRequest or $this->app->make('dingo.api.auth')->user())
+		if ($request instanceof InternalRequest or $this->container->make('dingo.api.auth')->user())
 		{
 			return $this->app->handle($request, $type, $catch);
 		}
 
-		$router = $this->app->make('router');
+		$router = $this->container->make('router');
 
 		$response = null;
 
@@ -78,11 +88,11 @@ class Authentication implements HttpKernelInterface {
 	{
 		try
 		{
-			$this->app->make('dingo.api.auth')->authenticate($request, $route);
+			$this->container->make('dingo.api.auth')->authenticate($request, $route);
 		}
 		catch (UnauthorizedHttpException $exception)
 		{
-			$router = $this->app->make('router');
+			$router = $this->container->make('router');
 
 			$response = $router->handleException($exception);
 
