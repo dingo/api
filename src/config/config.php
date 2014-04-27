@@ -59,7 +59,7 @@ return [
 	| The authentication providers that should be used when attempting to
 	| authenticate an incoming API request.
 	|
-	| Available: "basic", "oauth2"
+	| Available: "basic", "dingo.oauth2", "league.oauth2"
 	|
 	*/
 
@@ -109,7 +109,9 @@ return [
 	*/
 
 	'formats' => [
+
 		'json' => new Dingo\Api\Http\ResponseFormat\JsonResponseFormat
+		
 	]
 
 ];
