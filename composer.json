@@ -20,7 +20,8 @@
         "illuminate/events": "4.1.*",
         "illuminate/auth": "4.1.*",
         "illuminate/database": "4.1.*",
-        "mockery/mockery": "0.9.*"
+        "phpunit/phpunit": "~4.0",
+        "mockery/mockery": "~0.9"
     },
     "suggest": {
         "dingo/oauth2-server-laravel": "Allows OAuth 2.0 authentication to protect your API.",
@@ -30,6 +31,5 @@
         "psr-4": {
             "Dingo\\Api\\": "src"
         }
-    },
-    "minimum-stability": "stable"
+    }
 }
