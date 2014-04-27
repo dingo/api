@@ -102,10 +102,10 @@ class HttpMiddlewareRateLimitTest extends PHPUnit_Framework_TestCase {
 		$ip = $request->getClientIp();
 
 		$cache->shouldReceive('add')->once()->with('dingo:api:limit:'.$ip, 0, 1);
-		$cache->shouldReceive('add')->once()->with('dingo:api:reset:'.$ip, time() + 60, 1);
+		$cache->shouldReceive('add')->once();
 		$cache->shouldReceive('increment')->once()->with('dingo:api:limit:'.$ip);
 		$cache->shouldReceive('get')->once()->with('dingo:api:limit:'.$ip)->andReturn(1);
-		$cache->shouldReceive('get')->once()->with('dingo:api:reset:'.$ip)->andReturn(time() + 60);
+		$cache->shouldReceive('get')->once()->with('dingo:api:reset:'.$ip);
 
 		$app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn($response);
 		$response = $middleware->handle($request);
@@ -137,10 +137,10 @@ class HttpMiddlewareRateLimitTest extends PHPUnit_Framework_TestCase {
 		$ip = $request->getClientIp();
 
 		$cache->shouldReceive('add')->once()->with('dingo:api:limit:'.$ip, 0, 1);
-		$cache->shouldReceive('add')->once()->with('dingo:api:reset:'.$ip, time() + 60, 1);
+		$cache->shouldReceive('add')->once();
 		$cache->shouldReceive('increment')->once()->with('dingo:api:limit:'.$ip);
 		$cache->shouldReceive('get')->once()->with('dingo:api:limit:'.$ip)->andReturn(2);
-		$cache->shouldReceive('get')->once()->with('dingo:api:reset:'.$ip)->andReturn(time() + 60);
+		$cache->shouldReceive('get')->once()->with('dingo:api:reset:'.$ip);
 
 		$response = $middleware->handle($request);
 		$this->assertEquals(1, $response->headers->get('X-RateLimit-Limit'));
