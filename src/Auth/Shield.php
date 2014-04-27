@@ -134,4 +134,14 @@ class Shield {
 		return $this;
 	}
 
+	/**
+	 * Check if a user has authenticated with the API.
+	 * 
+	 * @return bool
+	 */
+	public function check()
+	{
+		return ! is_null($this->user());
+	}
+
 }

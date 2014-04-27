@@ -67,6 +67,36 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Rate Limiting
+	|--------------------------------------------------------------------------
+	|
+	| Consumers of your API can be limited to the amount of requests they can
+	| make. You can configure the limit based on whether the consumer is
+	| authenticated or unauthenticated.
+	|
+	| The "limit" is the number of requests the consumer can make within a
+	| certain amount time which is defined by "reset" in minutes.
+	|
+	*/
+
+	'rate_limiting' => [
+
+		'authenticated' => [
+			'limit' => 6000,
+			'reset' => 60
+		],
+
+		'unauthenticated' => [
+			'limit' => 60,
+			'reset' => 60
+		],
+
+		'exceeded' => 'API rate limit has been exceeded.'
+
+	],
+
+	/*
+	|--------------------------------------------------------------------------
 	| Response Formats
 	|--------------------------------------------------------------------------
 	|
