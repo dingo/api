@@ -22,7 +22,8 @@
         "mockery/mockery": "0.9.*"
     },
     "suggest": {
-        "dingo/oauth2-server-laravel": "Allows OAuth 2.0 authentication to protect your API."
+        "dingo/oauth2-server-laravel": "Allows OAuth 2.0 authentication to protect your API.",
+        "league/fractal": "Easily output complex, flexible, RESTful data structures."
     },
     "autoload": {
         "psr-4": {
