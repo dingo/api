@@ -6,6 +6,7 @@ use Dingo\Api\Http\InternalRequest;
 use Illuminate\Container\Container;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class Authentication implements HttpKernelInterface {
@@ -23,6 +24,13 @@ class Authentication implements HttpKernelInterface {
 	 * @var \Illuminate\Container\Container
 	 */
 	protected $container;
+
+	/**
+	 * Array of resolved container bindings.
+	 * 
+	 * @var array
+	 */
+	protected $bindings = [];
 
 	/**
 	 * Create a new authentication middleware instance.
@@ -65,12 +73,27 @@ class Authentication implements HttpKernelInterface {
 		// If a collection exists for the request and we can match a route
 		// from the request then we'll check to see if the route is
 		// protected and, if it is, we'll attempt to authenticate.
-		if ($collection = $router->getApiRouteCollectionFromRequest($request) and $route = $collection->match($request))
+		if ($collection = $router->getApiRouteCollectionFromRequest($request))
 		{
-			if ($this->routeIsProtected($route))
+			try
 			{
-				$response = $this->authenticate($request, $route);
-			}	
+				$route = $collection->match($request);
+
+				if ($this->routeIsProtected($route))
+				{
+					$response = $this->authenticate($request, $route);
+				}
+			}
+			catch (NotFoundHttpException $exception)
+			{
+				// If we catch a not found exception it's usually because the
+				// API is operating with no prefix so a collection is
+				// returned but a route does not exist for the
+				// request in that collection. We'll just
+				// ignore this and let the wrapping
+				// kernel do its thing.
+			}
+
 		}
 
 		return $response ?: $this->app->handle($request, $type, $catch);
@@ -111,6 +134,19 @@ class Authentication implements HttpKernelInterface {
 		$action = $route->getAction();
 
 		return in_array('protected', $action, true) or (isset($action['protected']) and $action['protected'] === true);
+	}
+
+	/**
+	 * Dynamically handle binding calls on the container.
+	 * 
+	 * @param  string  $binding
+	 * @return mixed
+	 */
+	public function __get($binding)
+	{
+		if (isset($this->bindings[$binding])) return $this->bindings[$binding];
+
+		return $this->bindings[$binding] = $this->container->make($binding);
 	}
 
 }

@@ -9,6 +9,7 @@ use Dingo\Api\Http\Response as ApiResponse;
 use Dingo\Api\Http\Middleware\Authentication;
 use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class HttpMiddlewareAuthenticationTest extends PHPUnit_Framework_TestCase {
@@ -79,7 +80,7 @@ class HttpMiddlewareAuthenticationTest extends PHPUnit_Framework_TestCase {
 
 		$router->shouldReceive('getApiRouteCollectionFromRequest')->once()->with($request)->andReturn($collection);
 
-		$collection->shouldReceive('match')->once()->with($request)->andReturn(null);
+		$collection->shouldReceive('match')->once()->with($request)->andThrow(new NotFoundHttpException);
 
 		$this->assertEquals($response, $middleware->handle($request));
 	}
