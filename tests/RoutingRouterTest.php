@@ -342,4 +342,17 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 	}
 
 
+	public function testRequestTargettingAnApiWithNoPrefixOrDomain()
+	{
+		$this->router->get('/', function() { return 'foo'; });
+
+		$this->router->api(['version' => 'v1'], function()
+		{
+			$this->router->get('foo', function() { return 'bar'; });
+		});
+
+		$this->assertFalse($this->router->requestTargettingApi(Request::create('/', 'GET')));
+	}
+
+
 }

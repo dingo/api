@@ -400,7 +400,23 @@ class Router extends IlluminateRouter {
 			return true;
 		}
 
-		return $this->getApiRouteCollectionFromRequest($request) instanceof ApiRouteCollection;
+		if ($collection = $this->getApiRouteCollectionFromRequest($request))
+		{
+			try
+			{
+				$collection->match($request);
+
+				return true;
+			}
+			catch (NotFoundHttpException $exception)
+			{
+				// If we don't find a matching route then we'll let this
+				// fall through so that false is returned as the
+				// request is not targetting the API.
+			}
+		}
+
+		return false;
 	}
 
 	/**
