@@ -77,17 +77,19 @@ return [
 	| The "limit" is the number of requests the consumer can make within a
 	| certain amount time which is defined by "reset" in minutes.
 	|
+	| By default rate limiting is disabled.
+	|
 	*/
 
 	'rate_limiting' => [
 
 		'authenticated' => [
-			'limit' => 6000,
+			'limit' => 0,
 			'reset' => 60
 		],
 
 		'unauthenticated' => [
-			'limit' => 60,
+			'limit' => 0,
 			'reset' => 60
 		],
 
