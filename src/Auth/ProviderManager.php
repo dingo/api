@@ -15,6 +15,18 @@ class ProviderManager extends Manager {
 	}
 
 	/**
+	 * Create League's OAuth 2.0 authentication driver.
+	 * 
+	 * @return \Dingo\Api\Auth\LeagueOAuth2Provider
+	 */
+	public function createLeagueOAuth2Driver()
+	{
+		$httpHeadersOnly = $this->app['config']->get('lucadegasperi/oauth2-server-laravel::oauth2.http_headers_only');
+		
+		return new LeagueOAuth2Provider($this->app['oauth2.resource-server'], $httpHeadersOnly);
+	}
+
+	/**
 	 * Create Basic authentication provider.
 	 * 
 	 * @return \Dingo\Api\Auth\BasicProvider
