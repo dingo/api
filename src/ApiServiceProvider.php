@@ -26,7 +26,7 @@ class ApiServiceProvider extends ServiceProvider {
 			return $app['dingo.api.dispatcher'];
 		};
 
-		$this->app['Dingo\Api\Authentication'] = function($app)
+		$this->app['Dingo\Api\Auth\Shield'] = function($app)
 		{
 			return $app['dingo.api.auth'];
 		};
