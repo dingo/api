@@ -431,7 +431,7 @@ class Router extends IlluminateRouter {
 	 */
 	protected function parseAcceptHeader($request)
 	{
-		if (preg_match('#application/vnd\.'.$this->vendor.'.(v\d)\+(json)#', $request->header('accept'), $matches))
+		if (preg_match('#application/vnd\.'.$this->vendor.'.(v[\d\.]+)\+(\w+)#', $request->header('accept'), $matches))
 		{
 			list ($accept, $this->requestedVersion, $this->requestedFormat) = $matches;
 		}

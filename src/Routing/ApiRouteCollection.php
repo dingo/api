@@ -53,17 +53,38 @@ class ApiRouteCollection extends RouteCollection {
 	 */
 	public function matchesRequest($request)
 	{
-		if ($this->matchDomain($request))
+		if ($this->matchesCollectionVersion($request))
 		{
-			return true;
+			if ($this->matchDomain($request))
+			{
+				return true;
+			}
+			elseif ($this->matchPrefix($request))
+			{
+				return true;
+			}
+			elseif ( ! $this->option('prefix') and ! $this->option('domain'))
+			{
+				return true;
+			}
 		}
-		elseif ($this->matchPrefix($request))
+
+		return false;
+	}
+
+	/**
+	 * Determine if the requested version matches the collection version.
+	 * 
+	 * @param  \Illuminate\Http\Request  $request
+	 * @return bool
+	 */
+	protected function matchesCollectionVersion($request)
+	{
+		if (preg_match('#application/vnd\.\w+.(v[\d\.]+)\+\w+#', $request->header('accept'), $matches))
 		{
-			return true;
-		}
-		elseif ( ! $this->option('prefix') and ! $this->option('domain'))
-		{
-			return true;
+			list ($accept, $version) = $matches;
+
+			return $version == $this->version;
 		}
 
 		return false;

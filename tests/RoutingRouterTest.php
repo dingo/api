@@ -121,7 +121,10 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 			$this->router->get('foo', function() { return 'bar'; });
 		});
 
-		$this->assertEquals('{"message":"bar"}', $this->router->dispatch(InternalRequest::create('foo', 'GET'))->getContent());
+		$request = InternalRequest::create('foo', 'GET');
+		$request->headers->set('accept', 'application/vnd.testing.v1+json');
+
+		$this->assertEquals('{"message":"bar"}', $this->router->dispatch($request)->getContent());
 	}
 
 
@@ -253,7 +256,10 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 			$this->router->get('foo', function() use ($exception) { throw $exception; });
 		});
 
-		$response = $this->router->dispatch(Request::create('foo', 'GET'));
+		$request = Request::create('foo', 'GET');
+		$request->headers->set('accept', 'application/vnd.testing.v1+json');
+
+		$response = $this->router->dispatch($request);
 		
 		$this->assertEquals(404, $response->getStatusCode());
 		$this->assertEquals('{"message":"404 Not Found"}', $response->getContent());
@@ -352,6 +358,49 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 		});
 
 		$this->assertFalse($this->router->requestTargettingApi(Request::create('/', 'GET')));
+	}
+
+
+	public function testRequestWithMultipleApisFindsTheCorrectApiRouteCollection()
+	{
+		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
+		{
+			$this->router->get('foo', function() { return 'bar'; });
+		});
+
+		$this->router->api(['version' => 'v2', 'prefix' => 'api'], function()
+		{
+			$this->router->get('bar', function() { return 'baz'; });
+		});
+
+		$request = Request::create('api/bar', 'GET');
+		$request->headers->set('accept', 'application/vnd.testing.v2+json');
+
+		$this->assertEquals('{"message":"baz"}', $this->router->dispatch($request)->getContent());
+	}
+
+
+	public function testApiCollectionsWithPointReleaseVersions()
+	{
+		$this->router->api(['version' => 'v1.1', 'prefix' => 'api'], function()
+		{
+			$this->router->get('foo', function() { return 'bar'; });
+		});
+
+		$this->router->api(['version' => 'v2.0.1', 'prefix' => 'api'], function()
+		{
+			$this->router->get('bar', function() { return 'baz'; });
+		});
+
+		$request = Request::create('api/foo', 'GET');
+		$request->headers->set('accept', 'application/vnd.testing.v1.1+json');
+
+		$this->assertEquals('{"message":"bar"}', $this->router->dispatch($request)->getContent());
+
+		$request = Request::create('api/bar', 'GET');
+		$request->headers->set('accept', 'application/vnd.testing.v2.0.1+json');
+
+		$this->assertEquals('{"message":"baz"}', $this->router->dispatch($request)->getContent());
 	}
 
 
