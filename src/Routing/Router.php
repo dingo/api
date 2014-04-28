@@ -449,7 +449,20 @@ class Router extends IlluminateRouter {
 	 */
 	public function getApiRouteCollectionFromRequest(Request $request)
 	{
-		return array_first($this->api, function($k, $c) use ($request) { return $c->matchesRequest($request); }, null);
+		$collection = array_first($this->api, function($key, $collection) use ($request)
+		{
+			return $collection->matchesRequest($request);
+		});
+
+		// If we don't initially find a collection then we'll grab the default
+		// version collection instead. This is a sort of graceful fallback
+		// and allows viewing of the latest API version in the browser.
+		if ( ! $collection)
+		{
+			return $this->getApiRouteCollection($this->defaultVersion);
+		}
+
+		return $collection;
 	}
 
 	/**

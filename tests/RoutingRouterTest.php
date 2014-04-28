@@ -404,4 +404,25 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 	}
 
 
+	public function testRouterDefaultsToDefaultVersionCollectionWhenNoAcceptHeader()
+	{
+		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
+		{
+			$this->router->get('foo', function() { return 'bar'; });
+		});
+
+		$this->router->api(['version' => 'v2', 'prefix' => 'api'], function()
+		{
+			$this->router->get('foo', function() { return 'baz'; });
+		});
+
+		$request = Request::create('api/foo', 'GET');
+
+		$this->assertEquals('{"message":"bar"}', $this->router->dispatch($request)->getContent());
+
+		$this->router->setDefaultVersion('v2');
+		$this->assertEquals('{"message":"baz"}', $this->router->dispatch($request)->getContent());
+	}
+
+
 }
