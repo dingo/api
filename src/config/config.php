@@ -59,7 +59,7 @@ return [
 	| The authentication providers that should be used when attempting to
 	| authenticate an incoming API request.
 	|
-	| Available: "basic", "dingo.oauth2", "league.oauth2"
+	| Available: "basic", "oauth2"
 	|
 	*/
 

@@ -1,29 +1,29 @@
 <?php namespace Dingo\Api\Auth;
 
+use RuntimeException;
 use Illuminate\Support\Manager;
 
 class ProviderManager extends Manager {
 
 	/**
-	 * Create Dingo's OAuth 2.0 authentication driver.
-	 * 
-	 * @return \Dingo\Api\Auth\DingoOAuth2Provider
-	 */
-	public function createDingoOAuth2Driver()
-	{
-		return new DingoOAuth2Provider($this->app['dingo.oauth.resource']);
-	}
-
-	/**
-	 * Create League's OAuth 2.0 authentication driver.
+	 * Create OAuth 2.0 authentication driver.
 	 * 
 	 * @return \Dingo\Api\Auth\LeagueOAuth2Provider
 	 */
-	public function createLeagueOAuth2Driver()
+	public function createOAuth2Driver()
 	{
-		$httpHeadersOnly = $this->app['config']->get('lucadegasperi/oauth2-server-laravel::oauth2.http_headers_only');
+		if ($this->app->bound('oauth2.resource-server'))
+		{
+			$httpHeadersOnly = $this->app['config']->get('lucadegasperi/oauth2-server-laravel::oauth2.http_headers_only');
 		
-		return new LeagueOAuth2Provider($this->app['oauth2.resource-server'], $httpHeadersOnly);
+			return new LeagueOAuth2Provider($this->app['oauth2.resource-server'], $httpHeadersOnly);
+		}
+		elseif ($this->app->bound('dingo.oauth.resource'))
+		{
+			return new DingoOAuth2Provider($this->app['dingo.oauth.resource']);
+		}
+
+		throw new RuntimeException('Unable to resolve either OAuth 2.0 resource server binding.');
 	}
 
 	/**
@@ -34,18 +34,6 @@ class ProviderManager extends Manager {
 	public function createBasicDriver()
 	{
 		return new BasicProvider($this->app['auth']);
-	}
-
-	/**
-	 * Create a new driver instance.
-	 *
-	 * @param  string  $driver
-	 * @return mixed
-	 * @throws \InvalidArgumentException
-	 */
-	protected function createDriver($driver)
-	{
-		return parent::createDriver(str_replace('.', '', $driver));
 	}
 
 }

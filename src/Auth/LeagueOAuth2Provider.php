@@ -7,7 +7,7 @@ use League\OAuth2\Server\Resource;
 use League\OAuth2\Server\Exception\InvalidAccessTokenException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class LeagueOAuth2Provider extends AuthorizationProvider {
+class LeagueOAuth2Provider extends AuthorizationProvider implements OAuth2ProviderInterface {
 
 	/**
 	 * OAuth 2.0 resource server instance.
@@ -101,6 +101,17 @@ class LeagueOAuth2Provider extends AuthorizationProvider {
 	public function getAuthorizationMethod()
 	{
 		return 'bearer';
+	}
+
+	/**
+	 * Determine if the authenticated access token has a given scope.
+	 * 
+	 * @param  string  $scope
+	 * @return bool
+	 */
+	public function hasScope($scope)
+	{
+		return $this->resource->hasScope($scope);
 	}
 
 }

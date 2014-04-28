@@ -28,24 +28,23 @@ class API extends Facade {
 	}
 
 	/**
-	 * Get the authenticated access token.
+	 * Get the authentication provider.
 	 * 
-	 * @return \Dingo\OAuth2\Entity\Token
+	 * @return \Dingo\Api\Auth\Provider
 	 */
-	public static function token()
+	public static function auth()
 	{
-		return static::$app['dingo.oauth.resource']->getToken();
+		return static::$app['dingo.api.auth'];
 	}
 
 	/**
-	 * Issue an access token to the API.
+	 * Determine if authentication was done using OAuth 2.0.
 	 * 
-	 * @param  array  $payload
-	 * @return mixed
+	 * @return bool
 	 */
-	public static function issueToken(array $payload)
+	public static function usedOAuth()
 	{
-		return static::$app['dingo.oauth.authorization']->issueAccessToken($payload);
+		return static::$app['dingo.api.auth']->usedOAuth();
 	}
 
 	/**

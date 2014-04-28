@@ -1,6 +1,7 @@
 <?php namespace Dingo\Api\Auth;
 
 use Exception;
+use BadMethodCallException;
 use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
@@ -24,6 +25,13 @@ class Shield {
 	 * @var array
 	 */
 	protected $providers;
+
+	/**
+	 * The provider used for authentication.
+	 * 
+	 * @var \Dingo\Api\Auth\Provider
+	 */
+	protected $provider;
 
 	/**
 	 * Authenticated user ID.
@@ -68,7 +76,11 @@ class Shield {
 		{
 			try
 			{
-				return $this->userId = $provider->authenticate($request, $route);
+				$id = $provider->authenticate($request, $route);
+
+				$this->provider = $provider;
+
+				return $this->userId = $id;
 			}
 			catch (UnauthorizedHttpException $exception)
 			{
@@ -142,6 +154,46 @@ class Shield {
 	public function check()
 	{
 		return ! is_null($this->user());
+	}
+
+	/**
+	 * Get the provider used for authentication.
+	 * 
+	 * @return \Dingo\Api\Auth\Provider
+	 */
+	public function getProvider()
+	{
+		return $this->provider;
+	}
+
+	/**
+	 * Determine if the provider used was an OAuth 2.0 provider.
+	 * 
+	 * @return bool
+	 */
+	public function usedOAuth()
+	{
+		return $this->getProvider() instanceof OAuth2ProviderInterface;
+	}
+
+	/**
+	 * Magically call methods on the authenticated provider used.
+	 * 
+	 * @param  string  $method
+	 * @param  array  $parameters
+	 * @return mixed
+	 * @throws \BadMethodCallException
+	 */
+	public function __call($method, $parameters)
+	{
+		$provider = $this->getProvider();
+
+		if (method_exists($provider, $method))
+		{
+			return call_user_func_array([$provider, $method], $parameters);
+		}
+
+		throw new BadMethodCallException('Method "'.$method.'" not found.');
 	}
 
 }
