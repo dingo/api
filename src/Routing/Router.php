@@ -127,6 +127,8 @@ class Router extends IlluminateRouter {
 	 */
 	public function dispatch(Request $request)
 	{
+		$this->container->instance('Illuminate\Http\Request', $request);
+
 		try
 		{
 			$response = parent::dispatch($request);
@@ -149,6 +151,8 @@ class Router extends IlluminateRouter {
 				throw $exception;
 			}
 		}
+
+		$this->container->forgetInstance('Illuminate\Http\Request');
 
 		if ($this->requestTargettingApi($request))
 		{
