@@ -31,9 +31,27 @@ class ApiServiceProvider extends ServiceProvider {
 			return $app['dingo.api.auth'];
 		};
 
-		// Set the static formatters on the response class so that requested formats
-		// can be formatted and returned correctly.
-		$formats = array_map('value', $this->app['config']['api::formats']);
+		$this->bootResponseFormatters();
+	}
+
+	/**
+	 * Boot the response formatters.
+	 * 
+	 * @return void
+	 */
+	protected function bootResponseFormatters()
+	{
+		$formats = [];
+
+		foreach ($this->app['config']['api::formats'] as $key => $format)
+		{
+			if ($format instanceof Closure)
+			{
+				$format = call_user_func($format, $this->app);
+			}
+
+			$formats[$key] = $format;
+		}
 
 		Response::setFormatters($formats);
 	}
