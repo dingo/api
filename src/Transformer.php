@@ -28,14 +28,14 @@ class Transformer {
 	 * 
 	 * @var string
 	 */
-	protected $scopesKey;
+	protected $embedsKey;
 
 	/**
 	 * The scopes separator.
 	 * 
 	 * @var string
 	 */
-	protected $scopesSeparator;
+	protected $embedsSeparator;
 
 	/**
 	 * Array of registered transformers.
@@ -58,12 +58,12 @@ class Transformer {
 	 * @param  \Illuminate\Container\Container  $container
 	 * @return void
 	 */
-	public function __construct(Fractal $fractal, Container $container, $scopesKey = 'embeds', $scopesSeparator = ',')
+	public function __construct(Fractal $fractal, Container $container, $embedsKey = 'embeds', $embedsSeparator = ',')
 	{
 		$this->fractal = $fractal;
 		$this->container = $container;
-		$this->scopesKey = $scopesKey;
-		$this->scopesSeparator = $scopesSeparator;
+		$this->embedsKey = $embedsKey;
+		$this->embedsSeparator = $embedsSeparator;
 	}
 
 	/**
@@ -197,7 +197,7 @@ class Transformer {
 			return;
 		}
 
-		$scopes = array_filter(explode($this->scopesSeparator, $this->request->get($this->scopesKey)));
+		$scopes = array_filter(explode($this->embedsSeparator, $this->request->get($this->embedsKey)));
 
 		$this->fractal->setRequestedScopes($scopes);
 	}

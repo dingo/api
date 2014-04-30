@@ -120,18 +120,16 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
-	| Transformer Scopes
+	| Transformer Embeds
 	|--------------------------------------------------------------------------
 	|
-	| Transformers can use scopes to nest or embed relationships. The "key"
-	| is the query string identifier which will hold the requested scopes.
-	| The "separator" is the character that will separate each scope.
-	| Do not use a "." as a separator as that is used when defining
-	| child scopes.
+	| Transformers embed or relationships. The "key" is the query string
+	| identifier which will hold the requested embeds. The "separator"
+	| is the character that will separate each embed.
 	|
 	*/
 
-	'scopes' => [
+	'embeds' => [
 
 		'key' => 'embeds',
 		'separator' => ','
