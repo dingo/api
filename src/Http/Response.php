@@ -18,6 +18,13 @@ class Response extends IlluminateResponse {
 	protected static $formatters = [];
 
 	/**
+	 * API transformer instance.
+	 * 
+	 * @var \Dingo\Api\Transformer
+	 */
+	protected static $transformer;
+
+	/**
 	 * Make an API response from an existing Illuminate response.
 	 * 
 	 * @param  \Illuminate\Http\Response  $response
@@ -35,9 +42,14 @@ class Response extends IlluminateResponse {
 	 */
 	public function morph($format = 'json')
 	{
-		$formatter = static::getFormatter($format);
+		$response = $this->getOriginalContent();
 
-		$response = $this->original;
+		if (static::$transformer->transformableResponse($response))
+		{
+			$response = static::$transformer->transformResponse($response);
+		}
+
+		$formatter = static::getFormatter($format);
 
 		// First we'll attempt to format the response if it's either an Eloquent
 		// model or an Eloquent collection.
@@ -110,6 +122,11 @@ class Response extends IlluminateResponse {
 	public static function setFormatters(array $formatters)
 	{
 		static::$formatters = $formatters;
+	}
+
+	public static function setTransformer(\Dingo\Api\Transformer $transformer)
+	{
+		static::$transformer = $transformer;
 	}
 
 }

@@ -28,6 +28,18 @@ class API extends Facade {
 	}
 
 	/**
+	 * Transform a class into a transformer.
+	 * 
+	 * @param  string  $class
+	 * @param  string|\Closure  $transformer
+	 * @return \Dingo\Api\Transformer
+	 */
+	public static function transform($class, $transformer)
+	{
+		return static::$app['dingo.api.transformer']->transform($class, $transformer);
+	}
+
+	/**
 	 * Get the authentication provider.
 	 * 
 	 * @return \Dingo\Api\Auth\Provider

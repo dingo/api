@@ -5,6 +5,7 @@ use Dingo\Api\Auth\Shield;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
 use Dingo\Api\Auth\ProviderManager;
+use League\Fractal\Manager as Fractal;
 use Illuminate\Support\ServiceProvider;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
@@ -30,6 +31,8 @@ class ApiServiceProvider extends ServiceProvider {
 		{
 			return $app['dingo.api.auth'];
 		};
+
+		Response::setTransformer($this->app['dingo.api.transformer']);
 
 		$this->bootResponseFormatters();
 	}
@@ -66,6 +69,8 @@ class ApiServiceProvider extends ServiceProvider {
 		$this->registerDispatcher();
 
 		$this->registerRouter();
+
+		$this->registerTransformer();
 
 		$this->registerExceptionHandler();
 
@@ -119,6 +124,19 @@ class ApiServiceProvider extends ServiceProvider {
 		$this->app['dingo.api.dispatcher'] = $this->app->share(function($app)
 		{
 			return new Dispatcher($app['request'], $app['url'], $app['router'], $app['dingo.api.auth']);
+		});
+	}
+
+	/**
+	 * Register the API transformer.
+	 * 
+	 * @return void
+	 */
+	protected function registerTransformer()
+	{
+		$this->app['dingo.api.transformer'] = $this->app->share(function($app)
+		{
+			return new Transformer(new Fractal, $app);
 		});
 	}
 

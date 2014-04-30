@@ -9,8 +9,10 @@ class HttpResponseTest extends PHPUnit_Framework_TestCase {
 	public function setUp()
 	{
 		Response::setFormatters(['json' => $this->formatter = m::mock('Dingo\Api\Http\ResponseFormat\JsonResponseFormat')]);
-
 		$this->formatter->shouldReceive('getContentType')->andReturn('foo');
+		
+		Response::setTransformer($transformer = m::mock('Dingo\Api\Transformer'));
+		$transformer->shouldReceive('transformableResponse')->andReturn(false);
 	}
 
 

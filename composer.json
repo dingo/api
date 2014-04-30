@@ -11,7 +11,8 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "illuminate/support": "4.1.*"
+        "illuminate/support": "4.1.*",
+        "league/fractal": "~0.7"
     },
     "require-dev": {
         "dingo/oauth2-server-laravel": "0.2.*",

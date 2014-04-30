@@ -1,28 +1,33 @@
 <?php
 
 use Mockery as m;
-use Dingo\Api\Dispatcher;
 use Dingo\Api\Http\Response;
-use Illuminate\Http\Request;
-use Dingo\Api\Routing\Router;
-use Illuminate\Routing\UrlGenerator;
-use Illuminate\Events\Dispatcher as EventsDispatcher;
-use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
+use Illuminate\Container\Container;
+use League\Fractal\Manager as Fractal;
 
 class DispatcherTest extends PHPUnit_Framework_TestCase {
 
 
 	public function setUp()
 	{
-		$this->request = new Request;
-		$this->router = new Router(new EventsDispatcher);
-		$this->router->setDefaultVersion('v1');
-		$this->router->setVendor('test');
+		$this->router = $this->setUpRouter();
+		$this->request = new Illuminate\Http\Request;
 		$this->shield = m::mock('Dingo\Api\Auth\Shield');
-		$this->url = new UrlGenerator($this->router->getRoutes(), $this->request);
-		$this->dispatcher = new Dispatcher($this->request, $this->url, $this->router, $this->shield);
+		$this->url = new Illuminate\Routing\UrlGenerator($this->router->getRoutes(), $this->request);
+		$this->dispatcher = new Dingo\Api\Dispatcher($this->request, $this->url, $this->router, $this->shield);
 
-		Response::setFormatters(['json' => new JsonResponseFormat]);
+		Response::setFormatters(['json' => new Dingo\Api\Http\ResponseFormat\JsonResponseFormat]);
+		Response::setTransformer($transformer = m::mock('Dingo\Api\Transformer'));
+		$transformer->shouldReceive('transformableResponse')->andReturn(false);
+	}
+
+	public function setUpRouter()
+	{
+		$router = new Dingo\Api\Routing\Router(new Illuminate\Events\Dispatcher);
+		$router->setDefaultVersion('v1');
+		$router->setVendor('test');
+
+		return $router;
 	}
 
 
