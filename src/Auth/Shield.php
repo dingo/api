@@ -170,34 +170,4 @@ class Shield {
 		return $this->usedProvider;
 	}
 
-	/**
-	 * Determine if the provider used was an OAuth 2.0 provider.
-	 * 
-	 * @return bool
-	 */
-	public function wasOAuth()
-	{
-		return $this->getUsedProvider() instanceof OAuth2ProviderInterface;
-	}
-
-	/**
-	 * Magically call methods on the authenticated provider used.
-	 * 
-	 * @param  string  $method
-	 * @param  array  $parameters
-	 * @return mixed
-	 * @throws \BadMethodCallException
-	 */
-	public function __call($method, $parameters)
-	{
-		$provider = $this->getUsedProvider();
-
-		if (method_exists($provider, $method))
-		{
-			return call_user_func_array([$provider, $method], $parameters);
-		}
-
-		throw new BadMethodCallException('Method "'.$method.'" not found.');
-	}
-
 }

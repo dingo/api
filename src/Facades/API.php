@@ -53,16 +53,6 @@ class API extends Facade {
 	}
 
 	/**
-	 * Determine if authentication was done using OAuth 2.0.
-	 * 
-	 * @return bool
-	 */
-	public static function usedOAuth()
-	{
-		return static::$app['dingo.api.auth']->usedOAuth();
-	}
-
-	/**
 	 * Get the authenticated API user.
 	 * 
 	 * @return \Illuminate\Auth\GenericUser|\Illuminate\Database\Eloquent\Model
