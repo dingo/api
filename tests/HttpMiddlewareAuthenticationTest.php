@@ -110,7 +110,7 @@ class HttpMiddlewareAuthenticationTest extends PHPUnit_Framework_TestCase {
 
 		$auth->shouldReceive('authenticate')->once()->with($this->request, $route)->andThrow($exception = new UnauthorizedHttpException(null, 'test'));
 		$this->router->shouldReceive('handleException')->once()->with($exception)->andReturn(new Response('test', 401));
-		$this->router->shouldReceive('getRequestedFormat')->once()->andReturn('json');
+		$this->router->shouldReceive('parseAcceptHeader')->once()->with($this->request)->andReturn(['v1', 'json']);
 
 		ApiResponse::setFormatters(['json' => new JsonResponseFormat]);
 

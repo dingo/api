@@ -120,7 +120,9 @@ class Authentication implements HttpKernelInterface {
 		{
 			$response = $this->router->handleException($exception);
 
-			return Response::makeFromExisting($response)->morph($this->router->getRequestedFormat());
+			list ($version, $format) = $this->router->parseAcceptHeader($request);
+
+			return Response::makeFromExisting($response)->morph($format);
 		}
 	}
 
