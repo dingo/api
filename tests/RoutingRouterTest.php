@@ -6,19 +6,26 @@ use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
 use Illuminate\Events\Dispatcher;
 use Dingo\Api\Http\InternalRequest;
-use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
 
 class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 
 	public function setUp()
 	{
+		$this->exceptionHandler = m::mock('Dingo\Api\ExceptionHandler');
+
 		$this->router = new Router(new Dispatcher);
-		$this->router->setExceptionHandler($this->exceptionHandler = m::mock('Dingo\Api\ExceptionHandler'));
+		$this->router->setExceptionHandler($this->exceptionHandler);
 		$this->router->setDefaultVersion('v1');
 		$this->router->setVendor('testing');
 
-		Response::setFormatters(['json' => new JsonResponseFormat]);
+		Response::setFormatters(['json' => new Dingo\Api\Http\ResponseFormat\JsonResponseFormat]);
+
+		$transformer = m::mock('Dingo\Api\Transformer');
+		$transformer->shouldReceive('transformableResponse')->andReturn(false);
+		$transformer->shouldReceive('setRequest');
+
+		Response::setTransformer($transformer);
 	}
 
 

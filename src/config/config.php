@@ -115,6 +115,27 @@ return [
 
 		'json' => new Dingo\Api\Http\ResponseFormat\JsonResponseFormat
 		
+	],
+
+
+	/*
+	|--------------------------------------------------------------------------
+	| Transformer Scopes
+	|--------------------------------------------------------------------------
+	|
+	| Transformers can use scopes to nest or embed relationships. The "key"
+	| is the query string identifier which will hold the requested scopes.
+	| The "separator" is the character that will separate each scope.
+	| Do not use a "." as a separator as that is used when defining
+	| child scopes.
+	|
+	*/
+
+	'scopes' => [
+
+		'key' => 'embeds',
+		'separator' => ','
+
 	]
 
 ];

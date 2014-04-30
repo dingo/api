@@ -1,5 +1,6 @@
 <?php namespace Dingo\Api;
 
+use Illuminate\Http\Request;
 use Illuminate\Container\Container;
 use League\Fractal\Manager as Fractal;
 use League\Fractal\Resource\Item as FractalItem;
@@ -23,11 +24,32 @@ class Transformer {
 	protected $container;
 
 	/**
+	 * The scopes query string key.
+	 * 
+	 * @var string
+	 */
+	protected $scopesKey;
+
+	/**
+	 * The scopes separator.
+	 * 
+	 * @var string
+	 */
+	protected $scopesSeparator;
+
+	/**
 	 * Array of registered transformers.
 	 * 
 	 * @var array
 	 */
 	protected $transformers = [];
+
+	/**
+	 * The current request instance.
+	 * 
+	 * @var \Illuminate\Http\Request
+	 */
+	protected $request;
 
 	/**
 	 * Create a new transformer instance.
@@ -36,10 +58,12 @@ class Transformer {
 	 * @param  \Illuminate\Container\Container  $container
 	 * @return void
 	 */
-	public function __construct(Fractal $fractal, Container $container)
+	public function __construct(Fractal $fractal, Container $container, $scopesKey = 'embeds', $scopesSeparator = ',')
 	{
 		$this->fractal = $fractal;
 		$this->container = $container;
+		$this->scopesKey = $scopesKey;
+		$this->scopesSeparator = $scopesSeparator;
 	}
 
 	/**
@@ -65,6 +89,8 @@ class Transformer {
 	public function transformResponse($response)
 	{
 		$transformer = $this->resolveTransformer($this->getTransformer($response));
+
+		$this->setRequestedScopes();
 
 		return $this->fractal->createData($this->createResource($response, $transformer))->toArray();
 	}
@@ -157,6 +183,34 @@ class Transformer {
 	protected function getTransformerFromCollection($collection)
 	{
 		return $this->getTransformer($collection->first());
+	}
+
+	/**
+	 * Set the requested scopes.
+	 * 
+	 * @return void
+	 */
+	protected function setRequestedScopes()
+	{
+		if ( ! $this->request)
+		{
+			return;
+		}
+
+		$scopes = array_filter(explode($this->scopesSeparator, $this->request->get($this->scopesKey)));
+
+		$this->fractal->setRequestedScopes($scopes);
+	}
+
+	/**
+	 * Set the request that's being used to generate the response.
+	 * 
+	 * @param  \Illuminate\Http\Request  $request
+	 * @return void
+	 */
+	public function setRequest(Request $request)
+	{
+		$this->request = $request;
 	}
 
 	/**

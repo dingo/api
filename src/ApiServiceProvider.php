@@ -123,7 +123,7 @@ class ApiServiceProvider extends ServiceProvider {
 	{
 		$this->app['dingo.api.transformer'] = $this->app->share(function($app)
 		{
-			return new Transformer(new Fractal, $app);
+			return new Transformer(new Fractal, $app, $app['config']['api::scopes.key'], $app['config']['api::scopes.separator']);
 		});
 	}
 

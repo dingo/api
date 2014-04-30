@@ -143,6 +143,8 @@ class Router extends IlluminateRouter {
 	{
 		$this->container->instance('Illuminate\Http\Request', $request);
 
+		Response::getTransformer()->setRequest($request);
+
 		try
 		{
 			$response = parent::dispatch($request);

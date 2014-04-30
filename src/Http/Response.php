@@ -136,4 +136,9 @@ class Response extends IlluminateResponse {
 		static::$transformer = $transformer;
 	}
 
+	public static function getTransformer()
+	{
+		return static::$transformer;
+	}
+
 }

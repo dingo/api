@@ -21,7 +21,12 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 		$this->dispatcher = new Dingo\Api\Dispatcher($this->request, $this->url, $this->router, $this->shield);
 
 		Response::setFormatters(['json' => new Dingo\Api\Http\ResponseFormat\JsonResponseFormat]);
-		Response::setTransformer(m::mock('Dingo\Api\Transformer')->shouldReceive('transformableResponse')->andReturn(false)->getMock());
+
+		$transformer = m::mock('Dingo\Api\Transformer');
+		$transformer->shouldReceive('transformableResponse')->andReturn(false);
+		$transformer->shouldReceive('setRequest');
+
+		Response::setTransformer($transformer);
 	}
 
 
