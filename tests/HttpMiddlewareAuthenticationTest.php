@@ -25,6 +25,7 @@ class HttpMiddlewareAuthenticationTest extends PHPUnit_Framework_TestCase {
 		$this->collection = m::mock('Dingo\Api\Routing\ApiRouteCollection');
 
 		$this->container->shouldReceive('boot')->atLeast()->once();
+		$this->router->shouldReceive('requestTargettingApi')->andReturn(true);
 
 		$this->middleware = new Authentication($this->app, $this->container);
 	}

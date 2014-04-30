@@ -78,7 +78,7 @@ class Authentication implements HttpKernelInterface {
 		// If a collection exists for the request and we can match a route
 		// from the request then we'll check to see if the route is
 		// protected and, if it is, we'll attempt to authenticate.
-		if ($collection = $this->router->getApiRouteCollectionFromRequest($request))
+		if ($this->router->requestTargettingApi($request) and $collection = $this->router->getApiRouteCollectionFromRequest($request))
 		{
 			try
 			{
