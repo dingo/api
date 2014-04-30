@@ -111,11 +111,15 @@ class Shield {
 	 */
 	public function getUser()
 	{
-		if ($this->user) return $this->user;
-
-		if ( ! $this->userId) return null;
-
-		if ( ! $this->auth->check())
+		if ($this->user)
+		{
+			return $this->user;
+		}
+		elseif ( ! $this->userId)
+		{
+			return null;
+		}
+		elseif ( ! $this->auth->check())
 		{
 			$this->auth->onceUsingId($this->userId);
 		}

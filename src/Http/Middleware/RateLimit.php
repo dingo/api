@@ -124,7 +124,10 @@ class RateLimit implements HttpKernelInterface {
 	{
 		$requestsRemaining = $this->config['limit'] - $this->cache->get($this->config['keys']['requests']);
 
-		if ($requestsRemaining < 0) $requestsRemaining = 0;
+		if ($requestsRemaining < 0)
+		{
+			$requestsRemaining = 0;
+		}
 
 		$response->headers->set('X-RateLimit-Limit', $this->config['limit']);
 		$response->headers->set('X-RateLimit-Remaining', $requestsRemaining);
@@ -150,7 +153,10 @@ class RateLimit implements HttpKernelInterface {
 	 */
 	protected function isRequestAuthenticated()
 	{
-		if ( ! is_null($this->authenticatedRequest)) return $this->authenticatedRequest;
+		if ( ! is_null($this->authenticatedRequest))
+		{
+			return $this->authenticatedRequest;
+		}
 
 		return $this->authenticatedRequest = $this->auth->check();
 	}
@@ -198,7 +204,10 @@ class RateLimit implements HttpKernelInterface {
 	{
 		$binding = isset($this->mappings[$binding]) ? $this->mappings[$binding] : $binding;
 
-		if (isset($this->bindings[$binding])) return $this->bindings[$binding];
+		if (isset($this->bindings[$binding]))
+		{
+			return $this->bindings[$binding];
+		}
 
 		return $this->bindings[$binding] = $this->container->make($binding);
 	}

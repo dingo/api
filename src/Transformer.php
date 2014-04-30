@@ -105,9 +105,11 @@ class Transformer {
 	 */
 	protected function resolveTransformer($transformer)
 	{
-		if ( ! $transformer) return;
-
-		if (is_string($transformer))
+		if ( ! $transformer)
+		{
+			return null;
+		}
+		elseif (is_string($transformer))
 		{
 			return new $transformer;
 		}

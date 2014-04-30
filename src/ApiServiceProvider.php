@@ -20,8 +20,6 @@ class ApiServiceProvider extends ServiceProvider {
 	{
 		$this->package('dingo/api', 'api', __DIR__);
 
-		// When a controller type hints the dispatcher we'll make sure Laravel knows
-		// to inject an instance of the registered API dispatcher.
 		$this->app['Dingo\Api\Dispatcher'] = function($app)
 		{
 			return $app['dingo.api.dispatcher'];
@@ -32,18 +30,6 @@ class ApiServiceProvider extends ServiceProvider {
 			return $app['dingo.api.auth'];
 		};
 
-		Response::setTransformer($this->app['dingo.api.transformer']);
-
-		$this->bootResponseFormatters();
-	}
-
-	/**
-	 * Boot the response formatters.
-	 * 
-	 * @return void
-	 */
-	protected function bootResponseFormatters()
-	{
 		$formats = [];
 
 		foreach ($this->app['config']['api::formats'] as $key => $format)
@@ -57,6 +43,7 @@ class ApiServiceProvider extends ServiceProvider {
 		}
 
 		Response::setFormatters($formats);
+		Response::setTransformer($this->app['dingo.api.transformer']);
 	}
 
 	/**

@@ -220,7 +220,10 @@ class Router extends IlluminateRouter {
 	{
 		$route = $this->createRoute($methods, $uri, $action);
 
-		if ($this->routeTargettingApi($route)) return $this->addApiRoute($route);
+		if ($this->routeTargettingApi($route))
+		{
+			return $this->addApiRoute($route);
+		}
 
 		return $this->routes->add($route);
 	}

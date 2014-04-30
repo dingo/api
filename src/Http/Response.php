@@ -1,6 +1,7 @@
 <?php namespace Dingo\Api\Http;
 
 use RuntimeException;
+use Dingo\Api\Transformer;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Contracts\JsonableInterface;
 use Illuminate\Support\Contracts\ArrayableInterface;
@@ -30,7 +31,7 @@ class Response extends IlluminateResponse {
 	 * @param  \Illuminate\Http\Response  $response
 	 * @return \Dingo\Api\Http\Response
 	 */
-	public static function makeFromExisting(\Illuminate\Http\Response $response)
+	public static function makeFromExisting(IlluminateResponse $response)
 	{
 		return new static($response->getOriginalContent(), $response->getStatusCode(), $response->headers->all());
 	}
@@ -124,7 +125,13 @@ class Response extends IlluminateResponse {
 		static::$formatters = $formatters;
 	}
 
-	public static function setTransformer(\Dingo\Api\Transformer $transformer)
+	/**
+	 * Set the transformer instance.
+	 * 
+	 * @param  \Dingo\Api\Transformer  $transformer
+	 * @return void
+	 */
+	public static function setTransformer(Transformer $transformer)
 	{
 		static::$transformer = $transformer;
 	}

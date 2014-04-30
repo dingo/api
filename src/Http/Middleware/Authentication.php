@@ -147,7 +147,10 @@ class Authentication implements HttpKernelInterface {
 	{
 		$binding = isset($this->mappings[$binding]) ? $this->mappings[$binding] : $binding;
 
-		if (isset($this->bindings[$binding])) return $this->bindings[$binding];
+		if (isset($this->bindings[$binding]))
+		{
+			return $this->bindings[$binding];
+		}
 
 		return $this->bindings[$binding] = $this->container->make($binding);
 	}

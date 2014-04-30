@@ -14,7 +14,10 @@ class API extends Facade {
 	 *
 	 * @return string
 	 */
-	protected static function getFacadeAccessor() { return 'dingo.api.dispatcher'; }
+	protected static function getFacadeAccessor()
+	{ 
+		return 'dingo.api.dispatcher';
+	}
 
 	/**
 	 * Bind an exception handler.
