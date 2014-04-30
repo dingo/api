@@ -33,6 +33,13 @@ class Authentication implements HttpKernelInterface {
 	protected $bindings = [];
 
 	/**
+	 * Array of binding mappings.
+	 * 
+	 * @var array
+	 */
+	protected $mappings = ['auth' => 'dingo.api.auth'];
+
+	/**
 	 * Create a new authentication middleware instance.
 	 * 
 	 * @param  \Symfony\Component\HttpKernel\HttpKernelInterface  $app
@@ -61,19 +68,17 @@ class Authentication implements HttpKernelInterface {
 		// service providers and other container bindings.
 		$this->container->boot();
 
-		if ($request instanceof InternalRequest or $this->container->make('dingo.api.auth')->user())
+		if ($request instanceof InternalRequest or $this->auth->user())
 		{
 			return $this->app->handle($request, $type, $catch);
 		}
-
-		$router = $this->container->make('router');
 
 		$response = null;
 
 		// If a collection exists for the request and we can match a route
 		// from the request then we'll check to see if the route is
 		// protected and, if it is, we'll attempt to authenticate.
-		if ($collection = $router->getApiRouteCollectionFromRequest($request))
+		if ($collection = $this->router->getApiRouteCollectionFromRequest($request))
 		{
 			try
 			{
@@ -87,11 +92,9 @@ class Authentication implements HttpKernelInterface {
 			catch (NotFoundHttpException $exception)
 			{
 				// If we catch a not found exception it's usually because the
-				// API is operating with no prefix so a collection is
-				// returned but a route does not exist for the
-				// request in that collection. We'll just
-				// ignore this and let the wrapping
-				// kernel do its thing.
+				// API is operating without a prefix so a collection is found
+				// but a route does not exist in that collection. We'll just
+				// ignore this and let the wrapping kernel do its thing.
 			}
 
 		}
@@ -111,15 +114,13 @@ class Authentication implements HttpKernelInterface {
 	{
 		try
 		{
-			$this->container->make('dingo.api.auth')->authenticate($request, $route);
+			$this->auth->authenticate($request, $route);
 		}
 		catch (UnauthorizedHttpException $exception)
 		{
-			$router = $this->container->make('router');
+			$response = $this->router->handleException($exception);
 
-			$response = $router->handleException($exception);
-
-			return Response::makeFromExisting($response)->morph($router->getRequestedFormat());
+			return Response::makeFromExisting($response)->morph($this->router->getRequestedFormat());
 		}
 	}
 
@@ -144,6 +145,8 @@ class Authentication implements HttpKernelInterface {
 	 */
 	public function __get($binding)
 	{
+		$binding = isset($this->mappings[$binding]) ? $this->mappings[$binding] : $binding;
+
 		if (isset($this->bindings[$binding])) return $this->bindings[$binding];
 
 		return $this->bindings[$binding] = $this->container->make($binding);

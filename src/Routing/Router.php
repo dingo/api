@@ -26,7 +26,7 @@ class Router extends IlluminateRouter {
 	 * 
 	 * @var string
 	 */
-	protected $defaultVersion;
+	protected $defaultVersion = 'v1';
 
 	/**
 	 * The default API prefix.
@@ -43,6 +43,13 @@ class Router extends IlluminateRouter {
 	protected $defaultDomain;
 
 	/**
+	 * The default API format.
+	 * 
+	 * @var string
+	 */
+	protected $defaultFormat = 'json';
+
+	/**
 	 * The API vendor.
 	 * 
 	 * @var string
@@ -57,11 +64,11 @@ class Router extends IlluminateRouter {
 	protected $requestedVersion;
 
 	/**
-	 * Requested format defaults to JSON.
+	 * Requested format.
 	 * 
 	 * @var string
 	 */
-	protected $requestedFormat = 'json';
+	protected $requestedFormat;
 
 	/**
 	 * Exception handler instance.
@@ -71,11 +78,18 @@ class Router extends IlluminateRouter {
 	protected $exceptionHandler;
 
 	/**
-	 * Array of cached API requests.
+	 * Array of parsed request "Accept" headers.
 	 * 
 	 * @var array
 	 */
-	protected $cachedApiRequests = [];
+	protected $parsedAcceptHeaders = [];
+
+	/**
+	 * Array of requests targetting the API.
+	 * 
+	 * @var array
+	 */
+	protected $requestsTargettingApi = [];
 
 	/**
 	 * Register an API group.
@@ -206,10 +220,7 @@ class Router extends IlluminateRouter {
 	{
 		$route = $this->createRoute($methods, $uri, $action);
 
-		if ($this->routingForApi($route))
-		{
-			return $this->addApiRoute($route);
-		}
+		if ($this->routeTargettingApi($route)) return $this->addApiRoute($route);
 
 		return $this->routes->add($route);
 	}
@@ -256,11 +267,7 @@ class Router extends IlluminateRouter {
 	{
 		$route = parent::createRoute($methods, $uri, $action);
 
-		// If we are routing for the API and routing to a controller we'll check to
-		// see if the controller is one of the API controllers. If it is then we
-		// need to check if the method is protected and get any scopes
-		// associated with the method.
-		if ($this->routingForApi($route) and $this->routingToController($action))
+		if ($this->routeTargettingApi($route) and $this->routingToController($action))
 		{
 			$route = $this->adjustRouteForApiController($route);
 		}
@@ -366,7 +373,7 @@ class Router extends IlluminateRouter {
 	{
 		if ($this->requestTargettingApi($request))
 		{
-			$this->parseAcceptHeader($request);
+			list ($this->requestedVersion, $this->requestedFormat) = $this->parseAcceptHeader($request);
 
 			try
 			{
@@ -399,10 +406,9 @@ class Router extends IlluminateRouter {
 			return false;
 		}
 
-		if (in_array($request, $this->cachedApiRequests))
-		{
-			return true;
-		}
+		$requestHash = $this->getRequestHash($request);
+
+		if (isset($this->requestsTargettingApi[$requestHash])) return $this->requestsTargettingApi[$requestHash];
 
 		if ($collection = $this->getApiRouteCollectionFromRequest($request))
 		{
@@ -410,7 +416,7 @@ class Router extends IlluminateRouter {
 			{
 				$collection->match($request);
 
-				return true;
+				return $this->requestsTargettingApi[$requestHash] = true;
 			}
 			catch (NotFoundHttpException $exception)
 			{
@@ -420,25 +426,36 @@ class Router extends IlluminateRouter {
 			}
 		}
 
-		return false;
+		return $this->requestsTargettingApi[$requestHash] = false;
 	}
 
 	/**
-	 * Parse the requests accept header.
+	 * Parse a requests accept header.
 	 * 
 	 * @param  \Illuminate\Http\Request  $request
-	 * @return string
+	 * @return array
 	 */
-	protected function parseAcceptHeader($request)
+	public function parseAcceptHeader($request)
 	{
+		$requestHash = $this->getRequestHash($request);
+
+		if (isset($this->parsedAcceptHeaders[$requestHash])) return $this->parsedAcceptHeaders[$requestHash];
+
 		if (preg_match('#application/vnd\.'.$this->vendor.'.(v[\d\.]+)\+(\w+)#', $request->header('accept'), $matches))
 		{
-			list ($accept, $this->requestedVersion, $this->requestedFormat) = $matches;
+			$parsed = array_slice($matches, 1);
 		}
 		else
 		{
-			$this->requestedVersion = $this->defaultVersion;
+			$parsed = [$this->defaultVersion, $this->defaultFormat];
 		}
+
+		return $this->parsedAcceptHeaders[$requestHash] = $parsed;
+	}
+
+	protected function getRequestHash($request)
+	{
+		return sha1($request);
 	}
 
 	/**
@@ -482,12 +499,12 @@ class Router extends IlluminateRouter {
 	}
 
 	/**
-	 * Determine if a route is an API route.
+	 * Determine if a route is targetting the API.
 	 * 
 	 * @param  \Illuminate\Routing\Route
 	 * @return bool
 	 */
-	public function routingForApi($route)
+	public function routeTargettingApi($route)
 	{
 		$key = array_search('api', $route->getAction(), true);
 

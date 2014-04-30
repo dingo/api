@@ -12,7 +12,6 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase {
 	public function testRegisterExceptionHandler()
 	{
 		$this->exceptionHandler->register(function(StubHttpException $e){});
-
 		$this->assertArrayHasKey('StubHttpException', $this->exceptionHandler->getHandlers());
 	}
 
@@ -20,7 +19,6 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase {
 	public function testExceptionHandlerWillHandleExceptionPasses()
 	{
 		$this->exceptionHandler->register(function(StubHttpException $e){});
-
 		$this->assertTrue($this->exceptionHandler->willHandle(new StubHttpException(404)));
 	}
 

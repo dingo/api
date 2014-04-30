@@ -28,7 +28,7 @@ class API extends Facade {
 	}
 
 	/**
-	 * Transform a class into a transformer.
+	 * Transform a class into a Fractal transformer.
 	 * 
 	 * @param  string  $class
 	 * @param  string|\Closure  $transformer

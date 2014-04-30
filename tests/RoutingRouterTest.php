@@ -418,8 +418,6 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 		$request = Request::create('api/foo', 'GET');
 
-		$this->assertEquals('{"message":"bar"}', $this->router->dispatch($request)->getContent());
-
 		$this->router->setDefaultVersion('v2');
 		$this->assertEquals('{"message":"baz"}', $this->router->dispatch($request)->getContent());
 	}

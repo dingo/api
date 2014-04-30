@@ -8,6 +8,13 @@ use Illuminate\Routing\Route;
 class AuthShieldTest extends PHPUnit_Framework_TestCase {
 
 
+	public function setUp()
+	{
+		$this->auth = m::mock('Illuminate\Auth\AuthManager');
+		$this->provider = m::mock('Dingo\Api\Auth\AuthorizationProvider');
+	}
+
+
 	public function tearDown()
 	{
 		m::close();
@@ -22,10 +29,9 @@ class AuthShieldTest extends PHPUnit_Framework_TestCase {
 		$request = Request::create('foo', 'GET');
 		$route = new Route('GET', 'foo', ['protected' => true]);
 
-		$provider = $this->getProviderMock();
-		$provider->shouldReceive('authenticate')->once()->with($request, $route)->andThrow(new Exception);
+		$this->provider->shouldReceive('authenticate')->once()->with($request, $route)->andThrow(new Exception);
 
-		(new Shield($this->getAuthMock(), [$provider]))->authenticate($request, $route);
+		(new Shield($this->auth, [$this->provider]))->authenticate($request, $route);
 	}
 
 
@@ -37,10 +43,9 @@ class AuthShieldTest extends PHPUnit_Framework_TestCase {
 		$request = Request::create('foo', 'GET');
 		$route = new Route('GET', 'foo', ['protected' => true]);
 
-		$provider = $this->getProviderMock();
-		$provider->shouldReceive('authenticate')->once()->with($request, $route)->andThrow(new Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException('foo'));
+		$this->provider->shouldReceive('authenticate')->once()->with($request, $route)->andThrow(new Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException('foo'));
 
-		(new Shield($this->getAuthMock(), [$provider]))->authenticate($request, $route);
+		(new Shield($this->auth, [$this->provider]))->authenticate($request, $route);
 	}
 
 
@@ -49,16 +54,15 @@ class AuthShieldTest extends PHPUnit_Framework_TestCase {
 		$request = Request::create('foo', 'GET');
 		$route = new Route('GET', 'foo', ['protected' => true]);
 
-		$provider = $this->getProviderMock();
-		$provider->shouldReceive('authenticate')->once()->with($request, $route)->andReturn(1);
+		$this->provider->shouldReceive('authenticate')->once()->with($request, $route)->andReturn(1);
 
-		$this->assertEquals(1, (new Shield($this->getAuthMock(), ['basic' => $provider]))->authenticate($request, $route));
+		$this->assertEquals(1, (new Shield($this->auth, [$this->provider]))->authenticate($request, $route));
 	}
 
 
 	public function testGettingUserReturnsSetUser()
 	{
-		$auth = new Shield($this->getAuthMock(), []);
+		$auth = new Shield($this->auth, []);
 		$auth->setUser('foo');
 		$this->assertEquals('foo', $auth->user());
 	}
@@ -69,15 +73,13 @@ class AuthShieldTest extends PHPUnit_Framework_TestCase {
 		$request = Request::create('foo', 'GET');
 		$route = new Route('GET', 'foo', ['protected' => true]);
 
-		$provider = $this->getProviderMock();
-		$provider->shouldReceive('authenticate')->once()->with($request, $route)->andReturn(1);
+		$this->provider->shouldReceive('authenticate')->once()->with($request, $route)->andReturn(1);
 
-		$manager = $this->getAuthMock();
-		$manager->shouldReceive('check')->once()->andReturn(false);
-		$manager->shouldReceive('onceUsingId')->once()->with(1)->andReturn(true);
-		$manager->shouldReceive('user')->once()->andReturn('foo');
+		$this->auth->shouldReceive('check')->once()->andReturn(false);
+		$this->auth->shouldReceive('onceUsingId')->once()->with(1)->andReturn(true);
+		$this->auth->shouldReceive('user')->once()->andReturn('foo');
 
-		$auth = new Shield($manager, ['basic' => $provider]);
+		$auth = new Shield($this->auth, [$this->provider]);
 		$auth->authenticate($request, $route);
 		$this->assertEquals('foo', $auth->user());
 	}
@@ -88,22 +90,9 @@ class AuthShieldTest extends PHPUnit_Framework_TestCase {
 		$request = Request::create('foo', 'GET');
 		$route = new Route('GET', 'foo', ['protected' => true, 'scopes' => ['foo', 'bar']]);
 
-		$provider = $this->getProviderMock();
-		$provider->shouldReceive('authenticate')->once()->with($request, $route)->andReturn(1);
+		$this->provider->shouldReceive('authenticate')->once()->with($request, $route)->andReturn(1);
 
-		$this->assertEquals(1, (new Shield($this->getAuthMock(), ['oauth2' => $provider]))->authenticate($request, $route));
-	}
-
-
-	protected function getAuthMock()
-	{
-		return m::mock('Illuminate\Auth\AuthManager');
-	}
-
-
-	protected function getProviderMock()
-	{
-		return m::mock('Dingo\Api\Auth\AuthorizationProvider');
+		$this->assertEquals(1, (new Shield($this->auth, [$this->provider]))->authenticate($request, $route));
 	}
 
 

@@ -23,11 +23,11 @@ class RateLimit implements HttpKernelInterface {
 	protected $container;
 
 	/**
-	 * Default rate limiting config.
+	 * Rate limiting config.
 	 * 
 	 * @var array
 	 */
-	protected $defaultConfig = [
+	protected $config = [
 		'authenticated' => [
 			'limit' => 6000,
 			'reset' => 3600
@@ -45,6 +45,20 @@ class RateLimit implements HttpKernelInterface {
 	 * @var array
 	 */
 	protected $bindings = [];
+
+	/**
+	 * Array of binding mappings.
+	 * 
+	 * @var array
+	 */
+	protected $mappings = ['auth' => 'dingo.api.auth'];
+
+	/**
+	 * Indicates if the request is authenticated.
+	 * 
+	 * @var bool
+	 */
+	protected $authenticatedRequest;
 
 	/**
 	 * Create a new rate limit middleware instance.
@@ -70,12 +84,9 @@ class RateLimit implements HttpKernelInterface {
 	 */
 	public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
 	{
-		// Our middleware needs to ensure that Laravel is booted before we
-		// can do anything. This gives us access to all the booted
-		// service providers and other container bindings.
 		$this->container->boot();
 
-		$this->defaultConfig = array_merge($this->defaultConfig, $this->config->get('api::rate_limiting'));
+		$this->prepareConfig($request);
 
 		// Internal requests as well as requests that are not targetting the
 		// API will not be rate limited. We'll also be sure not to perform
@@ -85,51 +96,86 @@ class RateLimit implements HttpKernelInterface {
 			return $this->app->handle($request, $type, $catch);
 		}
 
-		$cacheKeys = $this->getCacheKeys($request);
+		$this->cache->add($this->config['keys']['requests'], 0, $this->config['reset']);
+		$this->cache->add($this->config['keys']['reset'], time() + ($this->config['reset'] * 60), $this->config['reset']);
+		$this->cache->increment($this->config['keys']['requests']);
 
-		$this->cache->add($cacheKeys['limit'], 0, $this->getCacheReset());
-		$this->cache->add($cacheKeys['reset'], time() + ($this->getCacheReset() * 60), $this->getCacheReset());
-
-		$this->cache->increment($cacheKeys['limit']);
-
-		// If the total number of requests made exceeds the allowed number of
-		// requests then we'll create a new API response with a 403 status
-		// code. This will inform the consumer they have breached their
-		// allowed limit and must wait until it is reset.
-		$allowedRequests = $this->getAllowedRequests();
-		$totalRequests = $this->cache->get($cacheKeys['limit']);
-
-		if ($totalRequests > $allowedRequests)
+		if ($this->exceededRateLimit())
 		{
-			$response = new Response($this->defaultConfig['exceeded'], 403);
+			list ($version, $format) = $this->router->parseAcceptHeader($request);
 
-			$response->morph();
+			$response = (new Response($this->config['exceeded'], 403))->morph($format);
 		}
-
-		// Otherwise we'll let the next middleware handle the request and
-		// use the response returned from that.
 		else
 		{
 			$response = $this->app->handle($request, $type, $catch);
 		}
 
-		$requestsRemaining = $allowedRequests - $totalRequests;
+		return $this->adjustResponseHeaders($response);
+	}
 
-		$response->headers->set('X-RateLimit-Limit', $allowedRequests);
-		$response->headers->set('X-RateLimit-Remaining', $requestsRemaining > 0 ? $requestsRemaining : 0);
-		$response->headers->set('X-RateLimit-Reset', $this->cache->get($cacheKeys['reset']));
+	/**
+	 * Adjust the response headers and return the response.
+	 * 
+	 * @param  \Dingo\Api\Http\Response  $response
+	 * @return \Dingo\Api\Http\Response
+	 */
+	protected function adjustResponseHeaders($response)
+	{
+		$requestsRemaining = $this->config['limit'] - $this->cache->get($this->config['keys']['requests']);
+
+		if ($requestsRemaining < 0) $requestsRemaining = 0;
+
+		$response->headers->set('X-RateLimit-Limit', $this->config['limit']);
+		$response->headers->set('X-RateLimit-Remaining', $requestsRemaining);
+		$response->headers->set('X-RateLimit-Reset', $this->cache->get($this->config['keys']['reset']));
 
 		return $response;
 	}
 
 	/**
-	 * Get the allowed number of requests.
+	 * Determine if the client has exceeded their rate limit.
 	 * 
-	 * @return int
+	 * @return bool
 	 */
-	protected function getAllowedRequests()
+	protected function exceededRateLimit()
 	{
-		return $this->shield->check() ? $this->defaultConfig['authenticated']['limit'] : $this->defaultConfig['unauthenticated']['limit'];
+		return $this->cache->get($this->config['keys']['requests']) > $this->config['limit'];
+	}
+
+	/**
+	 * Deteremine if the request is authenticated.
+	 * 
+	 * @return bool
+	 */
+	protected function isRequestAuthenticated()
+	{
+		if ( ! is_null($this->authenticatedRequest)) return $this->authenticatedRequest;
+
+		return $this->authenticatedRequest = $this->auth->check();
+	}
+
+	/**
+	 * Prepare the configuration for the request.
+	 * 
+	 * @param  \Illuminate\Http\Request  $request
+	 * @return void
+	 */
+	protected function prepareConfig($request)
+	{
+		$this->config = array_merge($this->config, $this->container->make('config')->get('api::rate_limiting'));
+
+		if ($this->isRequestAuthenticated())
+		{
+			$this->config = array_merge(['exceeded' => $this->config['exceeded']], $this->config['authenticated']);
+		}
+		else
+		{
+			$this->config = array_merge(['exceeded' => $this->config['exceeded']], $this->config['unauthenticated']);	
+		}
+
+		$this->config['keys']['requests'] = sprintf('dingo:api:requests:%s', $request->getClientIp());
+		$this->config['keys']['reset'] = sprintf('dingo:api:reset:%s', $request->getClientIp());
 	}
 
 	/**
@@ -139,32 +185,7 @@ class RateLimit implements HttpKernelInterface {
 	 */
 	protected function rateLimitingDisabled()
 	{
-		return $this->getAllowedRequests() == 0;
-	}
-
-	/**
-	 * Get the cache reset time.
-	 * 
-	 * @return int
-	 */
-	protected function getCacheReset()
-	{
-
-		return $this->shield->check() ? $this->defaultConfig['authenticated']['reset'] : $this->defaultConfig['unauthenticated']['reset'];
-	}
-
-	/**
-	 * Get the "limit" and "reset" cache keys.
-	 * 
-	 * @param  \Symfony\Component\HttpFoundation\Request  $request
-	 * @return array
-	 */
-	protected function getCacheKeys(Request $request)
-	{
-		return [
-			'limit' => sprintf('dingo:api:limit:%s', $request->getClientIp()),
-			'reset' => sprintf('dingo:api:reset:%s', $request->getClientIp())
-		];
+		return $this->config['limit'] == 0;
 	}
 
 	/**
@@ -175,8 +196,7 @@ class RateLimit implements HttpKernelInterface {
 	 */
 	public function __get($binding)
 	{
-		$mappings = ['shield' => 'dingo.api.auth'];
-		$binding = isset($mappings[$binding]) ? $mappings[$binding] : $binding;
+		$binding = isset($this->mappings[$binding]) ? $this->mappings[$binding] : $binding;
 
 		if (isset($this->bindings[$binding])) return $this->bindings[$binding];
 

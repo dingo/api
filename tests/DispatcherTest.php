@@ -10,31 +10,23 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
-		$this->router = $this->setUpRouter();
+		$this->router = new Dingo\Api\Routing\Router(new Illuminate\Events\Dispatcher);
+		$this->router->setDefaultVersion('v1');
+		$this->router->setVendor('testing');
+
 		$this->request = new Illuminate\Http\Request;
 		$this->shield = m::mock('Dingo\Api\Auth\Shield');
 		$this->url = new Illuminate\Routing\UrlGenerator($this->router->getRoutes(), $this->request);
+
 		$this->dispatcher = new Dingo\Api\Dispatcher($this->request, $this->url, $this->router, $this->shield);
 
 		Response::setFormatters(['json' => new Dingo\Api\Http\ResponseFormat\JsonResponseFormat]);
-		Response::setTransformer($transformer = m::mock('Dingo\Api\Transformer'));
-		$transformer->shouldReceive('transformableResponse')->andReturn(false);
-	}
-
-	public function setUpRouter()
-	{
-		$router = new Dingo\Api\Routing\Router(new Illuminate\Events\Dispatcher);
-		$router->setDefaultVersion('v1');
-		$router->setVendor('test');
-
-		return $router;
+		Response::setTransformer(m::mock('Dingo\Api\Transformer')->shouldReceive('transformableResponse')->andReturn(false)->getMock());
 	}
 
 
 	public function tearDown()
 	{
-		Response::setFormatters([]);
-
 		m::close();
 	}
 
@@ -214,7 +206,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 	}
 
 
-	public function testInternalRequestWithPrefixAndNestedInternalRequest()
+	public function testInternalRequestWithNestedInternalRequest()
 	{
 		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
 		{
