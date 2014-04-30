@@ -41,7 +41,7 @@ class Dispatcher {
 	 * 
 	 * @var \Dingo\Api\Auth\Shield
 	 */
-	protected $shield;
+	protected $auth;
 
 	/**
 	 * Original request input array.
@@ -84,15 +84,15 @@ class Dispatcher {
 	 * @param  \Illuminate\Http\Request  $request
 	 * @param  \Illuminate\Routing\UrlGenerator  $url
 	 * @param  \Dingo\Api\Routing\Router  $router
-	 * @param  \Dingo\Api\Auth\Shield  $shield
+	 * @param  \Dingo\Api\Auth\Shield  $auth
 	 * @return void
 	 */
-	public function __construct(Request $request, UrlGenerator $url, Router $router, Shield $shield)
+	public function __construct(Request $request, UrlGenerator $url, Router $router, Shield $auth)
 	{
 		$this->request = $request;
 		$this->url = $url;
 		$this->router = $router;
-		$this->shield = $shield;
+		$this->auth = $auth;
 	}
 
 	/**
@@ -108,7 +108,7 @@ class Dispatcher {
 			throw new RuntimeException('User must be an instance of either Illuminate\Database\Eloquent\Model or Illuminate\Auth\GenericUser.');
 		}
 
-		$this->shield->setUser($user);
+		$this->auth->setUser($user);
 
 		return $this;
 	}
@@ -361,7 +361,7 @@ class Dispatcher {
 	{
 		if ( ! $this->persistAuthenticationUser)
 		{
-			$this->shield->setUser(null);
+			$this->auth->setUser(null);
 
 			$this->persistAuthenticationUser = true;
 		}
