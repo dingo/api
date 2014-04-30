@@ -7,6 +7,12 @@ use Dingo\Api\Auth\BasicProvider;
 class AuthBasicProviderTest extends PHPUnit_Framework_TestCase {
 
 
+	public function setUp()
+	{
+		$this->auth = m::mock('Illuminate\Auth\AuthManager');
+	}
+
+
 	public function tearDown()
 	{
 		m::close();
@@ -19,7 +25,7 @@ class AuthBasicProviderTest extends PHPUnit_Framework_TestCase {
 	public function testValidatingAuthorizationHeaderFailsAndThrowsException()
 	{
 		$request = Request::create('foo', 'GET');
-		$provider = new BasicProvider($this->getAuthMock(), []);
+		$provider = new BasicProvider($this->auth);
 		$provider->authenticate($request);
 	}
 
@@ -31,8 +37,8 @@ class AuthBasicProviderTest extends PHPUnit_Framework_TestCase {
 	{
 		$request = Request::create('foo', 'GET');
 		$request->headers->set('authorization', 'Basic foo');
-		$provider = new BasicProvider($auth = $this->getAuthMock(), []);
-		$auth->shouldReceive('onceBasic')->once()->with('email')->andReturn(m::mock(['getStatusCode' => 401]));
+		$provider = new BasicProvider($this->auth);
+		$this->auth->shouldReceive('onceBasic')->once()->with('email')->andReturn(m::mock(['getStatusCode' => 401]));
 		$provider->authenticate($request, m::mock('Illuminate\Routing\Route'));
 	}
 
@@ -42,10 +48,10 @@ class AuthBasicProviderTest extends PHPUnit_Framework_TestCase {
 		$request = Request::create('foo', 'GET');
 		$request->headers->set('authorization', 'Basic foo');
 		
-		$provider = new BasicProvider($auth = $this->getAuthMock(), []);
+		$provider = new BasicProvider($this->auth);
 
-		$auth->shouldReceive('onceBasic')->once()->with('email')->andReturn(m::mock(['getStatusCode' => 200]));
-		$auth->shouldReceive('user')->once()->andReturn((object) ['id' => 1]);
+		$this->auth->shouldReceive('onceBasic')->once()->with('email')->andReturn(m::mock(['getStatusCode' => 200]));
+		$this->auth->shouldReceive('user')->once()->andReturn((object) ['id' => 1]);
 		$this->assertEquals(1, $provider->authenticate($request, m::mock('Illuminate\Routing\Route')));
 	}
 
@@ -55,18 +61,11 @@ class AuthBasicProviderTest extends PHPUnit_Framework_TestCase {
 		$request = Request::create('foo', 'GET');
 		$request->headers->set('authorization', 'Basic foo');
 
-		$provider = new BasicProvider($auth = $this->getAuthMock());
-		$provider->setOptions(['identifier' => 'username']);
+		$provider = new BasicProvider($this->auth, 'username');
 
-		$auth->shouldReceive('onceBasic')->once()->with('username')->andReturn(m::mock(['getStatusCode' => 200]));
-		$auth->shouldReceive('user')->once()->andReturn((object) ['id' => 1]);
+		$this->auth->shouldReceive('onceBasic')->once()->with('username')->andReturn(m::mock(['getStatusCode' => 200]));
+		$this->auth->shouldReceive('user')->once()->andReturn((object) ['id' => 1]);
 		$this->assertEquals(1, $provider->authenticate($request, m::mock('Illuminate\Routing\Route')));
-	}
-
-
-	protected function getAuthMock()
-	{
-		return m::mock('Illuminate\Auth\AuthManager');
 	}
 
 

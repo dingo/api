@@ -147,30 +147,18 @@ class ApiServiceProvider extends ServiceProvider {
 	 */
 	protected function registerAuthentication()
 	{
-		$this->app['dingo.api.auth.manager'] = $this->app->share(function($app)
-		{
-			return new ProviderManager($app);
-		});
-
 		$this->app['dingo.api.auth'] = $this->app->share(function($app)
 		{
 			$providers = [];
 
-			foreach ($app['config']['api::auth'] as $key => $value)
+			foreach ($app['config']['api::auth'] as $key => $provider)
 			{
-				list ($provider, $options) = [$key, $value];
-
-				if ( ! is_string($key))
+				if (is_callable($provider))
 				{
-					list ($provider, $options) = [$value, []];
+					$provider = call_user_func($provider, $app);
 				}
 
-				if ($options instanceof Closure)
-				{
-					$options = call_user_func($options, $app);
-				}
-
-				$providers[$provider] = $app['dingo.api.auth.manager']->driver($provider)->setOptions($options);
+				$providers[$key] = $provider;
 			}
 
 			return new Shield($app['auth'], $providers);

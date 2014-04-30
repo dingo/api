@@ -15,11 +15,11 @@ class BasicProvider extends AuthorizationProvider {
 	protected $auth;
 
 	/**
-	 * Array of provider speicifc options.
+	 * Basic auth identifier.
 	 * 
-	 * @var array
+	 * @var string
 	 */
-	protected $options = ['identifier' => 'email'];
+	protected $identifier;
 
 	/**
 	 * Create a new Dingo\Api\Auth\BasicProvider instance.
@@ -27,9 +27,10 @@ class BasicProvider extends AuthorizationProvider {
 	 * @param  \Illuminate\Auth\AuthManager  $auth
 	 * @return void
 	 */
-	public function __construct(AuthManager $auth)
+	public function __construct(AuthManager $auth, $identifier = 'email')
 	{
 		$this->auth = $auth;
+		$this->identifier = $identifier;
 	}
 
 	/**
@@ -43,7 +44,7 @@ class BasicProvider extends AuthorizationProvider {
 	{
 		$this->validateAuthorizationHeader($request);
 
-		if ($response = $this->auth->onceBasic($this->options['identifier']) and $response->getStatusCode() === 401)
+		if ($response = $this->auth->onceBasic($this->identifier) and $response->getStatusCode() === 401)
 		{
 			throw new UnauthorizedHttpException('Basic', 'Invalid authentication credentials.');
 		}

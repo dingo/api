@@ -59,11 +59,14 @@ return [
 	| The authentication providers that should be used when attempting to
 	| authenticate an incoming API request.
 	|
-	| Available: "basic", "oauth2"
-	|
 	*/
 
-	'auth' => ['basic'],
+	'auth' => [
+		'basic' => function($app)
+		{
+			return new Dingo\Api\Auth\BasicProvider($app['auth']);
+		}
+	],
 
 	/*
 	|--------------------------------------------------------------------------

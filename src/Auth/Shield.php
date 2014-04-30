@@ -31,7 +31,7 @@ class Shield {
 	 * 
 	 * @var \Dingo\Api\Auth\Provider
 	 */
-	protected $provider;
+	protected $usedProvider;
 
 	/**
 	 * Authenticated user ID.
@@ -78,7 +78,7 @@ class Shield {
 			{
 				$id = $provider->authenticate($request, $route);
 
-				$this->provider = $provider;
+				$this->usedProvider = $provider;
 
 				return $this->userId = $id;
 			}
@@ -165,9 +165,9 @@ class Shield {
 	 * 
 	 * @return \Dingo\Api\Auth\Provider
 	 */
-	public function getProvider()
+	public function getUsedProvider()
 	{
-		return $this->provider;
+		return $this->usedProvider;
 	}
 
 	/**
@@ -175,9 +175,9 @@ class Shield {
 	 * 
 	 * @return bool
 	 */
-	public function usedOAuth()
+	public function wasOAuth()
 	{
-		return $this->getProvider() instanceof OAuth2ProviderInterface;
+		return $this->getUsedProvider() instanceof OAuth2ProviderInterface;
 	}
 
 	/**
@@ -190,7 +190,7 @@ class Shield {
 	 */
 	public function __call($method, $parameters)
 	{
-		$provider = $this->getProvider();
+		$provider = $this->getUsedProvider();
 
 		if (method_exists($provider, $method))
 		{
