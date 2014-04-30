@@ -408,7 +408,10 @@ class Router extends IlluminateRouter {
 
 		$requestHash = $this->getRequestHash($request);
 
-		if (isset($this->requestsTargettingApi[$requestHash])) return $this->requestsTargettingApi[$requestHash];
+		if (isset($this->requestsTargettingApi[$requestHash]))
+		{
+			return $this->requestsTargettingApi[$requestHash];
+		}
 
 		if ($collection = $this->getApiRouteCollectionFromRequest($request))
 		{
@@ -439,7 +442,10 @@ class Router extends IlluminateRouter {
 	{
 		$requestHash = $this->getRequestHash($request);
 
-		if (isset($this->parsedAcceptHeaders[$requestHash])) return $this->parsedAcceptHeaders[$requestHash];
+		if (isset($this->parsedAcceptHeaders[$requestHash]))
+		{
+			return $this->parsedAcceptHeaders[$requestHash];
+		}
 
 		if (preg_match('#application/vnd\.'.$this->vendor.'.(v[\d\.]+)\+(\w+)#', $request->header('accept'), $matches))
 		{
@@ -453,6 +459,12 @@ class Router extends IlluminateRouter {
 		return $this->parsedAcceptHeaders[$requestHash] = $parsed;
 	}
 
+	/**
+	 * Get a requests hash representation.
+	 * 
+	 * @param  \Illuminate\Http\Request  $request
+	 * @return string
+	 */
 	protected function getRequestHash($request)
 	{
 		return sha1($request);
