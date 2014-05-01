@@ -663,4 +663,16 @@ class Router extends IlluminateRouter {
 		return $this->inspector ?: $this->inspector = new ControllerInspector;
 	}
 
+    public function getRoutes()
+    {
+        $routes = parent::getRoutes();
+
+        foreach($this->api as $apiRoutes) {
+            foreach($apiRoutes->getRoutes() as $apiRoute) {
+                $routes->add($apiRoute);
+            }
+        }
+
+        return $routes;
+    }
 }
