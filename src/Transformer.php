@@ -4,7 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Container\Container;
 use League\Fractal\Manager as Fractal;
 use League\Fractal\Resource\Item as FractalItem;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use Illuminate\Support\Collection as IlluminateCollection;
+use Illuminate\Pagination\Paginator as IlluminatePaginator;
 use League\Fractal\Resource\Collection as FractalCollection;
 
 class Transformer {
@@ -92,7 +94,19 @@ class Transformer {
 
 		$this->setRequestedScopes();
 
-		return $this->fractal->createData($this->createResource($response, $transformer))->toArray();
+		$resource = $this->createResource($response, $transformer);
+
+		// If the response is a paginator then we'll create a new paginator
+		// adapter for Laravel and set the paginator instance on our
+		// collection resource.
+		if ($response instanceof IlluminatePaginator)
+		{
+			$paginator = new IlluminatePaginatorAdapter($response);
+
+			$resource->setPaginator($paginator);
+		}
+
+		return $this->fractal->createData($resource)->toArray();
 	}
 
 	/**
@@ -115,7 +129,7 @@ class Transformer {
 	 */
 	protected function createResource($response, $transformer)
 	{
-		if ($response instanceof IlluminateCollection)
+		if ($this->isCollection($response))
 		{
 			return new FractalCollection($response, $transformer);
 		}
@@ -151,7 +165,7 @@ class Transformer {
 	 */
 	protected function getTransformer($class)
 	{
-		if ($class instanceof IlluminateCollection)
+		if ($this->isCollection($class))
 		{
 			return $this->getTransformerFromCollection($class);
 		}
@@ -200,6 +214,17 @@ class Transformer {
 		$scopes = array_filter(explode($this->embedsSeparator, $this->request->get($this->embedsKey)));
 
 		$this->fractal->setRequestedScopes($scopes);
+	}
+
+	/**
+	 * Determine if the instance is a collection.
+	 * 
+	 * @param  object  $instance
+	 * @return bool
+	 */
+	protected function isCollection($instance)
+	{
+		return $instance instanceof IlluminateCollection or $instance instanceof IlluminatePaginator;
 	}
 
 	/**
