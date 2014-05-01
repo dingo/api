@@ -109,16 +109,3 @@ class CustomProviderStub extends Dingo\Api\Auth\Provider {
 	}
 
 }
-
-class FooTransformerStub extends League\Fractal\TransformerAbstract {
-
-	public function transform(FooStub $foo)
-	{
-		return ['foo' => 'bar'];
-	}
-
-}
-
-class FooStub {
-	
-}

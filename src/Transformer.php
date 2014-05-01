@@ -1,5 +1,6 @@
 <?php namespace Dingo\Api;
 
+use RuntimeException;
 use Illuminate\Http\Request;
 use Illuminate\Container\Container;
 use League\Fractal\Manager as Fractal;
@@ -117,7 +118,7 @@ class Transformer {
 	 */
 	public function transformableResponse($response)
 	{
-		return ! is_null($this->getTransformer($response));
+		return $this->hasTransformer($response);
 	}
 
 	/**
@@ -140,16 +141,12 @@ class Transformer {
 	/**
 	 * Resolve a transfomer instance.
 	 * 
-	 * @param  null|string|\Closure  $transformer
+	 * @param  string|\Closure  $transformer
 	 * @return \League\Fractal\TransformerAbstract
 	 */
 	protected function resolveTransformer($transformer)
 	{
-		if ( ! $transformer)
-		{
-			return null;
-		}
-		elseif (is_string($transformer))
+		if (is_string($transformer))
 		{
 			return $this->container->make($transformer);
 		}
@@ -161,7 +158,8 @@ class Transformer {
 	 * Get transformer from a class.
 	 * 
 	 * @param  mixed  $class
-	 * @return null|string|\Closure
+	 * @return string|\Closure
+	 * @throws \RuntimeException
 	 */
 	protected function getTransformer($class)
 	{
@@ -172,7 +170,12 @@ class Transformer {
 
 		$class = is_object($class) ? get_class($class) : $class;
 
-		return $this->hasTransformer($class) ? $this->transformers[$class] : null;
+		if ( ! $this->hasTransformer($class))
+		{
+			throw new RuntimeException('Unable to find bound transformer for "'.$class.'" class.');
+		}
+
+		return $this->transformers[$class];
 	}
 
 	/**
