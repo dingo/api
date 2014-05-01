@@ -429,5 +429,11 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('{"message":"baz"}', $this->router->dispatch($request)->getContent());
 	}
 
+    public function testRouterReturnsCorrectRoutesForArtisanCommand()
+    {
+        $this->router->api(['version' => 'v1'], function() { $this->router->get('foo', function() { return 'bar'; }); });
+        $this->router->get('bar', function() { return 'baz'; });
 
+        $this->assertCount(2, $this->router->getRoutes());
+    }
 }
