@@ -37,6 +37,7 @@ class TransformerTest extends PHPUnit_Framework_TestCase {
 	public function testTransformingResponseUsingTransformerClassName()
 	{
 		$this->transformer->transform('FooStub', 'FooTransformerStub');
+		$this->container->shouldReceive('make')->once()->with('FooTransformerStub')->andReturn(new FooTransformerStub);
 		$this->assertEquals(['data' => ['foo' => 'bar']], $this->transformer->transformResponse(new FooStub));
 	}
 
@@ -54,6 +55,7 @@ class TransformerTest extends PHPUnit_Framework_TestCase {
 	public function testTransformingCollectionUsingTransformerClassName()
 	{
 		$this->transformer->transform('FooStub', 'FooTransformerStub');
+		$this->container->shouldReceive('make')->once()->with('FooTransformerStub')->andReturn(new FooTransformerStub);
 		$response = new Illuminate\Support\Collection([new FooStub, new FooStub]);
 		$this->assertEquals(['data' => [['foo' => 'bar'], ['foo' => 'bar']]], $this->transformer->transformResponse($response));
 	}

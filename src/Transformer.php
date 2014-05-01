@@ -151,7 +151,7 @@ class Transformer {
 		}
 		elseif (is_string($transformer))
 		{
-			return new $transformer;
+			return $this->container->make($transformer);
 		}
 
 		return call_user_func($transformer, $this->container);
