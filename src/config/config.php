@@ -120,12 +120,12 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
-	| Transformer Embeds
+	| Transformer Relationships
 	|--------------------------------------------------------------------------
 	|
-	| Transformers embed or relationships. The "key" is the query string
-	| identifier which will hold the requested embeds. The "separator"
-	| is the character that will separate each embed.
+	| Transformers can embed or nest relationships. The embeds "key" is the
+	| query string key and the "separator" is the character that will
+	| separate each relationship (or scope).
 	|
 	*/
 
