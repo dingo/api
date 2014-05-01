@@ -76,7 +76,7 @@ class Dispatcher {
 	 * 
 	 * @var bool
 	 */
-	protected $persistAuthenticationUser = true;
+	protected $persistAuthenticatedUser = true;
 
 	/**
 	 * Create a new dispatcher instance.
@@ -120,7 +120,7 @@ class Dispatcher {
 	 */
 	public function once()
 	{
-		$this->persistAuthenticationUser = false;
+		$this->persistAuthenticatedUser = false;
 
 		return $this;
 	}
@@ -359,11 +359,11 @@ class Dispatcher {
 	 */
 	protected function refreshRequestStack()
 	{
-		if ( ! $this->persistAuthenticationUser)
+		if ( ! $this->persistAuthenticatedUser)
 		{
 			$this->auth->setUser(null);
 
-			$this->persistAuthenticationUser = true;
+			$this->persistAuthenticatedUser = true;
 		}
 
 		array_pop($this->requestStack);

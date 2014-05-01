@@ -59,15 +59,7 @@ class ExceptionHandler {
 	 */
 	public function willHandle(HttpExceptionInterface $exception)
 	{
-		foreach ($this->handlers as $hint => $handler)
-		{
-			if ($exception instanceof $hint)
-			{
-				return true;
-			}
-		}
-
-		return false;
+		return (bool) array_first($this->handlers, function($hint) use ($exception) { return $exception instanceof $hint; }, false);
 	}
 
 	/**
