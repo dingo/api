@@ -119,8 +119,6 @@ class Router extends IlluminateRouter {
 			$options['domain'] = $this->defaultDomain;
 		}
 
-		// If a collection for this version does not already exist we'll
-		// create a new collection for this version.
 		foreach ($options['version'] as $version)
 		{
 			if ( ! isset($this->api[$version]))
@@ -204,7 +202,10 @@ class Router extends IlluminateRouter {
 		{
 			$message = ['message' => $message];
 
-			if ($exception->hasErrors()) $message['errors'] = $exception->errors();
+			if ($exception->hasErrors())
+			{
+				$message['errors'] = $exception->errors();
+			}
 		}
 
 		return new Response($message, $exception->getStatusCode());
