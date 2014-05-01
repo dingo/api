@@ -31,13 +31,11 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 	public function tearDown()
 	{
-		Response::setFormatters([]);
-
 		m::close();
 	}
 
 
-	public function testRegisteringApiRouteCollection()
+	public function testRegisteringApiRoutes()
 	{
 		$this->router->api(['version' => 'v1'], function() { $this->router->get('foo', function() { return 'bar'; }); });
 		$request = Request::create('foo', 'GET');
@@ -45,16 +43,22 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 	}
 
 
-	public function testRegisterApiRouteCollectionWithMultipleVersions()
+	public function testRegisterApiRoutesWithMultipleVersions()
 	{
 		$this->router->api(['version' => ['v1', 'v2']], function() { $this->router->get('foo', function() { return 'bar'; }); });
+		$this->router->api(['version' => 'v2'], function() { $this->router->get('bar', function() { return 'baz'; }); });
+
 		$request = Request::create('foo', 'GET');
-		$this->assertInstanceOf('Dingo\Api\Routing\ApiRouteCollection', $this->router->getApiRouteCollection('v1'));
-		$this->assertInstanceOf('Dingo\Api\Routing\ApiRouteCollection', $this->router->getApiRouteCollection('v2'));
+		$request->headers->set('accept', 'application/vnd.testing.v2+json');
+		$this->assertEquals('{"message":"bar"}', $this->router->dispatch($request)->getContent());
+
+		$request = Request::create('bar', 'GET');
+		$request->headers->set('accept', 'application/vnd.testing.v2+json');
+		$this->assertEquals('{"message":"baz"}', $this->router->dispatch($request)->getContent());
 	}
 
 
-	public function testRegisterApiRouteCollectionWithMultipleVersionsAndDifferentResponseForSameUri()
+	public function testRegisterApiRoutesWithDifferentResponseForSameUri()
 	{
 		$this->router->api(['version' => 'v1'], function() { $this->router->get('foo', function() { return 'foo'; }); });
 		$this->router->api(['version' => 'v2'], function() { $this->router->get('foo', function() { return 'bar'; }); });
@@ -97,7 +101,6 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 		$request = Request::create('/foo/bar/foo', 'GET');
 		$request->headers->set('accept', 'application/vnd.testing.v2+json');
-		
 		$this->assertEquals('{"message":"bar"}', $this->router->dispatch($request)->getContent());
 	}
 
@@ -115,9 +118,8 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 		});
 
 		$request = Request::create('http://foo.bar/foo', 'GET');
-		$request->headers->set('accept', 'application/vnd.testing.v1+json');
-		
-		$this->assertEquals('{"message":"foo"}', $this->router->dispatch($request)->getContent());
+		$request->headers->set('accept', 'application/vnd.testing.v2+json');
+		$this->assertEquals('{"message":"bar"}', $this->router->dispatch($request)->getContent());
 	}
 
 
@@ -130,51 +132,14 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 		$request = InternalRequest::create('foo', 'GET');
 		$request->headers->set('accept', 'application/vnd.testing.v1+json');
-
 		$this->assertEquals('{"message":"bar"}', $this->router->dispatch($request)->getContent());
-	}
-
-
-	public function testRouterFindsCollectionCurrentRequestIsTargeting()
-	{
-		$this->router->api(['version' => 'v1'], function()
-		{
-			$this->router->get('/', function()
-			{
-				return 'foo';
-			});
-		});
-
-		$this->router->api(['version' => 'v2'], function()
-		{
-			$this->router->get('/', function()
-			{
-				return 'bar';
-			});
-		});
-
-		$request = Request::create('/', 'GET');
-		$request->headers->set('accept', 'application/vnd.testing.v2+json');
-
-		$response = $this->router->dispatch($request);
 	}
 
 
 	public function testAddingRouteFallsThroughToRouterCollection()
 	{
 		$this->router->get('foo', function() { return 'bar'; });
-
 		$this->assertCount(1, $this->router->getRoutes());
-	}
-
-
-	public function testDispatchingRequestTargetsApiButFailsToFindRouteFallsThroughToRouterCollection()
-	{
-		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function() {});
-
-		$this->router->get('foo', function() { return 'bar'; });
-
-		$this->assertEquals('bar', $this->router->dispatch(Request::create('foo', 'GET'))->getContent());
 	}
 
 
@@ -427,6 +392,30 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 		$this->router->setDefaultVersion('v2');
 		$this->assertEquals('{"message":"baz"}', $this->router->dispatch($request)->getContent());
+	}
+
+
+	public function testSettersAndGetters()
+	{
+		$this->router->setDefaultVersion('foo');
+		$this->assertEquals('foo', $this->router->getDefaultVersion());
+
+		$this->router->setExceptionHandler($this->exceptionHandler);
+		$this->assertEquals($this->exceptionHandler, $this->router->getExceptionHandler());
+
+		$this->router->setDefaultPrefix('foo');
+		$this->assertEquals('foo', $this->router->getDefaultPrefix());
+
+		$this->router->setDefaultDomain('foo');
+		$this->assertEquals('foo', $this->router->getDefaultDomain());
+
+		$this->router->setVendor('foo');
+		$this->assertEquals('foo', $this->router->getVendor());
+
+		$this->assertEquals(null, $this->router->getRequestedVersion());
+		$this->assertEquals(null, $this->router->getRequestedFormat());
+
+		$this->assertInstanceOf('Dingo\Api\Routing\ControllerInspector', $this->router->getInspector());
 	}
 
 

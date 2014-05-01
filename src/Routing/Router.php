@@ -78,13 +78,6 @@ class Router extends IlluminateRouter {
 	protected $exceptionHandler;
 
 	/**
-	 * Array of parsed request "Accept" headers.
-	 * 
-	 * @var array
-	 */
-	protected $parsedAcceptHeaders = [];
-
-	/**
 	 * Array of requests targetting the API.
 	 * 
 	 * @var array
@@ -381,17 +374,9 @@ class Router extends IlluminateRouter {
 		{
 			list ($this->requestedVersion, $this->requestedFormat) = $this->parseAcceptHeader($request);
 
-			try
-			{
-				$this->current = $route = $this->getApiRouteCollection($this->requestedVersion)->match($request);
+			$this->current = $route = $this->getApiRouteCollection($this->requestedVersion)->match($request);
 
-				return $this->substituteBindings($route);
-			}
-			catch (NotFoundHttpException $exception)
-			{
-				// We won't do anything with the exception, we'll just gracefully fallback
-				// to the default route collection to see if there's a match there.
-			}
+			return $this->substituteBindings($route);
 		}
 
 		return parent::findRoute($request);
@@ -412,11 +397,9 @@ class Router extends IlluminateRouter {
 			return false;
 		}
 
-		$requestHash = $this->getRequestHash($request);
-
-		if (isset($this->requestsTargettingApi[$requestHash]))
+		if (isset($this->requestsTargettingApi[$key = sha1($request)]))
 		{
-			return $this->requestsTargettingApi[$requestHash];
+			return $this->requestsTargettingApi[$key];
 		}
 
 		if ($collection = $this->getApiRouteCollectionFromRequest($request))
@@ -425,17 +408,15 @@ class Router extends IlluminateRouter {
 			{
 				$collection->match($request);
 
-				return $this->requestsTargettingApi[$requestHash] = true;
+				return $this->requestsTargettingApi[$key] = true;
 			}
 			catch (NotFoundHttpException $exception)
 			{
-				// If we don't find a matching route then we'll let this
-				// fall through so that false is returned as the
-				// request is not targetting the API.
+				// No matching route so the request is not targetting API.
 			}
 		}
 
-		return $this->requestsTargettingApi[$requestHash] = false;
+		return $this->requestsTargettingApi[$key] = false;
 	}
 
 	/**
@@ -446,34 +427,12 @@ class Router extends IlluminateRouter {
 	 */
 	public function parseAcceptHeader($request)
 	{
-		$requestHash = $this->getRequestHash($request);
-
-		if (isset($this->parsedAcceptHeaders[$requestHash]))
-		{
-			return $this->parsedAcceptHeaders[$requestHash];
-		}
-
 		if (preg_match('#application/vnd\.'.$this->vendor.'.(v[\d\.]+)\+(\w+)#', $request->header('accept'), $matches))
 		{
-			$parsed = array_slice($matches, 1);
-		}
-		else
-		{
-			$parsed = [$this->defaultVersion, $this->defaultFormat];
+			return array_slice($matches, 1);
 		}
 
-		return $this->parsedAcceptHeaders[$requestHash] = $parsed;
-	}
-
-	/**
-	 * Get a requests hash representation.
-	 * 
-	 * @param  \Illuminate\Http\Request  $request
-	 * @return string
-	 */
-	protected function getRequestHash($request)
-	{
-		return sha1($request);
+		return [$this->defaultVersion, $this->defaultFormat];
 	}
 
 	/**
