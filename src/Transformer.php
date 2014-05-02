@@ -86,7 +86,7 @@ class Transformer {
 	/**
 	 * Transform a response with a registered transformer.
 	 * 
-	 * @param  mixed  $response
+	 * @param  string|object  $response
 	 * @return mixed
 	 */
 	public function transformResponse($response)
@@ -157,7 +157,7 @@ class Transformer {
 	/**
 	 * Get transformer from a class.
 	 * 
-	 * @param  mixed  $class
+	 * @param  string|object  $class
 	 * @return string|\Closure
 	 * @throws \RuntimeException
 	 */
@@ -181,11 +181,16 @@ class Transformer {
 	/**
 	 * Determine if a class has a transformer.
 	 * 
-	 * @param  mixed  $class
+	 * @param  string|object  $class
 	 * @return bool
 	 */
 	protected function hasTransformer($class)
 	{
+		if ( ! is_object($class) and ! is_string($class))
+		{
+			return false;
+		}
+
 		$class = is_object($class) ? get_class($class) : $class;
 
 		return isset($this->transformers[$class]);

@@ -28,6 +28,8 @@ class TransformerTest extends PHPUnit_Framework_TestCase {
 
 	public function testDeterminingIfResponseIsTransformable()
 	{
+		$this->assertFalse($this->transformer->transformableResponse(['foo' => 'bar']));
+		$this->assertFalse($this->transformer->transformableResponse(new stdClass));
 		$this->assertFalse($this->transformer->transformableResponse('Foo'));
 		$this->transformer->transform('Foo', 'Bar');
 		$this->assertTrue($this->transformer->transformableResponse('Foo'));
