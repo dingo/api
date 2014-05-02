@@ -623,4 +623,15 @@ class Router extends IlluminateRouter {
 		return $this->inspector ?: $this->inspector = new ControllerInspector;
 	}
 
+	/**
+	 * Set the current request.
+	 * 
+	 * @param  \Illuminate\Http\Request  $request
+	 * @return void
+	 */
+	public function setCurrentRequest(Request $request)
+	{
+		$this->currentRequest = $request;
+	}
+
 }

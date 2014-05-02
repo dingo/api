@@ -1,6 +1,7 @@
 <?php
 
 use Mockery as m;
+use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
 use Illuminate\Container\Container;
 use League\Fractal\Manager as Fractal;
@@ -229,6 +230,30 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 		});
 
 		$this->assertEquals('bazbar', $this->dispatcher->version('v3')->get('foo'));
+	}
+
+
+	public function testOriginalRequestInputIsMaintained()
+	{
+		$request = Request::create('/', 'POST', ['foo' => 'bar']);
+		$dispatcher = new Dingo\Api\Dispatcher($request, $this->url, $this->router, $this->shield);
+
+		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
+		{
+			$this->router->post('/', function()
+			{
+				$this->assertEquals('baz', $this->router->getCurrentRequest()->input('foo'));
+			});
+		});
+
+		$this->router->post('/', function() use ($dispatcher)
+		{
+			$this->assertEquals('bar', $this->router->getCurrentRequest()->input('foo'));
+			$dispatcher->with(['foo' => 'baz'])->post('/');
+			$this->assertEquals('bar', $this->router->getCurrentRequest()->input('foo'));
+		});
+		
+		$this->router->dispatch($request);
 	}
 	
 

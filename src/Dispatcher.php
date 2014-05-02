@@ -44,13 +44,6 @@ class Dispatcher {
 	protected $auth;
 
 	/**
-	 * Original request input array.
-	 * 
-	 * @var array
-	 */
-	protected $originalRequestInput = [];
-
-	/**
 	 * Internal request stack.
 	 * 
 	 * @var array
@@ -93,6 +86,18 @@ class Dispatcher {
 		$this->url = $url;
 		$this->router = $router;
 		$this->auth = $auth;
+
+		$this->setupRequestStack();
+	}
+
+	/**
+	 * Setup the request stack by cloning the initial request.
+	 * 
+	 * @return void
+	 */
+	protected function setupRequestStack()
+	{
+		$this->requestStack[] = clone $this->request;
 	}
 
 	/**
@@ -259,13 +264,11 @@ class Dispatcher {
 	 */
 	protected function queueRequest($verb, $uri, $parameters)
 	{
-		$identifier = $this->buildRequestIdentifier($verb, $uri);
+		$request = $this->requestStack[] = $this->createRequest($verb, $uri, $parameters);
 
-		$this->requestStack[$identifier] = $this->createRequest($verb, $uri, $parameters);
+		$this->request->replace($request->input());
 
-		$this->request->replace($this->requestStack[$identifier]->input());
-
-		return $this->dispatch($this->requestStack[$identifier]);
+		return $this->dispatch($request);
 	}
 
 	/**
@@ -278,11 +281,6 @@ class Dispatcher {
 	 */
 	protected function createRequest($verb, $uri, $parameters)
 	{
-		foreach (['cookies', 'files', 'server'] as $parameter)
-		{
-			${$parameter} = $this->request->{$parameter}->all();
-		}
-
 		if ( ! isset($this->version))
 		{
 			$this->version = $this->router->getDefaultVersion();
@@ -299,7 +297,7 @@ class Dispatcher {
 
 		$parameters = array_merge($this->parameters, (array) $parameters);
 
-		$request = InternalRequest::create($uri, $verb, $parameters, $cookies, $files, $server);
+		$request = InternalRequest::create($uri, $verb, $parameters);
 
 		if ($domain = $api->option('domain'))
 		{
@@ -368,11 +366,25 @@ class Dispatcher {
 
 		array_pop($this->requestStack);
 
-		$this->request->replace($this->originalRequestInput);
+		$this->replaceRequestInput();
 
 		$this->version = null;
 
 		$this->parameters = [];
+	}
+
+	/**
+	 * Replace the request input with the previous request input.
+	 * 
+	 * @return void
+	 */
+	protected function replaceRequestInput()
+	{
+		$previous = end($this->requestStack);
+
+		$this->router->setCurrentRequest($previous);
+
+		$this->request->replace($previous->input());
 	}
 
 	/**
