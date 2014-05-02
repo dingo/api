@@ -5,6 +5,7 @@ use RuntimeException;
 use BadMethodCallException;
 use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
+use Illuminate\Routing\Route;
 use Dingo\Api\ExceptionHandler;
 use Dingo\Api\Http\InternalRequest;
 use Dingo\Api\Exception\ResourceException;
@@ -632,6 +633,17 @@ class Router extends IlluminateRouter {
 	public function setCurrentRequest(Request $request)
 	{
 		$this->currentRequest = $request;
+	}
+
+	/**
+	 * Set the current route.
+	 * 
+	 * @param  \Illuminate\Routing\Route  $route
+	 * @return void
+	 */
+	public function setCurrentRoute(Route $route)
+	{
+		$this->current = $route;
 	}
 
 }

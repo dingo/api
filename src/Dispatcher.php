@@ -51,6 +51,13 @@ class Dispatcher {
 	protected $requestStack = [];
 
 	/**
+	 * Internal route stack.
+	 * 
+	 * @var array
+	 */
+	protected $routeStack = [];
+
+	/**
 	 * Version for the request.
 	 * 
 	 * @var string
@@ -327,6 +334,8 @@ class Dispatcher {
 	 */
 	protected function dispatch(InternalRequest $request)
 	{
+		$this->routeStack[] = $this->router->getCurrentRoute();
+
 		try
 		{
 			$response = $this->router->dispatch($request);
@@ -364,7 +373,10 @@ class Dispatcher {
 			$this->persistAuthenticatedUser = true;
 		}
 
-		array_pop($this->requestStack);
+		if ($route = array_pop($this->routeStack))
+		{
+			$this->router->setCurrentRoute($route);
+		}
 
 		$this->replaceRequestInput();
 
@@ -380,6 +392,8 @@ class Dispatcher {
 	 */
 	protected function replaceRequestInput()
 	{
+		array_pop($this->requestStack);
+
 		$previous = end($this->requestStack);
 
 		$this->router->setCurrentRequest($previous);

@@ -233,28 +233,61 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 	}
 
 
-	public function testOriginalRequestInputIsMaintained()
+	public function testRequestStackIsMaintained()
 	{
-		$request = Request::create('/', 'POST', ['foo' => 'bar']);
-		$dispatcher = new Dingo\Api\Dispatcher($request, $this->url, $this->router, $this->shield);
-
 		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
 		{
-			$this->router->post('/', function()
+			$this->router->post('baz', function()
+			{
+				$this->assertEquals('bazinga', $this->router->getCurrentRequest()->input('foo'));
+			});
+
+			$this->router->post('bar', function()
 			{
 				$this->assertEquals('baz', $this->router->getCurrentRequest()->input('foo'));
+				$this->dispatcher->with(['foo' => 'bazinga'])->post('baz');
+				$this->assertEquals('baz', $this->router->getCurrentRequest()->input('foo'));
+			});
+
+			$this->router->post('foo', function()
+			{
+				$this->assertEquals('bar', $this->router->getCurrentRequest()->input('foo'));
+				$this->dispatcher->with(['foo' => 'baz'])->post('bar');
+				$this->assertEquals('bar', $this->router->getCurrentRequest()->input('foo'));
 			});
 		});
+		
+		$this->dispatcher->with(['foo' => 'bar'])->post('foo');
+	}
 
-		$this->router->post('/', function() use ($dispatcher)
+
+	public function testRouteStackIsMaintained()
+	{
+		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
 		{
-			$this->assertEquals('bar', $this->router->getCurrentRequest()->input('foo'));
-			$dispatcher->with(['foo' => 'baz'])->post('/');
-			$this->assertEquals('bar', $this->router->getCurrentRequest()->input('foo'));
+			$this->router->post('baz', ['as' => 'bazinga', function()
+			{
+				$this->assertEquals('bazinga', $this->router->currentRouteName());
+			}]);
+
+			$this->router->post('bar', ['as' => 'bar', function()
+			{
+				$this->assertEquals('bar', $this->router->currentRouteName());
+				$this->dispatcher->post('baz');
+				$this->assertEquals('bar', $this->router->currentRouteName());
+			}]);
+
+			$this->router->post('foo', ['as' => 'foo', function()
+			{
+				$this->assertEquals('foo', $this->router->currentRouteName());
+				$this->dispatcher->post('bar');
+				$this->assertEquals('foo', $this->router->currentRouteName());
+			}]);
 		});
 		
-		$this->router->dispatch($request);
+		$this->dispatcher->post('foo');
 	}
+
 	
 
 }
