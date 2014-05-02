@@ -1,33 +1,33 @@
 <?php
 
 use Mockery as m;
+use Dingo\Api\Dispatcher;
+use Dingo\Api\Transformer;
 use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
+use Dingo\Api\Routing\Router;
 use Illuminate\Container\Container;
+use Illuminate\Routing\UrlGenerator;
 use League\Fractal\Manager as Fractal;
+use Illuminate\Routing\RouteCollection;
+use Illuminate\Events\Dispatcher as EventsDispatcher;
+use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
 
 class DispatcherTest extends PHPUnit_Framework_TestCase {
 
 
 	public function setUp()
 	{
-		$this->router = new Dingo\Api\Routing\Router(new Illuminate\Events\Dispatcher);
+		$this->auth = m::mock('Dingo\Api\Auth\Shield');
+
+		$this->router = new Router(new EventsDispatcher);
 		$this->router->setDefaultVersion('v1');
 		$this->router->setVendor('testing');
 
-		$this->request = new Illuminate\Http\Request;
-		$this->shield = m::mock('Dingo\Api\Auth\Shield');
-		$this->url = new Illuminate\Routing\UrlGenerator($this->router->getRoutes(), $this->request);
+		$this->dispatcher = new Dispatcher(new Request, new UrlGenerator(new RouteCollection, new Request), $this->router, $this->auth);
 
-		$this->dispatcher = new Dingo\Api\Dispatcher($this->request, $this->url, $this->router, $this->shield);
-
-		Response::setFormatters(['json' => new Dingo\Api\Http\ResponseFormat\JsonResponseFormat]);
-
-		$transformer = m::mock('Dingo\Api\Transformer');
-		$transformer->shouldReceive('transformableResponse')->andReturn(false);
-		$transformer->shouldReceive('setRequest');
-
-		Response::setTransformer($transformer);
+		Response::setFormatters(['json' => new JsonResponseFormat]);
+		Response::setTransformer(new Transformer(new Fractal, new Container));
 	}
 
 
@@ -130,7 +130,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 	{
 		$user = m::mock('Illuminate\Database\Eloquent\Model');
 
-		$this->shield->shouldReceive('setUser')->once()->with($user);
+		$this->auth->shouldReceive('setUser')->once()->with($user);
 
 		$this->dispatcher->be($user);
 	}
@@ -140,8 +140,8 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 	{
 		$user = m::mock('Illuminate\Database\Eloquent\Model');
 
-		$this->shield->shouldReceive('setUser')->once()->with($user);
-		$this->shield->shouldReceive('setUser')->once()->with(null);
+		$this->auth->shouldReceive('setUser')->once()->with($user);
+		$this->auth->shouldReceive('setUser')->once()->with(null);
 
 		$this->router->api(['version' => 'v1'], function()
 		{
@@ -214,10 +214,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 
 	public function testInternalRequestWithNestedInternalRequest()
 	{
-		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
-		{
-			$this->router->get('foo', function() { return 'foo'; });
-		});
+		$this->dispatcher = new Dispatcher(new Request, m::mock('Illuminate\Routing\UrlGenerator'), $this->router, m::mock('Dingo\Api\Auth\Shield'));
 
 		$this->router->api(['version' => 'v2', 'prefix' => 'api'], function()
 		{

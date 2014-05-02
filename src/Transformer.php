@@ -118,7 +118,18 @@ class Transformer {
 	 */
 	public function transformableResponse($response)
 	{
-		return $this->hasTransformer($response);
+		return $this->transformableType($response) and $this->hasTransformer($response);
+	}
+		
+	/**
+	 * Deteremine if a value is of a transformable type.
+	 * 
+	 * @param  mixed  $value
+	 * @return bool
+	 */
+	public function transformableType($value)
+	{		
+		return is_object($value) or is_string($value);
 	}
 
 	/**
@@ -186,11 +197,6 @@ class Transformer {
 	 */
 	protected function hasTransformer($class)
 	{
-		if ( ! is_object($class) and ! is_string($class))
-		{
-			return false;
-		}
-
 		$class = is_object($class) ? get_class($class) : $class;
 
 		return isset($this->transformers[$class]);

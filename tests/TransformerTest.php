@@ -31,6 +31,10 @@ class TransformerTest extends PHPUnit_Framework_TestCase {
 		$this->assertFalse($this->transformer->transformableResponse(['foo' => 'bar']));
 		$this->assertFalse($this->transformer->transformableResponse(new stdClass));
 		$this->assertFalse($this->transformer->transformableResponse('Foo'));
+		$this->assertFalse($this->transformer->transformableResponse(1));
+		$this->assertFalse($this->transformer->transformableResponse(true));
+		$this->assertFalse($this->transformer->transformableResponse(false));
+		$this->assertFalse($this->transformer->transformableResponse(31.1));
 		$this->transformer->transform('Foo', 'Bar');
 		$this->assertTrue($this->transformer->transformableResponse('Foo'));
 	}
