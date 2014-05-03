@@ -6,6 +6,9 @@ use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
 use Illuminate\Events\Dispatcher;
 use Dingo\Api\Http\InternalRequest;
+use Dingo\Api\Exception\ResourceException;
+use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
@@ -19,7 +22,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 		$this->router->setDefaultVersion('v1');
 		$this->router->setVendor('testing');
 
-		Response::setFormatters(['json' => new Dingo\Api\Http\ResponseFormat\JsonResponseFormat]);
+		Response::setFormatters(['json' => new JsonResponseFormat]);
 
 		$transformer = m::mock('Dingo\Api\Transformer');
 		$transformer->shouldReceive('transformableResponse')->andReturn(false);
@@ -219,7 +222,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 	public function testRouterCatchesHttpExceptionsAndCreatesResponse()
 	{
-		$exception = new Symfony\Component\HttpKernel\Exception\HttpException(404);
+		$exception = new HttpException(404);
 
 		$this->exceptionHandler->shouldReceive('willHandle')->with($exception)->andReturn(false);
 
@@ -240,7 +243,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 	public function testExceptionHandledAndResponseIsReturned()
 	{
-		$exception = new Symfony\Component\HttpKernel\Exception\HttpException(404, 'testing');
+		$exception = new HttpException(404, 'testing');
 
 		$this->exceptionHandler->shouldReceive('willHandle')->with($exception)->andReturn(false);
 
@@ -254,7 +257,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 	public function testExceptionHandledAndResponseIsReturnedWithMissingMessage()
 	{
-		$exception = new Symfony\Component\HttpKernel\Exception\HttpException(404);
+		$exception = new HttpException(404);
 
 		$this->exceptionHandler->shouldReceive('willHandle')->with($exception)->andReturn(false);
 
@@ -268,7 +271,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 	public function testExceptionHandledAndResponseIsReturnedUsingResourceException()
 	{
-		$exception = new Dingo\Api\Exception\ResourceException('testing', ['foo' => 'bar']);
+		$exception = new ResourceException('testing', ['foo' => 'bar']);
 
 		$this->exceptionHandler->shouldReceive('willHandle')->with($exception)->andReturn(false);
 
@@ -282,7 +285,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 	public function testExceptionHandledByExceptionHandler()
 	{
-		$exception = new Symfony\Component\HttpKernel\Exception\HttpException(404);
+		$exception = new HttpException(404);
 
 		$this->exceptionHandler->shouldReceive('willHandle')->with($exception)->andReturn(true);
 		$this->exceptionHandler->shouldReceive('handle')->with($exception)->andReturn(new Response('testing', 404));
@@ -302,7 +305,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->router->api(['version' => 'v1'], function()
 		{
-			$this->router->get('foo', function() { throw new Symfony\Component\HttpKernel\Exception\HttpException(404); });
+			$this->router->get('foo', function() { throw new HttpException(404); });
 		});
 
 		$this->router->dispatch(InternalRequest::create('foo', 'GET'));

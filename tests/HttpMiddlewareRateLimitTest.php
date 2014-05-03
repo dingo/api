@@ -15,18 +15,18 @@ class HttpMiddlewareRateLimitTest extends PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
-		$this->response = new Response;
 		$this->app = m::mock('Symfony\Component\HttpKernel\HttpKernelInterface');
 		$this->container = m::mock('Illuminate\Container\Container');
-		$this->middleware = new RateLimit($this->app, $this->container);
 		$this->router = m::mock('Dingo\Api\Routing\Router');
-		$this->shield = m::mock('Dingo\Api\Auth\Shield');
+		$this->auth = m::mock('Dingo\Api\Auth\Shield');
 		$this->cache = m::mock('Illuminate\Cache\Repository');
 
-		$this->container->shouldReceive('boot')->atLeast()->once();
-		$this->container->shouldReceive('make')->once()->with('dingo.api.auth')->andReturn($this->shield);
+		$this->middleware = new RateLimit($this->app, $this->container);
 
-		$this->shield->shouldReceive('check')->once()->andReturn(false);
+		$this->container->shouldReceive('boot')->atLeast()->once();
+		$this->container->shouldReceive('make')->once()->with('dingo.api.auth')->andReturn($this->auth);
+
+		$this->auth->shouldReceive('check')->once()->andReturn(false);
 	}
 
 
@@ -41,8 +41,8 @@ class HttpMiddlewareRateLimitTest extends PHPUnit_Framework_TestCase {
 		$request = InternalRequest::create('/', 'GET');
 
 		$this->container->shouldReceive('make')->once()->with('config')->andReturn(m::mock(['get' => []]));
-		$this->app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn($this->response);
-		$this->assertEquals($this->response, $this->middleware->handle($request));
+		$this->app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn(new Response('test'));
+		$this->assertEquals('test', $this->middleware->handle($request)->getContent());
 	}
 
 
@@ -55,8 +55,8 @@ class HttpMiddlewareRateLimitTest extends PHPUnit_Framework_TestCase {
 
 		$this->router->shouldReceive('requestTargettingApi')->once()->with($request)->andReturn(false);
 
-		$this->app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn($this->response);
-		$this->assertEquals($this->response, $this->middleware->handle($request));
+		$this->app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn(new Response('test'));
+		$this->assertEquals('test', $this->middleware->handle($request)->getContent());
 	}
 
 
@@ -69,8 +69,8 @@ class HttpMiddlewareRateLimitTest extends PHPUnit_Framework_TestCase {
 
 		$this->router->shouldReceive('requestTargettingApi')->once()->with($request)->andReturn(true);
 
-		$this->app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn($this->response);
-		$this->assertEquals($this->response, $this->middleware->handle($request));
+		$this->app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn(new Response('test'));
+		$this->assertEquals('test', $this->middleware->handle($request)->getContent());
 	}
 
 
@@ -93,10 +93,11 @@ class HttpMiddlewareRateLimitTest extends PHPUnit_Framework_TestCase {
 		$this->cache->shouldReceive('get')->twice()->with('dingo:api:requests:'.$ip)->andReturn(1);
 		$this->cache->shouldReceive('get')->once()->with('dingo:api:reset:'.$ip);
 
-		$this->app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn($this->response);
-		$this->response = $this->middleware->handle($request);
-		$this->assertEquals(1, $this->response->headers->get('X-RateLimit-Limit'));
-		$this->assertEquals(0, $this->response->headers->get('X-RateLimit-Remaining'));
+		$this->app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn(new Response('test'));
+		$response = $this->middleware->handle($request);
+		$this->assertEquals('test', $response->getContent());
+		$this->assertEquals(1, $response->headers->get('X-RateLimit-Limit'));
+		$this->assertEquals(0, $response->headers->get('X-RateLimit-Remaining'));
 	}
 
 

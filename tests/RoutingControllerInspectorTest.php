@@ -1,12 +1,14 @@
 <?php
 
+use Dingo\Api\Routing\ControllerInspector;
+
 class RoutingControllerInspectorTest extends PHPUnit_Framework_TestCase {
 
 
 	public function testControllerMethodIsNotRoutable()
 	{
 		$method = new ReflectionMethod('Dingo\Api\Routing\Controller', 'scope');
-		$inspector = new Dingo\Api\Routing\ControllerInspector;
+		$inspector = new ControllerInspector;
 		$this->assertFalse($inspector->isRoutable($method, 'Dingo\Api\Routing\Controller'));
 	}
 
@@ -14,7 +16,7 @@ class RoutingControllerInspectorTest extends PHPUnit_Framework_TestCase {
 	public function testControllerMethodIsRoutable()
 	{
 		$method = new ReflectionMethod('ControllerStub', 'getFoo');
-		$inspector = new Dingo\Api\Routing\ControllerInspector;
+		$inspector = new ControllerInspector;
 		$this->assertTrue($inspector->isRoutable($method, 'ControllerStub'));
 	}
 
@@ -23,9 +25,6 @@ class RoutingControllerInspectorTest extends PHPUnit_Framework_TestCase {
 
 class ControllerStub extends Dingo\Api\Routing\Controller {
 
-	public function getFoo()
-	{
-
-	}
+	public function getFoo() {}
 
 }

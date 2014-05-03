@@ -17,14 +17,13 @@ class HttpMiddlewareAuthenticationTest extends PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
-		$this->response = new Response;
 		$this->app = m::mock('Symfony\Component\HttpKernel\HttpKernelInterface');
 		$this->container = m::mock('Illuminate\Container\Container');
-		$this->request = Request::create('/', 'GET');
 		$this->router = m::mock('Dingo\Api\Routing\Router');
 		$this->collection = m::mock('Dingo\Api\Routing\ApiRouteCollection');
 
 		$this->container->shouldReceive('boot')->atLeast()->once();
+
 		$this->router->shouldReceive('requestTargettingApi')->andReturn(true);
 
 		$this->middleware = new Authentication($this->app, $this->container);
@@ -39,63 +38,69 @@ class HttpMiddlewareAuthenticationTest extends PHPUnit_Framework_TestCase {
 
 	public function testWrappedKernelIsHandledForInternalRequestsAndAuthenticatedUsers()
 	{
-		$this->request = InternalRequest::create('/', 'GET');
+		$request = InternalRequest::create('/', 'GET');
 
-		$this->app->shouldReceive('handle')->once()->with($this->request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn($this->response);
-		$this->assertEquals($this->response, $this->middleware->handle($this->request));
+		$this->app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn(new Response('test'));
+		$this->assertEquals('test', $this->middleware->handle($request)->getContent());
 
-		$this->request = Request::create('/', 'GET');
+		$request = Request::create('/', 'GET');
 
 		$this->container->shouldReceive('make')->once()->with('dingo.api.auth')->andReturn(m::mock(['user' => true]));
-		$this->app->shouldReceive('handle')->once()->with($this->request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn($this->response);
-		$this->assertEquals($this->response, $this->middleware->handle($this->request));
+		$this->app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn(new Response('test'));
+		$this->assertEquals('test', $this->middleware->handle($request)->getContent());
 	}
 
 
 	public function testWrappedKernelIsHandledWhenNoApiRouteCollectionForRequest()
 	{
+		$request = Request::create('/', 'GET');
+
 		$this->container->shouldReceive('make')->once()->with('dingo.api.auth')->andReturn(m::mock(['user' => false]));
 		$this->container->shouldReceive('make')->once()->with('router')->andReturn($this->router);
-		$this->app->shouldReceive('handle')->once()->with($this->request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn($this->response);
+		$this->app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn(new Response('test'));
 
-		$this->router->shouldReceive('getApiRouteCollectionFromRequest')->once()->with($this->request)->andReturn(null);
+		$this->router->shouldReceive('getApiRouteCollectionFromRequest')->once()->with($request)->andReturn(null);
 
-		$this->assertEquals($this->response, $this->middleware->handle($this->request));
+		$this->assertEquals('test', $this->middleware->handle($request)->getContent());
 	}
 
 
 	public function testWrappedKernelIsHandledWhenRouteNotFoundInApiRouteCollection()
 	{
+		$request = Request::create('/', 'GET');
+
 		$this->container->shouldReceive('make')->once()->with('dingo.api.auth')->andReturn(m::mock(['user' => false]));
 		$this->container->shouldReceive('make')->once()->with('router')->andReturn($this->router);
-		$this->app->shouldReceive('handle')->once()->with($this->request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn($this->response);
+		$this->app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn(new Response('test'));
 
-		$this->router->shouldReceive('getApiRouteCollectionFromRequest')->once()->with($this->request)->andReturn($this->collection);
+		$this->router->shouldReceive('getApiRouteCollectionFromRequest')->once()->with($request)->andReturn($this->collection);
 
-		$this->collection->shouldReceive('match')->once()->with($this->request)->andThrow(new NotFoundHttpException);
+		$this->collection->shouldReceive('match')->once()->with($request)->andThrow(new NotFoundHttpException);
 
-		$this->assertEquals($this->response, $this->middleware->handle($this->request));
+		$this->assertEquals('test', $this->middleware->handle($request)->getContent());
 	}
 
 
 	public function testWrappedKernelIsHandledWhenRouteIsNotProtected()
 	{
+		$request = Request::create('/', 'GET');
 		$route = new Route('GET', '/', ['protected' => false]);
 
 		$this->container->shouldReceive('make')->once()->with('dingo.api.auth')->andReturn(m::mock(['user' => false]));
 		$this->container->shouldReceive('make')->once()->with('router')->andReturn($this->router);
-		$this->app->shouldReceive('handle')->once()->with($this->request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn($this->response);
+		$this->app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn(new Response('test'));
 
-		$this->router->shouldReceive('getApiRouteCollectionFromRequest')->once()->with($this->request)->andReturn($this->collection);
+		$this->router->shouldReceive('getApiRouteCollectionFromRequest')->once()->with($request)->andReturn($this->collection);
 
-		$this->collection->shouldReceive('match')->once()->with($this->request)->andReturn($route);
+		$this->collection->shouldReceive('match')->once()->with($request)->andReturn($route);
 
-		$this->assertEquals($this->response, $this->middleware->handle($this->request));
+		$this->assertEquals('test', $this->middleware->handle($request)->getContent());
 	}
 
 
 	public function testAuthenticationFailsAndThrownExceptionIsHandled()
 	{
+		$request = Request::create('/', 'GET');
 		$route = new Route('GET', '/', ['protected']);
 		$auth = m::mock('Dingo\Api\Auth\Shield');
 
@@ -104,22 +109,23 @@ class HttpMiddlewareAuthenticationTest extends PHPUnit_Framework_TestCase {
 		$this->container->shouldReceive('make')->once()->with('router')->andReturn($this->router);
 		$this->container->shouldReceive('make')->once()->once('dingo.api.auth')->andReturn($auth);
 
-		$this->router->shouldReceive('getApiRouteCollectionFromRequest')->once()->with($this->request)->andReturn($this->collection);
+		$this->router->shouldReceive('getApiRouteCollectionFromRequest')->once()->with($request)->andReturn($this->collection);
 
-		$this->collection->shouldReceive('match')->once()->with($this->request)->andReturn($route);
+		$this->collection->shouldReceive('match')->once()->with($request)->andReturn($route);
 
-		$auth->shouldReceive('authenticate')->once()->with($this->request, $route)->andThrow($exception = new UnauthorizedHttpException(null, 'test'));
+		$auth->shouldReceive('authenticate')->once()->with($request, $route)->andThrow($exception = new UnauthorizedHttpException(null, 'test'));
 		$this->router->shouldReceive('handleException')->once()->with($exception)->andReturn(new Response('test', 401));
-		$this->router->shouldReceive('parseAcceptHeader')->once()->with($this->request)->andReturn(['v1', 'json']);
+		$this->router->shouldReceive('parseAcceptHeader')->once()->with($request)->andReturn(['v1', 'json']);
 
 		ApiResponse::setFormatters(['json' => new JsonResponseFormat]);
 
-		$this->assertEquals('{"message":"test"}', $this->middleware->handle($this->request)->getContent());
+		$this->assertEquals('{"message":"test"}', $this->middleware->handle($request)->getContent());
 	}
 
 
 	public function testAuthenticationPassesAndWrappedKernelIsHandled()
 	{
+		$request = Request::create('/', 'GET');
 		$route = new Route('GET', '/', ['protected']);
 		$auth = m::mock('Dingo\Api\Auth\Shield');
 
@@ -127,15 +133,15 @@ class HttpMiddlewareAuthenticationTest extends PHPUnit_Framework_TestCase {
 
 		$this->container->shouldReceive('make')->once()->with('router')->andReturn($this->router);
 		$this->container->shouldReceive('make')->once()->once('dingo.api.auth')->andReturn($auth);
-		$this->app->shouldReceive('handle')->once()->with($this->request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn($this->response);
+		$this->app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn(new Response('test'));
 
-		$this->router->shouldReceive('getApiRouteCollectionFromRequest')->once()->with($this->request)->andReturn($this->collection);
+		$this->router->shouldReceive('getApiRouteCollectionFromRequest')->once()->with($request)->andReturn($this->collection);
 
-		$this->collection->shouldReceive('match')->once()->with($this->request)->andReturn($route);
+		$this->collection->shouldReceive('match')->once()->with($request)->andReturn($route);
 
-		$auth->shouldReceive('authenticate')->once()->with($this->request, $route);
+		$auth->shouldReceive('authenticate')->once()->with($request, $route);
 
-		$this->assertEquals($this->response, $this->middleware->handle($this->request));
+		$this->assertEquals('test', $this->middleware->handle($request)->getContent());
 	}
 
 
