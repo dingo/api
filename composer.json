@@ -33,5 +33,10 @@
         "psr-4": {
             "Dingo\\Api\\": "src"
         }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.2-dev"
+        }
     }
 }
