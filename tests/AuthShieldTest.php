@@ -11,6 +11,7 @@ class AuthShieldTest extends PHPUnit_Framework_TestCase {
 	public function setUp()
 	{
 		$this->auth = m::mock('Illuminate\Auth\AuthManager');
+		$this->container = m::mock('Illuminate\Container\Container');
 		$this->provider = m::mock('Dingo\Api\Auth\AuthorizationProvider');
 	}
 
@@ -31,7 +32,8 @@ class AuthShieldTest extends PHPUnit_Framework_TestCase {
 
 		$this->provider->shouldReceive('authenticate')->once()->with($request, $route)->andThrow(new Exception);
 
-		(new Shield($this->auth, [$this->provider]))->authenticate($request, $route);
+		$auth = new Shield($this->auth, $this->container, ['provider' => $this->provider]);
+		$auth->authenticate($request, $route);
 	}
 
 
@@ -45,7 +47,8 @@ class AuthShieldTest extends PHPUnit_Framework_TestCase {
 
 		$this->provider->shouldReceive('authenticate')->once()->with($request, $route)->andThrow(new Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException('foo'));
 
-		(new Shield($this->auth, [$this->provider]))->authenticate($request, $route);
+		$auth = new Shield($this->auth, $this->container, ['provider' => $this->provider]);
+		$auth->authenticate($request, $route);
 	}
 
 
@@ -56,15 +59,17 @@ class AuthShieldTest extends PHPUnit_Framework_TestCase {
 
 		$this->provider->shouldReceive('authenticate')->once()->with($request, $route)->andReturn(1);
 
-		$this->assertEquals(1, (new Shield($this->auth, [$this->provider]))->authenticate($request, $route));
+		$auth = new Shield($this->auth, $this->container, ['provider' => $this->provider]);
+		$this->assertEquals(1, $auth->authenticate($request, $route));
 	}
 
 
 	public function testGettingUserReturnsSetUser()
 	{
-		$auth = new Shield($this->auth, []);
+		$auth = new Shield($this->auth, $this->container, []);
 		$auth->setUser('foo');
 		$this->assertEquals('foo', $auth->user());
+		$this->assertTrue($auth->check());
 	}
 
 
@@ -79,20 +84,39 @@ class AuthShieldTest extends PHPUnit_Framework_TestCase {
 		$this->auth->shouldReceive('onceUsingId')->once()->with(1)->andReturn(true);
 		$this->auth->shouldReceive('user')->once()->andReturn('foo');
 
-		$auth = new Shield($this->auth, [$this->provider]);
+		$auth = new Shield($this->auth, $this->container, ['provider' => $this->provider]);
 		$auth->authenticate($request, $route);
 		$this->assertEquals('foo', $auth->user());
+		$this->assertTrue($auth->check());
 	}
 
 
-	public function testAuthenticatingViaOAuth2GrabsRouteScopesAndAuthenticationSucceeds()
+	public function testRegisteringCustomProviderAtRuntime()
 	{
 		$request = Request::create('foo', 'GET');
-		$route = new Route('GET', 'foo', ['protected' => true, 'scopes' => ['foo', 'bar']]);
+		$route = new Route('GET', 'foo', []);
+		$auth = new Shield($this->auth, $this->container, []);
 
-		$this->provider->shouldReceive('authenticate')->once()->with($request, $route)->andReturn(1);
+		$auth->extend('custom', new CustomProviderStub);
+		$auth->authenticate($request, $route);
+		$this->assertInstanceOf('CustomProviderStub', $auth->getUsedProvider());
 
-		$this->assertEquals(1, (new Shield($this->auth, [$this->provider]))->authenticate($request, $route));
+		$auth->extend('custom', function($app)
+		{
+			$this->assertInstanceOf('Illuminate\Container\Container', $app);
+
+			return new CustomProviderStub;
+		});
+		$auth->authenticate($request, $route);
+		$this->assertInstanceOf('CustomProviderStub', $auth->getUsedProvider());	
+	}
+
+
+	public function testGettingUserWhenNoLoggedInUserReturnsNull()
+	{
+		$auth = new Shield($this->auth, $this->container, []);
+		$this->assertFalse($auth->check());
+		$this->assertNull($auth->user());
 	}
 
 

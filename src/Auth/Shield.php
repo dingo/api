@@ -7,6 +7,7 @@ use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
 use Illuminate\Routing\Route;
 use Illuminate\Auth\AuthManager;
+use Illuminate\Container\Container;
 use Dingo\Api\Http\InternalRequest;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
@@ -18,6 +19,13 @@ class Shield {
 	 * @var \Illuminate\Auth\AuthManager
 	 */
 	protected $auth;
+
+	/**
+	 * Illuminate application container instance.
+	 * 
+	 * @var \Illuminate\Container\Container
+	 */
+	protected $container;
 
 	/**
 	 * Array of authentication providers.
@@ -51,12 +59,14 @@ class Shield {
      * Create a new Dingo\Api\Authentication instance.
      * 
      * @param  \Illuminate\Auth\AuthManager  $auth
+     * @param  \Illuminate\Container\Container  $container
      * @param  array  $providers
      * @return void
      */
-	public function __construct(AuthManager $auth, array $providers)
+	public function __construct(AuthManager $auth, Container $container, array $providers)
 	{
 		$this->auth = $auth;
+		$this->container = $container;
 		$this->providers = $providers;
 	}
 
@@ -72,7 +82,7 @@ class Shield {
 		// Spin through each of the registered authentication providers and attempt to
 		// authenticate through one of them. This allows a developer to implement
 		// and allow a number of different authentication mechanisms.
-		foreach ($this->providers as $provider)
+		foreach ($this->providers as $key => $provider)
 		{
 			try
 			{
@@ -173,13 +183,13 @@ class Shield {
 	/**
 	 * Extend the authentication layer with a custom provider.
 	 * 
-	 * @param  string  $provider
-	 * @param  callable  $resolver
+	 * @param  string  $key
+	 * @param  object|callable  $provider
 	 * @return void
 	 */
-	public function extend($provider, callable $resolver)
+	public function extend($key, $provider)
 	{
-		$this->providers[$provider] = call_user_func($resolver);
+		$this->providers[$key] = is_callable($provider) ? call_user_func($provider, $this->container) : $provider;
 	}
 
 }

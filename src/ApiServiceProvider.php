@@ -168,7 +168,7 @@ class ApiServiceProvider extends ServiceProvider {
 				$providers[$key] = $provider;
 			}
 
-			return new Shield($app['auth'], $providers);
+			return new Shield($app['auth'], $app, $providers);
 		});
 	}
 
