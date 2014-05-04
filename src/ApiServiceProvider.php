@@ -1,6 +1,7 @@
 <?php namespace Dingo\Api;
 
 use Closure;
+use RuntimeException;
 use Dingo\Api\Auth\Shield;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
@@ -20,16 +21,22 @@ class ApiServiceProvider extends ServiceProvider {
 	{
 		$this->package('dingo/api', 'api', __DIR__);
 
-		$this->app['Dingo\Api\Dispatcher'] = function($app)
-		{
-			return $app['dingo.api.dispatcher'];
-		};
+		$this->app['Dingo\Api\Dispatcher'] = function($app) { return $app['dingo.api.dispatcher']; };
+		$this->app['Dingo\Api\Auth\Shield'] = function($app) { return $app['dingo.api.auth']; };
 
-		$this->app['Dingo\Api\Auth\Shield'] = function($app)
-		{
-			return $app['dingo.api.auth'];
-		};
+		$formats = $this->prepareResponseFormats();
 
+		Response::setFormatters($formats);
+		Response::setTransformer($this->app['dingo.api.transformer']);
+	}
+
+	/**
+	 * Prepare the response formats.
+	 * 
+	 * @return array
+	 */
+	protected function prepareResponseFormats()
+	{
 		$formats = [];
 
 		foreach ($this->app['config']['api::formats'] as $key => $format)
@@ -42,8 +49,12 @@ class ApiServiceProvider extends ServiceProvider {
 			$formats[$key] = $format;
 		}
 
-		Response::setFormatters($formats);
-		Response::setTransformer($this->app['dingo.api.transformer']);
+		if (empty($formats))
+		{
+			throw new RuntimeException('No registered response formats.');
+		}
+
+		return $formats;
 	}
 
 	/**
@@ -65,19 +76,16 @@ class ApiServiceProvider extends ServiceProvider {
 
 		$this->registerMiddlewares();
 
-		// We'll also register a booting event so that we can set our exception handler
-		// instance, default API version and the API vendor on the router.
 		$this->app->booting(function($app)
 		{
-			$app['router']->setExceptionHandler($app['dingo.api.exception']);
+			$router = $app['router'];
 
-			$app['router']->setDefaultVersion($app['config']['api::version']);
-
-			$app['router']->setDefaultPrefix($app['config']['api::prefix']);
-
-			$app['router']->setDefaultDomain($app['config']['api::domain']);
-
-			$app['router']->setVendor($app['config']['api::vendor']);
+			$router->setExceptionHandler($app['dingo.api.exception']);
+			$router->setDefaultVersion($app['config']['api::version']);
+			$router->setDefaultPrefix($app['config']['api::prefix']);
+			$router->setDefaultDomain($app['config']['api::domain']);
+			$router->setDefaultFormat($app['config']['api::default_format']);
+			$router->setVendor($app['config']['api::vendor']);
 		});
 	}
 

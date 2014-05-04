@@ -595,6 +595,27 @@ class Router extends IlluminateRouter {
 	}
 
 	/**
+	 * Set the default API format.
+	 * 
+	 * @param  string  $defaultformat
+	 * @return void
+	 */
+	public function setDefaultFormat($defaultFormat)
+	{
+		$this->defaultFormat = $defaultFormat;
+	}
+
+	/**
+	 * Get the default API format.
+	 * 
+	 * @return string
+	 */
+	public function getDefaultFormat()
+	{
+		return $this->defaultFormat;
+	}
+
+	/**
 	 * Get the requested version.
 	 * 
 	 * @return string

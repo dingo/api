@@ -111,6 +111,8 @@ return [
 	|
 	*/
 
+	'default_format' => 'json',
+
 	'formats' => [
 
 		'json' => new Dingo\Api\Http\ResponseFormat\JsonResponseFormat
