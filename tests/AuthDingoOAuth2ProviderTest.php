@@ -16,13 +16,13 @@ class AuthDingoOAuth2ProviderTest extends PHPUnit_Framework_TestCase {
 
 
 	/**
-	 * @expectedException \Exception
+	 * @expectedException \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
 	 */
 	public function testValidatingAuthorizationHeaderFailsAndThrowsException()
 	{
 		$request = Request::create('foo', 'GET');
-		$provider = new DingoOAuth2Provider($this->getResourceMock(), []);
-		$provider->authenticate($request);
+		$provider = new DingoOAuth2Provider($this->getResourceMock());
+		$provider->authenticate($request, new Route('/foo', 'GET', []));
 	}
 
 
@@ -34,7 +34,7 @@ class AuthDingoOAuth2ProviderTest extends PHPUnit_Framework_TestCase {
 		$request = Request::create('foo', 'GET');
 		$request->headers->set('authorization', 'Bearer foo');
 
-		$provider = new DingoOAuth2Provider($resource = $this->getResourceMock(), []);
+		$provider = new DingoOAuth2Provider($resource = $this->getResourceMock());
 		$resource->shouldReceive('validateRequest')->once()->with([])->andThrow(new InvalidTokenException('foo', 'foo', 403));
 
 		$provider->authenticate($request, new Route('/foo', 'GET', []));
@@ -46,7 +46,18 @@ class AuthDingoOAuth2ProviderTest extends PHPUnit_Framework_TestCase {
 		$request = Request::create('foo', 'GET');
 		$request->headers->set('authorization', 'Bearer foo');
 
-		$provider = new DingoOAuth2Provider($resource = $this->getResourceMock(), []);
+		$provider = new DingoOAuth2Provider($resource = $this->getResourceMock());
+		$resource->shouldReceive('validateRequest')->once()->with(['foo', 'bar'])->andReturn(m::mock(['getUserId' => 1]));
+
+		$this->assertEquals(1, $provider->authenticate($request, new Route('/foo', 'GET', ['scopes' => ['foo', 'bar']])));
+	}
+
+
+	public function testAuthenticatingWithQueryStringSucceedsAndReturnsUserId()
+	{
+		$request = Request::create('foo', 'GET', ['access_token' => 'foo']);
+
+		$provider = new DingoOAuth2Provider($resource = $this->getResourceMock());
 		$resource->shouldReceive('validateRequest')->once()->with(['foo', 'bar'])->andReturn(m::mock(['getUserId' => 1]));
 
 		$this->assertEquals(1, $provider->authenticate($request, new Route('/foo', 'GET', ['scopes' => ['foo', 'bar']])));

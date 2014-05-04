@@ -1,6 +1,5 @@
 <?php namespace Dingo\Api\Auth;
 
-use Exception;
 use BadMethodCallException;
 use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
@@ -9,6 +8,7 @@ use Illuminate\Routing\Route;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Container\Container;
 use Dingo\Api\Http\InternalRequest;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class Shield {
@@ -96,7 +96,7 @@ class Shield {
 			{
 				$exceptionStack[] = $exception;
 			}
-			catch (Exception $exception)
+			catch (BadRequestHttpException $exception)
 			{
 				// We won't add this exception to the stack as it's thrown when the provider
 				// is unable to authenticate due to the correct authorization header not

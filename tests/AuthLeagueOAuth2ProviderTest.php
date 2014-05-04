@@ -16,7 +16,7 @@ class AuthLeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase {
 
 
 	/**
-	 * @expectedException \Exception
+	 * @expectedException \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
 	 */
 	public function testValidatingAuthorizationHeaderFailsAndThrowsException()
 	{

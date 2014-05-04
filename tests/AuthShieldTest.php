@@ -4,6 +4,8 @@ use Mockery as m;
 use Dingo\Api\Auth\Shield;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class AuthShieldTest extends PHPUnit_Framework_TestCase {
 
@@ -30,7 +32,7 @@ class AuthShieldTest extends PHPUnit_Framework_TestCase {
 		$request = Request::create('foo', 'GET');
 		$route = new Route('GET', 'foo', ['protected' => true]);
 
-		$this->provider->shouldReceive('authenticate')->once()->with($request, $route)->andThrow(new Exception);
+		$this->provider->shouldReceive('authenticate')->once()->with($request, $route)->andThrow(new BadRequestHttpException);
 
 		$auth = new Shield($this->auth, $this->container, ['provider' => $this->provider]);
 		$auth->authenticate($request, $route);
@@ -45,7 +47,7 @@ class AuthShieldTest extends PHPUnit_Framework_TestCase {
 		$request = Request::create('foo', 'GET');
 		$route = new Route('GET', 'foo', ['protected' => true]);
 
-		$this->provider->shouldReceive('authenticate')->once()->with($request, $route)->andThrow(new Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException('foo'));
+		$this->provider->shouldReceive('authenticate')->once()->with($request, $route)->andThrow(new UnauthorizedHttpException('foo'));
 
 		$auth = new Shield($this->auth, $this->container, ['provider' => $this->provider]);
 		$auth->authenticate($request, $route);
