@@ -73,7 +73,7 @@ class Transformer {
 	 * Register a transformer for a class.
 	 * 
 	 * @param  string  $class
-	 * @param  string|\Closure  $transformer
+	 * @param  string|callable  $transformer
 	 * @return \Dingo\Api\Transformer
 	 */
 	public function transform($class, $transformer)
@@ -152,7 +152,7 @@ class Transformer {
 	/**
 	 * Resolve a transfomer instance.
 	 * 
-	 * @param  string|\Closure  $transformer
+	 * @param  string|callable  $transformer
 	 * @return \League\Fractal\TransformerAbstract
 	 */
 	protected function resolveTransformer($transformer)
@@ -169,7 +169,7 @@ class Transformer {
 	 * Get transformer from a class.
 	 * 
 	 * @param  string|object  $class
-	 * @return string|\Closure
+	 * @return string|callable
 	 * @throws \RuntimeException
 	 */
 	protected function getTransformer($class)
@@ -206,7 +206,7 @@ class Transformer {
 	 * Get a registered transformer from a collection of items.
 	 * 
 	 * @param  \Illuminate\Support\Collection  $collection
-	 * @return null|string|\Closure
+	 * @return null|string|callable
 	 */
 	protected function getTransformerFromCollection($collection)
 	{

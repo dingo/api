@@ -1,6 +1,5 @@
 <?php namespace Dingo\Api;
 
-use Closure;
 use RuntimeException;
 use Dingo\Api\Auth\Shield;
 use Dingo\Api\Http\Response;
@@ -41,7 +40,7 @@ class ApiServiceProvider extends ServiceProvider {
 
 		foreach ($this->app['config']['api::formats'] as $key => $format)
 		{
-			if ($format instanceof Closure)
+			if (is_callable($format))
 			{
 				$format = call_user_func($format, $this->app);
 			}

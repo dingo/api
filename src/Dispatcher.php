@@ -1,6 +1,5 @@
 <?php namespace Dingo\Api;
 
-use Closure;
 use RuntimeException;
 use Dingo\Api\Auth\Shield;
 use Illuminate\Http\Request;

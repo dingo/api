@@ -1,6 +1,5 @@
 <?php namespace Dingo\Api\Routing;
 
-use Closure;
 use RuntimeException;
 use BadMethodCallException;
 use Illuminate\Http\Request;
@@ -89,10 +88,10 @@ class Router extends IlluminateRouter {
 	 * Register an API group.
 	 * 
 	 * @param  array  $options
-	 * @param  \Closure  $callback
+	 * @param  callable  $callback
 	 * @return void
 	 */
-	public function api($options, Closure $callback)
+	public function api($options, callable $callback)
 	{
 		if ( ! isset($options['version']))
 		{
@@ -210,7 +209,7 @@ class Router extends IlluminateRouter {
 	 * 
 	 * @param  array|string  $methods
 	 * @param  string  $uri
-	 * @param  \Closure|array|string  $action
+	 * @param  callable|array|string  $action
 	 * @return \Illuminate\Routing\Route
 	 */
 	protected function addRoute($methods, $uri, $action)

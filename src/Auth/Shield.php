@@ -1,6 +1,5 @@
 <?php namespace Dingo\Api\Auth;
 
-use Closure;
 use Exception;
 use BadMethodCallException;
 use Illuminate\Http\Request;
@@ -175,10 +174,10 @@ class Shield {
 	 * Extend the authentication layer with a custom provider.
 	 * 
 	 * @param  string  $provider
-	 * @param  \Closure  $resolver
+	 * @param  callable  $resolver
 	 * @return void
 	 */
-	public function extend($provider, Closure $resolver)
+	public function extend($provider, callable $resolver)
 	{
 		$this->providers[$provider] = call_user_func($resolver);
 	}

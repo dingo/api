@@ -1,6 +1,5 @@
 <?php namespace Dingo\Api;
 
-use Closure;
 use ReflectionFunction;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -17,10 +16,10 @@ class ExceptionHandler {
 	/**
 	 * Register a new exception handler.
 	 * 
-	 * @param  \Closure  $callback
+	 * @param  callable  $callback
 	 * @return void
 	 */
-	public function register(Closure $callback)
+	public function register(callable $callback)
 	{
 		$hint = $this->handlerHint($callback);
 		
@@ -65,10 +64,10 @@ class ExceptionHandler {
 	/**
 	 * Get the hint for an exception handler.
 	 * 
-	 * @param  \Closure  $callback
+	 * @param  callable  $callback
 	 * @return string
 	 */
-	protected function handlerHint(Closure $callback)
+	protected function handlerHint(callable $callback)
 	{
 		$reflection = new ReflectionFunction($callback);
 
