@@ -151,7 +151,7 @@ class RateLimit implements HttpKernelInterface {
 	 * 
 	 * @return bool
 	 */
-	protected function isRequestAuthenticated()
+	protected function isAuthenticatedRequest()
 	{
 		if ( ! is_null($this->authenticatedRequest))
 		{
@@ -171,7 +171,7 @@ class RateLimit implements HttpKernelInterface {
 	{
 		$this->config = array_merge($this->config, $this->container->make('config')->get('api::rate_limiting'));
 
-		if ($this->isRequestAuthenticated())
+		if ($this->isAuthenticatedRequest())
 		{
 			$this->config = array_merge(['exceeded' => $this->config['exceeded']], $this->config['authenticated']);
 		}

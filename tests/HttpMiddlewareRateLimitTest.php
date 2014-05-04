@@ -25,8 +25,6 @@ class HttpMiddlewareRateLimitTest extends PHPUnit_Framework_TestCase {
 
 		$this->container->shouldReceive('boot')->atLeast()->once();
 		$this->container->shouldReceive('make')->once()->with('dingo.api.auth')->andReturn($this->auth);
-
-		$this->auth->shouldReceive('check')->once()->andReturn(false);
 	}
 
 
@@ -40,6 +38,8 @@ class HttpMiddlewareRateLimitTest extends PHPUnit_Framework_TestCase {
 	{
 		$request = InternalRequest::create('/', 'GET');
 
+		$this->auth->shouldReceive('check')->once()->andReturn(false);
+
 		$this->container->shouldReceive('make')->once()->with('config')->andReturn(m::mock(['get' => []]));
 		$this->app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn(new Response('test'));
 		$this->assertEquals('test', $this->middleware->handle($request)->getContent());
@@ -49,6 +49,8 @@ class HttpMiddlewareRateLimitTest extends PHPUnit_Framework_TestCase {
 	public function testWrappedKernelIsHandledForRequestsNotTargettingTheApi()
 	{
 		$request = Request::create('/', 'GET');
+
+		$this->auth->shouldReceive('check')->once()->andReturn(false);
 
 		$this->container->shouldReceive('make')->once()->with('config')->andReturn(m::mock(['get' => []]));
 		$this->container->shouldReceive('make')->once()->with('router')->andReturn($this->router);
@@ -64,7 +66,25 @@ class HttpMiddlewareRateLimitTest extends PHPUnit_Framework_TestCase {
 	{
 		$request = Request::create('/', 'GET');
 
+		$this->auth->shouldReceive('check')->once()->andReturn(false);
+
 		$this->container->shouldReceive('make')->once()->with('config')->andReturn(m::mock(['get' => ['unauthenticated' => ['limit' => 0]]]));
+		$this->container->shouldReceive('make')->once()->with('router')->andReturn($this->router);
+
+		$this->router->shouldReceive('requestTargettingApi')->once()->with($request)->andReturn(true);
+
+		$this->app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn(new Response('test'));
+		$this->assertEquals('test', $this->middleware->handle($request)->getContent());
+	}
+
+
+	public function testAuthenticatedConfigurationIsUsedForAuthenticatedRequest()
+	{
+		$request = Request::create('/', 'GET');
+
+		$this->auth->shouldReceive('check')->once()->andReturn(true);
+
+		$this->container->shouldReceive('make')->once()->with('config')->andReturn(m::mock(['get' => ['authenticated' => ['limit' => 0]]]));
 		$this->container->shouldReceive('make')->once()->with('router')->andReturn($this->router);
 
 		$this->router->shouldReceive('requestTargettingApi')->once()->with($request)->andReturn(true);
@@ -78,12 +98,13 @@ class HttpMiddlewareRateLimitTest extends PHPUnit_Framework_TestCase {
 	{
 		$request = Request::create('/', 'GET');
 
+		$this->auth->shouldReceive('check')->once()->andReturn(false);
+
 		$this->container->shouldReceive('make')->once()->with('config')->andReturn(m::mock(['get' => ['unauthenticated' => ['limit' => 1, 'reset' => 1]]]));
 		$this->container->shouldReceive('make')->once()->with('router')->andReturn($this->router);
 		$this->container->shouldReceive('make')->once()->with('cache')->andReturn($this->cache);
 
 		$this->router->shouldReceive('requestTargettingApi')->once()->with($request)->andReturn(true);
-
 
 		$ip = $request->getClientIp();
 
@@ -104,6 +125,8 @@ class HttpMiddlewareRateLimitTest extends PHPUnit_Framework_TestCase {
 	public function testForbiddenResponseIsReturnedWhenRateLimitIsExceeded()
 	{
 		$request = Request::create('/', 'GET');
+
+		$this->auth->shouldReceive('check')->once()->andReturn(false);
 
 		$this->container->shouldReceive('make')->once()->with('config')->andReturn(m::mock(['get' => ['unauthenticated' => ['limit' => 1, 'reset' => 1]]]));
 		$this->container->shouldReceive('make')->once()->with('router')->andReturn($this->router);
