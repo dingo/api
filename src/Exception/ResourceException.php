@@ -45,7 +45,7 @@ class ResourceException extends HttpException {
 	 **/
 	public function errors()
 	{
-		return $this->errors;
+		return $this->getErrors();
 	}
 
 	/**

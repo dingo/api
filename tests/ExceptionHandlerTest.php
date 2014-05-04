@@ -58,4 +58,10 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase {
 	}
 
 
+	public function testExceptionHandlerReturnsNullWhenNoMatchingHandler()
+	{
+		$this->assertNull($this->exceptionHandler->handle(new StubHttpException(404, 'bar')));
+	}
+
+
 }
