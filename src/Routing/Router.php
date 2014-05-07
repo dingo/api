@@ -85,6 +85,13 @@ class Router extends IlluminateRouter {
 	protected $requestsTargettingApi = [];
 
 	/**
+	 * Array of resolved API controllers.
+	 * 
+	 * @var array
+	 */
+	protected $resolvedControllers = [];
+
+	/**
 	 * Register an API group.
 	 * 
 	 * @param  array  $options
@@ -284,16 +291,32 @@ class Router extends IlluminateRouter {
 	{
 		list ($class, $method) = explode('@', $route->getActionName());
 
-		$controller = $this->container->make($class);
+		$controller = $this->resolveController($class);
 
 		if ($controller instanceof \Dingo\Api\Routing\Controller)
 		{
-			$route = $this->controllerMethodProtected($route, $controller, $method);
+			$route = $this->controllerProtectedMethods($route, $controller, $method);
 
-			$route = $this->controllerMethodScopes($route, $controller, $method);
+			$route = $this->controllerScopedMethods($route, $controller, $method);
 		}
 
 		return $route;
+	}
+
+	/**
+	 * Resolve a controller from the IoC container.
+	 * 
+	 * @param  string  $controller
+	 * @return \Illuminate\Routing\Controller
+	 */
+	protected function resolveController($class)
+	{
+		if (isset($this->resolvedControllers[$class]))
+		{
+			return $this->resolvedControllers[$class];
+		}
+
+		return $this->resolvedControllers[$class] = $this->container->make($class);
 	}
 
 	/**
@@ -306,7 +329,7 @@ class Router extends IlluminateRouter {
 	 * @param  string  $method
 	 * @return \Illuminate\Routing\Route
 	 */
-	protected function controllerMethodScopes($route, $controller, $method)
+	protected function controllerScopedMethods($route, $controller, $method)
 	{
 		$action = $route->getAction();
 
@@ -344,7 +367,7 @@ class Router extends IlluminateRouter {
 	 * @param  string  $method
 	 * @return \Illuminate\Routing\Route
 	 */
-	protected function controllerMethodProtected($route, $controller, $method)
+	protected function controllerProtectedMethods($route, $controller, $method)
 	{
 		$action = $route->getAction();
 
