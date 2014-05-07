@@ -78,18 +78,18 @@ class Router extends IlluminateRouter {
 	protected $exceptionHandler;
 
 	/**
+	 * Controller reviser instance.
+	 * 
+	 * @var \Dingo\Api\Routing\ControllerReviser
+	 */
+	protected $reviser;
+
+	/**
 	 * Array of requests targetting the API.
 	 * 
 	 * @var array
 	 */
 	protected $requestsTargettingApi = [];
-
-	/**
-	 * Array of resolved API controllers.
-	 * 
-	 * @var array
-	 */
-	protected $resolvedControllers = [];
 
 	/**
 	 * Register an API group.
@@ -259,130 +259,6 @@ class Router extends IlluminateRouter {
 		{
 			$this->getApiRouteCollection($version)->add($route);
 		}
-
-		return $route;
-	}
-
-	/**
-	 * Create a new route instance.
-	 *
-	 * @param  array|string  $methods
-	 * @param  string  $uri
-	 * @param  mixed   $action
-	 * @return \Illuminate\Routing\Route
-	 */
-	protected function createRoute($methods, $uri, $action)
-	{
-		$route = parent::createRoute($methods, $uri, $action);
-
-		if ($this->routeTargettingApi($route) and $this->routingToController($action))
-		{
-			$route = $this->adjustRouteForApiController($route);
-		}
-
-		return $route;
-	}
-
-	/**
-	 * Adjust the routes action for an API controller.
-	 * 
-	 * @param  \Illuminate\Routing\Route  $route
-	 * @return \Illuminate\Routing\Route
-	 */
-	protected function adjustRouteForApiController($route)
-	{
-		list ($class, $method) = explode('@', $route->getActionName());
-
-		$controller = $this->resolveController($class);
-
-		if ($controller instanceof \Dingo\Api\Routing\Controller)
-		{
-			$route = $this->controllerProtectedMethods($route, $controller, $method);
-
-			$route = $this->controllerScopedMethods($route, $controller, $method);
-		}
-
-		return $route;
-	}
-
-	/**
-	 * Resolve a controller from the IoC container.
-	 * 
-	 * @param  string  $controller
-	 * @return \Illuminate\Routing\Controller
-	 */
-	protected function resolveController($class)
-	{
-		if (isset($this->resolvedControllers[$class]))
-		{
-			return $this->resolvedControllers[$class];
-		}
-
-		return $this->resolvedControllers[$class] = $this->container->make($class);
-	}
-
-	/**
-	 * Adjust the scopes of a controller method. Scopes defined
-	 * on the controller are merged with those defined
-	 * in the route definition.
-	 * 
-	 * @param  \Illuminate\Routing\Route  $route
-	 * @param  \Dingo\Api\Routing\Controller  $controller
-	 * @param  string  $method
-	 * @return \Illuminate\Routing\Route
-	 */
-	protected function controllerScopedMethods($route, $controller, $method)
-	{
-		$action = $route->getAction();
-
-		if ( ! isset($action['scopes']))
-		{
-			$action['scopes'] = [];
-		}
-
-		$action['scopes'] = (array) $action['scopes'];
-
-		$scopedMethods = $controller->getScopedMethods();
-
-		// A wildcard can be used to attach scopes to all controller methods so
-		// we'll merge any scopes here
-		if (isset($scopedMethods['*']))
-		{
-			$action['scopes'] = array_merge($action['scopes'], $scopedMethods['*']);
-		}
-
-		if (isset($scopedMethods[$method]))
-		{
-			$action['scopes'] = array_merge($action['scopes'], $scopedMethods[$method]);
-		}
-
-		$route->setAction($action);
-
-		return $route;
-	}
-
-	/**
-	 * Adjust the protected state of a controller method.
-	 * 
-	 * @param  \Illuminate\Routing\Route  $route
-	 * @param  \Dingo\Api\Routing\Controller  $controller
-	 * @param  string  $method
-	 * @return \Illuminate\Routing\Route
-	 */
-	protected function controllerProtectedMethods($route, $controller, $method)
-	{
-		$action = $route->getAction();
-
-		if (in_array($method, $controller->getProtectedMethods()))
-		{
-			$action['protected'] = true;
-		}
-		elseif (in_array($method, $controller->getUnprotectedMethods()))
-		{
-			$action['protected'] = false;
-		}
-
-		$route->setAction($action);
 
 		return $route;
 	}
@@ -667,6 +543,27 @@ class Router extends IlluminateRouter {
 	public function getInspector()
 	{
 		return $this->inspector ?: $this->inspector = new ControllerInspector;
+	}
+
+	/**
+	 * Set the controller reviser instance.
+	 * 
+	 * @param  \Dingo\Api\Routing\ControllerReviser  $reviser
+	 * @return void
+	 */
+	public function setControllerReviser(ControllerReviser $reviser)
+	{
+		$this->reviser = $reviser;
+	}
+
+	/**
+	 * Get the controller reviser instance.
+	 * 
+	 * @return \Dingo\Api\Routing\ControllerReviser
+	 */
+	public function getControllerReviser()
+	{
+		return $this->reviser ?: new ControllerReviser($this->container);
 	}
 
 	/**

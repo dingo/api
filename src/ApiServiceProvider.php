@@ -64,15 +64,10 @@ class ApiServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		$this->registerDispatcher();
-
 		$this->registerRouter();
-
 		$this->registerTransformer();
-
 		$this->registerExceptionHandler();
-
 		$this->registerAuthentication();
-
 		$this->registerMiddlewares();
 
 		$this->app->booting(function($app)

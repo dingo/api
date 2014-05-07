@@ -1,5 +1,6 @@
 <?php namespace Dingo\Api\Routing;
 
+use Illuminate\Http\Request;
 use Illuminate\Routing\RouteCollection;
 
 class ApiRouteCollection extends RouteCollection {
@@ -51,7 +52,7 @@ class ApiRouteCollection extends RouteCollection {
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return bool
 	 */
-	public function matchesRequest($request)
+	public function matchesRequest(Request $request)
 	{
 		if ($this->matchesCollectionVersion($request))
 		{

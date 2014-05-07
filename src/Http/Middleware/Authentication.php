@@ -4,6 +4,7 @@ use Dingo\Api\Http\Response;
 use Illuminate\Routing\Route;
 use Dingo\Api\Http\InternalRequest;
 use Illuminate\Container\Container;
+use Dingo\Api\Routing\ControllerReviser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -26,6 +27,13 @@ class Authentication implements HttpKernelInterface {
 	protected $container;
 
 	/**
+	 * Controller reviser instance.
+	 * 
+	 * @var \Dingo\Api\Routing\ControllerReviser
+	 */
+	protected $controllerReviser;
+
+	/**
 	 * Array of resolved container bindings.
 	 * 
 	 * @var array
@@ -46,10 +54,11 @@ class Authentication implements HttpKernelInterface {
 	 * @param  \Illuminate\Container\Container  $container
 	 * @return void
 	 */
-	public function __construct(HttpKernelInterface $app, Container $container)
+	public function __construct(HttpKernelInterface $app, Container $container, ControllerReviser $controllerReviser = null)
 	{
 		$this->app = $app;
 		$this->container = $container;
+		$this->controllerReviser = $controllerReviser ?: new ControllerReviser($container);
 	}
 
 	/**
@@ -82,7 +91,7 @@ class Authentication implements HttpKernelInterface {
 		{
 			try
 			{
-				$route = $collection->match($request);
+				$route = $this->controllerReviser->revise($collection->match($request));
 
 				if ($this->routeIsProtected($route))
 				{

@@ -22,6 +22,8 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 		$this->router->setDefaultVersion('v1');
 		$this->router->setVendor('testing');
 
+		$this->reviser = $this->router->getControllerReviser();
+
 		Response::setFormatters(['json' => new JsonResponseFormat]);
 
 		$transformer = m::mock('Dingo\Api\Transformer');
@@ -143,71 +145,6 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->router->get('foo', function() { return 'bar'; });
 		$this->assertCount(1, $this->router->getRoutes());
-	}
-
-
-	public function testRoutingToControllerWithWildcardScopes()
-	{
-		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
-		{
-			$this->router->get('foo', 'WildcardScopeControllerStub@index');
-		});
-
-		$route = $this->router->getApiRouteCollection('v1')->getRoutes()[0];
-
-		$this->assertEquals(['foo', 'bar'], $route->getAction()['scopes']);
-	}
-
-
-	public function testRoutingToControllerWithIndividualScopes()
-	{
-		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
-		{
-			$this->router->get('foo', 'IndividualScopeControllerStub@index');
-		});
-
-		$route = $this->router->getApiRouteCollection('v1')->getRoutes()[0];
-
-		$this->assertEquals(['foo', 'bar'], $route->getAction()['scopes']);
-	}
-
-
-	public function testRoutingToControllerMergesGroupScopes()
-	{
-		$this->router->api(['version' => 'v1', 'prefix' => 'api', 'scopes' => 'baz'], function()
-		{
-			$this->router->get('foo', 'WildcardScopeControllerStub@index');
-		});
-
-		$route = $this->router->getApiRouteCollection('v1')->getRoutes()[0];
-
-		$this->assertEquals(['baz', 'foo', 'bar'], $route->getAction()['scopes']);
-	}
-
-
-	public function testRoutingToControllerWithProtectedMethod()
-	{
-		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
-		{
-			$this->router->get('foo', 'ProtectedControllerStub@index');
-		});
-
-		$route = $this->router->getApiRouteCollection('v1')->getRoutes()[0];
-
-		$this->assertTrue($route->getAction()['protected']);
-	}
-
-
-	public function testRoutingToControllerWithUnprotectedMethod()
-	{
-		$this->router->api(['version' => 'v1', 'prefix' => 'api', 'protected' => true], function()
-		{
-			$this->router->get('foo', 'UnprotectedControllerStub@index');
-		});
-
-		$route = $this->router->getApiRouteCollection('v1')->getRoutes()[0];
-
-		$this->assertFalse($route->getAction()['protected']);
 	}
 
 
