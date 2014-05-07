@@ -243,14 +243,14 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 	public function testExceptionHandledAndResponseIsReturned()
 	{
-		$exception = new HttpException(404, 'testing');
+		$exception = new HttpException(404, 'testing', null, [], 1);
 
 		$this->exceptionHandler->shouldReceive('willHandle')->with($exception)->andReturn(false);
 
 		$response = $this->router->handleException($exception);
 
 		$this->assertInstanceOf('Dingo\Api\Http\Response', $response);
-		$this->assertEquals('testing', $response->getContent());
+		$this->assertEquals('{"message":"testing","code":1}', $response->getContent());
 		$this->assertEquals(404, $response->getStatusCode());
 	}
 
@@ -264,7 +264,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 		$response = $this->router->handleException($exception);
 
 		$this->assertInstanceOf('Dingo\Api\Http\Response', $response);
-		$this->assertEquals('404 Not Found', $response->getContent());
+		$this->assertEquals('{"message":"404 Not Found"}', $response->getContent());
 		$this->assertEquals(404, $response->getStatusCode());
 	}
 

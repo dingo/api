@@ -198,17 +198,19 @@ class Router extends IlluminateRouter {
 			$message = sprintf('%d %s', $exception->getStatusCode(), Response::$statusTexts[$exception->getStatusCode()]);
 		}
 
-		if ($exception instanceof ResourceException)
-		{
-			$message = ['message' => $message];
+		$response = ['message' => $message];
 
-			if ($exception->hasErrors())
-			{
-				$message['errors'] = $exception->errors();
-			}
+		if ($exception instanceof ResourceException and $exception->hasErrors())
+		{
+			$response['errors'] = $exception->getErrors();
 		}
 
-		return new Response($message, $exception->getStatusCode());
+		if ($code = $exception->getCode())
+		{
+			$response['code'] = $code;
+		}
+
+		return new Response($response, $exception->getStatusCode());
 	}
 
 	/**
