@@ -594,4 +594,13 @@ class Router extends IlluminateRouter {
 		$this->current = $route;
 	}
 
+	/**
+	 * Get the array of registered API route collections.
+	 * 
+	 * @return array
+	 */
+	public function getApiRoutes()
+	{
+		return $this->api;
+	}
 }
