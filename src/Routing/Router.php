@@ -666,4 +666,8 @@ class Router extends IlluminateRouter {
 		$this->current = $route;
 	}
 
+    public function getApiRoutes()
+    {
+        return $this->api;
+    }
 }
