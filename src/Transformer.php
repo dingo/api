@@ -91,9 +91,9 @@ class Transformer {
 	 */
 	public function transformResponse($response)
 	{
-		$transformer = $this->resolveTransformer($this->getTransformer($response));
-
 		$this->setRequestedScopes();
+
+		$transformer = $this->resolveTransformer($this->getTransformer($response));
 
 		$resource = $this->createResource($response, $transformer);
 
@@ -197,6 +197,11 @@ class Transformer {
 	 */
 	protected function hasTransformer($class)
 	{
+		if ($this->isCollection($class))
+		{
+			$class = $class->first();
+		}
+
 		$class = is_object($class) ? get_class($class) : $class;
 
 		return isset($this->transformers[$class]);
