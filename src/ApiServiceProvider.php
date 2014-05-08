@@ -125,7 +125,9 @@ class ApiServiceProvider extends ServiceProvider {
 	{
 		$this->app['dingo.api.transformer'] = $this->app->share(function($app)
 		{
-			return new Transformer(new Fractal, $app, $app['config']['api::embeds.key'], $app['config']['api::embeds.separator']);
+			$config = $app['config']['api::fractal_includes'];
+
+			return new Transformer(new Fractal, $app, $config['key'], $config['separator']);
 		});
 	}
 

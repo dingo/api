@@ -122,18 +122,19 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
-	| Transformer Relationships
+	| Fractal Includes
 	|--------------------------------------------------------------------------
 	|
-	| Transformers can embed or nest relationships. The embeds "key" is the
-	| query string key and the "separator" is the character that will
-	| separate each relationship (or scope).
+	| With Fractal transformers you can easily include or "nest" relationships.
+	| By default the API will look for a query string key of "include",
+	| the value should be a (by default) comma separated list of
+	|relationships that you have defined on your transformer.
 	|
 	*/
 
-	'embeds' => [
+	'fractal_includes' => [
 
-		'key' => 'embeds',
+		'key' => 'include',
 		'separator' => ','
 
 	]
