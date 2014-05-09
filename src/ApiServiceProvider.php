@@ -189,7 +189,8 @@ class ApiServiceProvider extends ServiceProvider {
 
     protected function registerCommands()
     {
-        $this->app['api.routes'] = $this->app->share(function($app) {
+        $this->app['dingo.api.command.routes'] = $this->app->share(function($app)
+        {
             return new ApiRoutesCommand($app['router']);
         });
 
