@@ -44,7 +44,7 @@ class Factory {
 	 * Register a transformer binding resolver for a class.
 	 * 
 	 * @param  string  $class
-	 * @param  string|callable  $resolver
+	 * @param  string|callable|object  $resolver
 	 * @return \Dingo\Api\Transformer\Factory
 	 */
 	public function transform($class, $resolver)
@@ -75,7 +75,7 @@ class Factory {
 	 */
 	public function transformableResponse($response)
 	{
-		return $this->transformableType($response) and $this->hasBinding($response);
+		return $this->transformableType($response) and ($this->hasBinding($response) or $this->boundByContract($response));
 	}
 		
 	/**
@@ -92,7 +92,7 @@ class Factory {
 	/**
 	 * Resolve a transfomer binding instance.
 	 * 
-	 * @param  string|callable  $resolver
+	 * @param  string|callable|object  $resolver
 	 * @return mixed
 	 */
 	protected function resolveTransformerBinding($resolver)
@@ -101,15 +101,19 @@ class Factory {
 		{
 			return $this->container->make($resolver);
 		}
-
-		return call_user_func($resolver, $this->container);
+		elseif (is_callable($resolver))
+		{
+			return call_user_func($resolver, $this->container);
+		}
+		
+		return $resolver;
 	}
 
 	/**
 	 * Get a registered transformer binding.
 	 * 
 	 * @param  string|object  $class
-	 * @return string|callable
+	 * @return string|callable|object
 	 * @throws \RuntimeException
 	 */
 	protected function getBinding($class)
@@ -117,6 +121,11 @@ class Factory {
 		if ($this->isCollection($class))
 		{
 			return $this->getBindingFromCollection($class);
+		}
+
+		if ($this->boundByContract($class))
+		{
+			return $class->getTransformer();
 		}
 
 		$class = is_object($class) ? get_class($class) : $class;
@@ -156,6 +165,17 @@ class Factory {
 		$class = is_object($class) ? get_class($class) : $class;
 
 		return isset($this->bindings[$class]);
+	}
+
+	/**
+	 * Determine if the class is bound by the transformable contract.
+	 * 
+	 * @param  string|object  $class
+	 * @return bool
+	 */
+	protected function boundByContract($class)
+	{
+		return is_object($class) and $class instanceof TransformableInterface;
 	}
 
 	/**

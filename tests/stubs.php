@@ -136,10 +136,12 @@ class BarTransformerStub extends League\Fractal\TransformerAbstract {
 }
 
 class Foo {
-	
-}
-
-class Bar {
 
 }
 
+class Bar implements Dingo\Api\Transformer\TransformableInterface  {
+	public function getTransformer()
+	{
+		return new BarTransformerStub;
+	}
+}
