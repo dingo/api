@@ -117,8 +117,8 @@ return [
 	{
 		$fractal = new League\Fractal\Manager;
 
-		return new Dingo\Api\Transformer\FractalTransformer($fractal)
-	}
+		return new Dingo\Api\Transformer\FractalTransformer($fractal);
+	},
 
 	/*
 	|--------------------------------------------------------------------------
