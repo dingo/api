@@ -6,7 +6,6 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Route;
 use Dingo\Api\Http\InternalRequest;
 use Dingo\Api\Http\Middleware\RateLimit;
-use Dingo\Api\Http\Response as ApiResponse;
 use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
@@ -143,7 +142,7 @@ class HttpMiddlewareRateLimitTest extends PHPUnit_Framework_TestCase {
 		$this->cache->shouldReceive('get')->twice()->with('dingo:api:requests:'.$ip)->andReturn(2);
 		$this->cache->shouldReceive('get')->once()->with('dingo:api:reset:'.$ip);
 
-		Dingo\Api\Http\Response::setTransformer(m::mock('Dingo\Api\Transformer')->shouldReceive('transformableResponse')->andReturn(false)->getMock());
+		Dingo\Api\Http\Response::setTransformer(m::mock('Dingo\Api\Transformer\Factory')->shouldReceive('transformableResponse')->andReturn(false)->getMock());
 		Dingo\Api\Http\Response::setFormatters(['json' => new Dingo\Api\Http\ResponseFormat\JsonResponseFormat]);
 
 		$response = $this->middleware->handle($request);

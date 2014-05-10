@@ -100,6 +100,26 @@ return [
 
 	],
 
+
+	/*
+	|--------------------------------------------------------------------------
+	| Response Transformer
+	|--------------------------------------------------------------------------
+	|
+	| Responses can be transformed so that they are easier to format. By
+	| default a Fractal transformer will be used to transform any
+	| responses prior to formatting. You can easily replace
+	| this with your own transformer.
+	|
+	*/
+
+	'transformer' => function($app)
+	{
+		$fractal = new League\Fractal\Manager;
+
+		return new Dingo\Api\Transformer\FractalTransformer($fractal)
+	}
+
 	/*
 	|--------------------------------------------------------------------------
 	| Response Formats
@@ -117,26 +137,6 @@ return [
 
 		'json' => new Dingo\Api\Http\ResponseFormat\JsonResponseFormat
 		
-	],
-
-
-	/*
-	|--------------------------------------------------------------------------
-	| Fractal Includes
-	|--------------------------------------------------------------------------
-	|
-	| With Fractal transformers you can easily include or "nest" relationships.
-	| By default the API will look for a query string key of "include",
-	| the value should be a (by default) comma separated list of
-	|relationships that you have defined on your transformer.
-	|
-	*/
-
-	'fractal_includes' => [
-
-		'key' => 'include',
-		'separator' => ','
-
 	]
 
 ];

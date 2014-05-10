@@ -26,7 +26,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 		Response::setFormatters(['json' => new JsonResponseFormat]);
 
-		$transformer = m::mock('Dingo\Api\Transformer');
+		$transformer = m::mock('Dingo\Api\Transformer\Factory');
 		$transformer->shouldReceive('transformableResponse')->andReturn(false);
 		$transformer->shouldReceive('setRequest');
 

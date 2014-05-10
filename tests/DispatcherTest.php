@@ -2,14 +2,15 @@
 
 use Mockery as m;
 use Dingo\Api\Dispatcher;
-use Dingo\Api\Transformer;
 use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
+use Dingo\Api\Transformer\Factory;
 use Illuminate\Container\Container;
 use Illuminate\Routing\UrlGenerator;
 use League\Fractal\Manager as Fractal;
 use Illuminate\Routing\RouteCollection;
+use Dingo\Api\Transformer\FractalTransformer;
 use Illuminate\Events\Dispatcher as EventsDispatcher;
 use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
 
@@ -27,7 +28,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 		$this->dispatcher = new Dispatcher(new Request, new UrlGenerator(new RouteCollection, new Request), $this->router, $this->auth);
 
 		Response::setFormatters(['json' => new JsonResponseFormat]);
-		Response::setTransformer(new Transformer(new Fractal, new Container));
+		Response::setTransformer(m::mock('Dingo\Api\Transformer\Factory')->shouldReceive('transformableResponse')->andReturn(false)->getMock()->shouldReceive('setRequest')->getMock());
 	}
 
 

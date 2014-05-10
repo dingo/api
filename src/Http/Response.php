@@ -1,7 +1,7 @@
 <?php namespace Dingo\Api\Http;
 
 use RuntimeException;
-use Dingo\Api\Transformer;
+use Dingo\Api\Transformer\Factory;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Contracts\JsonableInterface;
 use Illuminate\Support\Contracts\ArrayableInterface;
@@ -19,9 +19,9 @@ class Response extends IlluminateResponse {
 	protected static $formatters = [];
 
 	/**
-	 * API transformer instance.
+	 * Transformer factory instance.
 	 * 
-	 * @var \Dingo\Api\Transformer
+	 * @var \Dingo\Api\Transformer\Factory
 	 */
 	protected static $transformer;
 
@@ -126,20 +126,20 @@ class Response extends IlluminateResponse {
 	}
 
 	/**
-	 * Set the transformer instance.
+	 * Set the transformer factory instance.
 	 * 
-	 * @param  \Dingo\Api\Transformer  $transformer
+	 * @param  \Dingo\Api\Transformer\Factory  $transformer
 	 * @return void
 	 */
-	public static function setTransformer(Transformer $transformer)
+	public static function setTransformer(Factory $transformer)
 	{
 		static::$transformer = $transformer;
 	}
 
 	/**
-	 * Get the transformer instance.
+	 * Get the transformer factory instance.
 	 * 
-	 * @return \Dingo\Api\Transformer
+	 * @return \Dingo\Api\Transformer\Factory
 	 */
 	public static function getTransformer()
 	{

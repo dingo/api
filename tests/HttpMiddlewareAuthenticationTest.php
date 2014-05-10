@@ -5,7 +5,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Route;
 use Dingo\Api\Http\InternalRequest;
-use Dingo\Api\Http\Response as ApiResponse;
 use Dingo\Api\Http\Middleware\Authentication;
 use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -21,12 +20,11 @@ class HttpMiddlewareAuthenticationTest extends PHPUnit_Framework_TestCase {
 		$this->container = m::mock('Illuminate\Container\Container');
 		$this->router = m::mock('Dingo\Api\Routing\Router');
 		$this->collection = m::mock('Dingo\Api\Routing\ApiRouteCollection');
-
 		$this->container->shouldReceive('boot')->atLeast()->once();
-
 		$this->router->shouldReceive('requestTargettingApi')->andReturn(true);
-
 		$this->middleware = new Authentication($this->app, $this->container);
+
+		Dingo\Api\Http\Response::setTransformer(m::mock('Dingo\Api\Transformer\Factory')->shouldReceive('transformableResponse')->andReturn(false)->getMock());
 	}
 
 
@@ -117,7 +115,7 @@ class HttpMiddlewareAuthenticationTest extends PHPUnit_Framework_TestCase {
 		$this->router->shouldReceive('handleException')->once()->with($exception)->andReturn(new Response('test', 401));
 		$this->router->shouldReceive('parseAcceptHeader')->once()->with($request)->andReturn(['v1', 'json']);
 
-		ApiResponse::setFormatters(['json' => new JsonResponseFormat]);
+		Dingo\Api\Http\Response::setFormatters(['json' => new JsonResponseFormat]);
 
 		$this->assertEquals('{"message":"test"}', $this->middleware->handle($request)->getContent());
 	}

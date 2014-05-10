@@ -109,3 +109,37 @@ class CustomProviderStub extends Dingo\Api\Auth\Provider {
 	}
 
 }
+
+class FooTransformerStub extends League\Fractal\TransformerAbstract {
+
+	public function transform(Foo $foo)
+	{
+		return ['foo' => 'bar'];
+	}
+
+}
+
+class BarTransformerStub extends League\Fractal\TransformerAbstract {
+
+	protected $availableEmbeds = ['foo'];
+
+	public function transform(Bar $bar)
+	{
+		return ['bar' => 'baz'];
+	}
+
+	public function embedFoo(Bar $bar)
+	{
+		return $this->item(new Foo, new FooTransformerStub);
+	}
+
+}
+
+class Foo {
+	
+}
+
+class Bar {
+
+}
+

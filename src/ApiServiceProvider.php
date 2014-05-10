@@ -4,6 +4,7 @@ use RuntimeException;
 use Dingo\Api\Auth\Shield;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
+use Dingo\Api\Transformer\Factory;
 use Dingo\Api\Auth\ProviderManager;
 use League\Fractal\Manager as Fractal;
 use Illuminate\Support\ServiceProvider;
@@ -125,9 +126,16 @@ class ApiServiceProvider extends ServiceProvider {
 	{
 		$this->app['dingo.api.transformer'] = $this->app->share(function($app)
 		{
-			$config = $app['config']['api::fractal_includes'];
+			$factory = new Factory($app);
 
-			return new Transformer(new Fractal, $app, $config['key'], $config['separator']);
+			if ($app['config']->has('api::transformer'))
+			{
+				$transformer = call_user_func($app['config']['api::transformer'], $app);
+
+				$factory->setTransformer($transformer);
+			}
+
+			return $factory;
 		});
 	}
 

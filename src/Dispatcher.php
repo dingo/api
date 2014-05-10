@@ -334,7 +334,7 @@ class Dispatcher {
 	protected function dispatch(InternalRequest $request)
 	{
 		$this->routeStack[] = $this->router->getCurrentRoute();
-
+		
 		try
 		{
 			$response = $this->router->dispatch($request);
