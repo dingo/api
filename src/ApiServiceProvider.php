@@ -6,6 +6,7 @@ use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
 use Dingo\Api\Transformer\Factory;
 use Dingo\Api\Auth\ProviderManager;
+use Dingo\Api\Commands\ApiRoutesCommand;
 use League\Fractal\Manager as Fractal;
 use Illuminate\Support\ServiceProvider;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -70,6 +71,8 @@ class ApiServiceProvider extends ServiceProvider {
 		$this->registerExceptionHandler();
 		$this->registerAuthentication();
 		$this->registerMiddlewares();
+
+        $this->registerCommands();
 
 		$this->app->booting(function($app)
 		{
@@ -188,5 +191,15 @@ class ApiServiceProvider extends ServiceProvider {
 
 		$this->app->middleware('Dingo\Api\Http\Middleware\RateLimit', [$this->app]);
 	}
+
+    protected function registerCommands()
+    {
+        $this->app['dingo.api.command.routes'] = $this->app->share(function($app)
+        {
+            return new ApiRoutesCommand($app['router']);
+        });
+
+        $this->commands('api.routes');
+    }
 
 }
