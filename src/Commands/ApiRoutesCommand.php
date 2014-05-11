@@ -1,12 +1,12 @@
 <?php namespace Dingo\Api\Commands;
 
 use Dingo\Api\Routing\Router;
-use Illuminate\Console\Command;
+use Illuminate\Foundation\Console\RoutesCommand;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
 use Symfony\Component\Console\Input\InputOption;
 
-class ApiRoutesCommand extends Command
+class ApiRoutesCommand extends RoutesCommand
 {
 
 	/**
@@ -22,27 +22,6 @@ class ApiRoutesCommand extends Command
 	 * @var string
 	 */
 	protected $description = 'List all registered API routes';
-
-	/**
-	 * The router instance.
-	 *
-	 * @var \Illuminate\Routing\Router
-	 */
-	protected $router;
-
-	/**
-	 * An array of all the registered routes.
-	 *
-	 * @var \Illuminate\Routing\RouteCollection
-	 */
-	protected $routes;
-
-	/**
-	 * The table helper set.
-	 *
-	 * @var \Symfony\Component\Console\Helper\TableHelper
-	 */
-	protected $table;
 
 	/**
 	 * The table headers for the command.
@@ -62,27 +41,9 @@ class ApiRoutesCommand extends Command
 	 */
 	public function __construct(Router $router)
 	{
-		parent::__construct();
+		parent::__construct($router);
 
-		$this->router = $router;
 		$this->routes = $router->getApiRoutes();
-	}
-
-	/**
-	 * Execute the console command.
-	 *
-	 * @return void
-	 */
-	public function fire()
-	{
-		$this->table = $this->getHelperSet()->get('table');
-
-		if (count($this->routes) == 0)
-		{
-			return $this->error("Your application doesn't have any routes.");
-		}
-
-		$this->displayRoutes($this->getRoutes());
 	}
 
 	/**
@@ -130,19 +91,11 @@ class ApiRoutesCommand extends Command
 	}
 
 	/**
-	 * Display the route information on the console.
+	 * Get scopes
 	 *
-	 * @param  array $routes
-	 *
-	 * @return void
+	 * @param  \Illuminate\Routing\Route $route
+	 * @return string
 	 */
-	protected function displayRoutes(array $routes)
-	{
-		$this->table->setHeaders($this->headers)->setRows($routes);
-
-		$this->table->render($this->getOutput());
-	}
-
 	protected function getScopes($route)
 	{
 		$scopes = array_get($route->getAction(), 'scopes');
@@ -156,106 +109,6 @@ class ApiRoutesCommand extends Command
 		{
 			return implode(',', $scopes);
 		}
-	}
-
-	/**
-	 * Get before filters
-	 *
-	 * @param  \Illuminate\Routing\Route $route
-	 *
-	 * @return string
-	 */
-	protected function getBeforeFilters($route)
-	{
-		$before = array_keys($route->beforeFilters());
-
-		$before = array_unique(array_merge($before, $this->getPatternFilters($route)));
-
-		return implode(', ', $before);
-	}
-
-	/**
-	 * Get all of the pattern filters matching the route.
-	 *
-	 * @param  \Illuminate\Routing\Route $route
-	 *
-	 * @return array
-	 */
-	protected function getPatternFilters($route)
-	{
-		$patterns = array();
-
-		foreach ($route->methods() as $method)
-		{
-			// For each method supported by the route we will need to gather up the patterned
-			// filters for that method. We will then merge these in with the other filters
-			// we have already gathered up then return them back out to these consumers.
-			$inner = $this->getMethodPatterns($route->uri(), $method);
-
-			$patterns = array_merge($patterns, array_keys($inner));
-		}
-
-		return $patterns;
-	}
-
-	/**
-	 * Get the pattern filters for a given URI and method.
-	 *
-	 * @param  string $uri
-	 * @param  string $method
-	 *
-	 * @return array
-	 */
-	protected function getMethodPatterns($uri, $method)
-	{
-		return $this->router->findPatternFilters(Request::create($uri, $method));
-	}
-
-	/**
-	 * Get after filters
-	 *
-	 * @param  Route $route
-	 *
-	 * @return string
-	 */
-	protected function getAfterFilters($route)
-	{
-		return implode(', ', array_keys($route->afterFilters()));
-	}
-
-	/**
-	 * Filter the route by URI and / or name.
-	 *
-	 * @param  array $route
-	 *
-	 * @return array|null
-	 */
-	protected function filterRoute(array $route)
-	{
-		if (($this->option('name') && !str_contains($route['name'], $this->option('name'))) ||
-			$this->option('path') && !str_contains($route['uri'], $this->option('path'))
-		)
-		{
-			return null;
-		}
-		else
-		{
-			return $route;
-		}
-	}
-
-	/**
-	 * Get the console command options.
-	 *
-	 * @return array
-	 */
-	protected function getOptions()
-	{
-		return array(
-			array('name', null, InputOption::VALUE_OPTIONAL, 'Filter the routes by name.'),
-
-			array('path', null, InputOption::VALUE_OPTIONAL, 'Filter the routes by path.'),
-		);
 	}
 
 }
