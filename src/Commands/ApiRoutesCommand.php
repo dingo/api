@@ -62,6 +62,8 @@ class ApiRoutesCommand extends RoutesCommand
 			}
 		}
 
+		$results = array_unique($results, SORT_REGULAR);
+
 		return array_filter($results);
 	}
 
