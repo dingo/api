@@ -1,28 +1,35 @@
 <?php namespace Dingo\Api;
 
-use RuntimeException;
+use Dingo\Api\Auth\ProviderManager;
 use Dingo\Api\Auth\Shield;
+use Dingo\Api\Commands\ApiRoutesCommand;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
-use Dingo\Api\Auth\ProviderManager;
-use Dingo\Api\Commands\ApiRoutesCommand;
-use League\Fractal\Manager as Fractal;
 use Illuminate\Support\ServiceProvider;
+use League\Fractal\Manager as Fractal;
+use RuntimeException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class ApiServiceProvider extends ServiceProvider {
+class ApiServiceProvider extends ServiceProvider
+{
 
 	/**
 	 * Boot the service provider.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function boot()
 	{
 		$this->package('dingo/api', 'api', __DIR__);
 
-		$this->app['Dingo\Api\Dispatcher'] = function($app) { return $app['dingo.api.dispatcher']; };
-		$this->app['Dingo\Api\Auth\Shield'] = function($app) { return $app['dingo.api.auth']; };
+		$this->app['Dingo\Api\Dispatcher'] = function ($app)
+		{
+			return $app['dingo.api.dispatcher'];
+		};
+		$this->app['Dingo\Api\Auth\Shield'] = function ($app)
+		{
+			return $app['dingo.api.auth'];
+		};
 
 		$formats = $this->prepareResponseFormats();
 
@@ -32,7 +39,7 @@ class ApiServiceProvider extends ServiceProvider {
 
 	/**
 	 * Prepare the response formats.
-	 * 
+	 *
 	 * @return array
 	 */
 	protected function prepareResponseFormats()
@@ -59,7 +66,7 @@ class ApiServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register bindings for the service provider.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function register()
@@ -76,9 +83,9 @@ class ApiServiceProvider extends ServiceProvider {
 
 		$this->registerMiddlewares();
 
-        $this->registerCommands();
+		$this->registerCommands();
 
-		$this->app->booting(function($app)
+		$this->app->booting(function ($app)
 		{
 			$router = $app['router'];
 
@@ -93,12 +100,12 @@ class ApiServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register and replace the bound router.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function registerRouter()
 	{
-		$this->app['router'] = $this->app->share(function($app)
+		$this->app['router'] = $this->app->share(function ($app)
 		{
 			$router = new Router($app['events'], $app);
 
@@ -113,12 +120,12 @@ class ApiServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register the API dispatcher.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function registerDispatcher()
 	{
-		$this->app['dingo.api.dispatcher'] = $this->app->share(function($app)
+		$this->app['dingo.api.dispatcher'] = $this->app->share(function ($app)
 		{
 			return new Dispatcher($app['request'], $app['url'], $app['router'], $app['dingo.api.auth']);
 		});
@@ -126,12 +133,12 @@ class ApiServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register the API transformer.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function registerTransformer()
 	{
-		$this->app['dingo.api.transformer'] = $this->app->share(function($app)
+		$this->app['dingo.api.transformer'] = $this->app->share(function ($app)
 		{
 			return new Transformer(new Fractal, $app, $app['config']['api::embeds.key'], $app['config']['api::embeds.separator']);
 		});
@@ -139,12 +146,12 @@ class ApiServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register the exception handler.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function registerExceptionHandler()
 	{
-		$this->app['dingo.api.exception'] = $this->app->share(function($app)
+		$this->app['dingo.api.exception'] = $this->app->share(function ($app)
 		{
 			return new ExceptionHandler;
 		});
@@ -152,12 +159,12 @@ class ApiServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register the API authentication.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function registerAuthentication()
 	{
-		$this->app['dingo.api.auth'] = $this->app->share(function($app)
+		$this->app['dingo.api.auth'] = $this->app->share(function ($app)
 		{
 			$providers = [];
 
@@ -177,7 +184,7 @@ class ApiServiceProvider extends ServiceProvider {
 
 	/**
 	 * Register the middlewares.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function registerMiddlewares()
@@ -187,14 +194,14 @@ class ApiServiceProvider extends ServiceProvider {
 		$this->app->middleware('Dingo\Api\Http\Middleware\RateLimit', [$this->app]);
 	}
 
-    protected function registerCommands()
-    {
-        $this->app['dingo.api.command.routes'] = $this->app->share(function($app)
-        {
-            return new ApiRoutesCommand($app['router']);
-        });
+	protected function registerCommands()
+	{
+		$this->app['dingo.api.command.routes'] = $this->app->share(function ($app)
+		{
+			return new ApiRoutesCommand($app['router']);
+		});
 
-        $this->commands('api.routes');
-    }
+		$this->commands('dingo.api.command.routes');
+	}
 
 }
