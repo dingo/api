@@ -28,18 +28,19 @@ class TransformerTest extends PHPUnit_Framework_TestCase {
 
 	public function testDeterminingIfResponseIsTransformable()
 	{
-		$this->assertFalse($this->transformerFactory->transformableResponse(['foo' => 'bar']));
-		$this->assertFalse($this->transformerFactory->transformableResponse(new stdClass));
-		$this->assertFalse($this->transformerFactory->transformableResponse('Foo'));
-		$this->assertFalse($this->transformerFactory->transformableResponse(1));
-		$this->assertFalse($this->transformerFactory->transformableResponse(true));
-		$this->assertFalse($this->transformerFactory->transformableResponse(false));
-		$this->assertFalse($this->transformerFactory->transformableResponse(31.1));
-		$this->assertFalse($this->transformerFactory->transformableResponse(new Illuminate\Support\Collection([new Foo, new Foo])));
+		$this->assertFalse($this->transformerFactory->transformableResponse(['foo' => 'bar']), 'Testing that an array is not transformable.');
+		$this->assertFalse($this->transformerFactory->transformableResponse(new stdClass), 'Testing that a class with no binding is not transformable.');
+		$this->assertFalse($this->transformerFactory->transformableResponse('Foo'), 'Testing that a string with no binding is not transformable.');
+		$this->assertFalse($this->transformerFactory->transformableResponse(1), 'Testing that an integer is not transformable.');
+		$this->assertFalse($this->transformerFactory->transformableResponse(true), 'Testing that a boolean is not transformable.');
+		$this->assertFalse($this->transformerFactory->transformableResponse(false), 'Testing that a boolean is not transformable.');
+		$this->assertFalse($this->transformerFactory->transformableResponse(31.1), 'Testing that a float is not transformable.');
+		$this->assertFalse($this->transformerFactory->transformableResponse(new Illuminate\Support\Collection([new Foo, new Foo])), 'Testing that a collection with instances that have no binding are not transformable.');
 		$this->transformerFactory->transform('Foo', 'FooTransformerStub');
-		$this->assertTrue($this->transformerFactory->transformableResponse('Foo'));
-		$this->assertTrue($this->transformerFactory->transformableResponse(new Bar));
-		$this->assertTrue($this->transformerFactory->transformableResponse(new Illuminate\Support\Collection([new Bar, new Bar])));
+		$this->assertTrue($this->transformerFactory->transformableResponse('Foo'), 'Testing that a string with a binding is transformable.');
+		$this->assertTrue($this->transformerFactory->transformableResponse(new Bar), 'Testing that an instance that is bound by a contract is transformable.');
+		$this->assertTrue($this->transformerFactory->transformableResponse(new Illuminate\Support\Collection([new Bar, new Bar])), 'Testing that a collection with instances bound by a contract are transformable.');
+		$this->assertTrue($this->transformerFactory->transformableResponse(new Illuminate\Support\Collection([new Foo, new Foo])), 'Testing that a collection with instances that have a binding are transformable.');
 	}
 
 
