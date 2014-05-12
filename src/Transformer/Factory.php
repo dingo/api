@@ -177,7 +177,7 @@ class Factory {
 	{
 		if ($this->isCollection($class))
 		{
-			return is_object($class->first()) and $class->first() instanceof TransformableInterface;
+			$class = $class->first();
 		}
 
 		return is_object($class) and $class instanceof TransformableInterface;
