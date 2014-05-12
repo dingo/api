@@ -175,6 +175,11 @@ class Factory {
 	 */
 	protected function boundByContract($class)
 	{
+		if ($this->isCollection($class))
+		{
+			return is_object($class->first()) and $class->first() instanceof TransformableInterface;
+		}
+
 		return is_object($class) and $class instanceof TransformableInterface;
 	}
 
