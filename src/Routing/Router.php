@@ -97,6 +97,7 @@ class Router extends IlluminateRouter {
 	 * @param  array  $options
 	 * @param  callable  $callback
 	 * @return void
+	 * @throws \BadMethodCallException when api version not specified.
 	 */
 	public function api($options, callable $callback)
 	{
@@ -136,6 +137,7 @@ class Router extends IlluminateRouter {
 	 * 
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return \Illuminate\Http\Response|\Dingo\Api\Http\Response
+	 * @throws \HttpExceptionInterface
 	 */
 	public function dispatch(Request $request)
 	{
