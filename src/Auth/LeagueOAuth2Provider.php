@@ -42,6 +42,8 @@ class LeagueOAuth2Provider extends AuthorizationProvider {
 	 * @param  \Illuminate\Http\Request  $request
 	 * @param  \Illuminate\Routing\Route  $route
 	 * @return int
+	 * @throws \Exception
+	 * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
 	 */
 	public function authenticate(Request $request, Route $route)
 	{
