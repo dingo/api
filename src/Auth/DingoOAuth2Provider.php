@@ -33,6 +33,8 @@ class DingoOAuth2Provider extends AuthorizationProvider {
 	 * @param  \Illuminate\Http\Request  $request
 	 * @param  \Illuminate\Routing\Route  $route
 	 * @return int
+	 * @throws \Exception when header authorization fails.
+	 * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException when invalid token exception is called inside token validator.
 	 */
 	public function authenticate(Request $request, Route $route)
 	{
