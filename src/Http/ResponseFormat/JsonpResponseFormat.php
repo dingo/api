@@ -1,29 +1,18 @@
 <?php namespace Dingo\Api\Http\ResponseFormat;
 
-use Dingo\Api\Http\ResponseFormat\RequestAwareInterface;
 use Illuminate\Http\Request as IlluminateRequest;
+use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
 
-class JsonpResponseFormat extends \Dingo\Api\Http\ResponseFormat\JsonResponseFormat implements RequestAwareInterface
+class JsonpResponseFormat extends JsonResponseFormat
 {
 
 	/**
-	 * Name of the parameter to check if we want to issue a json response
+	 * Name of the parameter to check if we want to issue a jsonp response
+	 * if its not present it will fallback to json
 	 *
 	 * @var string
 	 */
 	protected $callbackName = 'callback';
-
-	/**
-	 * The original request
-	 *
-	 * @var \Illuminate\Http\Request
-	 */
-	protected $request;
-
-	public function setRequest($request)
-	{
-		$this->request = $request;
-	}
 
 	/**
 	 * Has a callback parameter been specified in the request ?
@@ -51,7 +40,7 @@ class JsonpResponseFormat extends \Dingo\Api\Http\ResponseFormat\JsonResponseFor
 			return 'application/javascript';
 		}
 
-		return 'application/json';
+		return parent::getContentType();
 	}
 
 	/**
@@ -66,7 +55,7 @@ class JsonpResponseFormat extends \Dingo\Api\Http\ResponseFormat\JsonResponseFor
 			return sprintf('%s(%s);', $this->callback, json_encode($content));
 		}
 
-		return json_encode($content);
+		return parent::encode($content);
 	}
 
 }

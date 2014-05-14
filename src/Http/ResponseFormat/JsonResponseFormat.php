@@ -2,11 +2,24 @@
 
 use Illuminate\Support\Contracts\ArrayableInterface;
 
-class JsonResponseFormat implements ResponseFormatInterface {
+class JsonResponseFormat extends AbstractResponseFormat {
+
+	/**
+	 * The original request
+	 *
+	 * @param \Illuminate\Http\Request $request
+	 * @return void
+	 */
+	protected $request;
+
+	public function setRequest($request)
+	{
+		$this->request = $request;
+	}
 
 	/**
 	 * Format an Eloquent model.
-	 * 
+	 *
 	 * @param  \Illuminate\Database\Eloquent\Model  $model
 	 * @return string
 	 */
@@ -19,7 +32,7 @@ class JsonResponseFormat implements ResponseFormatInterface {
 
 	/**
 	 * Format an Eloquent collection.
-	 * 
+	 *
 	 * @param  \Illuminate\Database\Eloquent\Collection  $collection
 	 * @return string
 	 */
@@ -37,7 +50,7 @@ class JsonResponseFormat implements ResponseFormatInterface {
 
 	/**
 	 * Format a string.
-	 * 
+	 *
 	 * @param  string  $string
 	 * @return string
 	 */
@@ -48,7 +61,7 @@ class JsonResponseFormat implements ResponseFormatInterface {
 
 	/**
 	 * Format an array or instance implementing ArrayableInterface.
-	 * 
+	 *
 	 * @param  \Illuminate\Support\Contracts\ArrayableInterface  $response
 	 * @return string
 	 */
@@ -66,7 +79,7 @@ class JsonResponseFormat implements ResponseFormatInterface {
 
 	/**
 	 * Format an instance implementing JsonableInterface.
-	 * 
+	 *
 	 * @param  \Illuminate\Support\Contracts\JsonableInterface  $response
 	 * @return string
 	 */
@@ -77,7 +90,7 @@ class JsonResponseFormat implements ResponseFormatInterface {
 
 	/**
 	 * Format an unknown type.
-	 * 
+	 *
 	 * @param  mixed  $response
 	 * @return string
 	 */
@@ -88,7 +101,7 @@ class JsonResponseFormat implements ResponseFormatInterface {
 
 	/**
 	 * Get the response content type.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getContentType()
@@ -98,7 +111,7 @@ class JsonResponseFormat implements ResponseFormatInterface {
 
 	/**
 	 * Morph a value to an array.
-	 * 
+	 *
 	 * @param  array|\Illuminate\Support\Contracts\ArrayableInterface
 	 * @return array
 	 */
@@ -109,7 +122,7 @@ class JsonResponseFormat implements ResponseFormatInterface {
 
 	/**
 	 * Encode the content to its JSON representation.
-	 * 
+	 *
 	 * @param  string  $content
 	 * @return string
 	 */
