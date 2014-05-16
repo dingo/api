@@ -184,7 +184,9 @@ class Router extends IlluminateRouter {
 		// Chances are if the client is requesting jsonp their browser
 		// wont implement 422 etc and will drop the body
 		if ($this->requestedFormat == 'jsonp') {
-			$response->setStatusCode(200);
+			if (!in_array($response->getStatusCode(), [404, 200])) {
+				$response->setStatusCode(200);
+			}
 		}
 
 		return $response;
