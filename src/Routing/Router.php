@@ -180,6 +180,13 @@ class Router extends IlluminateRouter {
 			$response = Response::makeFromExisting($response)->morph($this->requestedFormat);
 		}
 
+		// Force the response to always return "200 OK"
+		// Chances are if the client is requesting jsonp their browser
+		// wont implement 422 etc and will drop the body
+		if ($this->requestedFormat == 'jsonp') {
+			$response->setStatusCode(200);
+		}
+
 		return $response;
 	}
 
