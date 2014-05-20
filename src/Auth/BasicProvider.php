@@ -61,5 +61,4 @@ class BasicProvider extends AuthorizationProvider {
 	{
 		return 'basic';
 	}
-
 }

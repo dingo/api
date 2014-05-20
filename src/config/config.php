@@ -37,7 +37,7 @@ return [
 	|
 	*/
 
-	'prefix' => null,
+	'prefix' => 'api',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -50,6 +50,29 @@ return [
 	*/
 
 	'domain' => null,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Auth Class
+    |--------------------------------------------------------------------------
+    |
+    | The auth method used, ie: auth or sentry
+    |
+    */
+    'auth_provider' => 'sentry', // auth, sentry
+
+    /*
+    |--------------------------------------------------------------------------
+    | Auth Drivers
+    |--------------------------------------------------------------------------
+    |
+    | The auth driver used, ie: auth or sentry
+    |
+    */
+    'auth_drivers' => array(
+        'auth'      => '\Dingo\Api\Auth\Shield',
+        'sentry'    => '\Dingo\Api\Auth\SentryShield',
+    ),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -65,7 +88,11 @@ return [
 		'basic' => function($app)
 		{
 			return new Dingo\Api\Auth\BasicProvider($app['auth']);
-		}
+		},
+        'logged_in_user' => function($app)
+        {
+            return new \Dingo\Api\Auth\SentryProvider($app['sentry']);
+        }
 	],
 
 	/*

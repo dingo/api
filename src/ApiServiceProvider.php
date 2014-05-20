@@ -1,5 +1,6 @@
 <?php namespace Dingo\Api;
 
+use Dingo\Api\Auth\SentryShield;
 use RuntimeException;
 use Dingo\Api\Auth\Shield;
 use Dingo\Api\Http\Response;
@@ -68,11 +69,26 @@ class ApiServiceProvider extends ServiceProvider {
 		$this->registerRouter();
 		$this->registerTransformer();
 		$this->registerExceptionHandler();
-		$this->registerAuthentication();
-		$this->registerMiddlewares();
+		//$this->registerAuthentication();
+        $this->registerMiddlewares();
 
 		$this->app->booting(function($app)
 		{
+            // grab the setting for the auth driver your using.
+            $shield_type = $app['config']->get('api::auth_provider');
+            $shield_class = $app['config']->get("api::auth_drivers.$shield_type");
+
+            $app['dingo.api.auth'] = $app->share(function ($app) use ($shield_type, $shield_class) {
+                $providers = [];
+                foreach ($app['config']['api::auth'] as $key => $provider) {
+                    if (is_callable($provider)) {
+                        $provider = call_user_func($provider, $app);
+                    }
+                    $providers[$key] = $provider;
+                }
+                return new $shield_class($app[$shield_type], $app, $providers);
+            });
+
 			$router = $app['router'];
 
 			$router->setExceptionHandler($app['dingo.api.exception']);
@@ -159,7 +175,12 @@ class ApiServiceProvider extends ServiceProvider {
 	 */
 	protected function registerAuthentication()
 	{
-		$this->app['dingo.api.auth'] = $this->app->share(function($app)
+        // grab the setting for the auth driver your using.
+        $shield_type = $this->app['config']->get('api::auth_provider');
+        $shield_class = $this->app['config']->get("api::auth_drivers.$shield_type");
+        dd(compact('shield_type', 'shield_class'));
+
+		$this->app['dingo.api.auth'] = $this->app->share(function($app) use ($shield_type, $shield_class)
 		{
 			$providers = [];
 
@@ -169,11 +190,9 @@ class ApiServiceProvider extends ServiceProvider {
 				{
 					$provider = call_user_func($provider, $app);
 				}
-
 				$providers[$key] = $provider;
 			}
-
-			return new Shield($app['auth'], $app, $providers);
+			return new $shield_class($app[$shield_type], $app, $providers);
 		});
 	}
 
