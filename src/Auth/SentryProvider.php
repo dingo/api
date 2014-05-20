@@ -23,7 +23,7 @@ class SentryProvider extends \Dingo\Api\Auth\Provider
 
     public function authenticate(Request $request, Route $route)
     {
-        if(($user = $this->sentry->getUser())) {
+        if (($user = $this->sentry->getUser())) {
             return $user->getId();
         }
         // Logic to authenticate the user for the given request. If it fails...

@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 
-class InternalRequest extends Request {
-	
+class InternalRequest extends Request
+{
+
 }
