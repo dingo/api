@@ -69,28 +69,27 @@ class ApiServiceProvider extends ServiceProvider {
 		$this->registerRouter();
 		$this->registerTransformer();
 		$this->registerExceptionHandler();
-		//$this->registerAuthentication();
-        $this->registerMiddlewares();
-
+		$this->registerMiddlewares();
+	
 		$this->app->booting(function($app)
 		{
-            // grab the setting for the auth driver your using.
-            $shield_type = $app['config']->get('api::auth_provider');
-            $shield_class = $app['config']->get("api::auth_drivers.$shield_type");
-
-            $app['dingo.api.auth'] = $app->share(function ($app) use ($shield_type, $shield_class) {
-                $providers = [];
-                foreach ($app['config']['api::auth'] as $key => $provider) {
-                    if (is_callable($provider)) {
-                        $provider = call_user_func($provider, $app);
-                    }
-                    $providers[$key] = $provider;
-                }
-                return new $shield_class($app[$shield_type], $app, $providers);
-            });
-
+	            // grab the setting for the auth driver your using.
+	            	$shield_type = $app['config']->get('api::auth_provider');
+	            	$shield_class = $app['config']->get("api::auth_drivers.$shield_type");
+	
+	            	$app['dingo.api.auth'] = $app->share(function ($app) use ($shield_type, $shield_class) {
+	                	$providers = [];
+	                	foreach ($app['config']['api::auth'] as $key => $provider) {
+	                    		if (is_callable($provider)) {
+	                        	$provider = call_user_func($provider, $app);
+	                    	}
+	                    	$providers[$key] = $provider;
+	                	}
+	                	return new $shield_class($app[$shield_type], $app, $providers);
+	            	});
+	
 			$router = $app['router'];
-
+	
 			$router->setExceptionHandler($app['dingo.api.exception']);
 			$router->setDefaultVersion($app['config']['api::version']);
 			$router->setDefaultPrefix($app['config']['api::prefix']);
@@ -165,34 +164,6 @@ class ApiServiceProvider extends ServiceProvider {
 		$this->app['dingo.api.exception'] = $this->app->share(function($app)
 		{
 			return new ExceptionHandler;
-		});
-	}
-
-	/**
-	 * Register the API authentication.
-	 * 
-	 * @return void
-	 */
-	protected function registerAuthentication()
-	{
-        // grab the setting for the auth driver your using.
-        $shield_type = $this->app['config']->get('api::auth_provider');
-        $shield_class = $this->app['config']->get("api::auth_drivers.$shield_type");
-        dd(compact('shield_type', 'shield_class'));
-
-		$this->app['dingo.api.auth'] = $this->app->share(function($app) use ($shield_type, $shield_class)
-		{
-			$providers = [];
-
-			foreach ($app['config']['api::auth'] as $key => $provider)
-			{
-				if (is_callable($provider))
-				{
-					$provider = call_user_func($provider, $app);
-				}
-				$providers[$key] = $provider;
-			}
-			return new $shield_class($app[$shield_type], $app, $providers);
 		});
 	}
 
