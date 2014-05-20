@@ -37,6 +37,6 @@ class SentryProvider extends \Dingo\Api\Auth\Provider
      */
     public function getAuthorizationMethod()
     {
-        return 'basic';
+        return 'sentry';
     }
 }
