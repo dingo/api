@@ -1,5 +1,6 @@
 <?php namespace Dingo\Api;
 
+use Dingo\Api\Auth\SentryShield;
 use RuntimeException;
 use Dingo\Api\Auth\Shield;
 use Dingo\Api\Http\Response;
@@ -10,183 +11,167 @@ use League\Fractal\Manager as Fractal;
 use Illuminate\Support\ServiceProvider;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class ApiServiceProvider extends ServiceProvider {
+class ApiServiceProvider extends ServiceProvider
+{
 
-	/**
-	 * Boot the service provider.
-	 * 
-	 * @return void
-	 */
-	public function boot()
-	{
-		$this->package('dingo/api', 'api', __DIR__);
+    /**
+     * Boot the service provider.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        $this->package('dingo/api', 'api', __DIR__);
 
-		$this->app['Dingo\Api\Dispatcher'] = function($app) { return $app['dingo.api.dispatcher']; };
-		$this->app['Dingo\Api\Auth\Shield'] = function($app) { return $app['dingo.api.auth']; };
+        $this->app['Dingo\Api\Dispatcher'] = function ($app) {
+            return $app['dingo.api.dispatcher'];
+        };
+        $this->app['Dingo\Api\Auth\Shield'] = function ($app) {
+            return $app['dingo.api.auth'];
+        };
 
-		$formats = $this->prepareResponseFormats();
+        $formats = $this->prepareResponseFormats();
 
-		Response::setFormatters($formats);
-		Response::setTransformer($this->app['dingo.api.transformer']);
-	}
+        Response::setFormatters($formats);
+        Response::setTransformer($this->app['dingo.api.transformer']);
+    }
 
-	/**
-	 * Prepare the response formats.
-	 * 
-	 * @return array
-	 */
-	protected function prepareResponseFormats()
-	{
-		$formats = [];
+    /**
+     * Prepare the response formats.
+     *
+     * @return array
+     */
+    protected function prepareResponseFormats()
+    {
+        $formats = [];
 
-		foreach ($this->app['config']['api::formats'] as $key => $format)
-		{
-			if (is_callable($format))
-			{
-				$format = call_user_func($format, $this->app);
-			}
+        foreach ($this->app['config']['api::formats'] as $key => $format) {
+            if (is_callable($format)) {
+                $format = call_user_func($format, $this->app);
+            }
 
-			$formats[$key] = $format;
-		}
+            $formats[$key] = $format;
+        }
 
-		if (empty($formats))
-		{
-			throw new RuntimeException('No registered response formats.');
-		}
+        if (empty($formats)) {
+            throw new RuntimeException('No registered response formats.');
+        }
 
-		return $formats;
-	}
+        return $formats;
+    }
 
-	/**
-	 * Register bindings for the service provider.
-	 * 
-	 * @return void
-	 */
-	public function register()
-	{
-		$this->registerDispatcher();
-		$this->registerRouter();
-		$this->registerTransformer();
-		$this->registerExceptionHandler();
-		$this->registerAuthentication();
-		$this->registerMiddlewares();
+    /**
+     * Register bindings for the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->registerDispatcher();
+        $this->registerRouter();
+        $this->registerTransformer();
+        $this->registerExceptionHandler();
+        $this->registerMiddlewares();
 
-		$this->app->booting(function($app)
-		{
-			$router = $app['router'];
+        $this->app->booting(function ($app) {
+            // grab the setting for the auth driver your using.
+            $shield_type = $app['config']->get('api::auth_provider');
+            $shield_class = $app['config']->get("api::auth_drivers.$shield_type");
 
-			$router->setExceptionHandler($app['dingo.api.exception']);
-			$router->setDefaultVersion($app['config']['api::version']);
-			$router->setDefaultPrefix($app['config']['api::prefix']);
-			$router->setDefaultDomain($app['config']['api::domain']);
-			$router->setDefaultFormat($app['config']['api::default_format']);
-			$router->setVendor($app['config']['api::vendor']);
-		});
-	}
+            $app['dingo.api.auth'] = $app->share(function ($app) use ($shield_type, $shield_class) {
+                $providers = [];
+                foreach ($app['config']['api::auth'] as $key => $provider) {
+                    if (is_callable($provider)) {
+                        $provider = call_user_func($provider, $app);
+                    }
+                    $providers[$key] = $provider;
+                }
+                return new $shield_class($app[$shield_type], $app, $providers);
+            });
 
-	/**
-	 * Register and replace the bound router.
-	 * 
-	 * @return void
-	 */
-	protected function registerRouter()
-	{
-		$this->app['router'] = $this->app->share(function($app)
-		{
-			$router = new Router($app['events'], $app);
+            $router = $app['router'];
 
-			if ($app['env'] == 'testing')
-			{
-				$router->disableFilters();
-			}
+            $router->setExceptionHandler($app['dingo.api.exception']);
+            $router->setDefaultVersion($app['config']['api::version']);
+            $router->setDefaultPrefix($app['config']['api::prefix']);
+            $router->setDefaultDomain($app['config']['api::domain']);
+            $router->setDefaultFormat($app['config']['api::default_format']);
+            $router->setVendor($app['config']['api::vendor']);
+        });
+    }
 
-			return $router;
-		});
-	}
+    /**
+     * Register and replace the bound router.
+     *
+     * @return void
+     */
+    protected function registerRouter()
+    {
+        $this->app['router'] = $this->app->share(function ($app) {
+            $router = new Router($app['events'], $app);
 
-	/**
-	 * Register the API dispatcher.
-	 * 
-	 * @return void
-	 */
-	protected function registerDispatcher()
-	{
-		$this->app['dingo.api.dispatcher'] = $this->app->share(function($app)
-		{
-			return new Dispatcher($app['request'], $app['url'], $app['router'], $app['dingo.api.auth']);
-		});
-	}
+            if ($app['env'] == 'testing') {
+                $router->disableFilters();
+            }
 
-	/**
-	 * Register the API transformer.
-	 * 
-	 * @return void
-	 */
-	protected function registerTransformer()
-	{
-		$this->app['dingo.api.transformer'] = $this->app->share(function($app)
-		{
-			$factory = new Factory($app);
+            return $router;
+        });
+    }
 
-			if ($app['config']->has('api::transformer'))
-			{
-				$transformer = call_user_func($app['config']['api::transformer'], $app);
+    /**
+     * Register the API dispatcher.
+     *
+     * @return void
+     */
+    protected function registerDispatcher()
+    {
+        $this->app['dingo.api.dispatcher'] = $this->app->share(function ($app) {
+            return new Dispatcher($app['request'], $app['url'], $app['router'], $app['dingo.api.auth']);
+        });
+    }
 
-				$factory->setTransformer($transformer);
-			}
+    /**
+     * Register the API transformer.
+     *
+     * @return void
+     */
+    protected function registerTransformer()
+    {
+        $this->app['dingo.api.transformer'] = $this->app->share(function ($app) {
+            $factory = new Factory($app);
 
-			return $factory;
-		});
-	}
+            if ($app['config']->has('api::transformer')) {
+                $transformer = call_user_func($app['config']['api::transformer'], $app);
 
-	/**
-	 * Register the exception handler.
-	 * 
-	 * @return void
-	 */
-	protected function registerExceptionHandler()
-	{
-		$this->app['dingo.api.exception'] = $this->app->share(function($app)
-		{
-			return new ExceptionHandler;
-		});
-	}
+                $factory->setTransformer($transformer);
+            }
 
-	/**
-	 * Register the API authentication.
-	 * 
-	 * @return void
-	 */
-	protected function registerAuthentication()
-	{
-		$this->app['dingo.api.auth'] = $this->app->share(function($app)
-		{
-			$providers = [];
+            return $factory;
+        });
+    }
 
-			foreach ($app['config']['api::auth'] as $key => $provider)
-			{
-				if (is_callable($provider))
-				{
-					$provider = call_user_func($provider, $app);
-				}
+    /**
+     * Register the exception handler.
+     *
+     * @return void
+     */
+    protected function registerExceptionHandler()
+    {
+        $this->app['dingo.api.exception'] = $this->app->share(function ($app) {
+            return new ExceptionHandler;
+        });
+    }
 
-				$providers[$key] = $provider;
-			}
+    /**
+     * Register the middlewares.
+     *
+     * @return void
+     */
+    protected function registerMiddlewares()
+    {
+        $this->app->middleware('Dingo\Api\Http\Middleware\Authentication', [$this->app]);
 
-			return new Shield($app['auth'], $app, $providers);
-		});
-	}
-
-	/**
-	 * Register the middlewares.
-	 * 
-	 * @return void
-	 */
-	protected function registerMiddlewares()
-	{
-		$this->app->middleware('Dingo\Api\Http\Middleware\Authentication', [$this->app]);
-
-		$this->app->middleware('Dingo\Api\Http\Middleware\RateLimit', [$this->app]);
-	}
+        $this->app->middleware('Dingo\Api\Http\Middleware\RateLimit', [$this->app]);
+    }
 
 }
