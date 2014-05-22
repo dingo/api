@@ -5,57 +5,59 @@ use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
 
 class JsonpResponseFormat extends JsonResponseFormat
 {
+    /**
+     * Name of JSONP callback paramater.
+     *
+     * @var string
+     */
+    protected $callbackName = 'callback';
 
-	/**
-	 * Name of the parameter to check if we want to issue a jsonp response
-	 * if its not present it will fallback to json
-	 *
-	 * @var string
-	 */
-	protected $callbackName = 'callback';
+    /**
+     * Determine if a callback is valid.
+     *
+     * @return bool
+     */
+    protected function hasValidCallback()
+    {
+        return $this->request->query->has($this->callbackName);
+    }
 
-	/**
-	 * Has a callback parameter been specified in the request ?
-	 * @return bool
-	 */
-	protected function hasValidCallback()
-	{
-		$this->callback = $this->request->input($this->callbackName);
+    /**
+     * Get the callback from the query string.
+     * 
+     * @return string
+     */
+    protected function getCallback()
+    {
+        return $this->request->query->get($this->callbackName);
+    }
 
-		if (!empty($this->callback)) {
-			return true;
-		}
+    /**
+     * Get the response content type.
+     *
+     * @return string
+     */
+    public function getContentType()
+    {
+        if ($this->hasValidCallback()) {
+            return 'application/javascript';
+        }
 
-		return false;
-	}
+        return parent::getContentType();
+    }
 
-	/**
-	 * Get the response content type.
-	 *
-	 * @return string
-	 */
-	public function getContentType()
-	{
-		if ($this->hasValidCallback()) {
-			return 'application/javascript';
-		}
+    /**
+     * Encode the content to its JSON representation.
+     *
+     * @param  string  $content
+     * @return string
+     */
+    protected function encode($content)
+    {
+        if ($this->hasValidCallback()) {
+            return sprintf('%s(%s);', $this->getCallback(), json_encode($content));
+        }
 
-		return parent::getContentType();
-	}
-
-	/**
-	 * Encode the content to its JSON representation.
-	 *
-	 * @param  string  $content
-	 * @return string
-	 */
-	protected function encode($content)
-	{
-		if ($this->hasValidCallback()) {
-			return sprintf('%s(%s);', $this->callback, json_encode($content));
-		}
-
-		return parent::encode($content);
-	}
-
+        return parent::encode($content);
+    }
 }

@@ -4,7 +4,6 @@ use RuntimeException;
 use BadMethodCallException;
 use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
-use Dingo\Api\Http\ResponseFormat\RequestAwareInterface;
 use Illuminate\Routing\Route;
 use Dingo\Api\ExceptionHandler;
 use Dingo\Api\Http\InternalRequest;
@@ -171,11 +170,7 @@ class Router extends IlluminateRouter {
 
 		if ($this->requestTargettingApi($request))
 		{
-			$formatter = Response::getFormatter($this->requestedFormat);
-
-			if ($formatter instanceof \Dingo\Api\Http\ResponseFormat\RequestAwareInterface) {
-				$formatter->setRequest($request);
-			}
+			Response::getFormatter($this->requestedFormat)->setRequest($request);
 
 			$response = Response::makeFromExisting($response)->morph($this->requestedFormat);
 		}
