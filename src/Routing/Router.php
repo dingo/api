@@ -1,5 +1,6 @@
 <?php namespace Dingo\Api\Routing;
 
+use Exception;
 use RuntimeException;
 use BadMethodCallException;
 use Illuminate\Http\Request;
@@ -147,7 +148,7 @@ class Router extends IlluminateRouter {
 		{
 			$response = parent::dispatch($request);
 		}
-		catch (HttpExceptionInterface $exception)
+		catch (Exception $exception)
 		{
 			// If an exception is caught and we are currently routing an API request then
 			// we'll handle this exception by building a new response from it. This
@@ -179,10 +180,11 @@ class Router extends IlluminateRouter {
 	/**
 	 * Handle exception thrown when dispatching a request.
 	 * 
-	 * @param  \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface  $exception
+	 * @param  \Exception  $exception
 	 * @return \Dingo\Api\Http\Response
+	 * @throws \Exception
 	 */
-	public function handleException(HttpExceptionInterface $exception)
+	public function handleException(Exception $exception)
 	{
 		// If the exception handler will handle the given exception then we'll fire
 		// the callback registered to the handler and return the response.
@@ -191,6 +193,10 @@ class Router extends IlluminateRouter {
 			$response = $this->exceptionHandler->handle($exception);
 
 			return Response::makeFromExisting($response);
+		}
+		elseif ( ! $exception instanceof HttpExceptionInterface)
+		{
+			throw $exception;
 		}
 
 		if ( ! $message = $exception->getMessage())

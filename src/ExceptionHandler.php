@@ -1,5 +1,6 @@
 <?php namespace Dingo\Api;
 
+use Exception;
 use ReflectionFunction;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -29,10 +30,10 @@ class ExceptionHandler {
 	/**
 	 * Handle an exception if it has an existing handler.
 	 * 
-	 * @param  \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface  $exception
+	 * @param  \Exception  $exception
 	 * @return \Illuminate\Http\Response
 	 */
-	public function handle(HttpExceptionInterface $exception)
+	public function handle(Exception $exception)
 	{
 		foreach ($this->handlers as $hint => $handler)
 		{
@@ -42,7 +43,7 @@ class ExceptionHandler {
 
 				if ( ! $response instanceof Response)
 				{
-					$response = new Response($response, $exception->getStatusCode());
+					$response = new Response($response, $exception instanceof HttpExceptionInterface ? $exception->getStatusCode() : 200);
 				}
 
 				return $response;
@@ -53,10 +54,10 @@ class ExceptionHandler {
 	/**
 	 * Determine if the handler will handle the given exception.
 	 * 
-	 * @param  \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface  $exception
+	 * @param  \Exception  $exception
 	 * @return bool
 	 */
-	public function willHandle(HttpExceptionInterface $exception)
+	public function willHandle(Exception $exception)
 	{
 		return (bool) array_first($this->handlers, function($hint) use ($exception) { return $exception instanceof $hint; }, false);
 	}
