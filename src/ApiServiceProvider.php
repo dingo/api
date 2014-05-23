@@ -6,7 +6,7 @@ use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
 use Dingo\Api\Transformer\Factory;
 use Illuminate\Support\ServiceProvider;
-use Dingo\Api\Commands\ApiRoutesCommand;
+use Dingo\Api\Console\ApiRoutesCommand;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class ApiServiceProvider extends ServiceProvider {

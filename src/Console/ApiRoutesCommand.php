@@ -1,4 +1,4 @@
-<?php namespace Dingo\Api\Commands;
+<?php namespace Dingo\Api\Console;
 
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Router;
