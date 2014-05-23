@@ -5,8 +5,6 @@ use Dingo\Api\Auth\Shield;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
 use Dingo\Api\Transformer\Factory;
-use Dingo\Api\Auth\ProviderManager;
-use League\Fractal\Manager as Fractal;
 use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Commands\ApiRoutesCommand;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
