@@ -74,6 +74,7 @@ class Shield {
 	 * Authenticate the current request.
 	 * 
 	 * @return null|\Dingo\Api\Http\Response
+	 * @throws \Exception
 	 */
 	public function authenticate(Request $request, Route $route)
 	{

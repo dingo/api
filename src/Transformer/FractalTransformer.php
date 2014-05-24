@@ -2,7 +2,7 @@
 
 use League\Fractal\Manager as Fractal;
 use League\Fractal\Resource\Item as FractalItem;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use Dingo\Api\Pagination\IlluminatePaginatorWrapper;
 use Illuminate\Support\Collection as IlluminateCollection;
 use Illuminate\Pagination\Paginator as IlluminatePaginator;
 use League\Fractal\Resource\Collection as FractalCollection;
@@ -63,7 +63,7 @@ class FractalTransformer extends Transformer {
 		// collection resource.
 		if ($response instanceof IlluminatePaginator)
 		{
-			$paginator = new IlluminatePaginatorAdapter($response);
+			$paginator = new IlluminatePaginatorWrapper($response);
 
 			$resource->setPaginator($paginator);
 		}
