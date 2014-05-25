@@ -14,7 +14,8 @@ use Dingo\Api\Transformer\FractalTransformer;
 use Illuminate\Events\Dispatcher as EventsDispatcher;
 use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
 
-class DispatcherTest extends PHPUnit_Framework_TestCase {
+class DispatcherTest extends PHPUnit_Framework_TestCase
+{
 
 
 	public function setUp()
@@ -40,13 +41,22 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 
 	public function testInternalRequests()
 	{
-		$this->router->api(['version' => 'v1'], function()
-		{
-			$this->router->get('test', function(){ return 'test'; });
-			$this->router->post('test', function(){ return 'test'; });
-			$this->router->put('test', function(){ return 'test'; });
-			$this->router->patch('test', function(){ return 'test'; });
-			$this->router->delete('test', function(){ return 'test'; });
+		$this->router->api(['version' => 'v1'], function () {
+			$this->router->get('test', function () {
+				return 'test';
+			});
+			$this->router->post('test', function () {
+				return 'test';
+			});
+			$this->router->put('test', function () {
+				return 'test';
+			});
+			$this->router->patch('test', function () {
+				return 'test';
+			});
+			$this->router->delete('test', function () {
+				return 'test';
+			});
 		});
 
 		$this->assertEquals('test', $this->dispatcher->get('test'));
@@ -59,9 +69,10 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 
 	public function testInternalRequestWithVersionAndParameters()
 	{
-		$this->router->api(['version' => 'v1'], function()
-		{
-			$this->router->get('test', function(){ return 'test'; });
+		$this->router->api(['version' => 'v1'], function () {
+			$this->router->get('test', function () {
+				return 'test';
+			});
 		});
 
 		$this->assertEquals('test', $this->dispatcher->version('v1')->with(['foo' => 'bar'])->get('test'));
@@ -70,9 +81,10 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 
 	public function testInternalRequestWithPrefix()
 	{
-		$this->router->api(['version' => 'v1', 'prefix' => 'baz'], function()
-		{
-			$this->router->get('test', function(){ return 'test'; });
+		$this->router->api(['version' => 'v1', 'prefix' => 'baz'], function () {
+			$this->router->get('test', function () {
+				return 'test';
+			});
 		});
 
 		$this->assertEquals('test', $this->dispatcher->get('test'));
@@ -81,9 +93,10 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 
 	public function testInternalRequestWithDomain()
 	{
-		$this->router->api(['version' => 'v1', 'domain' => 'foo.bar'], function()
-		{
-			$this->router->get('test', function(){ return 'test'; });
+		$this->router->api(['version' => 'v1', 'domain' => 'foo.bar'], function () {
+			$this->router->get('test', function () {
+				return 'test';
+			});
 		});
 
 		$this->assertEquals('test', $this->dispatcher->get('test'));
@@ -95,7 +108,8 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testInternalRequestThrowsException()
 	{
-		$this->router->api(['version' => 'v1'], function() {});
+		$this->router->api(['version' => 'v1'], function () {
+		});
 
 		$this->dispatcher->get('test');
 	}
@@ -106,10 +120,8 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testInternalRequestThrowsExceptionWhenResponseIsNotOkay()
 	{
-		$this->router->api(['version' => 'v1'], function()
-		{
-			$this->router->get('test', function()
-			{
+		$this->router->api(['version' => 'v1'], function () {
+			$this->router->get('test', function () {
 				return new Illuminate\Http\Response('test', 401);
 			});
 		});
@@ -144,9 +156,10 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 		$this->auth->shouldReceive('setUser')->once()->with($user);
 		$this->auth->shouldReceive('setUser')->once()->with(null);
 
-		$this->router->api(['version' => 'v1'], function()
-		{
-			$this->router->get('test', function(){ return 'test'; });
+		$this->router->api(['version' => 'v1'], function () {
+			$this->router->get('test', function () {
+				return 'test';
+			});
 		});
 
 		$this->dispatcher->be($user)->once()->get('test');
@@ -155,15 +168,12 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 
 	public function testInternalRequestUsingRouteName()
 	{
-		$this->router->api(['version' => 'v1'], function()
-		{
-			$this->router->get('test', ['as' => 'test', function()
-			{
+		$this->router->api(['version' => 'v1'], function () {
+			$this->router->get('test', ['as' => 'test', function () {
 				return 'foo';
 			}]);
 
-			$this->router->get('test/{foo}', ['as' => 'parameters', function($parameter)
-			{
+			$this->router->get('test/{foo}', ['as' => 'parameters', function ($parameter) {
 				return $parameter;
 			}]);
 		});
@@ -175,8 +185,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 
 	public function testInternalRequestUsingControllerAction()
 	{
-		$this->router->api(['version' => 'v1'], function()
-		{
+		$this->router->api(['version' => 'v1'], function () {
 			$this->router->get('foo', 'InternalControllerActionRoutingStub@index');
 		});
 
@@ -186,9 +195,10 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 
 	public function testInternalRequestUsingRouteNameAndControllerActionDoesNotDoublePrefix()
 	{
-		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
-		{
-			$this->router->get('foo', ['as' => 'foo', function() { return 'foo'; }]);
+		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function () {
+			$this->router->get('foo', ['as' => 'foo', function () {
+				return 'foo';
+			}]);
 			$this->router->get('bar', 'InternalControllerActionRoutingStub@index');
 		});
 
@@ -199,14 +209,16 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 
 	public function testInternalRequestWithMultipleVersionsCallsCorrectVersion()
 	{
-		$this->router->api(['version' => 'v1'], function()
-		{
-			$this->router->get('foo', function() { return 'foo'; });
+		$this->router->api(['version' => 'v1'], function () {
+			$this->router->get('foo', function () {
+				return 'foo';
+			});
 		});
 
-		$this->router->api(['version' => 'v2'], function()
-		{
-			$this->router->get('foo', function() { return 'bar'; });
+		$this->router->api(['version' => 'v2'], function () {
+			$this->router->get('foo', function () {
+				return 'bar';
+			});
 		});
 
 		$this->assertEquals('bar', $this->dispatcher->version('v2')->get('foo'));
@@ -217,14 +229,16 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->dispatcher = new Dispatcher(new Request, m::mock('Illuminate\Routing\UrlGenerator'), $this->router, m::mock('Dingo\Api\Auth\Shield'));
 
-		$this->router->api(['version' => 'v2', 'prefix' => 'api'], function()
-		{
-			$this->router->get('foo', function() { return 'bar'; });
+		$this->router->api(['version' => 'v2', 'prefix' => 'api'], function () {
+			$this->router->get('foo', function () {
+				return 'bar';
+			});
 		});
 
-		$this->router->api(['version' => 'v3', 'prefix' => 'api'], function()
-		{
-			$this->router->get('foo', function() { return 'baz'.$this->dispatcher->version('v2')->get('foo'); });
+		$this->router->api(['version' => 'v3', 'prefix' => 'api'], function () {
+			$this->router->get('foo', function () {
+				return 'baz' . $this->dispatcher->version('v2')->get('foo');
+			});
 		});
 
 		$this->assertEquals('bazbar', $this->dispatcher->version('v3')->get('foo'));
@@ -233,59 +247,50 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 
 	public function testRequestStackIsMaintained()
 	{
-		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
-		{
-			$this->router->post('baz', function()
-			{
+		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function () {
+			$this->router->post('baz', function () {
 				$this->assertEquals('bazinga', $this->router->getCurrentRequest()->input('foo'));
 			});
 
-			$this->router->post('bar', function()
-			{
+			$this->router->post('bar', function () {
 				$this->assertEquals('baz', $this->router->getCurrentRequest()->input('foo'));
 				$this->dispatcher->with(['foo' => 'bazinga'])->post('baz');
 				$this->assertEquals('baz', $this->router->getCurrentRequest()->input('foo'));
 			});
 
-			$this->router->post('foo', function()
-			{
+			$this->router->post('foo', function () {
 				$this->assertEquals('bar', $this->router->getCurrentRequest()->input('foo'));
 				$this->dispatcher->with(['foo' => 'baz'])->post('bar');
 				$this->assertEquals('bar', $this->router->getCurrentRequest()->input('foo'));
 			});
 		});
-		
+
 		$this->dispatcher->with(['foo' => 'bar'])->post('foo');
 	}
 
 
 	public function testRouteStackIsMaintained()
 	{
-		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
-		{
-			$this->router->post('baz', ['as' => 'bazinga', function()
-			{
+		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function () {
+			$this->router->post('baz', ['as' => 'bazinga', function () {
 				$this->assertEquals('bazinga', $this->router->currentRouteName());
 			}]);
 
-			$this->router->post('bar', ['as' => 'bar', function()
-			{
+			$this->router->post('bar', ['as' => 'bar', function () {
 				$this->assertEquals('bar', $this->router->currentRouteName());
 				$this->dispatcher->post('baz');
 				$this->assertEquals('bar', $this->router->currentRouteName());
 			}]);
 
-			$this->router->post('foo', ['as' => 'foo', function()
-			{
+			$this->router->post('foo', ['as' => 'foo', function () {
 				$this->assertEquals('foo', $this->router->currentRouteName());
 				$this->dispatcher->post('bar');
 				$this->assertEquals('foo', $this->router->currentRouteName());
 			}]);
 		});
-		
+
 		$this->dispatcher->post('foo');
 	}
 
-	
 
 }

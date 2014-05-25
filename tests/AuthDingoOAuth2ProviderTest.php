@@ -6,7 +6,8 @@ use Illuminate\Routing\Route;
 use Dingo\Api\Auth\DingoOAuth2Provider;
 use Dingo\OAuth2\Exception\InvalidTokenException;
 
-class AuthDingoOAuth2ProviderTest extends PHPUnit_Framework_TestCase {
+class AuthDingoOAuth2ProviderTest extends PHPUnit_Framework_TestCase
+{
 
 
 	public function tearDown()

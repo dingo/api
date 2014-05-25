@@ -1,6 +1,7 @@
 <?php
 
-class EloquentModelStub extends Illuminate\Database\Eloquent\Model {
+class EloquentModelStub extends Illuminate\Database\Eloquent\Model
+{
 
 	protected $table = 'user';
 
@@ -11,7 +12,8 @@ class EloquentModelStub extends Illuminate\Database\Eloquent\Model {
 
 }
 
-class EloquentCollectionStub extends Illuminate\Database\Eloquent\Collection {
+class EloquentCollectionStub extends Illuminate\Database\Eloquent\Collection
+{
 
 	public function __construct()
 	{
@@ -23,11 +25,13 @@ class EloquentCollectionStub extends Illuminate\Database\Eloquent\Collection {
 
 }
 
-class EmptyEloquentCollectionStub extends Illuminate\Database\Eloquent\Collection {
+class EmptyEloquentCollectionStub extends Illuminate\Database\Eloquent\Collection
+{
 
 }
 
-class JsonableStub implements Illuminate\Support\Contracts\JsonableInterface {
+class JsonableStub implements Illuminate\Support\Contracts\JsonableInterface
+{
 
 	public function toJson($options = 0)
 	{
@@ -36,55 +40,69 @@ class JsonableStub implements Illuminate\Support\Contracts\JsonableInterface {
 
 }
 
-class WildcardScopeControllerStub extends Dingo\Api\Routing\Controller {
+class WildcardScopeControllerStub extends Dingo\Api\Routing\Controller
+{
 
 	public function __construct()
 	{
 		$this->scope(['foo', 'bar']);
 	}
 
-	public function index() {}
+	public function index()
+	{
+	}
 
 }
 
-class IndividualScopeControllerStub extends Dingo\Api\Routing\Controller {
+class IndividualScopeControllerStub extends Dingo\Api\Routing\Controller
+{
 
 	public function __construct()
 	{
 		$this->scope(['foo', 'bar'], 'index');
 	}
 
-	public function index() {}
+	public function index()
+	{
+	}
 
 }
 
-class ProtectedControllerStub extends Dingo\Api\Routing\Controller {
+class ProtectedControllerStub extends Dingo\Api\Routing\Controller
+{
 
 	public function __construct()
 	{
 		$this->protect('index');
 	}
 
-	public function index() {}
+	public function index()
+	{
+	}
 
 }
 
-class UnprotectedControllerStub extends Dingo\Api\Routing\Controller {
+class UnprotectedControllerStub extends Dingo\Api\Routing\Controller
+{
 
 	public function __construct()
 	{
 		$this->unprotect('index');
 	}
 
-	public function index() {}
+	public function index()
+	{
+	}
 
 }
 
-class StubHttpException extends Symfony\Component\HttpKernel\Exception\HttpException {
+class StubHttpException extends Symfony\Component\HttpKernel\Exception\HttpException
+{
 
 }
 
-class InternalControllerActionRoutingStub extends Illuminate\Routing\Controller {
+class InternalControllerActionRoutingStub extends Illuminate\Routing\Controller
+{
 
 	public function index()
 	{
@@ -93,15 +111,22 @@ class InternalControllerActionRoutingStub extends Illuminate\Routing\Controller 
 
 }
 
-class AuthorizationProviderStub extends Dingo\Api\Auth\AuthorizationProvider {
+class AuthorizationProviderStub extends Dingo\Api\Auth\AuthorizationProvider
+{
 
-	public function authenticate(Illuminate\Http\Request $request, Illuminate\Routing\Route $route) {}
+	public function authenticate(Illuminate\Http\Request $request, Illuminate\Routing\Route $route)
+	{
+	}
 
-	public function getAuthorizationMethod() { return 'foo'; }
+	public function getAuthorizationMethod()
+	{
+		return 'foo';
+	}
 
 }
 
-class CustomProviderStub extends Dingo\Api\Auth\Provider {
+class CustomProviderStub extends Dingo\Api\Auth\Provider
+{
 
 	public function authenticate(Illuminate\Http\Request $request, Illuminate\Routing\Route $route)
 	{
@@ -110,7 +135,8 @@ class CustomProviderStub extends Dingo\Api\Auth\Provider {
 
 }
 
-class FooTransformerStub extends League\Fractal\TransformerAbstract {
+class FooTransformerStub extends League\Fractal\TransformerAbstract
+{
 
 	public function transform(Foo $foo)
 	{
@@ -119,7 +145,8 @@ class FooTransformerStub extends League\Fractal\TransformerAbstract {
 
 }
 
-class BarTransformerStub extends League\Fractal\TransformerAbstract {
+class BarTransformerStub extends League\Fractal\TransformerAbstract
+{
 
 	protected $availableEmbeds = ['foo'];
 
@@ -135,11 +162,13 @@ class BarTransformerStub extends League\Fractal\TransformerAbstract {
 
 }
 
-class Foo {
+class Foo
+{
 
 }
 
-class Bar implements Dingo\Api\Transformer\TransformableInterface  {
+class Bar implements Dingo\Api\Transformer\TransformableInterface
+{
 	public function getTransformer()
 	{
 		return new BarTransformerStub;

@@ -3,11 +3,11 @@
 interface TransformableInterface
 {
 
-    /**
-     * Get the transformer instance.
-     *
-     * @return mixed
-     */
-    public function getTransformer();
+	/**
+	 * Get the transformer instance.
+	 *
+	 * @return mixed
+	 */
+	public function getTransformer();
 
 }

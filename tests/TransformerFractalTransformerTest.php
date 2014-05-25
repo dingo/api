@@ -2,7 +2,8 @@
 
 use Mockery as m;
 
-class TransformerFractalTransformerTest extends PHPUnit_Framework_TestCase {
+class TransformerFractalTransformerTest extends PHPUnit_Framework_TestCase
+{
 
 
 	public function setUp()
@@ -32,8 +33,7 @@ class TransformerFractalTransformerTest extends PHPUnit_Framework_TestCase {
 
 	public function testTransformingResponseUsingCallback()
 	{
-		$this->transformerFactory->transform('Foo', function()
-		{
+		$this->transformerFactory->transform('Foo', function () {
 			return new FooTransformerStub;
 		});
 		$this->assertEquals(['data' => ['foo' => 'bar']], $this->transformerFactory->transformResponse(new Foo));
@@ -51,8 +51,7 @@ class TransformerFractalTransformerTest extends PHPUnit_Framework_TestCase {
 
 	public function testTransformingCollectionUsingCallback()
 	{
-		$this->transformerFactory->transform('Foo', function()
-		{
+		$this->transformerFactory->transform('Foo', function () {
 			return new FooTransformerStub;
 		});
 		$response = new Illuminate\Support\Collection([new Foo, new Foo]);
@@ -105,7 +104,7 @@ class TransformerFractalTransformerTest extends PHPUnit_Framework_TestCase {
 					'next' => 'http://foo.bar/?page=2'
 				]
 			]
-		], $this->transformerFactory->transformResponse($paginator));		
+		], $this->transformerFactory->transformResponse($paginator));
 	}
 
 

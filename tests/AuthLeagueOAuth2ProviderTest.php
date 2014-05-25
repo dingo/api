@@ -6,7 +6,8 @@ use Illuminate\Routing\Route;
 use Dingo\Api\Auth\LeagueOAuth2Provider;
 use League\OAuth2\Server\Exception\InvalidAccessTokenException;
 
-class AuthLeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase {
+class AuthLeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase
+{
 
 
 	public function tearDown()

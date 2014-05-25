@@ -2,7 +2,8 @@
 
 use Dingo\Api\Routing\ControllerInspector;
 
-class RoutingControllerInspectorTest extends PHPUnit_Framework_TestCase {
+class RoutingControllerInspectorTest extends PHPUnit_Framework_TestCase
+{
 
 
 	public function testControllerMethodIsNotRoutable()
@@ -23,8 +24,11 @@ class RoutingControllerInspectorTest extends PHPUnit_Framework_TestCase {
 
 }
 
-class ControllerStub extends Dingo\Api\Routing\Controller {
+class ControllerStub extends Dingo\Api\Routing\Controller
+{
 
-	public function getFoo() {}
+	public function getFoo()
+	{
+	}
 
 }

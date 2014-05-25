@@ -1,6 +1,7 @@
 <?php
 
-class AuthAuthorizationProviderTest extends PHPUnit_Framework_TestCase {
+class AuthAuthorizationProviderTest extends PHPUnit_Framework_TestCase
+{
 
 
 	/**

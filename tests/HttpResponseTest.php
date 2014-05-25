@@ -3,14 +3,15 @@
 use Mockery as m;
 use Dingo\Api\Http\Response;
 
-class HttpResponseTest extends PHPUnit_Framework_TestCase {
+class HttpResponseTest extends PHPUnit_Framework_TestCase
+{
 
 
 	public function setUp()
 	{
 		$this->formatter = m::mock('Dingo\Api\Http\ResponseFormat\JsonResponseFormat');
 		$this->formatter->shouldReceive('getContentType')->andReturn('foo');
-		
+
 		Response::setFormatters(['json' => $this->formatter]);
 		Response::setTransformer(m::mock('Dingo\Api\Transformer\Factory')->shouldReceive('transformableResponse')->andReturn(false)->getMock());
 	}

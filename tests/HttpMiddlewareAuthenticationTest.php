@@ -11,7 +11,8 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class HttpMiddlewareAuthenticationTest extends PHPUnit_Framework_TestCase {
+class HttpMiddlewareAuthenticationTest extends PHPUnit_Framework_TestCase
+{
 
 
 	public function setUp()

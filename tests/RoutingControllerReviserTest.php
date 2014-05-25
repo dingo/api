@@ -3,7 +3,8 @@
 use Illuminate\Routing\Route;
 use Dingo\Api\Routing\ControllerReviser;
 
-class RoutingControllerReviserTest extends PHPUnit_Framework_TestCase {
+class RoutingControllerReviserTest extends PHPUnit_Framework_TestCase
+{
 
 
 	public function testRoutingToRevisedControllerWithWildcardScopes()

@@ -1,6 +1,7 @@
 <?php
 
-class ExceptionHandlerTest extends PHPUnit_Framework_TestCase {
+class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
+{
 
 
 	public function setUp()
@@ -11,14 +12,16 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase {
 
 	public function testRegisterExceptionHandler()
 	{
-		$this->exceptionHandler->register(function(StubHttpException $e){});
+		$this->exceptionHandler->register(function (StubHttpException $e) {
+		});
 		$this->assertArrayHasKey('StubHttpException', $this->exceptionHandler->getHandlers());
 	}
 
 
 	public function testExceptionHandlerWillHandleExceptionPasses()
 	{
-		$this->exceptionHandler->register(function(StubHttpException $e){});
+		$this->exceptionHandler->register(function (StubHttpException $e) {
+		});
 		$this->assertTrue($this->exceptionHandler->willHandle(new StubHttpException(404)));
 	}
 
@@ -31,8 +34,7 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase {
 
 	public function testExceptionHandlerHandlesException()
 	{
-		$this->exceptionHandler->register(function(StubHttpException $e)
-		{
+		$this->exceptionHandler->register(function (StubHttpException $e) {
 			return new Illuminate\Http\Response('foo', 404);
 		});
 
@@ -45,8 +47,7 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase {
 
 	public function testExceptionHandlerHandlesExceptionAndCreatesNewResponse()
 	{
-		$this->exceptionHandler->register(function(StubHttpException $e)
-		{
+		$this->exceptionHandler->register(function (StubHttpException $e) {
 			return 'foo';
 		});
 

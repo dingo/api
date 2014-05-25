@@ -7,7 +7,8 @@ use Illuminate\Routing\Route;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class AuthShieldTest extends PHPUnit_Framework_TestCase {
+class AuthShieldTest extends PHPUnit_Framework_TestCase
+{
 
 
 	public function setUp()
@@ -103,14 +104,13 @@ class AuthShieldTest extends PHPUnit_Framework_TestCase {
 		$auth->authenticate($request, $route);
 		$this->assertInstanceOf('CustomProviderStub', $auth->getUsedProvider());
 
-		$auth->extend('custom', function($app)
-		{
+		$auth->extend('custom', function ($app) {
 			$this->assertInstanceOf('Illuminate\Container\Container', $app);
 
 			return new CustomProviderStub;
 		});
 		$auth->authenticate($request, $route);
-		$this->assertInstanceOf('CustomProviderStub', $auth->getUsedProvider());	
+		$this->assertInstanceOf('CustomProviderStub', $auth->getUsedProvider());
 	}
 
 

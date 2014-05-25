@@ -4,7 +4,8 @@ use Mockery as m;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
 
-class HttpResponseFormatJsonResponseFormatTest extends PHPUnit_Framework_TestCase {
+class HttpResponseFormatJsonResponseFormatTest extends PHPUnit_Framework_TestCase
+{
 
 
 	public function setUp()

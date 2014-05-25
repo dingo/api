@@ -2,7 +2,8 @@
 
 use Mockery as m;
 
-class TransformerTest extends PHPUnit_Framework_TestCase {
+class TransformerTest extends PHPUnit_Framework_TestCase
+{
 
 
 	public function setUp()

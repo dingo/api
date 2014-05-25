@@ -9,7 +9,8 @@ use Dingo\Api\Http\Middleware\RateLimit;
 use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-class HttpMiddlewareRateLimitTest extends PHPUnit_Framework_TestCase {
+class HttpMiddlewareRateLimitTest extends PHPUnit_Framework_TestCase
+{
 
 
 	public function setUp()
@@ -107,11 +108,11 @@ class HttpMiddlewareRateLimitTest extends PHPUnit_Framework_TestCase {
 
 		$ip = $request->getClientIp();
 
-		$this->cache->shouldReceive('add')->once()->with('dingo:api:requests:'.$ip, 0, 1);
+		$this->cache->shouldReceive('add')->once()->with('dingo:api:requests:' . $ip, 0, 1);
 		$this->cache->shouldReceive('add')->once();
-		$this->cache->shouldReceive('increment')->once()->with('dingo:api:requests:'.$ip);
-		$this->cache->shouldReceive('get')->twice()->with('dingo:api:requests:'.$ip)->andReturn(1);
-		$this->cache->shouldReceive('get')->once()->with('dingo:api:reset:'.$ip);
+		$this->cache->shouldReceive('increment')->once()->with('dingo:api:requests:' . $ip);
+		$this->cache->shouldReceive('get')->twice()->with('dingo:api:requests:' . $ip)->andReturn(1);
+		$this->cache->shouldReceive('get')->once()->with('dingo:api:reset:' . $ip);
 
 		$this->app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn(new Response('test'));
 		$response = $this->middleware->handle($request);
@@ -136,11 +137,11 @@ class HttpMiddlewareRateLimitTest extends PHPUnit_Framework_TestCase {
 
 		$ip = $request->getClientIp();
 
-		$this->cache->shouldReceive('add')->once()->with('dingo:api:requests:'.$ip, 0, 1);
+		$this->cache->shouldReceive('add')->once()->with('dingo:api:requests:' . $ip, 0, 1);
 		$this->cache->shouldReceive('add')->once();
-		$this->cache->shouldReceive('increment')->once()->with('dingo:api:requests:'.$ip);
-		$this->cache->shouldReceive('get')->twice()->with('dingo:api:requests:'.$ip)->andReturn(2);
-		$this->cache->shouldReceive('get')->once()->with('dingo:api:reset:'.$ip);
+		$this->cache->shouldReceive('increment')->once()->with('dingo:api:requests:' . $ip);
+		$this->cache->shouldReceive('get')->twice()->with('dingo:api:requests:' . $ip)->andReturn(2);
+		$this->cache->shouldReceive('get')->once()->with('dingo:api:reset:' . $ip);
 
 		Dingo\Api\Http\Response::setTransformer(m::mock('Dingo\Api\Transformer\Factory')->shouldReceive('transformableResponse')->andReturn(false)->getMock());
 		Dingo\Api\Http\Response::setFormatters(['json' => new Dingo\Api\Http\ResponseFormat\JsonResponseFormat]);
