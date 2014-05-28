@@ -97,7 +97,7 @@ class FractalTransformer extends Transformer {
 	{
 		$scopes = array_filter(explode($this->includeSeparator, $this->request->get($this->includeKey)));
 
-		$this->fractal->setRequestedScopes($scopes);
+		$this->fractal->parseIncludes($scopes);
 	}
 
 }
