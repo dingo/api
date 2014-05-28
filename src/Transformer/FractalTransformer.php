@@ -54,7 +54,7 @@ class FractalTransformer extends Transformer {
 	 */
 	public function transformResponse($response, $transformer)
 	{
-		$this->setRequestedScopes();
+		$this->parseIncludes();
 
 		$resource = $this->createResource($response, $transformer);
 
@@ -89,15 +89,15 @@ class FractalTransformer extends Transformer {
 	}
 
 	/**
-	 * Set the requested scopes.
+	 * Parse includes
 	 * 
 	 * @return void
 	 */
-	protected function setRequestedScopes()
+	protected function parseIncludes()
 	{
 		$scopes = array_filter(explode($this->includeSeparator, $this->request->get($this->includeKey)));
 
-		$this->fractal->setRequestedScopes($scopes);
+		$this->fractal->parseIncludes($scopes);
 	}
 
 }

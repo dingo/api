@@ -121,14 +121,14 @@ class FooTransformerStub extends League\Fractal\TransformerAbstract {
 
 class BarTransformerStub extends League\Fractal\TransformerAbstract {
 
-	protected $availableEmbeds = ['foo'];
+	protected $availableIncludes = ['foo'];
 
 	public function transform(Bar $bar)
 	{
 		return ['bar' => 'baz'];
 	}
 
-	public function embedFoo(Bar $bar)
+	public function includeFoo(Bar $bar)
 	{
 		return $this->item(new Foo, new FooTransformerStub);
 	}

@@ -64,7 +64,7 @@ class TransformerFractalTransformerTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->transformerFactory->transform('Bar', 'BarTransformerStub');
 		$this->transformerFactory->setRequest(Illuminate\Http\Request::create('/', 'GET', ['include' => 'foo']));
-		$this->assertEquals(['data' => ['bar' => 'baz', 'foo' => ['data' => ['foo' => 'bar']]], 'embeds' => ['foo']], $this->transformerFactory->transformResponse(new Bar));
+		$this->assertEquals(['data' => ['bar' => 'baz', 'foo' => ['data' => ['foo' => 'bar']]]], $this->transformerFactory->transformResponse(new Bar));
 	}
 
 
@@ -95,16 +95,18 @@ class TransformerFractalTransformerTest extends PHPUnit_Framework_TestCase {
 				['foo' => 'bar'],
 				['foo' => 'bar']
 			],
-			'pagination' => [
-				'total' => 2,
-				'count' => 2,
-				'per_page' => 1,
-				'current_page' => 1,
-				'total_pages' => 2,
-				'links' => [
-					'next' => 'http://foo.bar/?page=2'
+			'meta' => [
+				'pagination' => [
+					'total' => 2,
+					'count' => 2,
+					'per_page' => 1,
+					'current_page' => 1,
+					'total_pages' => 2,
+					'links' => [
+						'next' => 'http://foo.bar/?page=2'
+					]
 				]
-			]
+			],
 		], $this->transformerFactory->transformResponse($paginator));		
 	}
 
