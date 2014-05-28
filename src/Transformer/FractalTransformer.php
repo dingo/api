@@ -89,15 +89,15 @@ class FractalTransformer extends Transformer {
 	}
 
 	/**
-	 * Parse includes
+	 * Parse includes.
 	 * 
 	 * @return void
 	 */
 	protected function parseIncludes()
 	{
-		$scopes = array_filter(explode($this->includeSeparator, $this->request->get($this->includeKey)));
+		$includes = array_filter(explode($this->includeSeparator, $this->request->get($this->includeKey)));
 
-		$this->fractal->parseIncludes($scopes);
+		$this->fractal->parseIncludes($includes);
 	}
 
 }

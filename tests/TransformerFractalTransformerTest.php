@@ -62,7 +62,6 @@ class TransformerFractalTransformerTest extends PHPUnit_Framework_TestCase {
 
 	public function testTransformingNestedRelationships()
 	{
-		$this->transformerFactory->transform('Bar', 'BarTransformerStub');
 		$this->transformerFactory->setRequest(Illuminate\Http\Request::create('/', 'GET', ['include' => 'foo']));
 		$this->assertEquals(['data' => ['bar' => 'baz', 'foo' => ['data' => ['foo' => 'bar']]]], $this->transformerFactory->transformResponse(new Bar));
 	}
