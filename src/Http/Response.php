@@ -3,7 +3,6 @@
 use RuntimeException;
 use Dingo\Api\Transformer\Factory;
 use Illuminate\Support\MessageBag;
-use Illuminate\Support\Contracts\JsonableInterface;
 use Illuminate\Support\Contracts\ArrayableInterface;
 use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
@@ -65,9 +64,8 @@ class Response extends IlluminateResponse {
 		else
 		{
 			// Next we'll attempt to format the response if it's a string,
-			// an array or an object implementing ArrayableInterface,
-			// an object implementing JsonableInterface or an
-			// unknown type.
+			// an array or an object implementing ArrayableInterface, or
+			// an unknown type.
 			if (is_string($response))
 			{
 				$response = $formatter->formatString($response);
@@ -75,10 +73,6 @@ class Response extends IlluminateResponse {
 			elseif (is_array($response) or $response instanceof ArrayableInterface)
 			{
 				$response = $formatter->formatArrayableInterface($response);
-			}
-			elseif ($response instanceof JsonableInterface)
-			{
-				$response = $formatter->formatJsonableInterface($response);
 			}
 			else
 			{

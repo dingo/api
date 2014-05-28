@@ -46,14 +46,6 @@ class HttpResponseFormatJsonResponseFormatTest extends PHPUnit_Framework_TestCas
 	}
 
 
-	public function testMorphingJsonableInterface()
-	{
-		$response = with(new Response(new JsonableStub))->morph();
-
-		$this->assertEquals('{"foo":"bar"}', $response->getContent());
-	}
-
-
 	public function testMorphingString()
 	{
 		$response = with(new Response('foo'))->morph();

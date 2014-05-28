@@ -65,17 +65,6 @@ class JsonResponseFormat implements ResponseFormatInterface {
 	}
 
 	/**
-	 * Format an instance implementing JsonableInterface.
-	 * 
-	 * @param  \Illuminate\Support\Contracts\JsonableInterface  $response
-	 * @return string
-	 */
-	public function formatJsonableInterface($response)
-	{
-		return $response->toJson();
-	}
-
-	/**
 	 * Format an unknown type.
 	 * 
 	 * @param  mixed  $response
@@ -83,7 +72,7 @@ class JsonResponseFormat implements ResponseFormatInterface {
 	 */
 	public function formatUnknown($response)
 	{
-		return $this->encode($response);
+		return $response;
 	}
 
 	/**

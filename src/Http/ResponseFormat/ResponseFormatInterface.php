@@ -35,14 +35,6 @@ interface ResponseFormatInterface {
 	public function formatArrayableInterface($response);
 
 	/**
-	 * Format an instance implementing JsonableInterface.
-	 * 
-	 * @param  \Illuminate\Support\Contracts\JsonableInterface  $response
-	 * @return string
-	 */
-	public function formatJsonableInterface($response);
-
-	/**
 	 * Format an unknown type.
 	 * 
 	 * @param  mixed  $response

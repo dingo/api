@@ -40,14 +40,6 @@ class HttpResponseTest extends PHPUnit_Framework_TestCase {
 	}
 
 
-	public function testMorphingJsonableInterface()
-	{
-		$this->formatter->shouldReceive('formatJsonableInterface')->once()->andReturn('test');
-
-		(new Response(new JsonableStub))->morph();
-	}
-
-
 	public function testMorphingString()
 	{
 		$this->formatter->shouldReceive('formatString')->once();

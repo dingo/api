@@ -27,15 +27,6 @@ class EmptyEloquentCollectionStub extends Illuminate\Database\Eloquent\Collectio
 
 }
 
-class JsonableStub implements Illuminate\Support\Contracts\JsonableInterface {
-
-	public function toJson($options = 0)
-	{
-		return json_encode(['foo' => 'bar']);
-	}
-
-}
-
 class WildcardScopeControllerStub extends Dingo\Api\Routing\Controller {
 
 	public function __construct()
