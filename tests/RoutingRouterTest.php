@@ -50,8 +50,8 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 	public function testRegisterApiRoutesWithMultipleVersions()
 	{
-		$this->router->api(['version' => ['v1', 'v2']], function() { $this->router->get('foo', function() { return 'bar'; }); });
-		$this->router->api(['version' => 'v2'], function() { $this->router->get('bar', function() { return 'baz'; }); });
+		$this->router->api(['version' => ['v1', 'v2']], function() { $this->router->get('foo', function() { return ['message' => 'bar']; }); });
+		$this->router->api(['version' => 'v2'], function() { $this->router->get('bar', function() { return ['message' => 'baz']; }); });
 
 		$request = Request::create('foo', 'GET');
 		$request->headers->set('accept', 'application/vnd.testing.v2+json');
@@ -65,8 +65,8 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 	public function testRegisterApiRoutesWithDifferentResponseForSameUri()
 	{
-		$this->router->api(['version' => 'v1'], function() { $this->router->get('foo', function() { return 'foo'; }); });
-		$this->router->api(['version' => 'v2'], function() { $this->router->get('foo', function() { return 'bar'; }); });
+		$this->router->api(['version' => 'v1'], function() { $this->router->get('foo', function() { return ['message' => 'foo']; }); });
+		$this->router->api(['version' => 'v2'], function() { $this->router->get('foo', function() { return ['message' => 'bar']; }); });
 		$request = Request::create('foo', 'GET');
 		$request->headers->set('accept', 'application/vnd.testing.v1+json');
 		$this->assertEquals('{"message":"foo"}', $this->router->dispatch($request)->getContent());
@@ -77,7 +77,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 	public function testApiRouteCollectionOptionsApplyToRoutes()
 	{
-		$this->router->api(['version' => 'v1', 'protected' => true], function() { $this->router->get('foo', function() { return 'bar'; }); });
+		$this->router->api(['version' => 'v1', 'protected' => true], function() { $this->router->get('foo', function() { return ['message' => 'bar']; }); });
 		$route = $this->router->getApiRouteCollection('v1')->getRoutes()[0];
 		$this->assertTrue($route->getAction()['protected']);
 	}
@@ -96,12 +96,12 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->router->api(['version' => 'v1', 'prefix' => 'foo/bar'], function()
 		{
-			$this->router->get('foo', function() { return 'foo'; });
+			$this->router->get('foo', function() { return ['message' => 'foo']; });
 		});
 
 		$this->router->api(['version' => 'v2', 'prefix' => 'foo/bar'], function()
 		{
-			$this->router->get('foo', function() { return 'bar'; });
+			$this->router->get('foo', function() { return ['message' => 'bar']; });
 		});
 
 		$request = Request::create('/foo/bar/foo', 'GET');
@@ -114,12 +114,12 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->router->api(['version' => 'v1', 'domain' => 'foo.bar'], function()
 		{
-			$this->router->get('foo', function() { return 'foo'; });
+			$this->router->get('foo', function() { return ['message' => 'foo']; });
 		});
 
 		$this->router->api(['version' => 'v2', 'domain' => 'foo.bar'], function()
 		{
-			$this->router->get('foo', function() { return 'bar'; });
+			$this->router->get('foo', function() { return ['message' => 'bar']; });
 		});
 
 		$request = Request::create('http://foo.bar/foo', 'GET');
@@ -132,7 +132,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->router->api(['version' => 'v1'], function()
 		{
-			$this->router->get('foo', function() { return 'bar'; });
+			$this->router->get('foo', function() { return ['message' => 'bar']; });
 		});
 
 		$request = InternalRequest::create('foo', 'GET');
@@ -143,7 +143,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 	public function testAddingRouteFallsThroughToRouterCollection()
 	{
-		$this->router->get('foo', function() { return 'bar'; });
+		$this->router->get('foo', function() { return ['message' => 'bar']; });
 		$this->assertCount(1, $this->router->getRoutes());
 	}
 
@@ -262,11 +262,11 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 	public function testRequestTargettingAnApiWithNoPrefixOrDomain()
 	{
-		$this->router->get('/', function() { return 'foo'; });
+		$this->router->get('/', function() { return ['message' => 'foo']; });
 
 		$this->router->api(['version' => 'v1'], function()
 		{
-			$this->router->get('foo', function() { return 'bar'; });
+			$this->router->get('foo', function() { return ['message' => 'bar']; });
 		});
 
 		$this->assertFalse($this->router->requestTargettingApi(Request::create('/', 'GET')));
@@ -277,12 +277,12 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
 		{
-			$this->router->get('foo', function() { return 'bar'; });
+			$this->router->get('foo', function() { return ['message' => 'bar']; });
 		});
 
 		$this->router->api(['version' => 'v2', 'prefix' => 'api'], function()
 		{
-			$this->router->get('bar', function() { return 'baz'; });
+			$this->router->get('bar', function() { return ['message' => 'baz']; });
 		});
 
 		$request = Request::create('api/bar', 'GET');
@@ -296,12 +296,12 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->router->api(['version' => 'v1.1', 'prefix' => 'api'], function()
 		{
-			$this->router->get('foo', function() { return 'bar'; });
+			$this->router->get('foo', function() { return ['message' => 'bar']; });
 		});
 
 		$this->router->api(['version' => 'v2.0.1', 'prefix' => 'api'], function()
 		{
-			$this->router->get('bar', function() { return 'baz'; });
+			$this->router->get('bar', function() { return ['message' => 'baz']; });
 		});
 
 		$request = Request::create('api/foo', 'GET');
@@ -320,12 +320,12 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->router->api(['version' => 'v1', 'prefix' => 'api'], function()
 		{
-			$this->router->get('foo', function() { return 'bar'; });
+			$this->router->get('foo', function() { return ['message' => 'bar']; });
 		});
 
 		$this->router->api(['version' => 'v2', 'prefix' => 'api'], function()
 		{
-			$this->router->get('foo', function() { return 'baz'; });
+			$this->router->get('foo', function() { return ['message' => 'baz']; });
 		});
 
 		$request = Request::create('api/foo', 'GET');

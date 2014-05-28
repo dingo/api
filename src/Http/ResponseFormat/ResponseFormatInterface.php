@@ -19,28 +19,20 @@ interface ResponseFormatInterface {
 	public function formatEloquentCollection($collection);
 
 	/**
-	 * Format a string.
+	 * Format other response type such as a string or integer.
 	 * 
-	 * @param  string  $string
+	 * @param  mixed  $content
 	 * @return string
 	 */
-	public function formatString($string);
+	public function formatOther($content);
 
 	/**
 	 * Format an array or instance implementing ArrayableInterface.
 	 * 
-	 * @param  \Illuminate\Support\Contracts\ArrayableInterface  $response
+	 * @param  array|\Illuminate\Support\Contracts\ArrayableInterface  $content
 	 * @return string
 	 */
-	public function formatArrayableInterface($response);
-
-	/**
-	 * Format an unknown type.
-	 * 
-	 * @param  mixed  $response
-	 * @return string
-	 */
-	public function formatUnknown($response);
+	public function formatArray($content);
 
 	/**
 	 * Get the response content type.

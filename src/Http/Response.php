@@ -42,51 +42,43 @@ class Response extends IlluminateResponse {
 	 */
 	public function morph($format = 'json')
 	{
-		$response = $this->getOriginalContent();
+		$content = $this->getOriginalContent();
 
-		if (static::$transformer->transformableResponse($response))
+		if (static::$transformer->transformableResponse($content))
 		{
-			$response = static::$transformer->transformResponse($response);
+			$content = static::$transformer->transformResponse($content);
 		}
 
 		$formatter = static::getFormatter($format);
 
-		// First we'll attempt to format the response if it's either an Eloquent
-		// model or an Eloquent collection.
-		if ($response instanceof EloquentModel)
+		// Set the "Content-Type" header of the response to that which
+		// is defined by the formatter being used.
+		$contentType = $this->headers->get('content-type');
+
+		$this->headers->set('content-type', $formatter->getContentType());
+
+		if ($content instanceof EloquentModel)
 		{
-			$response = $formatter->formatEloquentModel($response);
+			$content = $formatter->formatEloquentModel($content);
 		}
-		elseif ($response instanceof EloquentCollection)
+		elseif ($content instanceof EloquentCollection)
 		{
-			$response = $formatter->formatEloquentCollection($response);
+			$content = $formatter->formatEloquentCollection($content);
+		}
+		elseif (is_array($content) or $content instanceof ArrayableInterface)
+		{
+			$content = $formatter->formatArray($content);
 		}
 		else
 		{
-			// Next we'll attempt to format the response if it's a string,
-			// an array or an object implementing ArrayableInterface, or
-			// an unknown type.
-			if (is_string($response))
-			{
-				$response = $formatter->formatString($response);
-			}
-			elseif (is_array($response) or $response instanceof ArrayableInterface)
-			{
-				$response = $formatter->formatArrayableInterface($response);
-			}
-			else
-			{
-				$response = $formatter->formatUnknown($response);
-			}
-		}
+			$content = $formatter->formatOther($content);
 
-		// Set the "Content-Type" header of the response to that which
-		// is defined by the formatter being used.
-		$this->headers->set('content-type', $formatter->getContentType());
+			$this->headers->set('content-type', $contentType);
+		}
 
 		// Directly set the property because using setContent results in
 		// the original content also being updated.
-		$this->content = $response;
+		$this->content = $content;
 
 		return $this;
 	}

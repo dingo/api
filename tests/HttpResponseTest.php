@@ -40,9 +40,9 @@ class HttpResponseTest extends PHPUnit_Framework_TestCase {
 	}
 
 
-	public function testMorphingString()
+	public function testMorphingOther()
 	{
-		$this->formatter->shouldReceive('formatString')->once();
+		$this->formatter->shouldReceive('formatOther')->once();
 
 		(new Response('foo'))->morph();
 	}
@@ -50,17 +50,9 @@ class HttpResponseTest extends PHPUnit_Framework_TestCase {
 
 	public function testMorphingArrayableInterface()
 	{
-		$this->formatter->shouldReceive('formatArrayableInterface')->once()->andReturn('test');
+		$this->formatter->shouldReceive('formatArray')->once()->andReturn('test');
 
 		(new Response(['foo' => 'bar']))->morph();
-	}
-
-
-	public function testMorphingUnknownType()
-	{
-		$this->formatter->shouldReceive('formatUnknown')->once()->andReturn('test');
-
-		(new Response(1))->morph();
 	}
 
 

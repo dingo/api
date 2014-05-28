@@ -112,7 +112,7 @@ class HttpMiddlewareAuthenticationTest extends PHPUnit_Framework_TestCase {
 		$this->collection->shouldReceive('match')->once()->with($request)->andReturn($route);
 
 		$auth->shouldReceive('authenticate')->once()->with($request, $route)->andThrow($exception = new UnauthorizedHttpException(null, 'test'));
-		$this->router->shouldReceive('handleException')->once()->with($exception)->andReturn(new Response('test', 401));
+		$this->router->shouldReceive('handleException')->once()->with($exception)->andReturn(new Response(['message' => 'test'], 401));
 		$this->router->shouldReceive('parseAcceptHeader')->once()->with($request)->andReturn(['v1', 'json']);
 
 		Dingo\Api\Http\Response::setFormatters(['json' => new JsonResponseFormat]);

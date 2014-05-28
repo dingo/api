@@ -104,7 +104,7 @@ class RateLimit implements HttpKernelInterface {
 		{
 			list ($version, $format) = $this->router->parseAcceptHeader($request);
 
-			$response = (new Response($this->config['exceeded'], 403))->morph($format);
+			$response = (new Response(['message' => $this->config['exceeded']], 403))->morph($format);
 		}
 		else
 		{

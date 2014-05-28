@@ -36,43 +36,32 @@ class JsonResponseFormat implements ResponseFormatInterface {
 	}
 
 	/**
-	 * Format a string.
+	 * Format other response type such as a string or integer.
 	 * 
 	 * @param  string  $string
 	 * @return string
 	 */
-	public function formatString($string)
+	public function formatOther($content)
 	{
-		return $this->encode(['message' => $string]);
+		return $content;
 	}
 
 	/**
 	 * Format an array or instance implementing ArrayableInterface.
 	 * 
-	 * @param  \Illuminate\Support\Contracts\ArrayableInterface  $response
+	 * @param  array|\Illuminate\Support\Contracts\ArrayableInterface  $content
 	 * @return string
 	 */
-	public function formatArrayableInterface($response)
+	public function formatArray($content)
 	{
-		$response = $this->morphToArray($response);
+		$content = $this->morphToArray($content);
 
-		array_walk_recursive($response, function(&$value)
+		array_walk_recursive($content, function(&$value)
 		{
 			$value = $this->morphToArray($value);
 		});
 
-		return $this->encode($response);
-	}
-
-	/**
-	 * Format an unknown type.
-	 * 
-	 * @param  mixed  $response
-	 * @return string
-	 */
-	public function formatUnknown($response)
-	{
-		return $response;
+		return $this->encode($content);
 	}
 
 	/**

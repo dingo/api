@@ -50,7 +50,7 @@ class HttpResponseFormatJsonResponseFormatTest extends PHPUnit_Framework_TestCas
 	{
 		$response = with(new Response('foo'))->morph();
 
-		$this->assertEquals('{"message":"foo"}', $response->getContent());
+		$this->assertEquals('foo', $response->getContent());
 	}
 
 
