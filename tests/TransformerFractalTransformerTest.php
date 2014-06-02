@@ -10,8 +10,7 @@ class TransformerFractalTransformerTest extends PHPUnit_Framework_TestCase {
 		$this->fractal = new League\Fractal\Manager;
 		$this->container = m::mock('Illuminate\Container\Container');
 		$this->transformer = new Dingo\Api\Transformer\FractalTransformer($this->fractal);
-		$this->transformerFactory = new Dingo\Api\Transformer\Factory($this->container);
-		$this->transformerFactory->setTransformer($this->transformer);
+		$this->transformerFactory = new Dingo\Api\Transformer\Factory($this->container, $this->transformer);
 		$this->transformerFactory->setRequest(new Illuminate\Http\Request);
 	}
 

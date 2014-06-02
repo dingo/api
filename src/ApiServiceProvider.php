@@ -126,16 +126,9 @@ class ApiServiceProvider extends ServiceProvider {
 	{
 		$this->app['dingo.api.transformer'] = $this->app->share(function($app)
 		{
-			$factory = new Factory($app);
+			$transformer = call_user_func($app['config']['api::transformer'], $app);
 
-			if ($app['config']->has('api::transformer'))
-			{
-				$transformer = call_user_func($app['config']['api::transformer'], $app);
-
-				$factory->setTransformer($transformer);
-			}
-
-			return $factory;
+			return new Factory($app, $transformer);
 		});
 	}
 

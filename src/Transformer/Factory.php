@@ -33,11 +33,13 @@ class Factory {
 	 * Create a new transformer factory instance.
 	 * 
 	 * @param  \Illuminate\Container\Container  $container
+	 * @param  \Dingo\Api\Transformer\Transformer  $transformer
 	 * @return void
 	 */
-	public function __construct(Container $container)
+	public function __construct(Container $container, Transformer $transformer)
 	{
 		$this->container = $container;
+		$this->transformer = $transformer;
 	}
 
 	/**
@@ -205,19 +207,6 @@ class Factory {
 	}
 
 	/**
-	 * Set the transformer instance.
-	 * 
-	 * @param  \Dingo\Api\Transformer\Transformer  $transformer
-	 * @return \Dingo\Api\Transformer\Factory
-	 */
-	public function setTransformer(Transformer $transformer)
-	{
-		$this->transformer = $transformer;
-
-		return $this;
-	}
-
-	/**
 	 * Set the request instance on the transformer.
 	 * 
 	 * @param  \Illuminate\Http\Request  $request
@@ -231,6 +220,16 @@ class Factory {
 		}
 
 		$this->transformer->setRequest($request);
+	}
+
+	/**
+	 * Get the transformation layer.
+	 * 
+	 * @return Dingo\Api\Transformer\Transformer
+	 */
+	public function getTransformationLayer()
+	{
+		return $this->transformer;
 	}
 
 }

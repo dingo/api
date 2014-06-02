@@ -2,14 +2,13 @@
 
 use Mockery as m;
 
-class TransformerTest extends PHPUnit_Framework_TestCase {
+class TransformerFactoryTest extends PHPUnit_Framework_TestCase {
 
 
 	public function setUp()
 	{
-		$this->fractal = new League\Fractal\Manager;
 		$this->container = m::mock('Illuminate\Container\Container');
-		$this->transformerFactory = new Dingo\Api\Transformer\Factory($this->container);
+		$this->transformerFactory = new Dingo\Api\Transformer\Factory($this->container, m::mock('Dingo\Api\Transformer\Transformer'));
 	}
 
 
@@ -51,16 +50,6 @@ class TransformerTest extends PHPUnit_Framework_TestCase {
 	public function testNonexistentTransformerThrowsException()
 	{
 		$this->transformerFactory->transformResponse(new Foo);
-	}
-
-
-	/**
-	 * @expectedException \RuntimeException
-	 * @expectedExceptionMessage Request cannot be set when no transformer has been registered.
-	 */
-	public function testSettingRequestWithoutRegisteredTransformerThrowsException()
-	{
-		$this->transformerFactory->setRequest(new Illuminate\Http\Request);
 	}
 
 

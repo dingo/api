@@ -3,9 +3,11 @@
 use RuntimeException;
 use Dingo\Api\Transformer\Factory;
 use Illuminate\Support\MessageBag;
-use Illuminate\Support\Contracts\ArrayableInterface;
+use League\Fractal\Resource\Item as FractalItem;
 use Illuminate\Http\Response as IlluminateResponse;
+use Illuminate\Support\Contracts\ArrayableInterface;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
+use League\Fractal\Resource\Collection as FractalCollection;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 class Response extends IlluminateResponse {
@@ -36,7 +38,7 @@ class Response extends IlluminateResponse {
 	}
 
 	/**
-	 * Process the API response.
+	 * Morph the API response to the appropriate format.
 	 * 
 	 * @return \Dingo\Api\Http\Response
 	 */
@@ -52,7 +54,10 @@ class Response extends IlluminateResponse {
 		$formatter = static::getFormatter($format);
 
 		// Set the "Content-Type" header of the response to that which
-		// is defined by the formatter being used.
+		// is defined by the formatter being used. Before setting it
+		// we'll get the original content type in case we need to
+		// resort to that because of a response that is unable
+		// to be formatted.
 		$contentType = $this->headers->get('content-type');
 
 		$this->headers->set('content-type', $formatter->getContentType());
