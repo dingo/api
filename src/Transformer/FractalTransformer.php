@@ -63,12 +63,23 @@ class FractalTransformer extends Transformer {
 		// collection resource.
 		if ($response instanceof IlluminatePaginator)
 		{
-			$paginator = new IlluminatePaginatorAdapter($response);
+			$paginator = $this->createPaginatorAdapter($response);
 
 			$resource->setPaginator($paginator);
 		}
 
 		return $this->fractal->createData($resource)->toArray();
+	}
+
+	/**
+	 * Create the Fractal paginator adapter.
+	 * 
+	 * @param  \Illuminate\Pagination\Paginator  $paginator
+	 * @return \League\Fractal\Pagination\IlluminatePaginatorAdapter
+	 */
+	protected function createPaginatorAdapter(IlluminatePaginator $paginator)
+	{
+		return new IlluminatePaginatorAdapter($paginator);
 	}
 
 	/**
@@ -98,6 +109,16 @@ class FractalTransformer extends Transformer {
 		$includes = array_filter(explode($this->includeSeparator, $this->request->get($this->includeKey)));
 
 		$this->fractal->parseIncludes($includes);
+	}
+
+	/**
+	 * Get the underlying Fractal instance.
+	 * 
+	 * @return \League\Fractal\Manager
+	 */
+	public function getFractal()
+	{
+		return $this->fractal;
 	}
 
 }
