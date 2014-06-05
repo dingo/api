@@ -2,9 +2,11 @@
 
 use Illuminate\Container\Container;
 use League\Fractal\Manager as Fractal;
+use League\Fractal\Resource\ResourceInterface as FractalResourceInterface;
 use League\Fractal\Resource\Item as FractalItem;
 use Illuminate\Http\Response as IlluminateResponse;
 use League\Fractal\Resource\Collection as FractalCollection;
+use League\Fractal\Pagination\CursorInterface as FractalCursorInterface;
 use League\Fractal\Pagination\PaginatorInterface as FractalPaginatorInterface;
 
 class ResponseBuilder {
@@ -15,6 +17,13 @@ class ResponseBuilder {
 	 * @var \Illuminate\Container\Container
 	 */
 	protected $container;
+
+	/**
+	 * The HTTP response headers.
+	 * 
+	 * @var array
+	 */
+	protected $headers = [];
 
 	/**
 	 * The HTTP response status code.
@@ -39,14 +48,19 @@ class ResponseBuilder {
 	 * 
 	 * @param  array|object  $collection
 	 * @param  object  $transformer
-	 * @param  array  $headers
+	 * @param  \League\Fractal\Pagination\CursorInterface  $cursor
 	 * @return \Illuminate\Http\Response
 	 */
-	public function withCollection($collection, $transformer, array $headers = [])
+	public function withCollection($collection, $transformer, FractalCursorInterface $cursor = null)
 	{
 		$resource = new FractalCollection($collection, $transformer);
 
-		return new IlluminateResponse($this->resolveFractal()->createData($resource)->toArray(), $this->statusCode, $headers);
+		if (! is_null($cursor))
+		{
+			$resource->setCursor($cursor);
+		}
+
+		return $this->build($resource);
 	}
 
 	/**
@@ -54,14 +68,13 @@ class ResponseBuilder {
 	 * 
 	 * @param  array|object  $item
 	 * @param  object  $transformer
-	 * @param  array  $headers
 	 * @return \Illuminate\Http\Response
 	 */
-	public function withItem($item, $transformer, array $headers = [])
+	public function withItem($item, $transformer)
 	{
 		$resource = new FractalItem($item, $transformer);
 
-		return new IlluminateResponse($this->resolveFractal()->createData($resource)->toArray(), $this->statusCode, $headers);
+		return $this->build($resource);
 	}
 
 	/**
@@ -69,28 +82,56 @@ class ResponseBuilder {
 	 * 
 	 * @param  \League\Fractal\Pagination\PaginatorInterface  $paginator
 	 * @param  object  $transformer
-	 * @param  array  $headers
 	 * @return \Illuminate\Http\Response
 	 */
-	public function withPaginator(FractalPaginatorInterface $paginator, $transformer, array $headers = [])
+	public function withPaginator(FractalPaginatorInterface $paginator, $transformer)
 	{
 		$resource = new FractalCollection($paginator->getCollection(), $transformer);
 
 		$resource->setPaginator($paginator);
 
-		return new IlluminateResponse($this->resolveFractal()->createData($resource)->toArray(), $this->statusCode, $headers);
+		return $this->build($resource);
 	}
 
 	/**
 	 * Return an array response.
 	 * 
 	 * @param  array  $array
-	 * @param  array  $headers
 	 * @return \Illuminate\Http\Response
 	 */
-	public function withArray(array $array, array $headers = [])
+	public function withArray(array $array)
 	{
-		return new IlluminateResponse($array, $this->statusCode, $headers);
+		return $this->build($array);
+	}
+
+	/**
+	 * Return an array response.
+	 * 
+	 * @param  array|\League\Fractal\Resource\ResourceInterface  $data
+	 * @return \Illuminate\Http\Response
+	 */
+	protected function build($data)
+	{
+		if ($data instanceof FractalResourceInterface)
+		{
+			$data = $this->resolveFractal()->createData($data)->toArray();
+		}
+
+		return new IlluminateResponse($data, $this->statusCode, $this->headers);
+	}
+
+	/**
+	 * Add a header to the response
+	 * 
+	 * @param  string  $headerName
+	 * @param  string  $headerValue
+	 * @return \Dingo\Api\Http\ResponseBuilder
+	 */
+	public function addHeader($headerName, $headerValue)
+	{
+		$this->headers[$headerName] = $headerValue;
+
+		return $this;
 	}
 
 	/**
