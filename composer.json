@@ -15,7 +15,6 @@
         "league/fractal": "0.8.*"
     },
     "require-dev": {
-        "dingo/oauth2-server-laravel": "0.2.*",
         "lucadegasperi/oauth2-server-laravel": "1.0.*",
         "illuminate/routing": "~4.1",
         "illuminate/events": "~4.1",
@@ -26,7 +25,6 @@
         "mockery/mockery": "~0.9"
     },
     "suggest": {
-        "dingo/oauth2-server-laravel": "Use the Dingo OAuth 2.0 server to protect your API.",
         "lucadegasperi/oauth2-server-laravel": "Use the League OAuth 2.0 server to protect your API."
     },
     "autoload": {
