@@ -24,7 +24,7 @@ class HttpMiddlewareAuthenticationTest extends PHPUnit_Framework_TestCase {
 		$this->router->shouldReceive('requestTargettingApi')->andReturn(true);
 		$this->middleware = new Authentication($this->app, $this->container);
 
-		Dingo\Api\Http\Response::setTransformer(m::mock('Dingo\Api\Transformer\Factory')->shouldReceive('transformableResponse')->andReturn(false)->getMock());
+		Dingo\Api\Http\Response::setTransformer(m::mock('Dingo\Api\Transformer\Transformer')->shouldReceive('transformableResponse')->andReturn(false)->getMock());
 	}
 
 

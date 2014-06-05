@@ -28,7 +28,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase {
 		$this->dispatcher = new Dispatcher(new Request, new UrlGenerator(new RouteCollection, new Request), $this->router, $this->auth);
 
 		Response::setFormatters(['json' => new JsonResponseFormat]);
-		Response::setTransformer(m::mock('Dingo\Api\Transformer\Factory')->shouldReceive('transformableResponse')->andReturn(false)->getMock()->shouldReceive('setRequest')->getMock());
+		Response::setTransformer(m::mock('Dingo\Api\Transformer\Transformer')->shouldReceive('transformableResponse')->andReturn(false)->getMock()->shouldReceive('setRequest')->getMock());
 	}
 
 

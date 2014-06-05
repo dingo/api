@@ -4,9 +4,9 @@ use RuntimeException;
 use Dingo\Api\Auth\Shield;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
-use Dingo\Api\Transformer\Factory;
 use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Console\ApiRoutesCommand;
+use Dingo\Api\Transformer\FractalTransformer;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class ApiServiceProvider extends ServiceProvider {
@@ -126,9 +126,11 @@ class ApiServiceProvider extends ServiceProvider {
 	{
 		$this->app['dingo.api.transformer'] = $this->app->share(function($app)
 		{
-			$transformer = call_user_func($app['config']['api::transformer'], $app);
+			$transformer = call_user_func($app['config']->get('api::transformer'), $app);
 
-			return new Factory($app, $transformer);
+			$transformer->setContainer($app);
+
+			return $transformer;
 		});
 	}
 

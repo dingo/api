@@ -39,7 +39,7 @@ class API extends Facade {
 	 */
 	public static function transform($class, $transformer)
 	{
-		return static::$app['dingo.api.transformer']->transform($class, $transformer);
+		return static::$app['dingo.api.transformer']->registerBinding($class, $transformer);
 	}
 
 	/**

@@ -1,8 +1,8 @@
 <?php namespace Dingo\Api\Http;
 
 use RuntimeException;
-use Dingo\Api\Transformer\Factory;
 use Illuminate\Support\MessageBag;
+use Dingo\Api\Transformer\Transformer;
 use League\Fractal\Resource\Item as FractalItem;
 use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Support\Contracts\ArrayableInterface;
@@ -20,9 +20,9 @@ class Response extends IlluminateResponse {
 	protected static $formatters = [];
 
 	/**
-	 * Transformer factory instance.
+	 * Transformer instance.
 	 * 
-	 * @var \Dingo\Api\Transformer\Factory
+	 * @var \Dingo\Api\Transformer\Transformer
 	 */
 	protected static $transformer;
 
@@ -48,7 +48,7 @@ class Response extends IlluminateResponse {
 
 		if (static::$transformer->transformableResponse($content))
 		{
-			$content = static::$transformer->transformResponse($content);
+			$content = static::$transformer->transform($content);
 		}
 
 		$formatter = static::getFormatter($format);
@@ -117,20 +117,20 @@ class Response extends IlluminateResponse {
 	}
 
 	/**
-	 * Set the transformer factory instance.
+	 * Set the transformer instance.
 	 * 
-	 * @param  \Dingo\Api\Transformer\Factory  $transformer
+	 * @param  \Dingo\Api\Transformer\Transformer  $transformer
 	 * @return void
 	 */
-	public static function setTransformer(Factory $transformer)
+	public static function setTransformer(Transformer $transformer)
 	{
 		static::$transformer = $transformer;
 	}
 
 	/**
-	 * Get the transformer factory instance.
+	 * Get the transformer instance.
 	 * 
-	 * @return \Dingo\Api\Transformer\Factory
+	 * @return \Dingo\Api\Transformer\Transformer
 	 */
 	public static function getTransformer()
 	{

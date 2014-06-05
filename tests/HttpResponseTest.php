@@ -12,7 +12,7 @@ class HttpResponseTest extends PHPUnit_Framework_TestCase {
 		$this->formatter->shouldReceive('getContentType')->andReturn('foo');
 		
 		Response::setFormatters(['json' => $this->formatter]);
-		Response::setTransformer(m::mock('Dingo\Api\Transformer\Factory')->shouldReceive('transformableResponse')->andReturn(false)->getMock());
+		Response::setTransformer(m::mock('Dingo\Api\Transformer\Transformer')->shouldReceive('transformableResponse')->andReturn(false)->getMock());
 	}
 
 

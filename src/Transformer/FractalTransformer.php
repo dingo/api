@@ -47,9 +47,10 @@ class FractalTransformer extends Transformer {
 	}
 
 	/**
-	 * Transform a response with a registered transformer.
+	 * Transform a response with a transformer.
 	 * 
 	 * @param  string|object  $response
+	 * @param  object  $transformer
 	 * @return array
 	 */
 	public function transformResponse($response, $transformer)
