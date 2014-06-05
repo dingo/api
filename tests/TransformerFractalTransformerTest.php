@@ -73,9 +73,11 @@ class TransformerFractalTransformerTest extends PHPUnit_Framework_TestCase {
 
 		$paginator = m::mock('Illuminate\Pagination\Paginator');
 		$environment = m::mock('Illuminate\Pagination\Environment');
+		$factory = m::mock('Illuminate\Pagination\Factory');
 
 		$paginator->shouldReceive('first')->once()->andReturn(new Foo);
-		$paginator->shouldReceive('getEnvironment')->once()->andReturn($environment);
+		$paginator->shouldReceive('getEnvironment')->andReturn($environment);
+		$paginator->shouldReceive('getFactory')->andReturn($factory);
 		$paginator->shouldReceive('getItems')->once()->andReturn($items = [
 			new Foo,
 			new Foo
@@ -84,9 +86,13 @@ class TransformerFractalTransformerTest extends PHPUnit_Framework_TestCase {
 		$paginator->shouldReceive('getPerPage')->once()->andReturn(1);
 		$paginator->shouldReceive('getIterator')->once()->andReturn(new ArrayIterator($items));
 
-		$environment->shouldReceive('getCurrentPage')->once()->andReturn(1);
-		$environment->shouldReceive('getPageName')->once()->andReturn('page');
-		$environment->shouldReceive('getCurrentUrl')->once()->andReturn('http://foo.bar/');
+		$environment->shouldReceive('getCurrentPage')->andReturn(1);
+		$environment->shouldReceive('getPageName')->andReturn('page');
+		$environment->shouldReceive('getCurrentUrl')->andReturn('http://foo.bar/');
+
+		$factory->shouldReceive('getCurrentPage')->andReturn(1);
+		$factory->shouldReceive('getPageName')->andReturn('page');
+		$factory->shouldReceive('getCurrentUrl')->andReturn('http://foo.bar/');
 
 		$this->assertEquals([
 			'data' => [

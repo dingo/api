@@ -214,7 +214,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 
 		$response = $this->router->handleException($exception);
 		$this->assertInstanceOf('Dingo\Api\Http\Response', $response);
-		$this->assertEquals('{"message":"testing","errors":{}}', $response->getContent());
+		$this->assertEquals('{"message":"testing","errors":{"foo":["bar"]}}', $response->getContent());
 		$this->assertInstanceOf('Illuminate\Support\MessageBag', $response->getOriginalContent()['errors']);
 		$this->assertEquals(422, $response->getStatusCode());
 	}
