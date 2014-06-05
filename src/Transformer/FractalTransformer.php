@@ -55,7 +55,7 @@ class FractalTransformer extends Transformer {
 	 */
 	public function transformResponse($response, $transformer)
 	{
-		$this->parseIncludes();
+		$this->parseFractalIncludes();
 
 		$resource = $this->createResource($response, $transformer);
 
@@ -105,7 +105,7 @@ class FractalTransformer extends Transformer {
 	 * 
 	 * @return void
 	 */
-	protected function parseIncludes()
+	public function parseFractalIncludes()
 	{
 		$includes = array_filter(explode($this->includeSeparator, $this->request->get($this->includeKey)));
 

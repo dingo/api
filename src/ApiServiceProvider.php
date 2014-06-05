@@ -2,10 +2,12 @@
 
 use RuntimeException;
 use Dingo\Api\Auth\Shield;
-use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
+use Dingo\Api\Http\ResponseBuilder;
 use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Console\ApiRoutesCommand;
+use Illuminate\Support\Facades\Response;
+use Dingo\Api\Http\Response as ApiResponse;
 use Dingo\Api\Transformer\FractalTransformer;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
@@ -23,10 +25,15 @@ class ApiServiceProvider extends ServiceProvider {
 		$this->app['Dingo\Api\Dispatcher'] = function($app) { return $app['dingo.api.dispatcher']; };
 		$this->app['Dingo\Api\Auth\Shield'] = function($app) { return $app['dingo.api.auth']; };
 
+		Response::macro('api', function()
+		{
+			return new ResponseBuilder($this->app);
+		});
+
 		$formats = $this->prepareResponseFormats();
 
-		Response::setFormatters($formats);
-		Response::setTransformer($this->app['dingo.api.transformer']);
+		ApiResponse::setFormatters($formats);
+		ApiResponse::setTransformer($this->app['dingo.api.transformer']);
 	}
 
 	/**
