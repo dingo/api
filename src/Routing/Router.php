@@ -17,84 +17,84 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * The API route collections.
-	 * 
+	 *
 	 * @param array
 	 */
 	protected $api = [];
 
 	/**
 	 * The default API version.
-	 * 
+	 *
 	 * @var string
 	 */
 	protected $defaultVersion = 'v1';
 
 	/**
 	 * The default API prefix.
-	 * 
+	 *
 	 * @var string
 	 */
 	protected $defaultPrefix;
 
 	/**
 	 * The default API domain.
-	 * 
+	 *
 	 * @var string
 	 */
 	protected $defaultDomain;
 
 	/**
 	 * The default API format.
-	 * 
+	 *
 	 * @var string
 	 */
 	protected $defaultFormat = 'json';
 
 	/**
 	 * The API vendor.
-	 * 
+	 *
 	 * @var string
 	 */
 	protected $vendor;
 
 	/**
 	 * Requested API version.
-	 * 
+	 *
 	 * @var string
 	 */
 	protected $requestedVersion;
 
 	/**
 	 * Requested format.
-	 * 
+	 *
 	 * @var string
 	 */
 	protected $requestedFormat;
 
 	/**
 	 * Exception handler instance.
-	 * 
+	 *
 	 * @var \Dingo\Api\ExceptionHandler
 	 */
 	protected $exceptionHandler;
 
 	/**
 	 * Controller reviser instance.
-	 * 
+	 *
 	 * @var \Dingo\Api\Routing\ControllerReviser
 	 */
 	protected $reviser;
 
 	/**
 	 * Array of requests targetting the API.
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $requestsTargettingApi = [];
 
 	/**
 	 * Register an API group.
-	 * 
+	 *
 	 * @param  array  $options
 	 * @param  callable  $callback
 	 * @return void
@@ -127,14 +127,14 @@ class Router extends IlluminateRouter {
 				$this->api[$version] = new ApiRouteCollection($version, array_except($options, 'version'));
 			}
 		}
-		
+
 		$this->group($options, $callback);
 	}
 
 	/**
 	 * Dispatch the request to the application and return either a regular response
 	 * or an API response.
-	 * 
+	 *
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return \Illuminate\Http\Response|\Dingo\Api\Http\Response
 	 */
@@ -171,6 +171,8 @@ class Router extends IlluminateRouter {
 
 		if ($this->requestTargettingApi($request))
 		{
+			Response::getFormatter($this->requestedFormat)->setRequest($request);
+
 			$response = Response::makeFromExisting($response)->morph($this->requestedFormat);
 		}
 
@@ -221,7 +223,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Add a new route to either the routers collection or an API collection.
-	 * 
+	 *
 	 * @param  array|string  $methods
 	 * @param  string  $uri
 	 * @param  callable|array|string  $action
@@ -241,7 +243,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Add a new route to an API collection.
-	 * 
+	 *
 	 * @param  \Illuminate\Routing\Route  $route
 	 * @return \Illuminate\Routing\Route
 	 */
@@ -271,7 +273,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Find a route either from the routers collection or the API collection.
-	 * 
+	 *
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return \Illuminate\Routing\Route
 	 */
@@ -291,7 +293,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Determine if the current request is targetting an API.
-	 * 
+	 *
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return bool
 	 */
@@ -328,7 +330,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Parse a requests accept header.
-	 * 
+	 *
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return array
 	 */
@@ -344,7 +346,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Get a matching API route collection from the request.
-	 * 
+	 *
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return null|\Dingo\Api\Routing\ApiRouteCollection
 	 */
@@ -368,7 +370,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Get an API route collection for a given version.
-	 * 
+	 *
 	 * @param  string  $version
 	 * @return \Dingo\Api\Routing\ApiRouteCollection
 	 */
@@ -384,7 +386,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Determine if a route is targetting the API.
-	 * 
+	 *
 	 * @param  \Illuminate\Routing\Route
 	 * @return bool
 	 */
@@ -397,7 +399,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Set the exception handler instance.
-	 * 
+	 *
 	 * @param  \Dingo\Api\ExceptionHandler
 	 * @return void
 	 */
@@ -408,7 +410,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Get the exception handler instance.
-	 * 
+	 *
 	 * @return \Dingo\Api\ExceptionHandler
 	 */
 	public function getExceptionHandler()
@@ -418,7 +420,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Set the default API version.
-	 * 
+	 *
 	 * @param  string  $defaultVersion
 	 * @return void
 	 */
@@ -429,7 +431,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Get the default API version.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getDefaultVersion()
@@ -439,7 +441,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Set the default API prefix.
-	 * 
+	 *
 	 * @param  string  $defaultPrefix
 	 * @return void
 	 */
@@ -450,7 +452,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Get the default API prefix.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getDefaultPrefix()
@@ -460,7 +462,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Set the default API domain.
-	 * 
+	 *
 	 * @param  string  $defaultDomain
 	 * @return void
 	 */
@@ -471,7 +473,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Get the default API domain.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getDefaultDomain()
@@ -481,7 +483,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Set the API vendor.
-	 * 
+	 *
 	 * @param  string  $vendor
 	 * @return void
 	 */
@@ -492,7 +494,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Get the API vendor.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getVendor()
@@ -502,7 +504,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Set the default API format.
-	 * 
+	 *
 	 * @param  string  $defaultformat
 	 * @return void
 	 */
@@ -513,7 +515,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Get the default API format.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getDefaultFormat()
@@ -523,7 +525,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Get the requested version.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getRequestedVersion()
@@ -533,7 +535,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Get the requested format.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getRequestedFormat()
@@ -553,7 +555,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Set the controller reviser instance.
-	 * 
+	 *
 	 * @param  \Dingo\Api\Routing\ControllerReviser  $reviser
 	 * @return void
 	 */
@@ -564,7 +566,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Get the controller reviser instance.
-	 * 
+	 *
 	 * @return \Dingo\Api\Routing\ControllerReviser
 	 */
 	public function getControllerReviser()
@@ -574,7 +576,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Set the current request.
-	 * 
+	 *
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return void
 	 */
@@ -585,7 +587,7 @@ class Router extends IlluminateRouter {
 
 	/**
 	 * Set the current route.
-	 * 
+	 *
 	 * @param  \Illuminate\Routing\Route  $route
 	 * @return void
 	 */
