@@ -1,7 +1,9 @@
-<?php namespace Dingo\Api\Http;
+<?php
+
+namespace Dingo\Api\Http;
 
 use Illuminate\Http\Request;
 
-class InternalRequest extends Request {
-	
+class InternalRequest extends Request
+{
 }

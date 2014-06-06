@@ -37,53 +37,31 @@ class JsonResponseFormat extends ResponseFormat
     }
 
     /**
-     * Format a string.
+     * Format other response type such as a string or integer.
      *
      * @param  string  $string
      * @return string
      */
-    public function formatString($string)
+    public function formatOther($content)
     {
-        return $this->encode(['message' => $string]);
+        return $content;
     }
 
     /**
      * Format an array or instance implementing ArrayableInterface.
      *
-     * @param  \Illuminate\Support\Contracts\ArrayableInterface  $response
+     * @param  array|\Illuminate\Support\Contracts\ArrayableInterface  $content
      * @return string
      */
-    public function formatArrayableInterface($response)
+    public function formatArray($content)
     {
-        $response = $this->morphToArray($response);
+        $content = $this->morphToArray($content);
 
-        array_walk_recursive($response, function (&$value) {
+        array_walk_recursive($content, function (&$value) {
             $value = $this->morphToArray($value);
         });
 
-        return $this->encode($response);
-    }
-
-    /**
-     * Format an instance implementing JsonableInterface.
-     *
-     * @param  \Illuminate\Support\Contracts\JsonableInterface  $response
-     * @return string
-     */
-    public function formatJsonableInterface($response)
-    {
-        return $response->toJson();
-    }
-
-    /**
-     * Format an unknown type.
-     *
-     * @param  mixed  $response
-     * @return string
-     */
-    public function formatUnknown($response)
-    {
-        return $this->encode($response);
+        return $this->encode($content);
     }
 
     /**
@@ -99,7 +77,7 @@ class JsonResponseFormat extends ResponseFormat
     /**
      * Morph a value to an array.
      *
-     * @param  array|\Illuminate\Support\Contracts\ArrayableInterface
+     * @param  array|\Illuminate\Support\Contracts\ArrayableInterface  $value
      * @return array
      */
     protected function morphToArray($value)

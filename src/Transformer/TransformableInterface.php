@@ -1,12 +1,13 @@
-<?php namespace Dingo\Api\Transformer;
+<?php
 
-interface TransformableInterface {
+namespace Dingo\Api\Transformer;
 
-	/**
-	 * Get the transformer instance.
-	 * 
-	 * @return mixed
-	 */
-	public function getTransformer();
-
+interface TransformableInterface
+{
+    /**
+     * Get the transformer instance.
+     *
+     * @return mixed
+     */
+    public function getTransformer();
 }
