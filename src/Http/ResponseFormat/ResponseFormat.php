@@ -41,36 +41,20 @@ abstract class ResponseFormat
     abstract public function formatEloquentCollection($collection);
 
     /**
-     * Format a string.
-     *
-     * @param  string  $string
-     * @return string
-     */
-    abstract public function formatString($string);
-
-    /**
      * Format an array or instance implementing ArrayableInterface.
      *
-     * @param  \Illuminate\Support\Contracts\ArrayableInterface  $response
+     * @param  array|\Illuminate\Support\Contracts\ArrayableInterface  $content
      * @return string
      */
-    abstract public function formatArrayableInterface($response);
+    abstract public function formatArray($content);
 
     /**
-     * Format an instance implementing JsonableInterface.
+     * Format other response type such as a string or integer.
      *
-     * @param  \Illuminate\Support\Contracts\JsonableInterface  $response
+     * @param  string  $content
      * @return string
      */
-    abstract public function formatJsonableInterface($response);
-
-    /**
-     * Format an unknown type.
-     *
-     * @param  mixed  $response
-     * @return string
-     */
-    abstract public function formatUnknown($response);
+    abstract public function formatOther($content);
 
     /**
      * Get the response content type.
