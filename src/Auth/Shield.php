@@ -156,7 +156,15 @@ class Shield
      */
     public function check()
     {
-        return ! is_null($this->user());
+        try
+        {
+            return ! is_null($this->user());
+        }
+        
+        catch (\Exception $e)
+        {
+            return false;
+        }
     }
 
     /**
