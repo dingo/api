@@ -6,10 +6,12 @@ use RuntimeException;
 use Dingo\Api\Auth\Shield;
 use Dingo\Api\Routing\Router;
 use Dingo\Api\Http\ResponseBuilder;
+use League\Fractal\Manager as Fractal;
 use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Console\ApiRoutesCommand;
 use Illuminate\Support\Facades\Response;
 use Dingo\Api\Http\Response as ApiResponse;
+use Dingo\Api\Transformer\FractalTransformer;
 
 class ApiServiceProvider extends ServiceProvider
 {
@@ -22,29 +24,56 @@ class ApiServiceProvider extends ServiceProvider
     {
         $this->package('dingo/api', 'api', __DIR__);
 
+        $this->bootContainerBindings();
+        $this->bootResponseMacro();
+        $this->bootResponseFormats();
+        $this->bootResponseTransformer();
+    }
+
+    /**
+     * Boot the container bindings.
+     * 
+     * @return void
+     */
+    protected function bootContainerBindings()
+    {
         $this->app['Dingo\Api\Dispatcher'] = function ($app) {
             return $app['dingo.api.dispatcher'];
         };
+
         $this->app['Dingo\Api\Auth\Shield'] = function ($app) {
             return $app['dingo.api.auth'];
         };
+    }
 
+    /**
+     * Boot the response facade macro.
+     * 
+     * @return void
+     */
+    protected function bootResponseMacro()
+    {
         Response::macro('api', function () {
-            return new ResponseBuilder($this->app);
+            return $this->app['dingo.api.response'];
         });
+    }
 
-        $formats = $this->prepareResponseFormats();
-
-        ApiResponse::setFormatters($formats);
+    /**
+     * Boot the response transformer.
+     * 
+     * @return void
+     */
+    protected function bootResponseTransformer()
+    {
         ApiResponse::setTransformer($this->app['dingo.api.transformer']);
     }
 
     /**
-     * Prepare the response formats.
+     * Boot the response formats.
      *
      * @return array
      */
-    protected function prepareResponseFormats()
+    protected function bootResponseFormats()
     {
         $formats = [];
 
@@ -60,7 +89,7 @@ class ApiServiceProvider extends ServiceProvider
             throw new RuntimeException('No registered response formats.');
         }
 
-        return $formats;
+        ApiResponse::setFormatters($formats);
     }
 
     /**
@@ -72,12 +101,22 @@ class ApiServiceProvider extends ServiceProvider
     {
         $this->registerDispatcher();
         $this->registerRouter();
+        $this->registerResponseBuilder();
         $this->registerTransformer();
         $this->registerExceptionHandler();
         $this->registerAuthentication();
         $this->registerMiddlewares();
         $this->registerCommands();
+        $this->registerBootingEvent();
+    }
 
+    /**
+     * Register the booting event.
+     * 
+     * @return void
+     */
+    protected function registerBootingEvent()
+    {
         $this->app->booting(function ($app) {
             $router = $app['router'];
 
@@ -105,6 +144,24 @@ class ApiServiceProvider extends ServiceProvider
             }
 
             return $router;
+        });
+    }
+
+    /**
+     * Register the API response builder.
+     * 
+     * @return void
+     */
+    protected function registerResponseBuilder()
+    {
+        $this->app['dingo.api.response'] = $this->app->share(function ($app) {
+            $transformer = $app['dingo.api.transformer'];
+
+            if (! $transformer instanceof FractalTransformer) {
+                $transformer = new FractalTransformer(new Fractal);
+            }
+
+            return new ResponseBuilder($transformer);
         });
     }
 
