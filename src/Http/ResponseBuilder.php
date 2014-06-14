@@ -106,7 +106,26 @@ class ResponseBuilder
     }
 
     /**
-     * Return an array response.
+     * Return an error response.
+     * 
+     * @param  string|array  $error
+     * @param  int  $code
+     * @return \Illuminate\Http\Response
+     */
+    public function withError($error, $code)
+    {
+        if (! is_array($error)) {
+            $error = [
+                'error' => $error,
+                'code'  => $code
+            ];
+        }
+
+        return $this->setStatusCode($code)->withArray($error);
+    }
+
+    /**
+     * Build the response.
      *
      * @param  array|\League\Fractal\Resource\ResourceInterface  $data
      * @return \Illuminate\Http\Response
@@ -123,15 +142,51 @@ class ResponseBuilder
     /**
      * Add a header to the response
      *
-     * @param  string  $headerName
-     * @param  string  $headerValue
+     * @param  string  $name
+     * @param  string  $value
      * @return \Dingo\Api\Http\ResponseBuilder
      */
-    public function addHeader($headerName, $headerValue)
+    public function addHeader($name, $value)
     {
-        $this->headers[$headerName] = $headerValue;
+        $this->headers[$name] = $value;
 
         return $this;
+    }
+
+    /**
+     * Add an array of headers.
+     * 
+     * @param  array  $headers
+     * @return \Dingo\Api\Http\ResponseBuilder
+     */
+    public function addHeaders(array $headers)
+    {
+        $this->headers = array_merge($this->headers, $headers);
+
+        return $this;
+    }
+
+    /**
+     * Add a header to the response.
+     * 
+     * @param  string  $name
+     * @param  string  $value
+     * @return \Dingo\Api\Http\ResponseBuilder
+     */
+    public function header($name, $value)
+    {
+        return $this->addHeader($name, $value);
+    }
+
+    /**
+     * Add an array of headers.
+     * 
+     * @param  array  $headers
+     * @return \Dingo\Api\Http\ResponseBuilder
+     */
+    public function headers(array $headers)
+    {
+        return $this->addHeaders($headers);
     }
 
     /**
@@ -145,6 +200,61 @@ class ResponseBuilder
         $this->statusCode = $statusCode;
 
         return $this;
+    }
+
+    /**
+     * Return a 404 not found error.
+     * 
+     * @param  string|array  $message
+     * @return \Illuminate\Http\Response
+     */
+    public function errorNotFound($message = 'Not Found')
+    {
+        return $this->withError($message, 404);
+    }
+
+    /**
+     * Return a 400 bad request error.
+     * 
+     * @param  string|array  $message
+     * @return \Illuminate\Http\Response
+     */
+    public function errorBadRequest($message = 'Bad Request')
+    {
+        return $this->withError($message, 400);
+    }
+
+    /**
+     * Return a 403 forbidden error.
+     * 
+     * @param  string|array  $message
+     * @return \Illuminate\Http\Response
+     */
+    public function errorForbidden($message = 'Forbidden')
+    {
+        return $this->withError($message, 403);
+    }
+
+    /**
+     * Return a 500 internal server error.
+     * 
+     * @param  string|array  $message
+     * @return \Illuminate\Http\Response
+     */
+    public function errorInternal($message = 'Internal Error')
+    {
+        return $this->withError($message, 500);
+    }
+
+    /**
+     * Return a 401 unauthorized error.
+     * 
+     * @param  string|array  $message
+     * @return \Illuminate\Http\Response
+     */
+    public function errorUnauthorized($message = 'Unauthorized')
+    {
+        return $this->withError($message, 401);
     }
 
     /**
