@@ -9,7 +9,7 @@ use Illuminate\Container\Container;
 use Dingo\Api\Routing\ControllerReviser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class Authentication implements HttpKernelInterface
@@ -95,13 +95,10 @@ class Authentication implements HttpKernelInterface
                 if ($this->routeIsProtected($route)) {
                     $response = $this->authenticate($request, $route);
                 }
-            } catch (NotFoundHttpException $exception) {
-                // If we catch a not found exception it's usually because the
-                // API is operating without a prefix so a collection is found
-                // but a route does not exist in that collection. We'll just
-                // ignore this and let the wrapping kernel do its thing.
+            } catch (HttpExceptionInterface $exception) {
+                // If we catch an HTTP exception then we'll simply let
+                // the wrapping kernel do its thing.
             }
-
         }
 
         return $response ?: $this->app->handle($request, $type, $catch);

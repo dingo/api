@@ -14,6 +14,7 @@ use Dingo\Api\Exception\ResourceException;
 use Illuminate\Routing\Router as IlluminateRouter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 class Router extends IlluminateRouter
 {
@@ -286,17 +287,20 @@ class Router extends IlluminateRouter
             return $this->requestsTargettingApi[$key];
         }
 
-        if ($collection = $this->getApiRouteCollectionFromRequest($request)) {
-            try {
-                $collection->match($request);
+        $collection = $this->getApiRouteCollectionFromRequest($request) ?: $this->getDefaultApiRouteCollection();
 
-                return $this->requestsTargettingApi[$key] = true;
-            } catch (NotFoundHttpException $exception) {
-                // No matching route so the request is not targetting API.
-            }
+        try {
+            $collection->match($request);
+        } catch (NotFoundHttpException $exception) {
+            return $this->requestsTargettingApi[$key] = false;
+        } catch (MethodNotAllowedHttpException $exception) {
+            // If a method is not allowed then we can say that a route was matched
+            // so the request is still targetting the API. This allows developers
+            // to provide better error responses when a client sends a bad
+            // request.
         }
 
-        return $this->requestsTargettingApi[$key] = false;
+        return $this->requestsTargettingApi[$key] = true;
     }
 
     /**
@@ -322,18 +326,20 @@ class Router extends IlluminateRouter
      */
     public function getApiRouteCollectionFromRequest(Request $request)
     {
-        $collection = array_first($this->api, function ($key, $collection) use ($request) {
+        return array_first($this->api, function ($key, $collection) use ($request) {
             return $collection->matchesRequest($request);
         });
+    }
 
-        // If we don't initially find a collection then we'll grab the default
-        // version collection instead. This is a sort of graceful fallback
-        // and allows viewing of the latest API version in the browser.
-        if (! $collection) {
-            return $this->getApiRouteCollection($this->defaultVersion);
-        }
-
-        return $collection;
+    /**
+     * Get the default API route collection.
+     * 
+     * @return \Dingo\Api\Routing\ApiRouteCollection
+     * @throws \RuntimeException
+     */
+    public function getDefaultApiRouteCollection()
+    {
+        return $this->getApiRouteCollection($this->defaultVersion);
     }
 
     /**
@@ -341,6 +347,7 @@ class Router extends IlluminateRouter
      *
      * @param  string  $version
      * @return \Dingo\Api\Routing\ApiRouteCollection
+     * @throws \RuntimeException
      */
     public function getApiRouteCollection($version)
     {
