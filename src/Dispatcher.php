@@ -336,7 +336,7 @@ class Dispatcher
         try {
             $response = $this->router->dispatch($request);
 
-            if (! $response->isOk()) {
+            if (! $response->isSuccessful()) {
                 throw new HttpException($response->getStatusCode(), $response->getOriginalContent());
             }
         } catch (HttpExceptionInterface $exception) {
