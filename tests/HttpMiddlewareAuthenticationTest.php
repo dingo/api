@@ -58,6 +58,7 @@ class HttpMiddlewareAuthenticationTest extends PHPUnit_Framework_TestCase {
 		$this->app->shouldReceive('handle')->once()->with($request, HttpKernelInterface::MASTER_REQUEST, true)->andReturn(new Response('test'));
 
 		$this->router->shouldReceive('getApiRouteCollectionFromRequest')->once()->with($request)->andReturn(null);
+		$this->router->shouldReceive('getDefaultApiRouteCollection')->once()->andReturn(null);
 
 		$this->assertEquals('test', $this->middleware->handle($request)->getContent());
 	}

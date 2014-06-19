@@ -88,7 +88,7 @@ class Authentication implements HttpKernelInterface
         // If a collection exists for the request and we can match a route
         // from the request then we'll check to see if the route is
         // protected and, if it is, we'll attempt to authenticate.
-        if ($this->router->requestTargettingApi($request) and $collection = $this->router->getApiRouteCollectionFromRequest($request)) {
+        if ($this->router->requestTargettingApi($request) and $collection = $this->getApiRouteCollection($request)) {
             try {
                 $route = $this->controllerReviser->revise($collection->match($request));
 
@@ -102,6 +102,17 @@ class Authentication implements HttpKernelInterface
         }
 
         return $response ?: $this->app->handle($request, $type, $catch);
+    }
+
+    /**
+     * Get the API route collection for the given request.
+     * 
+     * @param  \Symfony\Component\HttpFoundation\Request  $request
+     * @return \Dingo\Api\Routing\ApiRouteCollection
+     */
+    protected function getApiRouteCollection(Request $request)
+    {
+        return $this->router->getApiRouteCollectionFromRequest($request) ?: $this->router->getDefaultApiRouteCollection();
     }
 
     /**
