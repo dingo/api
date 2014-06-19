@@ -22,7 +22,8 @@
         "illuminate/database": "~4.1",
         "illuminate/pagination": "~4.1",
         "phpunit/phpunit": "~4.0",
-        "mockery/mockery": "~0.9"
+        "mockery/mockery": "~0.9",
+        "squizlabs/php_codesniffer": "1.*"
     },
     "suggest": {
         "lucadegasperi/oauth2-server-laravel": "Use the League OAuth 2.0 server to protect your API."
