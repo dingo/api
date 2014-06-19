@@ -133,9 +133,9 @@ class Router extends IlluminateRouter
             }
         }
 
-        if (! isset($options['conditional_request']))
+        if (isset($options['conditional_request']))
         {
-            $options['conditional_request'] = $this->conditionalRequest;
+            $this->conditionalRequest = $options['conditional_request'];
         }
 
         $this->group($options, $callback);
