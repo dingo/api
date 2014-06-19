@@ -148,7 +148,49 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 	}
 
 
-	/**
+    public function testRouterPreparesNotModifiedResponse()
+    {
+        $this->router->api(['version' => 'v1'], function ()
+        {
+            $this->router->get('foo', function () { return 'bar'; });
+        });
+
+        $request = Request::create('foo', 'GET');
+        $request->headers->set('accept', 'application/vnd.testing.v1+json');
+        $this->router->setConditionalRequest(false);
+        $response = $this->router->dispatch($request);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('bar', $response->getContent());
+
+        $request = Request::create('foo', 'GET');
+        $request->headers->set('accept', 'application/vnd.testing.v1+json');
+        $this->router->setConditionalRequest(true);
+        $response = $this->router->dispatch($request);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('"'.md5('bar').'"', $response->getETag());
+        $this->assertEquals('bar', $response->getContent());
+
+        $request = Request::create('foo', 'GET');
+        $request->headers->set('If-None-Match', '"'.md5('bar').'"', true);
+        $request->headers->set('accept', 'application/vnd.testing.v1+json');
+        $this->router->setConditionalRequest(true);
+        $response = $this->router->dispatch($request);
+        $this->assertEquals(304, $response->getStatusCode());
+        $this->assertEquals('"'.md5('bar').'"', $response->getETag());
+        $this->assertEquals(null, $response->getContent());
+
+        $request = Request::create('foo', 'GET');
+        $request->headers->set('If-None-Match', '0123456789', true);
+        $request->headers->set('accept', 'application/vnd.testing.v1+json');
+        $this->router->setConditionalRequest(true);
+        $response = $this->router->dispatch($request);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('"'.md5('bar').'"', $response->getETag());
+        $this->assertEquals('bar', $response->getContent());
+    }
+
+
+    /**
 	 * @expectedException RuntimeException
 	 */
 	public function testGettingUnkownApiCollectionThrowsException()
@@ -172,7 +214,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 		$request->headers->set('accept', 'application/vnd.testing.v1+json');
 
 		$response = $this->router->dispatch($request);
-		
+
 		$this->assertEquals(404, $response->getStatusCode());
 		$this->assertEquals('{"message":"404 Not Found"}', $response->getContent());
 	}
