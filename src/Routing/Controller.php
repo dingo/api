@@ -4,6 +4,7 @@ namespace Dingo\Api\Routing;
 
 use Dingo\Api\Dispatcher;
 use Dingo\Api\Auth\Shield;
+use Dingo\Api\Http\ResponseBuilder;
 use Illuminate\Routing\Controller as IlluminateController;
 
 abstract class Controller extends IlluminateController
@@ -21,6 +22,13 @@ abstract class Controller extends IlluminateController
      * @var \Dingo\Api\Auth\Shield
      */
     protected $auth;
+
+    /**
+     * API response builder instance.
+     * 
+     * @var \Dingo\Api\Http\ResponseBuilder
+     */
+    protected $response;
 
     /**
      * Array of unprotected controller methods.
@@ -50,10 +58,11 @@ abstract class Controller extends IlluminateController
      * @param  \Dingo\Api\Auth\Shield  $auth
      * @return void
      */
-    public function __construct(Dispatcher $api, Shield $auth)
+    public function __construct(Dispatcher $api, Shield $auth, ResponseBuilder $response)
     {
         $this->api = $api;
         $this->auth = $auth;
+        $this->response = $response;
     }
 
     /**
@@ -130,5 +139,21 @@ abstract class Controller extends IlluminateController
     public function getScopedMethods()
     {
         return $this->scopedMethods;
+    }
+
+    /**
+     * Magically handle calls to the response builder.
+     * 
+     * @param  string  $method
+     * @param  array  $parameters
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        if (method_exists($this->response, $method)) {
+            return call_user_func_array([$this->response, $method], $parameters);
+        }
+
+        return parent::__call($method, $parameters);
     }
 }
