@@ -56,6 +56,7 @@ abstract class Controller extends IlluminateController
      *
      * @param  \Dingo\Api\Dispatcher  $api
      * @param  \Dingo\Api\Auth\Shield  $auth
+     * @param  \Dingo\Api\Http\ResponseBuilder  $response
      * @return void
      */
     public function __construct(Dispatcher $api, Shield $auth, ResponseBuilder $response)
