@@ -109,19 +109,18 @@ class ResponseBuilder
      * Return an error response.
      * 
      * @param  string|array  $error
-     * @param  int  $code
+     * @param  int  $statusCode
      * @return \Illuminate\Http\Response
      */
-    public function withError($error, $code)
+    public function withError($error, $statusCode)
     {
         if (! is_array($error)) {
-            $error = [
-                'error' => $error,
-                'code'  => $code
-            ];
+            $error = ['error' => $error];
         }
 
-        return $this->setStatusCode($code)->withArray($error);
+        $error = array_merge(['status_code'  => $statusCode], $error);
+
+        return $this->setStatusCode($statusCode)->withArray($error);
     }
 
     /**

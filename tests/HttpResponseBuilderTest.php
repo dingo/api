@@ -95,7 +95,7 @@ class HttpResponseBuilderTest extends PHPUnit_Framework_TestCase {
 	{
 		$response = $this->builder->errorNotFound();
 		$this->assertEquals(404, $response->getStatusCode());
-		$this->assertEquals('{"error":"Not Found","code":404}', $response->getContent());
+		$this->assertEquals('{"status_code":404,"error":"Not Found"}', $response->getContent());
 	}
 
 
@@ -103,7 +103,7 @@ class HttpResponseBuilderTest extends PHPUnit_Framework_TestCase {
 	{
 		$response = $this->builder->errorBadRequest();
 		$this->assertEquals(400, $response->getStatusCode());
-		$this->assertEquals('{"error":"Bad Request","code":400}', $response->getContent());
+		$this->assertEquals('{"status_code":400,"error":"Bad Request"}', $response->getContent());
 	}
 
 
@@ -111,7 +111,7 @@ class HttpResponseBuilderTest extends PHPUnit_Framework_TestCase {
 	{
 		$response = $this->builder->errorForbidden();
 		$this->assertEquals(403, $response->getStatusCode());
-		$this->assertEquals('{"error":"Forbidden","code":403}', $response->getContent());
+		$this->assertEquals('{"status_code":403,"error":"Forbidden"}', $response->getContent());
 	}
 
 
@@ -119,7 +119,7 @@ class HttpResponseBuilderTest extends PHPUnit_Framework_TestCase {
 	{
 		$response = $this->builder->errorInternal();
 		$this->assertEquals(500, $response->getStatusCode());
-		$this->assertEquals('{"error":"Internal Error","code":500}', $response->getContent());
+		$this->assertEquals('{"status_code":500,"error":"Internal Error"}', $response->getContent());
 	}
 
 
@@ -127,7 +127,7 @@ class HttpResponseBuilderTest extends PHPUnit_Framework_TestCase {
 	{
 		$response = $this->builder->errorUnauthorized();
 		$this->assertEquals(401, $response->getStatusCode());
-		$this->assertEquals('{"error":"Unauthorized","code":401}', $response->getContent());
+		$this->assertEquals('{"status_code":401,"error":"Unauthorized"}', $response->getContent());
 	}
 
 
