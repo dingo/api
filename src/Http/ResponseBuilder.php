@@ -259,7 +259,7 @@ class ResponseBuilder
     /**
      * Resolve the Fractal manager.
      *
-     * @return void
+     * @return \League\Fractal\Manager
      */
     protected function resolveFractal()
     {
