@@ -65,6 +65,16 @@ class API extends Facade
     }
 
     /**
+	 * Get the authenticated API user's ID.
+	 *
+	 * @return int|string The user's ID, or the client_id in the case of client_credentials grant
+	 */
+	public static function userId()
+	{
+		return static::$app['dingo.api.auth']->getUserId();
+	}
+
+    /**
      * Determine if a request is internal.
      *
      * @return bool

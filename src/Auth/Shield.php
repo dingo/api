@@ -137,6 +137,16 @@ class Shield
     }
 
     /**
+	 * Get the authenticated user's ID.
+	 * 
+	 * @return int|string The user's ID, or the client ID in the case of client_credentials grant
+	 */
+	public function getUserId()
+	{
+		return $this->userId;
+	}
+
+    /**
      * Alias for getUser.
      *
      * @return \Illuminate\Auth\GenericUser|\Illuminate\Database\Eloquent\Model
@@ -145,6 +155,16 @@ class Shield
     {
         return $this->getUser();
     }
+
+    /**
+	 * Alias for getUserId.
+	 * 
+	 * @return int|string
+	 */
+	public function userId()
+	{
+		return $this->getUserId();
+	}
 
     /**
      * Set the authenticated user.
@@ -166,7 +186,15 @@ class Shield
      */
     public function check()
     {
-        return ! is_null($this->user());
+        try
+        {
+            return ! is_null($this->user());
+        }
+        
+        catch (\Exception $e)
+        {
+            return false;
+        }
     }
 
     /**
