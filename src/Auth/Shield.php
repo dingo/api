@@ -2,6 +2,7 @@
 
 namespace Dingo\Api\Auth;
 
+use Exception;
 use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
 use Illuminate\Routing\Route;
@@ -38,14 +39,7 @@ class Shield
      *
      * @var \Dingo\Api\Auth\Provider
      */
-    protected $usedProvider;
-
-    /**
-     * Authenticated user ID.
-     *
-     * @var int
-     */
-    protected $userId;
+    protected $providerUsed;
 
     /**
      * Authenticated user instance.
@@ -53,6 +47,20 @@ class Shield
      * @var \Illuminate\Auth\GenericUser|\Illuminate\Database\Eloquent\Model
      */
     protected $user;
+
+    /**
+     * Illuminate request instance.
+     * 
+     * @var \Illuminate\Http\Request
+     */
+    protected $request;
+
+    /**
+     * Illuminate route instance.
+     * 
+     * @var \Illumimate\Routing\Route
+     */
+    protected $route;
 
     /**
      * Create a new Dingo\Api\Authentication instance.
@@ -72,12 +80,14 @@ class Shield
     /**
      * Authenticate the current request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Illuminate\Routing\Route  $route
      * @return null|\Dingo\Api\Http\Response
      */
-    public function authenticate(Request $request, Route $route)
+    public function authenticate()
     {
+        if (! $this->request || ! $this->route) {
+            return;
+        }
+
         $exceptionStack = [];
 
         // Spin through each of the registered authentication providers and attempt to
@@ -85,11 +95,11 @@ class Shield
         // and allow a number of different authentication mechanisms.
         foreach ($this->providers as $key => $provider) {
             try {
-                $id = $provider->authenticate($request, $route);
+                $user = $provider->authenticate($this->request, $this->route);
 
-                $this->usedProvider = $provider;
+                $this->providerUsed = $provider;
 
-                return $this->userId = $id;
+                return $this->user = $user;
             } catch (UnauthorizedHttpException $exception) {
                 $exceptionStack[] = $exception;
             } catch (BadRequestHttpException $exception) {
@@ -111,19 +121,19 @@ class Shield
     /**
      * Get the authenticated user.
      *
-     * @return \Illuminate\Auth\GenericUser|\Illuminate\Database\Eloquent\Model
+     * @return \Illuminate\Auth\GenericUser|\Illuminate\Database\Eloquent\Model|null
      */
     public function getUser()
     {
         if ($this->user) {
             return $this->user;
-        } elseif (! $this->userId) {
-            return null;
-        } elseif (! $this->auth->check()) {
-            $this->auth->onceUsingId($this->userId);
         }
 
-        return $this->user = $this->auth->user();
+        try {
+            return $this->user = $this->authenticate();
+        } catch (Exception $exception) {
+            return;
+        }
     }
 
     /**
@@ -164,9 +174,35 @@ class Shield
      *
      * @return \Dingo\Api\Auth\Provider
      */
-    public function getUsedProvider()
+    public function getProviderUsed()
     {
-        return $this->usedProvider;
+        return $this->providerUsed;
+    }
+
+    /**
+     * Set the request instance.
+     * 
+     * @param  \Illuminate\Routing\Route  $route
+     * @return \Dingo\Api\Auth\Shield
+     */
+    public function setRequest(Request $request)
+    {
+        $this->request = $request;
+
+        return $this;
+    }
+
+    /**
+     * Set the route instance.
+     * 
+     * @param  \Illuminate\Routing\Route  $route
+     * @return \Dingo\Api\Auth\Shield
+     */
+    public function setRoute(Route $route)
+    {
+        $this->route = $route;
+
+        return $this;
     }
 
     /**

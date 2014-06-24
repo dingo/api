@@ -28,6 +28,7 @@ class ApiServiceProvider extends ServiceProvider
         $this->bootResponseMacro();
         $this->bootResponseFormats();
         $this->bootResponseTransformer();
+        $this->bootRouteAndAuthentication();
     }
 
     /**
@@ -94,6 +95,30 @@ class ApiServiceProvider extends ServiceProvider
         }
 
         ApiResponse::setFormatters($formats);
+    }
+
+    /**
+     * Boot the current route and the authentication.
+     * 
+     * @return void
+     */
+    protected function bootRouteAndAuthentication()
+    {
+        $this->app->booted(function($app) {
+            $request = $app['request'];
+            $router = $app['router'];
+            $collection = $router->getApiRouteCollectionFromRequest($request) ?: $router->getDefaultApiRouteCollection();
+
+            // If the request is targetting the API we'll prepare the route by
+            // revising it. This sets up the correct protection of the route
+            // and any scopes that should be associated with it.
+            if ($router->requestTargettingApi($request) && ! is_null($collection)) {
+                $route = (new Routing\ControllerReviser($app))->revise($collection->match($request));
+
+                $app['dingo.api.auth']->setRoute($route);
+                $app['dingo.api.auth']->setRequest($request);
+            }
+        });
     }
 
     /**

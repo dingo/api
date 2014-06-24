@@ -41,7 +41,7 @@ class BasicProvider extends AuthorizationProvider
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Illuminate\Routing\Route  $route
-     * @return int
+     * @return mixed
      */
     public function authenticate(Request $request, Route $route)
     {
@@ -51,7 +51,7 @@ class BasicProvider extends AuthorizationProvider
             throw new UnauthorizedHttpException('Basic', 'Invalid authentication credentials.');
         }
 
-        return $this->auth->user()->id;
+        return $this->auth->user();
     }
 
     /**

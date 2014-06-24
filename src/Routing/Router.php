@@ -138,6 +138,7 @@ class Router extends IlluminateRouter
      */
     public function dispatch(Request $request)
     {
+        $this->currentRequest = $request;
         $this->container->instance('Illuminate\Http\Request', $request);
 
         Response::getTransformer()->setRequest($request);
@@ -148,7 +149,7 @@ class Router extends IlluminateRouter
             // If an exception is caught and we are currently routing an API request then
             // we'll handle this exception by building a new response from it. This
             // allows the API to gracefully handle its own exceptions.
-            if ($this->requestTargettingApi($request) and ! $request instanceof InternalRequest) {
+            if ($this->requestTargettingApi() and ! $request instanceof InternalRequest) {
                 $response = $this->handleException($exception);
             // If the request was an internal request then we will rethrow the exception
             // so that developers can easily catch them and adjust ther esponse
@@ -160,7 +161,7 @@ class Router extends IlluminateRouter
 
         $this->container->forgetInstance('Illuminate\Http\Request');
 
-        if ($this->requestTargettingApi($request)) {
+        if ($this->requestTargettingApi()) {
             $response = Response::makeFromExisting($response)->morph($this->requestedFormat);
         }
 

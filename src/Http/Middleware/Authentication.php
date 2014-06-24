@@ -79,21 +79,19 @@ class Authentication implements HttpKernelInterface
         // service providers and other container bindings.
         $this->container->boot();
 
-        if ($request instanceof InternalRequest or $this->auth->user()) {
+        if ($request instanceof InternalRequest || $this->auth->user()) {
             return $this->app->handle($request, $type, $catch);
         }
-
-        $response = null;
 
         // If a collection exists for the request and we can match a route
         // from the request then we'll check to see if the route is
         // protected and, if it is, we'll attempt to authenticate.
-        if ($this->router->requestTargettingApi($request) and $collection = $this->getApiRouteCollection($request)) {
+        if ($this->router->requestTargettingApi($request) && $collection = $this->getApiRouteCollection($request)) {
             try {
                 $route = $this->controllerReviser->revise($collection->match($request));
 
                 if ($this->routeIsProtected($route)) {
-                    $response = $this->authenticate($request, $route);
+                    return $this->authenticate($request, $route) ?: $this->app->handle($request, $type, $catch);
                 }
             } catch (HttpExceptionInterface $exception) {
                 // If we catch an HTTP exception then we'll simply let
@@ -101,7 +99,7 @@ class Authentication implements HttpKernelInterface
             }
         }
 
-        return $response ?: $this->app->handle($request, $type, $catch);
+        return $this->app->handle($request, $type, $catch);
     }
 
     /**
@@ -146,7 +144,7 @@ class Authentication implements HttpKernelInterface
     {
         $action = $route->getAction();
 
-        return in_array('protected', $action, true) or (isset($action['protected']) and $action['protected'] === true);
+        return in_array('protected', $action, true) || (isset($action['protected']) && $action['protected'] === true);
     }
 
     /**

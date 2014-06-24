@@ -26,6 +26,20 @@ class LeagueOAuth2Provider extends AuthorizationProvider
     protected $httpHeadersOnly = false;
 
     /**
+     * Callback to fetch a user.
+     * 
+     * @var callable
+     */
+    protected $userCallback;
+
+    /**
+     * Callback to fetch a client.
+     * 
+     * @var callable
+     */
+    protected $clientCallback;
+
+    /**
      * Create a new Dingo\Api\Auth\OAuth2Provider instance.
      *
      * @param  \Dingo\OAuth2\Server\Resource  $resource
@@ -43,7 +57,7 @@ class LeagueOAuth2Provider extends AuthorizationProvider
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Illuminate\Routing\Route  $route
-     * @return int
+     * @return mixed
      */
     public function authenticate(Request $request, Route $route)
     {
@@ -67,10 +81,24 @@ class LeagueOAuth2Provider extends AuthorizationProvider
                 }
             }
 
-            return $this->resource->getOwnerId();
+            return $this->resolveResourceOwner();
         } catch (InvalidAccessTokenException $exception) {
             throw new UnauthorizedHttpException('Bearer', $exception->getMessage(), $exception);
         }
+    }
+
+    /**
+     * Resolve the resource owner.
+     * 
+     * @return mixed
+     */
+    protected function resolveResourceOwner()
+    {
+        if ($this->resource->getOwnerType() == 'client') {
+            return call_user_func($this->clientCallback, $this->resource->getOwnerId());
+        }
+
+        return call_user_func($this->userCallback, $this->resource->getOwnerId());
     }
 
     /**
@@ -84,6 +112,32 @@ class LeagueOAuth2Provider extends AuthorizationProvider
         $action = $route->getAction();
 
         return isset($action['scopes']) ? (array) $action['scopes'] : [];
+    }
+
+    /**
+     * Set the callback to fetch a user.
+     * 
+     * @param  callable  $callback
+     * @return \Dingo\Api\Auth\LeagueOAuth2Provider
+     */
+    public function setUserCallback(callable $callback)
+    {
+        $this->userCallback = $callback;
+
+        return $this;
+    }
+
+    /**
+     * Set the callback to fetch a client.
+     * 
+     * @param  callable  $callback
+     * @return \Dingo\Api\Auth\LeagueOAuth2Provider
+     */
+    public function setClientCallback(callable $callback)
+    {
+        $this->clientCallback = $callback;
+
+        return $this;
     }
 
     /**

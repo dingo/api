@@ -57,32 +57,42 @@ class AuthLeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase {
 	}
 
 
-	public function testAuthenticatingSucceedsAndReturnsUserId()
+	public function testAuthenticatingSucceedsAndReturnsUserObject()
 	{
 		$request = Request::create('foo', 'GET');
 		$request->headers->set('authorization', 'Bearer foo');
 
 		$provider = new LeagueOAuth2Provider($resource = $this->getResourceMock());
+		$provider->setUserCallback(function($id)
+		{
+			return (object) ['id' => 1];
+		});
 		$resource->shouldReceive('isValid')->once()->with(false);
 		$resource->shouldReceive('hasScope')->once()->with('foo')->andReturn(true);
 		$resource->shouldReceive('hasScope')->once()->with('bar')->andReturn(true);
 		$resource->shouldReceive('getOwnerId')->once()->andReturn(1);
+		$resource->shouldReceive('getOwnerType')->once()->andReturn('user');
 
-		$this->assertEquals(1, $provider->authenticate($request, new Route('/foo', 'GET', ['scopes' => ['foo', 'bar']])));
+		$this->assertEquals(1, $provider->authenticate($request, new Route('/foo', 'GET', ['scopes' => ['foo', 'bar']]))->id);
 	}
 
 
-	public function testAuthenticatingWithQueryStringSucceedsAndReturnsUserId()
+	public function testAuthenticatingWithQueryStringSucceedsAndReturnsUserObject()
 	{
 		$request = Request::create('foo', 'GET', ['access_token' => 'foo']);
 
 		$provider = new LeagueOAuth2Provider($resource = $this->getResourceMock());
+		$provider->setClientCallback(function($id)
+		{
+			return (object) ['id' => 1];
+		});
 		$resource->shouldReceive('isValid')->once()->with(false);
 		$resource->shouldReceive('hasScope')->once()->with('foo')->andReturn(true);
 		$resource->shouldReceive('hasScope')->once()->with('bar')->andReturn(true);
 		$resource->shouldReceive('getOwnerId')->once()->andReturn(1);
+		$resource->shouldReceive('getOwnerType')->once()->andReturn('client');
 
-		$this->assertEquals(1, $provider->authenticate($request, new Route('/foo', 'GET', ['scopes' => ['foo', 'bar']])));
+		$this->assertEquals(1, $provider->authenticate($request, new Route('/foo', 'GET', ['scopes' => ['foo', 'bar']]))->id);
 	}
 
 
