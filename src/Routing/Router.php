@@ -205,7 +205,7 @@ class Router extends IlluminateRouter
             $response['code'] = $code;
         }
 
-        return new ApiResponse($response, $exception->getStatusCode());
+        return new ApiResponse($response, $exception->getStatusCode(), $exception->getHeaders());
     }
 
     /**
