@@ -6,12 +6,14 @@ use Exception;
 use RuntimeException;
 use BadMethodCallException;
 use Illuminate\Http\Request;
-use Dingo\Api\Http\Response;
 use Illuminate\Routing\Route;
 use Dingo\Api\ExceptionHandler;
 use Dingo\Api\Http\InternalRequest;
 use Dingo\Api\Exception\ResourceException;
+use Dingo\Api\Http\Response as ApiResponse;
 use Illuminate\Routing\Router as IlluminateRouter;
+use Illuminate\Http\Response as IlluminateResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -149,34 +151,25 @@ class Router extends IlluminateRouter
      */
     public function dispatch(Request $request)
     {
-        $this->currentRequest = $request;
-        $this->container->instance('Illuminate\Http\Request', $request);
+        if (! $this->requestTargettingApi($request)) {
+            return parent::dispatch($request);
+        }
 
-        Response::getTransformer()->setRequest($request);
+        $this->container->instance('Illuminate\Http\Request', $request);
 
         try {
             $response = parent::dispatch($request);
         } catch (Exception $exception) {
-            // If an exception is caught and we are currently routing an API request then
-            // we'll handle this exception by building a new response from it. This
-            // allows the API to gracefully handle its own exceptions.
-            if ($this->requestTargettingApi() and ! $request instanceof InternalRequest) {
-                $response = $this->handleException($exception);
-            // If the request was an internal request then we will rethrow the exception
-            // so that developers can easily catch them and adjust ther esponse
-            // themselves.
-            } else {
+            if ($request instanceof InternalRequest) {
                 throw $exception;
+            } else {
+                $response = $this->handleException($exception);
             }
         }
 
         $this->container->forgetInstance('Illuminate\Http\Request');
 
-        if ($this->requestTargettingApi()) {
-            $response = Response::makeFromExisting($response)->morph($this->requestedFormat);
-        }
-
-        return $response;
+        return $response instanceof ApiResponse ? $response->morph($this->requestedFormat) : $response;
     }
 
     /**
@@ -193,13 +186,13 @@ class Router extends IlluminateRouter
         if ($this->exceptionHandler->willHandle($exception)) {
             $response = $this->exceptionHandler->handle($exception);
 
-            return Response::makeFromExisting($response);
+            return ApiResponse::makeFromExisting($response);
         } elseif (! $exception instanceof HttpExceptionInterface) {
             throw $exception;
         }
 
         if (! $message = $exception->getMessage()) {
-            $message = sprintf('%d %s', $exception->getStatusCode(), Response::$statusTexts[$exception->getStatusCode()]);
+            $message = sprintf('%d %s', $exception->getStatusCode(), ApiResponse::$statusTexts[$exception->getStatusCode()]);
         }
 
         $response = ['message' => $message];
@@ -212,7 +205,7 @@ class Router extends IlluminateRouter
             $response['code'] = $code;
         }
 
-        return new Response($response, $exception->getStatusCode());
+        return new ApiResponse($response, $exception->getStatusCode());
     }
 
     /**
@@ -288,6 +281,14 @@ class Router extends IlluminateRouter
     {
         $response = parent::prepareResponse($request, $response);
 
+        if ($response instanceof IlluminateResponse && $this->requestTargettingApi($request)) {
+            $response = ApiResponse::makeFromExisting($response);
+        } 
+
+        if ($response instanceof ApiResponse) {
+            ApiResponse::getTransformer()->setRequest($request);
+        }
+
         if ($response->isSuccessful() && $this->getConditionalRequest()) {
             $response->setEtag(md5($response->getContent()));
         }
@@ -303,10 +304,8 @@ class Router extends IlluminateRouter
      * @param  \Illuminate\Http\Request  $request
      * @return bool
      */
-    public function requestTargettingApi($request = null)
+    public function requestTargettingApi($request)
     {
-        $request = $request ?: $this->currentRequest;
-
         if (empty($this->api)) {
             return false;
         }
