@@ -53,11 +53,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Enable Conditional Request
+    | Conditional Requests
     |--------------------------------------------------------------------------
     |
-    | An ETag header will be added to any successful response and a check will
-    | be done against request to return a 304 (Not-Modifiedt) response
+    | Globally enable conditional requests so that an ETag header is added to
+    | any successful response. Subsequent requests will perform a check and
+    | will return a 304 Not Modified. This can also be enabled or disabled
+    | on certain groups or routes.
     |
     */
 

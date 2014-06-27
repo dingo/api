@@ -75,7 +75,7 @@ class Router extends IlluminateRouter
     protected $requestedFormat;
 
 	/**
-	 * Conditional request.
+	 * Indicates if conditional requests are enabled or disabled.
 	 *
 	 * @var bool
 	 */
@@ -127,15 +127,14 @@ class Router extends IlluminateRouter
             $options['domain'] = $this->defaultDomain;
         }
 
+        if (isset($options['conditional_request'])) {
+            $this->conditionalRequest = $options['conditional_request'];
+        }
+
         foreach ($options['version'] as $version) {
             if (! isset($this->api[$version])) {
                 $this->api[$version] = new ApiRouteCollection($version, array_except($options, 'version'));
             }
-        }
-
-        if (isset($options['conditional_request']))
-        {
-            $this->conditionalRequest = $options['conditional_request'];
         }
 
         $this->group($options, $callback);
@@ -280,6 +279,22 @@ class Router extends IlluminateRouter
         }
 
         return parent::findRoute($request);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function prepareResponse($request, $response)
+    {
+        $response = parent::prepareResponse($request, $response);
+
+        if ($response->isSuccessful() && $this->getConditionalRequest()) {
+            $response->setEtag(md5($response->getContent()));
+        }
+
+        $response->isNotModified($request);
+
+        return $response;
     }
 
     /**
@@ -596,38 +611,21 @@ class Router extends IlluminateRouter
     /**
      * Enable or disable conditional requests.
      *
-     * @param  bool $enable
+     * @param  bool  $conditionalRequest
      * @return void
      */
-    public function setConditionalRequest($enable)
+    public function setConditionalRequest($conditionalRequest)
     {
-        $this->conditionalRequest = $enable;
+        $this->conditionalRequest = $conditionalRequest;
     }
 
     /**
-     * Check conditional requests is enabled.
+     * Check conditional requests are enabled.
      *
      * @return bool
      */
     public function getConditionalRequest()
     {
         return $this->conditionalRequest;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function prepareResponse($request, $response)
-    {
-        $response = parent::prepareResponse($request, $response);
-
-        if ($response->isSuccessful() && $this->getConditionalRequest())
-        {
-            $response->setEtag(md5($response->getContent()));
-        }
-
-        $response->isNotModified($request);
-
-        return $response;
     }
 }
