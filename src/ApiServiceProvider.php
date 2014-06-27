@@ -155,6 +155,7 @@ class ApiServiceProvider extends ServiceProvider
             $router->setDefaultDomain($app['config']['api::domain']);
             $router->setDefaultFormat($app['config']['api::default_format']);
             $router->setVendor($app['config']['api::vendor']);
+            $router->setConditionalRequest($app['config']['api::conditional_request']);
         });
     }
 

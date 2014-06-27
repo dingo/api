@@ -53,6 +53,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Enable Conditional Request
+    |--------------------------------------------------------------------------
+    |
+    | An ETag header will be added to any successful response and a check will
+    | be done against request to return a 304 (Not-Modifiedt) response
+    |
+    */
+
+    'conditional_request' => true,
+
+    /*
+    |--------------------------------------------------------------------------
     | Authentication Providers
     |--------------------------------------------------------------------------
     |

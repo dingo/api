@@ -74,6 +74,13 @@ class Router extends IlluminateRouter
      */
     protected $requestedFormat;
 
+	/**
+	 * Conditional request.
+	 *
+	 * @var bool
+	 */
+	protected $conditionalRequest = true;
+
     /**
      * Exception handler instance.
      *
@@ -124,6 +131,11 @@ class Router extends IlluminateRouter
             if (! isset($this->api[$version])) {
                 $this->api[$version] = new ApiRouteCollection($version, array_except($options, 'version'));
             }
+        }
+
+        if (isset($options['conditional_request']))
+        {
+            $this->conditionalRequest = $options['conditional_request'];
         }
 
         $this->group($options, $callback);
@@ -579,5 +591,43 @@ class Router extends IlluminateRouter
     public function getApiRoutes()
     {
         return $this->api;
+    }
+
+    /**
+     * Enable or disable conditional requests.
+     *
+     * @param  bool $enable
+     * @return void
+     */
+    public function setConditionalRequest($enable)
+    {
+        $this->conditionalRequest = $enable;
+    }
+
+    /**
+     * Check conditional requests is enabled.
+     *
+     * @return bool
+     */
+    public function getConditionalRequest()
+    {
+        return $this->conditionalRequest;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function prepareResponse($request, $response)
+    {
+        $response = parent::prepareResponse($request, $response);
+
+        if ($response->isSuccessful() && $this->getConditionalRequest())
+        {
+            $response->setEtag(md5($response->getContent()));
+        }
+
+        $response->isNotModified($request);
+
+        return $response;
     }
 }
