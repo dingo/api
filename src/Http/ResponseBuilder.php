@@ -43,6 +43,13 @@ class ResponseBuilder
     protected $serializer;
 
     /**
+     * Array of meta data.
+     * 
+     * @var array
+     */
+    protected $meta = [];
+
+    /**
      * Create a new response builder instance.
      *
      * @param  \Dingo\Api\Transformer\FractalTransformer  $fractal
@@ -135,6 +142,32 @@ class ResponseBuilder
     }
 
     /**
+     * Add a Fractal meta key and value pair.
+     * 
+     * @param  string  $key
+     * @param  mixed  $value
+     * @return \Dingo\Api\Http\ResponseBuilder
+     */
+    public function addMeta($key, $value)
+    {
+        $this->meta[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Add a Fractal meta key and value pair.
+     * 
+     * @param  string  $key
+     * @param  mixed  $value
+     * @return \Dingo\Api\Http\ResponseBuilder
+     */
+    public function meta($key, $value)
+    {
+        return $this->addMeta($key, $value);
+    }
+
+    /**
      * Build the response.
      *
      * @param  array|\League\Fractal\Resource\ResourceInterface  $data
@@ -144,6 +177,10 @@ class ResponseBuilder
     {
         if ($data instanceof FractalResourceInterface) {
             $fractal = $this->resolveFractal();
+
+            foreach ($this->meta as $key => $value) {
+                $data->setMetaValue($key, $value);
+            }
 
             if ($this->serializer) {
                 $fractal->setSerializer($this->serializer);
@@ -169,6 +206,7 @@ class ResponseBuilder
         $this->serializer = null;
         $this->statusCode = 200;
         $this->headers = [];
+        $this->meta = [];
     }
 
     /**
