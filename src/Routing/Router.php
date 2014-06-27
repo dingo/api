@@ -157,6 +157,8 @@ class Router extends IlluminateRouter
 
         $this->container->instance('Illuminate\Http\Request', $request);
 
+        ApiResponse::getTransformer()->setRequest($request);
+
         try {
             $response = parent::dispatch($request);
         } catch (Exception $exception) {
@@ -283,10 +285,6 @@ class Router extends IlluminateRouter
 
         if ($response instanceof IlluminateResponse && $this->requestTargettingApi($request)) {
             $response = ApiResponse::makeFromExisting($response);
-        } 
-
-        if ($response instanceof ApiResponse) {
-            ApiResponse::getTransformer()->setRequest($request);
         }
 
         if ($response->isSuccessful() && $this->getConditionalRequest()) {
