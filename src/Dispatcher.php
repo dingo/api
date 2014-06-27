@@ -340,10 +340,12 @@ class Dispatcher
                 throw new HttpException($response->getStatusCode(), $response->getOriginalContent());
             }
         } catch (HttpExceptionInterface $exception) {
-            throw $exception;
-        } finally {
             $this->refreshRequestStack();
+
+            throw $exception;
         }
+
+        $this->refreshRequestStack();
 
         return $response->getOriginalContent();
     }
