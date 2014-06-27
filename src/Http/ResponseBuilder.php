@@ -5,6 +5,7 @@ namespace Dingo\Api\Http;
 use League\Fractal\Manager as Fractal;
 use Dingo\Api\Transformer\FractalTransformer;
 use League\Fractal\Resource\Item as FractalItem;
+use League\Fractal\Serializer\SerializerAbstract;
 use Illuminate\Http\Response as IlluminateResponse;
 use League\Fractal\Resource\Collection as FractalCollection;
 use League\Fractal\Pagination\CursorInterface as FractalCursorInterface;
@@ -35,6 +36,13 @@ class ResponseBuilder
     protected $statusCode = 200;
 
     /**
+     * The Fractal serializer.
+     * 
+     * @var \League\Fractal\Serializer\SerializerAbstract
+     */
+    protected $serializer;
+
+    /**
      * Create a new response builder instance.
      *
      * @param  \Dingo\Api\Transformer\FractalTransformer  $fractal
@@ -51,11 +59,12 @@ class ResponseBuilder
      * @param  array|object  $collection
      * @param  object  $transformer
      * @param  \League\Fractal\Pagination\CursorInterface  $cursor
+     * @param  string  $key
      * @return \Illuminate\Http\Response
      */
-    public function withCollection($collection, $transformer, FractalCursorInterface $cursor = null)
+    public function withCollection($collection, $transformer, FractalCursorInterface $cursor = null, $key = null)
     {
-        $resource = new FractalCollection($collection, $transformer);
+        $resource = new FractalCollection($collection, $transformer, $key);
 
         if (! is_null($cursor)) {
             $resource->setCursor($cursor);
@@ -69,11 +78,12 @@ class ResponseBuilder
      *
      * @param  array|object  $item
      * @param  object  $transformer
+     * @param  string  $key
      * @return \Illuminate\Http\Response
      */
-    public function withItem($item, $transformer)
+    public function withItem($item, $transformer, $key = null)
     {
-        $resource = new FractalItem($item, $transformer);
+        $resource = new FractalItem($item, $transformer, $key);
 
         return $this->build($resource);
     }
@@ -83,11 +93,12 @@ class ResponseBuilder
      *
      * @param  \League\Fractal\Pagination\PaginatorInterface  $paginator
      * @param  object  $transformer
+     * @param  string  $key
      * @return \Illuminate\Http\Response
      */
-    public function withPaginator(FractalPaginatorInterface $paginator, $transformer)
+    public function withPaginator(FractalPaginatorInterface $paginator, $transformer, $key = null)
     {
-        $resource = new FractalCollection($paginator->getCollection(), $transformer);
+        $resource = new FractalCollection($paginator->getCollection(), $transformer, $key);
 
         $resource->setPaginator($paginator);
 
@@ -132,10 +143,32 @@ class ResponseBuilder
     protected function build($data)
     {
         if ($data instanceof FractalResourceInterface) {
+            $fractal = $this->resolveFractal();
+
+            if ($this->serializer) {
+                $fractal->setSerializer($this->serializer);
+            }
+
             $data = $this->resolveFractal()->createData($data)->toArray();
         }
 
-        return new IlluminateResponse($data, $this->statusCode, $this->headers);
+        $response = new IlluminateResponse($data, $this->statusCode, $this->headers);
+
+        $this->reset();
+
+        return $response;
+    }
+
+    /**
+     * Reset this response builder instance.
+     * 
+     * @return void
+     */
+    protected function reset()
+    {
+        $this->serializer = null;
+        $this->statusCode = 200;
+        $this->headers = [];
     }
 
     /**
@@ -254,6 +287,30 @@ class ResponseBuilder
     public function errorUnauthorized($message = 'Unauthorized')
     {
         return $this->withError($message, 401);
+    }
+
+    /**
+     * Set the Fractal serializer.
+     * 
+     * @param  \League\Fractal\Serializer\SerializerAbstract  $serializer
+     * @return \Dingo\Api\Http\ResponseBuilder
+     */
+    public function setSerializer(SerializerAbstract $serializer)
+    {
+        $this->serializer = $serializer;
+
+        return $this;
+    }
+
+    /**
+     * Set the Fractal serializer.
+     * 
+     * @param  \League\Fractal\Serializer\SerializerAbstract  $serializer
+     * @return \Dingo\Api\Http\ResponseBuilder
+     */
+    public function serializer(SerializerAbstract $serializer)
+    {
+        return $this->setSerializer($serializer);
     }
 
     /**
