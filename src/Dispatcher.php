@@ -11,6 +11,7 @@ use Illuminate\Auth\GenericUser;
 use Dingo\Api\Http\InternalRequest;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Database\Eloquent\Model;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
@@ -73,6 +74,13 @@ class Dispatcher
     protected $parameters = [];
 
     /**
+     * Request uploaded files.
+     * 
+     * @var array
+     */
+    protected $files = [];
+
+    /**
      * Indicates whether the authenticated user is persisted.
      *
      * @var bool
@@ -106,6 +114,21 @@ class Dispatcher
     protected function setupRequestStack()
     {
         $this->requestStack[] = clone $this->request;
+    }
+
+    /**
+     * Attach files to be uploaded.
+     * 
+     * @param  array  $files
+     * @return \Dingo\Api\Dispatcher
+     */
+    public function attach(array $files)
+    {
+        foreach ($files as $key => $path) {
+            $this->files[$key] = new UploadedFile($path, basename($path));;
+        }
+
+        return $this;
     }
 
     /**
@@ -158,7 +181,7 @@ class Dispatcher
      */
     public function with($parameters)
     {
-        $this->parameters = is_array($parameters) ? $parameters : func_get_args();
+        $this->parameters = array_merge($this->parameters, is_array($parameters) ? $parameters : func_get_args());
 
         return $this;
     }
@@ -274,6 +297,7 @@ class Dispatcher
         $request = $this->requestStack[] = $this->createRequest($verb, $uri, $parameters);
 
         $this->request->replace($request->input());
+        $this->request->files->replace($request->file());
 
         return $this->dispatch($request);
     }
@@ -302,7 +326,7 @@ class Dispatcher
 
         $parameters = array_merge($this->parameters, (array) $parameters);
 
-        $request = InternalRequest::create($uri, $verb, $parameters);
+        $request = InternalRequest::create($uri, $verb, $parameters, [], $this->files);
 
         if ($domain = $api->option('domain')) {
             $request->headers->set('host', $domain);
@@ -373,7 +397,7 @@ class Dispatcher
 
         $this->version = null;
 
-        $this->parameters = [];
+        $this->parameters = $this->files = [];
     }
 
     /**
