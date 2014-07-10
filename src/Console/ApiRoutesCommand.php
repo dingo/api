@@ -5,6 +5,8 @@ namespace Dingo\Api\Console;
 use Dingo\Api\Routing\Router;
 use Illuminate\Routing\Route;
 use Illuminate\Foundation\Console\RoutesCommand;
+use Illuminate\Support\Facades\Input;
+use Symfony\Component\Console\Input\InputOption;
 
 class ApiRoutesCommand extends RoutesCommand
 {
@@ -83,6 +85,40 @@ class ApiRoutesCommand extends RoutesCommand
         ));
     }
 
+	/**
+	 * Filter the route by URI, Version and / or name.
+	 *
+	 * @param  array $route
+	 * @return array|null
+	 */
+	protected function filterRoute(array $route)
+	{
+		if (($this->option('name') && !str_contains($route['name'], $this->option('name'))) ||
+			$this->option('path') && !str_contains($route['uri'], $this->option('path')) ||
+			($this->option('vers') && !str_contains($route['version'], $this->option('vers'))) ||
+			($this->option('scopes') && !$this->scopeFilter($route['scopes']))
+		)
+		{
+			return null;
+		}
+		else
+		{
+			return $route;
+		}
+	}
+
+	protected function scopeFilter($scopes)
+	{
+		foreach($this->option('scopes') as $scope) {
+			if (str_contains($scopes, $scope))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
     /**
      * Get the scopes of a route.
      *
@@ -95,4 +131,18 @@ class ApiRoutesCommand extends RoutesCommand
 
         return is_array($scopes) ? implode(', ', $scopes) : $scopes;
     }
+
+	/**
+	 * Get the console command options.
+	 *
+	 * @return array
+	 */
+	protected function getOptions()
+	{
+		return array_merge(parent::getOptions(), array(
+			array('vers', null, InputOption::VALUE_OPTIONAL, 'Filter the routes by version.'),
+
+			array('scopes', 'S', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Filter the routes by scope(s)', null),
+		));
+	}
 }
