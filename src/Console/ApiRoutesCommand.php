@@ -87,7 +87,7 @@ class ApiRoutesCommand extends RoutesCommand
     }
 
     /**
-     * Filter the route by URI, Version and / or name.
+     * Filter the route by URI, Version, Scopes and / or name.
      *
      * @param  array $route
      *
@@ -95,26 +95,15 @@ class ApiRoutesCommand extends RoutesCommand
      */
     protected function filterRoute(array $route)
     {
-        if (( $this->option('name') && ! str_contains($route[ 'name' ], $this->option('name')) ) ||
-            $this->option('path') && ! str_contains($route[ 'uri' ], $this->option('path')) ||
-            ( $this->option('vers') && ! str_contains($route[ 'version' ], $this->option('vers')) ) ||
-            ( $this->option('scopes') && ! $this->scopeFilter($route[ 'scopes' ]) )
+        if (( $this->option('name') && ! $this->nameFilter($route) ) ||
+            ( $this->option('path') && ! $this->pathFilter($route) ) ||
+            ( $this->option('vers') && ! $this->versionFilter($route) ) ||
+            ( $this->option('scopes') && ! $this->scopeFilter($route) )
         ) {
             return null;
         } else {
             return $route;
         }
-    }
-
-    protected function scopeFilter($scopes)
-    {
-        foreach ($this->option('scopes') as $scope) {
-            if (str_contains($scopes, $scope)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -151,5 +140,31 @@ class ApiRoutesCommand extends RoutesCommand
                 ),
             )
         );
+    }
+
+    protected function pathFilter(array $route)
+    {
+        return str_contains($route[ 'uri' ], $this->option('path'));
+    }
+
+    protected function versionFilter(array $route)
+    {
+        return str_contains($route[ 'version' ], $this->option('vers'));
+    }
+
+    protected function nameFilter(array $route)
+    {
+        return str_contains($route[ 'name' ], $this->option('name'));
+    }
+
+    protected function scopeFilter(array $route)
+    {
+        foreach ($this->option('scopes') as $scope) {
+            if (str_contains($route[ 'scopes' ], $scope)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
