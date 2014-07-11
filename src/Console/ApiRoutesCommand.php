@@ -129,16 +129,16 @@ class ApiRoutesCommand extends RoutesCommand
     {
         return array_merge(
             parent::getOptions(),
-            array(
-                array('vers', null, InputOption::VALUE_OPTIONAL, 'Filter the routes by version.'),
-                array(
+            [
+                ['vers', null, InputOption::VALUE_OPTIONAL, 'Filter the routes by version.'],
+                [
                     'scopes',
                     'S',
                     InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL,
                     'Filter the routes by scope(s)',
                     null
-                ),
-            )
+                ],
+            ]
         );
     }
 
