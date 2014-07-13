@@ -104,7 +104,7 @@ class ApiServiceProvider extends ServiceProvider
      */
     protected function bootRouteAndAuthentication()
     {
-        $this->app->booted(function($app) {
+        $this->app->booted(function ($app) {
             $request = $app['request'];
             $router = $app['router'];
             $collection = $router->getApiRouteCollectionFromRequest($request) ?: $router->getDefaultApiRouteCollection();
@@ -112,7 +112,7 @@ class ApiServiceProvider extends ServiceProvider
             // If the request is targetting the API we'll prepare the route by
             // revising it. This sets up the correct protection of the route
             // and any scopes that should be associated with it.
-            if ($router->requestTargettingApi($request) && ! is_null($collection)) {
+            if (! is_null($collection) && $router->requestTargettingApi($request)) {
                 $route = (new Routing\ControllerReviser($app))->revise($collection->match($request));
 
                 $app['dingo.api.auth']->setRoute($route);

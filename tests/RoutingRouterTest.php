@@ -190,12 +190,9 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
     }
 
 
-    /**
-	 * @expectedException RuntimeException
-	 */
 	public function testGettingUnkownApiCollectionThrowsException()
 	{
-		$this->router->getApiRouteCollection('v1');
+		$this->assertNull($this->router->getApiRouteCollection('v1'));
 	}
 
 
