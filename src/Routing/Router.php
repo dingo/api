@@ -76,12 +76,12 @@ class Router extends IlluminateRouter
      */
     protected $requestedFormat;
 
-	/**
-	 * Indicates if conditional requests are enabled or disabled.
-	 *
-	 * @var bool
-	 */
-	protected $conditionalRequest = true;
+    /**
+     * Indicates if conditional requests are enabled or disabled.
+     *
+     * @var bool
+     */
+    protected $conditionalRequest = true;
 
     /**
      * Exception handler instance.
@@ -359,8 +359,7 @@ class Router extends IlluminateRouter
     /**
      * Get the default API route collection.
      * 
-     * @return \Dingo\Api\Routing\ApiRouteCollection
-     * @throws \RuntimeException
+     * @return \Dingo\Api\Routing\ApiRouteCollection|null
      */
     public function getDefaultApiRouteCollection()
     {
@@ -371,16 +370,11 @@ class Router extends IlluminateRouter
      * Get an API route collection for a given version.
      *
      * @param  string  $version
-     * @return \Dingo\Api\Routing\ApiRouteCollection
-     * @throws \RuntimeException
+     * @return \Dingo\Api\Routing\ApiRouteCollection|null
      */
     public function getApiRouteCollection($version)
     {
-        if (! isset($this->api[$version])) {
-            throw new RuntimeException('There is no API route collection for the version "'.$version.'".');
-        }
-
-        return $this->api[$version];
+        return isset($this->api[$version]) ? $this->api[$version] : null;
     }
 
     /**
