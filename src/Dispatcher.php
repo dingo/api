@@ -125,7 +125,7 @@ class Dispatcher
     public function attach(array $files)
     {
         foreach ($files as $key => $path) {
-            $this->files[$key] = new UploadedFile($path, basename($path));;
+            $this->files[$key] = new UploadedFile($path, basename($path));
         }
 
         return $this;
