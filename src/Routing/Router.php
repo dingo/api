@@ -207,6 +207,15 @@ class Router extends IlluminateRouter
             $response['code'] = $code;
         }
 
+        if (\Config::get('api::debug')) {
+            $response['debug'] = [
+                'line' => $exception->getLine(),
+                'file' => $exception->getFile(),
+                'class' => get_class($exception),
+                'trace' => $exception->getTrace()
+            ];
+        }
+
         return new ApiResponse($response, $exception->getStatusCode(), $exception->getHeaders());
     }
 
