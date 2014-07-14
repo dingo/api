@@ -251,7 +251,9 @@ class Router extends IlluminateRouter
         $versions = array_get(last($this->groupStack), 'version', []);
 
         foreach ($versions as $version) {
-            $this->getApiRouteCollection($version)->add($route);
+            if ($collection = $this->getApiRouteCollection($version)) {
+                $collection->add($route);
+            }
         }
 
         return $route;
