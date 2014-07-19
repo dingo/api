@@ -207,8 +207,7 @@ class Router extends IlluminateRouter
             $response['code'] = $code;
         }
 
-        $debug = app('config')->get('api::debug');
-        if ($debug) {
+        if ($this->isDebug()) {
             $response['debug'] = [
                 'line'  => $exception->getLine(),
                 'file'  => $exception->getFile(),
@@ -218,6 +217,13 @@ class Router extends IlluminateRouter
         }
 
         return new ApiResponse($response, $exception->getStatusCode(), $exception->getHeaders());
+    }
+
+    protected function isDebug()
+    {
+        $config = $this->container->make('config');
+
+        return $config->get('api::debug');
     }
 
     /**
