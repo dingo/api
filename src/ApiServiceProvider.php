@@ -12,6 +12,7 @@ use Dingo\Api\Console\ApiRoutesCommand;
 use Illuminate\Support\Facades\Response;
 use Dingo\Api\Http\Response as ApiResponse;
 use Dingo\Api\Transformer\FractalTransformer;
+use Dingo\Api\Routing\UrlGenerator;
 
 class ApiServiceProvider extends ServiceProvider
 {
@@ -137,6 +138,7 @@ class ApiServiceProvider extends ServiceProvider
         $this->registerMiddlewares();
         $this->registerCommands();
         $this->registerBootingEvent();
+        $this->registerUrlGenerator();
     }
 
     /**
@@ -281,5 +283,28 @@ class ApiServiceProvider extends ServiceProvider
         });
 
         $this->commands('dingo.api.command.routes');
+    }
+
+    /**
+     * Register the UrlGenerator
+     *
+     * @return void
+     */
+    protected function registerUrlGenerator()
+    {
+        $this->app['url'] = $this->app->share(
+            function ($app) {
+                $routes = $app['router']->getRoutes();
+                return new UrlGenerator(
+                    $routes,
+                    $app->rebinding(
+                        'request',
+                        function ($app, $request) {
+                            $app['url']->setRequest($request);
+                        }
+                    )
+                );
+            }
+        );
     }
 }
