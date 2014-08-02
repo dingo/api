@@ -4,6 +4,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | API Debug Mode
+    |--------------------------------------------------------------------------
+    |
+    | When your API is in debug mode, a debug object will be added to the default
+    | responses. This debug key contains the file and line that threw the
+    | error, the exact exception class, and a stack trace.
+    |
+    */
+
+    'debug' => false,
+
+    /*
+    |--------------------------------------------------------------------------
     | API Vendor
     |--------------------------------------------------------------------------
     |
