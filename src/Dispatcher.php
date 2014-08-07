@@ -371,7 +371,7 @@ class Dispatcher
 
         $this->refreshRequestStack();
 
-        return $response->getOriginalContent();
+        return $response->getContent();
     }
 
     /**
