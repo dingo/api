@@ -361,7 +361,7 @@ class Dispatcher
             $response = $this->router->dispatch($request);
 
             if (! $response->isSuccessful()) {
-                throw new HttpException($response->getStatusCode(), $response->getContent());
+                throw new HttpException($response->getStatusCode(), $response->getOriginalContent());
             }
         } catch (HttpExceptionInterface $exception) {
             $this->refreshRequestStack();
@@ -371,7 +371,7 @@ class Dispatcher
 
         $this->refreshRequestStack();
 
-        return $response->getContent();
+        return $response->getOriginalContent();
     }
 
     /**
