@@ -4,17 +4,24 @@ namespace Dingo\Api\Http\ResponseFormat;
 
 use Illuminate\Support\Contracts\ArrayableInterface;
 
-class JsonResponseFormat extends ResponseFormat
-{
+class JsonResponseFormat extends ResponseFormat {
+
     /**
      * Format an Eloquent model.
      *
      * @param  \Illuminate\Database\Eloquent\Model  $model
      * @return string
      */
-    public function formatEloquentModel($model)
-    {
-        $key = str_singular($model->getTable());
+    public function formatEloquentModel($model) {
+        $modelTable = $model->getTable();
+
+        if ($model::$snakeAttributes) {
+            $key = $modelTable;
+        } else {
+            $key = lcfirst(studly_case($modelTable));
+        }
+
+        $key = str_singular($key);
 
         return $this->encode([$key => $model->toArray()]);
     }
@@ -25,13 +32,21 @@ class JsonResponseFormat extends ResponseFormat
      * @param  \Illuminate\Database\Eloquent\Collection  $collection
      * @return string
      */
-    public function formatEloquentCollection($collection)
-    {
+    public function formatEloquentCollection($collection) {
         if ($collection->isEmpty()) {
             return $this->encode([]);
         }
 
-        $key = str_plural($collection->first()->getTable());
+        $model = $collection->first();
+        $modelTable = $model->getTable();
+
+        if ($model::$snakeAttributes) {
+            $key = $modelTable;
+        } else {
+            $key = lcfirst(studly_case($modelTable));
+        }
+
+        $key = str_plural($key);
 
         return $this->encode([$key => $collection->toArray()]);
     }
@@ -42,8 +57,7 @@ class JsonResponseFormat extends ResponseFormat
      * @param  string  $string
      * @return string
      */
-    public function formatOther($content)
-    {
+    public function formatOther($content) {
         return $content;
     }
 
@@ -53,8 +67,7 @@ class JsonResponseFormat extends ResponseFormat
      * @param  array|\Illuminate\Support\Contracts\ArrayableInterface  $content
      * @return string
      */
-    public function formatArray($content)
-    {
+    public function formatArray($content) {
         $content = $this->morphToArray($content);
 
         array_walk_recursive($content, function (&$value) {
@@ -69,8 +82,7 @@ class JsonResponseFormat extends ResponseFormat
      *
      * @return string
      */
-    public function getContentType()
-    {
+    public function getContentType() {
         return 'application/json';
     }
 
@@ -80,8 +92,7 @@ class JsonResponseFormat extends ResponseFormat
      * @param  array|\Illuminate\Support\Contracts\ArrayableInterface  $value
      * @return array
      */
-    protected function morphToArray($value)
-    {
+    protected function morphToArray($value) {
         return $value instanceof ArrayableInterface ? $value->toArray() : $value;
     }
 
@@ -91,8 +102,8 @@ class JsonResponseFormat extends ResponseFormat
      * @param  string  $content
      * @return string
      */
-    protected function encode($content)
-    {
+    protected function encode($content) {
         return json_encode($content);
     }
+
 }
