@@ -148,7 +148,7 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
 	}
 
 
-    public function testRouterPreparesNotModifiedResponse()
+    public function testRouterPreparesNotModifiedIlluminateResponse()
     {
         $this->router->api(['version' => 'v1'], function ()
         {
@@ -187,6 +187,109 @@ class RoutingRouterTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('"'.md5('bar').'"', $response->getETag());
         $this->assertEquals('bar', $response->getContent());
+    }
+
+
+    public function testRouterPreparesNotModifiedNonIlluminateResponse()
+    {
+        $this->router->api(['version' => 'v1'], function ()
+        {
+            $this->router->get('foo', function () {
+                return new \Symfony\Component\HttpFoundation\Response('bar');
+            });
+        });
+
+        $request = Request::create('foo', 'GET');
+        $request->headers->set('accept', 'application/vnd.testing.v1+json');
+        $this->router->setConditionalRequest(false);
+        $response = $this->router->dispatch($request);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('bar', $response->getContent());
+
+        $request = Request::create('foo', 'GET');
+        $request->headers->set('accept', 'application/vnd.testing.v1+json');
+        $this->router->setConditionalRequest(true);
+        $response = $this->router->dispatch($request);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('"'.md5('bar').'"', $response->getETag());
+        $this->assertEquals('bar', $response->getContent());
+
+        $request = Request::create('foo', 'GET');
+        $request->headers->set('If-None-Match', '"'.md5('bar').'"', true);
+        $request->headers->set('accept', 'application/vnd.testing.v1+json');
+        $this->router->setConditionalRequest(true);
+        $response = $this->router->dispatch($request);
+        $this->assertEquals(304, $response->getStatusCode());
+        $this->assertEquals('"'.md5('bar').'"', $response->getETag());
+        $this->assertEquals(null, $response->getContent());
+
+        $request = Request::create('foo', 'GET');
+        $request->headers->set('If-None-Match', '0123456789', true);
+        $request->headers->set('accept', 'application/vnd.testing.v1+json');
+        $this->router->setConditionalRequest(true);
+        $response = $this->router->dispatch($request);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('"'.md5('bar').'"', $response->getETag());
+        $this->assertEquals('bar', $response->getContent());
+    }
+
+
+    public function testRouterSkipNotModifiedResponseOutsideApi()
+    {
+        $this->router->group([], function ()
+        {
+            $this->router->get('foo', function () { return 'bar'; });
+        });
+
+        $request = Request::create('foo', 'GET');
+        $this->router->setConditionalRequest(true);
+        $response = $this->router->dispatch($request);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertFalse($response->headers->has('ETag'));
+        $this->assertEquals('bar', $response->getContent());
+    }
+
+
+    public function testRouterHandlesExistingEtag()
+    {
+        $this->router->api(['version' => 'v1'], function ()
+        {
+            $this->router->get('foo', function () {
+                $response = new Response('bar');
+                $response->setEtag('custom-etag');
+                return $response;
+            });
+        });
+
+        $request = Request::create('foo', 'GET');
+        $request->headers->set('accept', 'application/vnd.testing.v1+json');
+        $this->router->setConditionalRequest(true);
+        $response = $this->router->dispatch($request);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('"custom-etag"', $response->getETag());
+        $this->assertEquals('bar', $response->getContent());
+    }
+
+
+    public function testRouterHandlesCustomEtag()
+    {
+        $this->router->api(['version' => 'v1'], function ()
+        {
+            $this->router->get('foo', function () {
+                $response = new Response('bar');
+                $response->setEtag('custom-etag');
+                return $response;
+            });
+        });
+
+        $request = Request::create('foo', 'GET');
+        $request->headers->set('If-None-Match', '"custom-etag"', true);
+        $request->headers->set('accept', 'application/vnd.testing.v1+json');
+        $this->router->setConditionalRequest(true);
+        $response = $this->router->dispatch($request);
+        $this->assertEquals(304, $response->getStatusCode());
+        $this->assertEquals('"custom-etag"', $response->getETag());
+        $this->assertEquals(null, $response->getContent());
     }
 
 
