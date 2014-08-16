@@ -53,7 +53,7 @@ class ControllerReviser
     /**
      * Determine if the route is routing to a controller.
      *
-     * @param  Illuminate\Routing\Route  $action
+     * @param  \Illuminate\Routing\Route  $action
      * @return bool
      */
     protected function routingToController(Route $route)
