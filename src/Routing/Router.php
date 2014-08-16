@@ -110,6 +110,7 @@ class Router extends IlluminateRouter
      * @param  array  $options
      * @param  callable  $callback
      * @return void
+     * @throws \BadMethodCallException
      */
     public function api($options, callable $callback)
     {
@@ -148,6 +149,7 @@ class Router extends IlluminateRouter
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response|\Dingo\Api\Http\Response
+     * @throws \Exception
      */
     public function dispatch(Request $request)
     {
