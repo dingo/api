@@ -3,9 +3,8 @@
 namespace Dingo\Api\Auth;
 
 use Exception;
-use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
-use Illuminate\Routing\Route;
+use Illuminate\Routing\Router;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Container\Container;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -49,30 +48,15 @@ class Shield
     protected $user;
 
     /**
-     * Illuminate request instance.
-     * 
-     * @var \Illuminate\Http\Request
-     */
-    protected $request;
-
-    /**
-     * Illuminate route instance.
-     * 
-     * @var \Illumimate\Routing\Route
-     */
-    protected $route;
-
-    /**
      * Create a new Dingo\Api\Authentication instance.
      *
-     * @param  \Illuminate\Auth\AuthManager  $auth
      * @param  \Illuminate\Container\Container  $container
      * @param  array  $providers
      * @return void
      */
-    public function __construct(AuthManager $auth, Container $container, array $providers)
+    public function __construct(Router $router, Container $container, array $providers)
     {
-        $this->auth = $auth;
+        $this->router = $router;
         $this->container = $container;
         $this->providers = $providers;
     }
@@ -84,10 +68,6 @@ class Shield
      */
     public function authenticate()
     {
-        if (! $this->request || ! $this->route) {
-            return;
-        }
-
         $exceptionStack = [];
 
         // Spin through each of the registered authentication providers and attempt to
@@ -95,7 +75,7 @@ class Shield
         // and allow a number of different authentication mechanisms.
         foreach ($this->providers as $key => $provider) {
             try {
-                $user = $provider->authenticate($this->request, $this->route);
+                $user = $provider->authenticate($this->router->getCurrentRequest(), $this->router->getCurrentRoute());
 
                 $this->providerUsed = $provider;
 
@@ -177,32 +157,6 @@ class Shield
     public function getProviderUsed()
     {
         return $this->providerUsed;
-    }
-
-    /**
-     * Set the request instance.
-     * 
-     * @param  \Illuminate\Routing\Route  $route
-     * @return \Dingo\Api\Auth\Shield
-     */
-    public function setRequest(Request $request)
-    {
-        $this->request = $request;
-
-        return $this;
-    }
-
-    /**
-     * Set the route instance.
-     * 
-     * @param  \Illuminate\Routing\Route  $route
-     * @return \Dingo\Api\Auth\Shield
-     */
-    public function setRoute(Route $route)
-    {
-        $this->route = $route;
-
-        return $this;
     }
 
     /**

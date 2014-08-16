@@ -18,13 +18,6 @@ abstract class Transformer
     protected $container;
 
     /**
-     * Illuminate request instance.
-     *
-     * @var \Illuminate\Http\Request
-     */
-    protected $request;
-
-    /**
      * Array of registered transformer bindings.
      *
      * @var array
@@ -32,14 +25,13 @@ abstract class Transformer
     protected $bindings = [];
 
     /**
-     * Set the illuminate request instance.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return void
+     * Get the current request instance.
+     * 
+     * @return \Illuminate\Http\Request
      */
-    public function setRequest(Request $request)
+    public function getCurrentRequest()
     {
-        $this->request = $request;
+        return $this->container['router']->getCurrentRequest();
     }
 
     /**

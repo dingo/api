@@ -142,6 +142,21 @@ abstract class Controller extends IlluminateController
         return $this->scopedMethods;
     }
 
+    public function setDispatcher(Dispatcher $dispatcher)
+    {
+        $this->dispatcher = $dispatcher;
+    }
+
+    public function setAuthenticator(Shield $auth)
+    {
+        $this->auth = $auth;
+    }
+
+    public function setResponseBuilder(ResponseBuilder $response)
+    {
+        $this->response = $response;
+    }
+
     /**
      * Magically handle calls to the response builder.
      * 

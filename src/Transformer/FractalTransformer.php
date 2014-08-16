@@ -36,7 +36,6 @@ class FractalTransformer extends Transformer
      * Create a new fractal transformer instance.
      *
      * @param  \League\Fractal\Manager  $fractal
-     * @param  \Illuminate\Http\Request  $request
      * @param  string  $includeKey
      * @param  string  $includeSeparator
      * @return void
@@ -107,7 +106,9 @@ class FractalTransformer extends Transformer
      */
     public function parseFractalIncludes()
     {
-        $includes = array_filter(explode($this->includeSeparator, $this->request->get($this->includeKey)));
+        $request = $this->getCurrentRequest();
+        
+        $includes = array_filter(explode($this->includeSeparator, $request->get($this->includeKey)));
 
         $this->fractal->parseIncludes($includes);
     }
