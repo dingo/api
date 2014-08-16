@@ -72,7 +72,7 @@ class ApiRoutesCommand extends RoutesCommand
      */
     protected function getRouteInformation(Route $route)
     {
-        return $this->filterRoute(array(
+        return $this->filterRoute([
             'host'      => $route->domain(),
             'uri'       => implode('|', $route->methods()).' '.$route->uri(),
             'name'      => $route->getName(),
@@ -80,7 +80,7 @@ class ApiRoutesCommand extends RoutesCommand
             'version'   => implode(', ', array_get($route->getAction(), 'version')),
             'protected' => array_get($route->getAction(), 'protected') ? 'Yes' : 'No',
             'scopes'    => $this->getScopes($route)
-        ));
+        ]);
     }
 
     /**
