@@ -1,13 +1,13 @@
 <?php
 
-namespace Dingo\Api;
+namespace Dingo\Api\Exception;
 
 use Exception;
 use ReflectionFunction;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
-class ExceptionHandler
+class Handler
 {
     /**
      * Array of exception handlers.

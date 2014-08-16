@@ -3,17 +3,15 @@
 namespace Dingo\Api\Routing;
 
 use Exception;
-use RuntimeException;
 use BadMethodCallException;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Route;
-use Dingo\Api\ExceptionHandler;
+use Illuminate\Events\Dispatcher;
+use Illuminate\Container\Container;
 use Dingo\Api\Http\InternalRequest;
 use Dingo\Api\Exception\ResourceException;
 use Dingo\Api\Http\Response as ApiResponse;
 use Illuminate\Routing\Router as IlluminateRouter;
 use Illuminate\Http\Response as IlluminateResponse;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -21,9 +19,9 @@ use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 class Router extends IlluminateRouter
 {
     /**
-     * The API route collections.
+     * An array of API route collections.
      *
-     * @param array
+     * @var array
      */
     protected $api = [];
 
@@ -84,25 +82,18 @@ class Router extends IlluminateRouter
     protected $conditionalRequest = true;
 
     /**
-     * Exception handler instance.
-     *
-     * @var \Dingo\Api\ExceptionHandler
-     */
-    protected $exceptionHandler;
-
-    /**
-     * Controller reviser instance.
-     *
-     * @var \Dingo\Api\Routing\ControllerReviser
-     */
-    protected $reviser;
-
-    /**
      * Array of requests targetting the API.
      *
      * @var array
      */
     protected $requestsTargettingApi = [];
+
+    /**
+     * Indicates if API routes are being added.
+     * 
+     * @var bool
+     */
+    protected $addingApiRoutes = false;
 
     /**
      * Register an API group.
@@ -135,12 +126,16 @@ class Router extends IlluminateRouter
         }
 
         foreach ($options['version'] as $version) {
-            if (! isset($this->api[$version])) {
-                $this->api[$version] = new ApiRouteCollection($version, array_except($options, 'version'));
+           if (! isset($this->api[$version])) {
+                $this->api[$version] = new RouteCollection($version, array_except($options, 'version'));
             }
         }
 
+        $this->addingApiRoutes = true;
+
         $this->group($options, $callback);
+
+        $this->addingApiRoutes = false;
     }
 
     /**
@@ -156,10 +151,10 @@ class Router extends IlluminateRouter
         if (! $this->requestTargettingApi($request)) {
             return parent::dispatch($request);
         }
+        
+        list ($this->requestedVersion, $this->requestedFormat) = $this->parseAcceptHeader($request);
 
         $this->container->instance('Illuminate\Http\Request', $request);
-
-        ApiResponse::getTransformer()->setRequest($request);
 
         try {
             $response = parent::dispatch($request);
@@ -167,49 +162,25 @@ class Router extends IlluminateRouter
             if ($request instanceof InternalRequest) {
                 throw $exception;
             } else {
-                $response = $this->handleException($exception);
+                $response = $this->events->until('router.exception', [$exception]);
             }
         }
 
         $this->container->forgetInstance('Illuminate\Http\Request');
 
-        return $response instanceof ApiResponse ? $response->morph($this->requestedFormat) : $response;
+        return $response->morph($this->requestedFormat);
     }
 
     /**
-     * Handle exception thrown when dispatching a request.
-     *
-     * @param  \Exception  $exception
-     * @return \Dingo\Api\Http\Response
-     * @throws \Exception
+     * {@inheritDoc}
      */
-    public function handleException(Exception $exception)
+    protected function newRoute($methods, $uri, $action)
     {
-        // If the exception handler will handle the given exception then we'll fire
-        // the callback registered to the handler and return the response.
-        if ($this->exceptionHandler->willHandle($exception)) {
-            $response = $this->exceptionHandler->handle($exception);
-
-            return ApiResponse::makeFromExisting($response);
-        } elseif (! $exception instanceof HttpExceptionInterface) {
-            throw $exception;
+        if ($this->addingApiRoutes) {
+            return new Route($methods, $uri, $action);
         }
 
-        if (! $message = $exception->getMessage()) {
-            $message = sprintf('%d %s', $exception->getStatusCode(), ApiResponse::$statusTexts[$exception->getStatusCode()]);
-        }
-
-        $response = ['message' => $message];
-
-        if ($exception instanceof ResourceException and $exception->hasErrors()) {
-            $response['errors'] = $exception->getErrors();
-        }
-
-        if ($code = $exception->getCode()) {
-            $response['code'] = $code;
-        }
-
-        return new ApiResponse($response, $exception->getStatusCode(), $exception->getHeaders());
+        return parent::newRoute($methods, $uri, $action);
     }
 
     /**
@@ -224,8 +195,8 @@ class Router extends IlluminateRouter
     {
         $route = $this->createRoute($methods, $uri, $action);
 
-        if ($this->routeTargettingApi($route)) {
-            return $this->addApiRoute($route);
+        if ($this->addingApiRoutes) {
+            return $this->addApiRoute($this->attachApiFilters($route));
         }
 
         return $this->routes->add($route);
@@ -239,45 +210,44 @@ class Router extends IlluminateRouter
      */
     protected function addApiRoute($route)
     {
-        // Since the groups action gets merged with the routes we need to make
-        // sure that if the route supplied its own protection that we grab
-        // that protection status from the array after the merge.
-        $action = $route->getAction();
-
-        if (count($this->groupStack) > 0 and isset($action['protected'])) {
-            $action['protected'] = is_array($action['protected']) ? last($action['protected']) : $action['protected'];
-
-            $route->setAction($action);
-        }
-
         $versions = array_get(last($this->groupStack), 'version', []);
 
         foreach ($versions as $version) {
-            if ($collection = $this->getApiRouteCollection($version)) {
-                $collection->add($route);
-            }
+            if ($collection = $this->getApiRouteCollection($version)) $collection->add($route);
         }
 
         return $route;
     }
 
     /**
-     * Find a route either from the routers collection or the API collection.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Routing\Route
+     * Attach the API before filters to the route.
+     * 
+     * @param  \Dingo\Api\Routing\Route  $route
+     * @return \Dingo\Api\Routing\Route
+     */
+    protected function attachApiFilters(Route $route)
+    {
+        $filters = $route->beforeFilters();
+
+        foreach (['api.auth', 'api.rate_limiting'] as $filter) {
+            if (! isset($filters[$filter])) $route->before($filter);
+        }
+
+        return $route;
+    }
+
+    /**
+     * {@inheritDoc}
      */
     protected function findRoute($request)
     {
         if ($this->requestTargettingApi($request)) {
-            list ($this->requestedVersion, $this->requestedFormat) = $this->parseAcceptHeader($request);
-
-            $this->current = $route = $this->getApiRouteCollection($this->requestedVersion)->match($request);
-
-            return $this->substituteBindings($route);
+            $route = $this->getApiRouteCollection($this->requestedVersion)->match($request);
+        } else {
+            $route = $this->routes->match($request);
         }
 
-        return parent::findRoute($request);
+        return $this->current = $this->substituteBindings($route);
     }
 
     /**
@@ -316,9 +286,7 @@ class Router extends IlluminateRouter
     {
         if (empty($this->api)) {
             return false;
-        }
-
-        if (isset($this->requestsTargettingApi[$key = sha1($request)])) {
+        } elseif (isset($this->requestsTargettingApi[$key = sha1($request)])) {
             return $this->requestsTargettingApi[$key];
         }
 
@@ -331,8 +299,7 @@ class Router extends IlluminateRouter
         } catch (MethodNotAllowedHttpException $exception) {
             // If a method is not allowed then we can say that a route was matched
             // so the request is still targetting the API. This allows developers
-            // to provide better error responses when a client sends a bad
-            // request.
+            // to provide better error responses when clients send bad requests.
         }
 
         return $this->requestsTargettingApi[$key] = true;
@@ -344,7 +311,7 @@ class Router extends IlluminateRouter
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function parseAcceptHeader($request)
+    public function parseAcceptHeader(Request $request)
     {
         if (preg_match('#application/vnd\.'.$this->vendor.'.(v[\d\.]+)\+(\w+)#', $request->header('accept'), $matches)) {
             return array_slice($matches, 1);
@@ -385,40 +352,6 @@ class Router extends IlluminateRouter
     public function getApiRouteCollection($version)
     {
         return isset($this->api[$version]) ? $this->api[$version] : null;
-    }
-
-    /**
-     * Determine if a route is targetting the API.
-     *
-     * @param  \Illuminate\Routing\Route  $route
-     * @return bool
-     */
-    public function routeTargettingApi($route)
-    {
-        $key = array_search('api', $route->getAction(), true);
-
-        return is_numeric($key);
-    }
-
-    /**
-     * Set the exception handler instance.
-     *
-     * @param  \Dingo\Api\ExceptionHandler
-     * @return void
-     */
-    public function setExceptionHandler(ExceptionHandler $exceptionHandler)
-    {
-        $this->exceptionHandler = $exceptionHandler;
-    }
-
-    /**
-     * Get the exception handler instance.
-     *
-     * @return \Dingo\Api\ExceptionHandler
-     */
-    public function getExceptionHandler()
-    {
-        return $this->exceptionHandler;
     }
 
     /**
@@ -554,27 +487,6 @@ class Router extends IlluminateRouter
     public function getInspector()
     {
         return $this->inspector ?: $this->inspector = new ControllerInspector;
-    }
-
-    /**
-     * Set the controller reviser instance.
-     *
-     * @param  \Dingo\Api\Routing\ControllerReviser  $reviser
-     * @return void
-     */
-    public function setControllerReviser(ControllerReviser $reviser)
-    {
-        $this->reviser = $reviser;
-    }
-
-    /**
-     * Get the controller reviser instance.
-     *
-     * @return \Dingo\Api\Routing\ControllerReviser
-     */
-    public function getControllerReviser()
-    {
-        return $this->reviser ?: new ControllerReviser($this->container);
     }
 
     /**

@@ -3,9 +3,9 @@
 namespace Dingo\Api\Routing;
 
 use Illuminate\Http\Request;
-use Illuminate\Routing\RouteCollection;
+use Illuminate\Routing\RouteCollection as IlluminateRouteCollection;
 
-class ApiRouteCollection extends RouteCollection
+class RouteCollection extends IlluminateRouteCollection
 {
     /**
      * Version of this collection of routes.
@@ -48,7 +48,7 @@ class ApiRouteCollection extends RouteCollection
 
     /**
      * Determine if the routes within the collection will be a match for
-     * the current request. If not prefix or domain is set on the
+     * the current request. If no prefix or domain is set on the
      * collection then it's assumed it will be a match.
      *
      * @param  \Illuminate\Http\Request  $request

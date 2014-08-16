@@ -111,7 +111,7 @@ class Authentication implements HttpKernelInterface
      */
     protected function getApiRouteCollection(Request $request)
     {
-        return $this->router->getApiRouteCollectionFromRequest($request) ?: $this->router->getDefaultApiRouteCollection();
+        return $this->router->getRouteCollectionFromRequest($request) ?: $this->router->getDefaultRouteCollection();
     }
 
     /**
