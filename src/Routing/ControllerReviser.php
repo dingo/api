@@ -53,7 +53,7 @@ class ControllerReviser
     /**
      * Determine if the route is routing to a controller.
      *
-     * @param  Illuminate\Routing\Route  $action
+     * @param  \Illuminate\Routing\Route  $route
      * @return bool
      */
     protected function routingToController(Route $route)
@@ -65,7 +65,7 @@ class ControllerReviser
      * Revise the scopes of a controller method. Scopes defined on the
      * controller are merged with those in the route definition.
      *
-     * @param  \Illuminate\Routing\Route  $route
+     * @param  \Illuminate\Routing\Route  $action
      * @param  \Dingo\Api\Routing\Controller  $controller
      * @param  string  $method
      * @return \Illuminate\Routing\Route
@@ -94,7 +94,7 @@ class ControllerReviser
     /**
      * Revise the protected state of a controller method.
      *
-     * @param  \Illuminate\Routing\Route  $route
+     * @param  \Illuminate\Routing\Route  $action
      * @param  \Dingo\Api\Routing\Controller  $controller
      * @param  string  $method
      * @return \Illuminate\Routing\Route

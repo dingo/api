@@ -77,6 +77,7 @@ class ApiServiceProvider extends ServiceProvider
      * Boot the response formats.
      *
      * @return array
+     * @throws \RuntimeException
      */
     protected function bootResponseFormats()
     {

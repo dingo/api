@@ -54,6 +54,7 @@ class Authentication implements HttpKernelInterface
      *
      * @param  \Symfony\Component\HttpKernel\HttpKernelInterface  $app
      * @param  \Illuminate\Container\Container  $container
+     * @param  \Dingo\Api\Routing\ControllerReviser  $controllerReviser
      * @return void
      */
     public function __construct(HttpKernelInterface $app, Container $container, ControllerReviser $controllerReviser = null)

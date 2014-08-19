@@ -136,6 +136,7 @@ class Dispatcher
      *
      * @param  \Illuminate\Auth\GenericUser|\Illuminate\Database\Eloquent\Model  $user
      * @return \Dingo\Api\Dispatcher
+     * @throws \RuntimeException
      */
     public function be($user)
     {
@@ -208,7 +209,7 @@ class Dispatcher
     /**
      * Perform an API request to a controller action.
      *
-     * @param  string  $name
+     * @param  string  $action
      * @param  string|array  $actionParameters
      * @param  string|array  $parameters
      * @return mixed
@@ -352,6 +353,7 @@ class Dispatcher
      *
      * @param  \Dingo\Api\Http\InternalRequest  $request
      * @return mixed
+     * @throws \Exception|\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface
      */
     protected function dispatch(InternalRequest $request)
     {
