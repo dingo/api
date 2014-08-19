@@ -20,6 +20,6 @@ class ControllerInspector extends IlluminateControllerInspector
             return false;
         }
 
-        return parent::isRoutable($method, $controller);
+        return call_user_func_array([$this, 'parent::isRoutable'], [$method, $controller]);
     }
 }
