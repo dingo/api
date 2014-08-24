@@ -3,11 +3,11 @@
 namespace Dingo\Api;
 
 use RuntimeException;
-use Dingo\Api\Auth\Shield;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Dingo\Api\Routing\Router;
 use Illuminate\Auth\GenericUser;
+use Dingo\Api\Auth\Authenticator;
 use Dingo\Api\Http\InternalRequest;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Database\Eloquent\Model;
@@ -39,9 +39,9 @@ class Dispatcher
     protected $router;
 
     /**
-     * API authentication shield instance.
+     * API authentication Authenticator instance.
      *
-     * @var \Dingo\Api\Auth\Shield
+     * @var \Dingo\Api\Auth\Authenticator
      */
     protected $auth;
 
@@ -93,10 +93,10 @@ class Dispatcher
      * @param  \Illuminate\Http\Request  $request
      * @param  \Illuminate\Routing\UrlGenerator  $url
      * @param  \Dingo\Api\Routing\Router  $router
-     * @param  \Dingo\Api\Auth\Shield  $auth
+     * @param  \Dingo\Api\Auth\Authenticator  $auth
      * @return void
      */
-    public function __construct(Request $request, UrlGenerator $url, Router $router, Shield $auth)
+    public function __construct(Request $request, UrlGenerator $url, Router $router, Authenticator $auth)
     {
         $this->request = $request;
         $this->url = $url;

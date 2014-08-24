@@ -3,9 +3,9 @@
 namespace Dingo\Api;
 
 use RuntimeException;
-use Dingo\Api\Auth\Shield;
 use Dingo\Api\Routing\Router;
 use Dingo\Api\Exception\Handler;
+use Dingo\Api\Auth\Authenticator;
 use Dingo\Api\Http\ResponseBuilder;
 use League\Fractal\Manager as Fractal;
 use Illuminate\Support\ServiceProvider;
@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Response;
 use Dingo\Api\Http\Response as ApiResponse;
 use Dingo\Api\Transformer\FractalTransformer;
 use Dingo\Api\Events\RouterHandler;
-use Dingo\Api\Events\AuthenticationHandler;
+use Dingo\Api\Http\Filter\AuthFilter;
 use Dingo\Api\Routing\ControllerDispatcher;
 
 class ApiServiceProvider extends ServiceProvider
@@ -42,7 +42,8 @@ class ApiServiceProvider extends ServiceProvider
 
         $events->listen('router.exception', 'Dingo\Api\Events\RouterHandler@handleException');
         $events->listen('router.matched', 'Dingo\Api\Events\RouterHandler@handleControllerRevising');
-        $events->listen('router.filter: api.auth', 'Dingo\Api\Events\AuthenticationHandler@handleRequestAuthentication');
+        
+        $this->app['router']->filter('auth.api', 'Dingo\Api\Http\Filter\AuthFilter');
     }
 
     /**
@@ -68,8 +69,8 @@ class ApiServiceProvider extends ServiceProvider
             return new RouterHandler($app['router'], new Handler, new ControllerReviser($app));
         });
 
-        $this->app->bind'Dingo\Api\Events\AuthenticationHandler', function ($app) {
-            return new AuthenticationHandler($app['router'], $app['events'], $app['api.auth']);
+        $this->app->bind('Dingo\Api\Http\Filter\AuthFilter', function ($app) {
+            return new AuthFilter($app['router'], $app['events'], $app['api.auth']);
         });
     }
 
@@ -131,8 +132,7 @@ class ApiServiceProvider extends ServiceProvider
         $this->registerRouter();
         $this->registerResponseBuilder();
         $this->registerTransformer();
-        $this->registerExceptionHandler();
-        $this->registerAuthentication();
+        $this->registerAuthenticator();
         $this->registerCommands();
         $this->registerBootingEvent();
     }
@@ -161,9 +161,9 @@ class ApiServiceProvider extends ServiceProvider
      */
     protected function registerRouter()
     {
-        $this->app->bindShared('router', function ($app) {
+        $this->app['router'] = $this->app->share(function ($app) {
             $router = new Router($app['events'], $app);
-            $dispatcher = new ControllerDispatcher($router, $app['api.dispatcher'], $app['api.auth'], $app['api.response'], $app);
+            $dispatcher = new ControllerDispatcher($router, $app);
             
             $router->setControllerDispatcher($dispatcher);
 
@@ -182,7 +182,7 @@ class ApiServiceProvider extends ServiceProvider
      */
     protected function registerResponseBuilder()
     {
-        $this->app->bindShared('api.response', function ($app) {
+        $this->app['api.response'] = $this->app->share(function ($app) {
             $transformer = $app['api.transformer'];
 
             if (! $transformer instanceof FractalTransformer) {
@@ -200,7 +200,7 @@ class ApiServiceProvider extends ServiceProvider
      */
     protected function registerDispatcher()
     {
-        $this->app->bindShared('api.dispatcher', function ($app) {
+        $this->app['api.dispatcher'] = $this->app->share(function ($app) {
             return new Dispatcher($app['request'], $app['url'], $app['router'], $app['api.auth']);
         });
     }
@@ -212,7 +212,7 @@ class ApiServiceProvider extends ServiceProvider
      */
     protected function registerTransformer()
     {
-        $this->app->bindShared('api.transformer', function ($app) {
+        $this->app['api.transformer'] = $this->app->share(function ($app) {
             $transformer = call_user_func($app['config']->get('api::transformer'), $app);
 
             $transformer->setContainer($app);
@@ -226,9 +226,9 @@ class ApiServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function registerAuthentication()
+    protected function registerAuthenticator()
     {
-        $this->app->bindShared('api.auth', function ($app) {
+        $this->app['api.auth'] = $this->app->share(function ($app) {
             $providers = [];
 
             foreach ($app['config']['api::auth'] as $key => $provider) {
@@ -239,7 +239,7 @@ class ApiServiceProvider extends ServiceProvider
                 $providers[$key] = $provider;
             }
 
-            return new Shield($app['router'], $app, $providers);
+            return new Authenticator($app['router'], $app, $providers);
         });
     }
 
@@ -250,7 +250,7 @@ class ApiServiceProvider extends ServiceProvider
      */
     protected function registerCommands()
     {
-        $this->app->bindShared('api.command.routes', function ($app) {
+        $this->app['api.command.routes'] = $this->app->share(function ($app) {
             return new ApiRoutesCommand($app['router']);
         });
 
