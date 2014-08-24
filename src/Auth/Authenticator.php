@@ -71,13 +71,7 @@ class Authenticator
     protected function prepareProviders(array $providers)
     {
         foreach ($providers as $key => $provider) {
-            $provider = $this->createProvider($provider);
-
-            if ($provider instanceof Provider) {
-                $providers[$key] = $provider;
-            } else {
-                unset($providers[$key]);
-            }
+            $providers[$key] = $this->createProvider($provider);
         }
 
         return $providers;
@@ -163,9 +157,7 @@ class Authenticator
      */
     public function getUser()
     {
-        if ($this->user) {
-            return $this->user;
-        }
+        if ($this->user) return $this->user;
 
         try {
             return $this->user = $this->authenticate();
@@ -226,6 +218,6 @@ class Authenticator
      */
     public function extend($key, $provider)
     {
-        $this->providers[$key] = is_callable($provider) ? call_user_func($provider, $this->container) : $provider;
+        $this->providers[$key] = $this->createProvider($provider);
     }
 }
