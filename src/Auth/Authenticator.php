@@ -10,14 +10,14 @@ use Illuminate\Container\Container;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class Shield
+class Authenticator
 {
     /**
-     * Illuminate auth instance.
-     *
-     * @var \Illuminate\Auth\AuthManager
+     * API router instance.
+     * 
+     * @var \Dingo\Api\Routing\Router
      */
-    protected $auth;
+    protected $router;
 
     /**
      * Illuminate application container instance.
@@ -27,7 +27,7 @@ class Shield
     protected $container;
 
     /**
-     * Array of authentication providers.
+     * Array of available authentication providers.
      *
      * @var array
      */
@@ -48,8 +48,9 @@ class Shield
     protected $user;
 
     /**
-     * Create a new Dingo\Api\Authentication instance.
+     * Create a new authenticator instance.
      *
+     * @param  \Dingo\Api\Routing\Router  $router
      * @param  \Illuminate\Container\Container  $container
      * @param  array  $providers
      * @return void
@@ -64,16 +65,18 @@ class Shield
     /**
      * Authenticate the current request.
      *
-     * @return null|\Dingo\Api\Http\Response
+     * @param  array  $providers
+     * @return mixed
+     * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
      */
-    public function authenticate()
+    public function authenticate(array $providers = [])
     {
         $exceptionStack = [];
 
         // Spin through each of the registered authentication providers and attempt to
         // authenticate through one of them. This allows a developer to implement
         // and allow a number of different authentication mechanisms.
-        foreach ($this->providers as $key => $provider) {
+        foreach ($this->prepareProviders($providers) as $provider) {
             try {
                 $user = $provider->authenticate($this->router->getCurrentRequest(), $this->router->getCurrentRoute());
 
@@ -89,6 +92,18 @@ class Shield
             }
         }
 
+        $this->throwUnauthorizedException($exceptionStack);
+    }
+
+    /**
+     * Throw the first exception from the exception stack.
+     * 
+     * @param  array  $exceptionStack
+     * @return void
+     * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
+     */
+    protected function throwUnauthorizedException(array $exceptionStack)
+    {
         $exception = array_shift($exceptionStack);
 
         if ($exception === null) {
@@ -96,6 +111,17 @@ class Shield
         }
 
         throw $exception;
+    }
+
+    /**
+     * Prepare the requested authentication providers.
+     * 
+     * @param  array  $providers
+     * @return array
+     */
+    protected function prepareProviders(array $providers)
+    {
+        return array_intersect_key($this->providers, array_flip($providers));
     }
 
     /**
@@ -112,7 +138,7 @@ class Shield
         try {
             return $this->user = $this->authenticate();
         } catch (Exception $exception) {
-            return;
+            return null;
         }
     }
 
@@ -146,7 +172,7 @@ class Shield
      */
     public function check()
     {
-        return ! is_null($this->user());
+        return ! is_null($this->user);
     }
 
     /**
