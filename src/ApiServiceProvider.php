@@ -222,24 +222,14 @@ class ApiServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register the API authentication.
+     * Register the API authenticator.
      *
      * @return void
      */
     protected function registerAuthenticator()
     {
         $this->app['api.auth'] = $this->app->share(function ($app) {
-            $providers = [];
-
-            foreach ($app['config']['api::auth'] as $key => $provider) {
-                if (is_callable($provider)) {
-                    $provider = call_user_func($provider, $app);
-                }
-
-                $providers[$key] = $provider;
-            }
-
-            return new Authenticator($app['router'], $app, $providers);
+            return new Authenticator($app['router'], $app, $app['config']->get('api::auth'));
         });
     }
 

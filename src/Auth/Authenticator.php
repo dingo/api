@@ -59,7 +59,39 @@ class Authenticator
     {
         $this->router = $router;
         $this->container = $container;
-        $this->providers = $providers;
+        $this->providers = $this->prepareProviders($providers);
+    }
+
+    /**
+     * Prepare the available authentication providers.
+     * 
+     * @param  array  $providers
+     * @return array
+     */
+    protected function prepareProviders(array $providers)
+    {
+        foreach ($providers as $key => $provider) {
+            $provider = $this->createProvider($provider);
+
+            if ($provider instanceof Provider) {
+                $providers[$key] = $provider;
+            } else {
+                unset($providers[$key]);
+            }
+        }
+
+        return $providers;
+    }
+
+    /**
+     * Create an authentication provider.
+     * 
+     * @param  mixed  $provider
+     * @return mixed
+     */
+    protected function createProvider($provider)
+    {
+        return is_callable($provider) ? call_user_func($provider, $this->container) : $provider;
     }
 
     /**
@@ -76,7 +108,7 @@ class Authenticator
         // Spin through each of the registered authentication providers and attempt to
         // authenticate through one of them. This allows a developer to implement
         // and allow a number of different authentication mechanisms.
-        foreach ($this->prepareProviders($providers) as $provider) {
+        foreach ($this->filterProviders($providers) as $provider) {
             try {
                 $user = $provider->authenticate($this->router->getCurrentRequest(), $this->router->getCurrentRoute());
 
@@ -114,12 +146,12 @@ class Authenticator
     }
 
     /**
-     * Prepare the requested authentication providers.
+     * Filter the requested providers from the available providers.
      * 
      * @param  array  $providers
      * @return array
      */
-    protected function prepareProviders(array $providers)
+    protected function filterProviders(array $providers)
     {
         return array_intersect_key($this->providers, array_flip($providers));
     }
