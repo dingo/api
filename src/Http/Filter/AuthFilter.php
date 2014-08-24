@@ -10,7 +10,7 @@ use Illuminate\Events\Dispatcher;
 use Dingo\Api\Http\InternalRequest;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class AuthFilter
+class AuthFilter extends Filter
 {
 	/**
 	 * API router instance.
@@ -67,48 +67,5 @@ class AuthFilter
         } catch (UnauthorizedHttpException $exception) {
             return $this->events->until('router.exception', [$exception]);
         }
-	}
-
-	/**
-	 * Indicates if a request is internal.
-	 * 
-	 * @param  \Illuminate\Http\Request  $request
-	 * @return bool
-	 */
-	protected function requestIsInternal(Request $request)
-	{
-		return $request instanceof InternalRequest;
-	}
-
-	/**
-	 * Indicates if the request is regular request.
-	 * 
-	 * @param  \Illuminate\Http\Request  $request
-	 * @return bool
-	 */
-	protected function requestIsRegular(Request $request)
-	{
-		return ! $this->router->requestTargettingApi($request);
-	}
-
-	/**
-	 * Indicates if a route is not protected.
-	 * 
-	 * @param  \Dingo\Api\Routing\Route  $route
-	 * @return bool
-	 */
-	protected function routeNotProtected(Route $route)
-	{
-		return ! $route->isProtected();
-	}
-
-	/**
-	 * Indicates if a user is logged in.
-	 * 
-	 * @return bool
-	 */
-	protected function userIsLogged()
-	{
-		return $this->auth->check();
 	}
 }
