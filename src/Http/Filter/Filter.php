@@ -2,6 +2,10 @@
 
 namespace Dingo\Api\Http\Filter;
 
+use Illuminate\Http\Request;
+use Dingo\Api\Routing\Route;
+use Dingo\Api\Http\InternalRequest;
+
 abstract class Filter
 {
 	/**

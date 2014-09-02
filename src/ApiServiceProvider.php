@@ -6,17 +6,19 @@ use RuntimeException;
 use Dingo\Api\Routing\Router;
 use Dingo\Api\Exception\Handler;
 use Dingo\Api\Auth\Authenticator;
+use Dingo\Api\Events\RouterHandler;
 use Dingo\Api\Http\ResponseBuilder;
+use Dingo\Api\Http\Filter\AuthFilter;
 use League\Fractal\Manager as Fractal;
 use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Console\ApiRoutesCommand;
 use Dingo\Api\Routing\ControllerReviser;
 use Illuminate\Support\Facades\Response;
+use Dingo\Api\Http\RateLimit\RateLimiter;
+use Dingo\Api\Http\Filter\RateLimitFilter;
+use Dingo\Api\Routing\ControllerDispatcher;
 use Dingo\Api\Http\Response as ApiResponse;
 use Dingo\Api\Transformer\FractalTransformer;
-use Dingo\Api\Events\RouterHandler;
-use Dingo\Api\Http\Filter\AuthFilter;
-use Dingo\Api\Routing\ControllerDispatcher;
 
 class ApiServiceProvider extends ServiceProvider
 {
@@ -44,6 +46,7 @@ class ApiServiceProvider extends ServiceProvider
         $events->listen('router.matched', 'Dingo\Api\Events\RouterHandler@handleControllerRevising');
         
         $this->app['router']->filter('auth.api', 'Dingo\Api\Http\Filter\AuthFilter');
+        $this->app['router']->filter('api.throttle', 'Dingo\Api\Http\Filter\RateLimitFilter');
     }
 
     /**
@@ -71,6 +74,10 @@ class ApiServiceProvider extends ServiceProvider
 
         $this->app->bind('Dingo\Api\Http\Filter\AuthFilter', function ($app) {
             return new AuthFilter($app['router'], $app['events'], $app['api.auth']);
+        });
+
+        $this->app->bind('Dingo\Api\Http\Filter\RateLimitFilter', function ($app) {
+            return new RateLimitFilter($app['router'], $app['api.auth'], $app['api.limiter']);
         });
     }
 
@@ -106,7 +113,7 @@ class ApiServiceProvider extends ServiceProvider
     {
         $formats = [];
 
-        foreach ($this->app['config']['api::formats'] as $key => $format) {
+        foreach ($this->prepareConfigInstances($this->app['config']['api::formats']) as $key => $format) {
             if (is_callable($format)) {
                 $format = call_user_func($format, $this->app);
             }
@@ -133,6 +140,7 @@ class ApiServiceProvider extends ServiceProvider
         $this->registerResponseBuilder();
         $this->registerTransformer();
         $this->registerAuthenticator();
+        $this->registerRateLimiter();
         $this->registerCommands();
         $this->registerBootingEvent();
     }
@@ -213,7 +221,7 @@ class ApiServiceProvider extends ServiceProvider
     protected function registerTransformer()
     {
         $this->app['api.transformer'] = $this->app->share(function ($app) {
-            $transformer = call_user_func($app['config']->get('api::transformer'), $app);
+            $transformer = $this->prepareConfigInstance($app['config']['api::transformer']);
 
             $transformer->setContainer($app);
 
@@ -229,8 +237,56 @@ class ApiServiceProvider extends ServiceProvider
     protected function registerAuthenticator()
     {
         $this->app['api.auth'] = $this->app->share(function ($app) {
-            return new Authenticator($app['router'], $app, $app['config']->get('api::auth'));
+            $providers = $this->prepareConfigInstances($app['config']['api::auth']);
+
+            return new Authenticator($app['router'], $app, $providers);
         });
+    }
+
+    /**
+     * Register the API rate limiter.
+     * 
+     * @return void
+     */  
+    protected function registerRateLimiter()
+    {
+        $this->app['api.limiter'] = $this->app->share(function ($app) {
+            $throttles = $this->prepareConfigInstances($app['config']['api::throttling']);
+
+            return new RateLimiter($app['cache'], $app, $throttles);
+        });
+    }
+
+    /**
+     * Prepare an array of instantiable configuration instances.
+     * 
+     * @param  array  $instances
+     * @return array
+     */
+    protected function prepareConfigInstances(array $instances)
+    {
+        foreach ($instances as $key => $value) {
+            $instances[$key] = $this->prepareConfigInstance($value);
+        }
+
+        return $instances;
+    }
+
+    /**
+     * Prepare an instantiable configuration instance.
+     * 
+     * @param  mixed  $instance
+     * @return object
+     */
+    protected function prepareConfigInstance($instance)
+    {
+        if (is_callable($instance)) {
+            return call_user_func($instance, $this->app);
+        } elseif (is_string($instance)) {
+            return $this->app->make($instance);
+        } else {
+            return $instance;
+        }
     }
 
     /**
