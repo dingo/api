@@ -4,40 +4,41 @@ namespace Dingo\Api\Events;
 
 use Exception;
 use Dingo\Api\Http\Response;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Route;
-use Illuminate\Routing\Router;
 use Dingo\Api\Exception\Handler;
-use Dingo\Api\Routing\ControllerReviser;
 use Dingo\Api\Exception\ResourceException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
-class RouterHandler
+class ExceptionHandler
 {
-    protected $router;
+    /**
+     * API exception handler instance.
+     * 
+     * @var \Dingo\Api\Exception\Handler
+     */
+    protected $handler;
 
-    protected $exceptionHandler;
-    
-    protected $controllerReviser;
-
-    public function __construct(Router $router, Handler $exceptionHandler, ControllerReviser $controllerReviser)
+    /**
+     * Create a new exception handler instance.
+     * 
+     * @param  \Dingo\Api\Exception\Handler  $handler
+     * @return void
+     */
+    public function __construct(Handler $handler)
     {
-        $this->router = $router;
-        $this->exceptionHandler = $exceptionHandler;
-        $this->controllerReviser = $controllerReviser;
+        $this->handler = $handler;
     }
 
-    public function handleControllerRevising(Route $route, Request $request)
+    /**
+     * Handle an exception thrown during dispatching of an API request.
+     * 
+     * @param  \Exception  $exception
+     * @return \Dingo\Api\Http\Response
+     * @throws \Exception
+     */
+    public function handle(Exception $exception)
     {
-        if ($this->router->requestTargettingApi($request)) {
-            $this->controllerReviser->revise($route);
-        }
-    }
-    
-    public function handleException(Exception $exception)
-    {
-        if ($this->exceptionHandler->willHandle($exception)) {
-            $response = $this->exceptionHandler->handle($exception);
+        if ($this->handler->willHandle($exception)) {
+            $response = $this->handler->handle($exception);
 
             return Response::makeFromExisting($response);
         } elseif (! $exception instanceof HttpExceptionInterface) {

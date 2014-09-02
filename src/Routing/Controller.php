@@ -3,7 +3,7 @@
 namespace Dingo\Api\Routing;
 
 use Dingo\Api\Dispatcher;
-use Dingo\Api\Auth\Shield;
+use Dingo\Api\Auth\Authenticator;
 use Dingo\Api\Http\ResponseBuilder;
 use Illuminate\Routing\Controller as IlluminateController;
 
@@ -17,9 +17,9 @@ abstract class Controller extends IlluminateController
     protected $api;
 
     /**
-     * API authentication shield instance.
+     * API authenticator instance.
      *
-     * @var \Dingo\Api\Auth\Shield
+     * @var \Dingo\Api\Auth\Authenticator
      */
     protected $auth;
 
@@ -50,21 +50,6 @@ abstract class Controller extends IlluminateController
      * @var array
      */
     protected $scopedMethods = [];
-
-    /**
-     * Create a new controller instance.
-     *
-     * @param  \Dingo\Api\Dispatcher  $api
-     * @param  \Dingo\Api\Auth\Shield  $auth
-     * @param  \Dingo\Api\Http\ResponseBuilder  $response
-     * @return void
-     */
-    public function __construct(Dispatcher $api, Shield $auth, ResponseBuilder $response)
-    {
-        $this->api = $api;
-        $this->auth = $auth;
-        $this->response = $response;
-    }
 
     /**
      * Set the scopes for all or a subset of methods.
@@ -142,16 +127,34 @@ abstract class Controller extends IlluminateController
         return $this->scopedMethods;
     }
 
-    public function setDispatcher(Dispatcher $dispatcher)
+    /**
+     * Set the API dispatcher instance.
+     * 
+     * @param  \Dingo\Api\Dispatcher  $api
+     * @return void
+     */
+    public function setDispatcher(Dispatcher $api)
     {
-        $this->dispatcher = $dispatcher;
+        $this->api = $api;
     }
 
-    public function setAuthenticator(Shield $auth)
+    /**
+     * Set the API authenticator instance.
+     * 
+     * @param  \Dingo\Api\Auth\Authenticator  $auth
+     * @return void
+     */
+    public function setAuthenticator(Authenticator $auth)
     {
         $this->auth = $auth;
     }
 
+    /**
+     * Set the API response builder instance.
+     * 
+     * @param  \Dingo\Api\Http\ResponseBuilder  $response
+     * @return void
+     */
     public function setResponseBuilder(ResponseBuilder $response)
     {
         $this->response = $response;
