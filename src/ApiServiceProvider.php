@@ -2,23 +2,22 @@
 
 namespace Dingo\Api;
 
+use Dingo\Api\Events;
 use RuntimeException;
+use Dingo\Api\Http\Filter;
 use Dingo\Api\Routing\Router;
-use Dingo\Api\Exception\Handler;
 use Dingo\Api\Auth\Authenticator;
-use Dingo\Api\Events\RouterHandler;
 use Dingo\Api\Http\ResponseBuilder;
-use Dingo\Api\Http\Filter\AuthFilter;
 use League\Fractal\Manager as Fractal;
 use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Console\ApiRoutesCommand;
 use Dingo\Api\Routing\ControllerReviser;
 use Illuminate\Support\Facades\Response;
 use Dingo\Api\Http\RateLimit\RateLimiter;
-use Dingo\Api\Http\Filter\RateLimitFilter;
 use Dingo\Api\Routing\ControllerDispatcher;
 use Dingo\Api\Http\Response as ApiResponse;
 use Dingo\Api\Transformer\FractalTransformer;
+use Dingo\Api\Exception\Handler as ExceptionHandler;
 
 class ApiServiceProvider extends ServiceProvider
 {
@@ -42,8 +41,8 @@ class ApiServiceProvider extends ServiceProvider
     {
         $events = $this->app['events'];
 
-        $events->listen('router.exception', 'Dingo\Api\Events\RouterHandler@handleException');
-        $events->listen('router.matched', 'Dingo\Api\Events\RouterHandler@handleControllerRevising');
+        $events->listen('router.exception', 'Dingo\Api\Events\ExceptionHandler');
+        $events->listen('router.matched', 'Dingo\Api\Events\RevisingHandler');
         
         $this->app['router']->filter('auth.api', 'Dingo\Api\Http\Filter\AuthFilter');
         $this->app['router']->filter('api.throttle', 'Dingo\Api\Http\Filter\RateLimitFilter');
@@ -68,16 +67,20 @@ class ApiServiceProvider extends ServiceProvider
             return $app['api.response'];
         });
 
-        $this->app->bind('Dingo\Api\Events\RouterHandler', function ($app) {
-            return new RouterHandler($app['router'], new Handler, new ControllerReviser($app));
+        $this->app->bind('Dingo\Api\Events\ExceptionHandler', function ($app) {
+            return new Events\ExceptionHandler(new ExceptionHandler);
+        });
+
+        $this->app->bind('Dingo\Api\Events\RevisingHandler', function ($app) {
+            return new Events\RevisingHandler($app['router'], new ControllerReviser($app));
         });
 
         $this->app->bind('Dingo\Api\Http\Filter\AuthFilter', function ($app) {
-            return new AuthFilter($app['router'], $app['events'], $app['api.auth']);
+            return new Filter\AuthFilter($app['router'], $app['events'], $app['api.auth']);
         });
 
         $this->app->bind('Dingo\Api\Http\Filter\RateLimitFilter', function ($app) {
-            return new RateLimitFilter($app['router'], $app['api.auth'], $app['api.limiter']);
+            return new Filter\RateLimitFilter($app['router'], $app['api.auth'], $app['api.limiter']);
         });
     }
 
