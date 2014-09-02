@@ -162,7 +162,13 @@ class Router extends IlluminateRouter
             if ($request instanceof InternalRequest) {
                 throw $exception;
             } else {
-                $response = $this->events->until('router.exception', [$exception]);
+                $response = $this->prepareResponse(
+                    $request, $this->events->until('router.exception', [$exception])
+                );
+
+                // When an exception is thrown it halts execution of the dispatch. We'll
+                // call the attached after filters for caught exceptions still.
+                $this->callFilter('after', $request, $response);
             }
         }
 
