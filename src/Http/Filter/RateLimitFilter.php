@@ -53,18 +53,18 @@ class RateLimitFilter extends Filter
      * 
      * @param  \Dingo\Api\Routing\Route  $route
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $requestsAllowed
-     * @param  int  $requestsExpire
+     * @param  int  $limit
+     * @param  int  $expires
      * @return mixed
      * @throws \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException
      */
-    public function filter(Route $route, Request $request, $requestsAllowed = 0, $requestsExpire = 0)
+    public function filter(Route $route, Request $request, $limit = 0, $expires = 0)
     {
         if ($this->requestIsInternal($request) || $this->requestIsRegular($request)) {
             return null;
         }
 
-        $this->limiter->rateLimitRequest($request, $requestsAllowed, $requestsExpire);
+        $this->limiter->rateLimitRequest($request, $limit, $expires);
 
         if (! $this->limiter->requestWasRateLimited()) {
             return null;
@@ -85,8 +85,8 @@ class RateLimitFilter extends Filter
     protected function attachResponseAfterFilter()
     {
         $this->router->after(function (Request $request, Response $response) {
-            $response->headers->set('X-RateLimit-Limit', $this->limiter->getThrottle()->getRequests());
-            $response->headers->set('X-RateLimit-Remaining', $this->limiter->getRemainingRequests());
+            $response->headers->set('X-RateLimit-Limit', $this->limiter->getThrottle()->getLimit());
+            $response->headers->set('X-RateLimit-Remaining', $this->limiter->getRemainingLimit());
             $response->headers->set('X-RateLimit-Reset', $this->limiter->getRateLimitExpiration());
         });
     }

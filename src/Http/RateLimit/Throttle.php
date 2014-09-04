@@ -11,7 +11,7 @@ abstract class Throttle
      * 
      * @var array
      */
-    protected $options = ['requests' => 0, 'expires' => 60];
+    protected $options = ['limit' => 0, 'expires' => 60];
 
     /**
      * Create a new throttle instance.
@@ -43,13 +43,13 @@ abstract class Throttle
     }
 
     /**
-     * Get the throttles allowed number of requests.
+     * Get the throttles request limit.
      * 
      * @return int
      */
-    public function getRequests()
+    public function getLimit()
     {
-        return $this->options['requests'];
+        return $this->options['limit'];
     }
 
     /**

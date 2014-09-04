@@ -63,19 +63,19 @@ class RateLimiter
      * Execute the rate limiting for the given request.
      * 
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $requestsAllowed
-     * @param  int  $requestsExpire
+     * @param  int  $limit
+     * @param  int  $expires
      * @return void
      */
-    public function rateLimitRequest(Request $request, $requestsAllowed = 0, $requestsExpire = 0)
+    public function rateLimitRequest(Request $request, $limit = 0, $expires = 0)
     {
         $this->request = $request;
 
         // If the developer specified a certain amount of requests or expiration
         // time on a specific route then we'll always use the route specific
         // throttle with the given values.
-        if ($requestsAllowed > 0 || $requestsExpire > 0) {
-            $this->throttle = new RouteSpecificThrottle(['requests' => $requestsAllowed, 'expires' => $requestsExpire]);
+        if ($limit > 0 || $expires > 0) {
+            $this->throttle = new RouteSpecificThrottle(['limit' => $limit, 'expires' => $expires]);
         
         // Otherwise we'll use the throttle that gives the consumer the largest
         // amount of requests. If no matching throttle is found then rate
@@ -87,7 +87,7 @@ class RateLimiter
         }
 
         if (is_null($this->throttle)) {
-            return false;
+            return;
         }
 
         $this->cache('requests', 0, $this->throttle->getExpires());
@@ -102,7 +102,7 @@ class RateLimiter
      */
     public function exceededRateLimit()
     {
-        return $this->retrieve('requests') > $this->throttle->getRequests();
+        return $this->retrieve('requests') > $this->throttle->getLimit();
     }
 
     /**
@@ -184,13 +184,13 @@ class RateLimiter
     }
 
     /**
-     * Get the remaining requests before the consumer is rate limited.
+     * Get the remaining limit before the consumer is rate limited.
      * 
      * @return int
      */
-    public function getRemainingRequests()
+    public function getRemainingLimit()
     {
-        $remaining = $this->throttle->getRequests() - $this->retrieve('requests');
+        $remaining = $this->throttle->getLimit() - $this->retrieve('requests');
 
         return $remaining > 0 ? $remaining : 0;
     }
