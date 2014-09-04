@@ -238,7 +238,7 @@ class Router extends IlluminateRouter
     {
         $filters = $route->beforeFilters();
 
-        foreach (['auth.api', 'api.throttle'] as $filter) {
+        foreach (['api.auth', 'api.throttle'] as $filter) {
             if (! isset($filters[$filter])) {
                 $route->before($filter);
             }
