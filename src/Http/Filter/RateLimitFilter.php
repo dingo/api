@@ -53,16 +53,18 @@ class RateLimitFilter extends Filter
      * 
      * @param  \Dingo\Api\Routing\Route  $route
      * @param  \Illuminate\Http\Request  $request
+     * @param  int  $requestsAllowed
+     * @param  int  $requestsExpire
      * @return mixed
      * @throws \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException
      */
-    public function filter(Route $route, Request $request)
+    public function filter(Route $route, Request $request, $requestsAllowed = 0, $requestsExpire = 0)
     {
         if ($this->requestIsInternal($request) || $this->requestIsRegular($request)) {
             return null;
         }
 
-        $this->limiter->rateLimitRequest($request);
+        $this->limiter->rateLimitRequest($request, $requestsAllowed, $requestsExpire);
 
         if (! $this->limiter->requestWasRateLimited()) {
             return null;

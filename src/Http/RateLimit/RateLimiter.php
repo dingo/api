@@ -56,18 +56,28 @@ class RateLimiter
      * Execute the rate limiting for the given request.
      * 
      * @param  \Illuminate\Http\Request  $request
+     * @param  int  $requestsAllowed
+     * @param  int  $requestsExpire
      * @return void
      */
-    public function rateLimitRequest(Request $request)
+    public function rateLimitRequest(Request $request, $requestsAllowed = 0, $requestsExpire = 0)
     {
         $this->request = $request;
 
-        // We'll use the throttle that gives the consumer the largest amount of
-        // requests. If no matching throttle is found then rate limiting
-        // will not be imposed for the request.
-        $this->throttle = $this->getMatchingThrottles()->sort(function ($a, $b) {
-            return $a->getRequests() < $b->getRequests();
-        })->first();
+        // If the developer specified a certain amount of requests or expiration
+        // time on a specific route then we'll always use the route specific
+        // throttle with the given values.
+        if ($requestsAllowed > 0 || $requestsExpire > 0) {
+            $this->throttle = new RouteSpecificThrottle(['requests' => $requestsAllowed, 'expires' => $requestsExpire]);
+        
+        // Otherwise we'll use the throttle that gives the consumer the largest
+        // amount of requests. If no matching throttle is found then rate
+        // limiting will not be imposed for the request.
+        } else {
+            $this->throttle = $this->getMatchingThrottles()->sort(function ($a, $b) {
+                return $a->getRequests() < $b->getRequests();
+            })->first();
+        }
 
         if (is_null($this->throttle)) {
             return false;
