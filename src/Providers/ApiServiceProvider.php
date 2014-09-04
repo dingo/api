@@ -137,7 +137,7 @@ class ApiServiceProvider extends ServiceProvider
      * Register the API rate limiter.
      * 
      * @return void
-     */  
+     */
     protected function registerRateLimiter()
     {
         $this->app->bindShared('api.limiter', function ($app) {

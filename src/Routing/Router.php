@@ -126,7 +126,7 @@ class Router extends IlluminateRouter
         }
 
         foreach ($options['version'] as $version) {
-           if (! isset($this->api[$version])) {
+            if (! isset($this->api[$version])) {
                 $this->api[$version] = new RouteCollection($version, array_except($options, 'version'));
             }
         }
@@ -163,7 +163,8 @@ class Router extends IlluminateRouter
                 throw $exception;
             } else {
                 $response = $this->prepareResponse(
-                    $request, $this->events->until('router.exception', [$exception])
+                    $request,
+                    $this->events->until('router.exception', [$exception])
                 );
 
                 // When an exception is thrown it halts execution of the dispatch. We'll
@@ -219,7 +220,9 @@ class Router extends IlluminateRouter
         $versions = array_get(last($this->groupStack), 'version', []);
 
         foreach ($versions as $version) {
-            if ($collection = $this->getApiRouteCollection($version)) $collection->add($route);
+            if ($collection = $this->getApiRouteCollection($version)) {
+                $collection->add($route);
+            }
         }
 
         return $route;
@@ -236,7 +239,9 @@ class Router extends IlluminateRouter
         $filters = $route->beforeFilters();
 
         foreach (['auth.api', 'api.throttle'] as $filter) {
-            if (! isset($filters[$filter])) $route->before($filter);
+            if (! isset($filters[$filter])) {
+                $route->before($filter);
+            }
         }
 
         return $route;

@@ -12,25 +12,25 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class RateLimitFilter extends Filter
 {
-	/**
-	 * API router instance.
-	 * 
-	 * @var \Dingo\Api\Routing\Router
-	 */
-	protected $router;
+    /**
+     * API router instance.
+     * 
+     * @var \Dingo\Api\Routing\Router
+     */
+    protected $router;
 
-	/**
-	 * API authenticator instance.
-	 * 
-	 * @var \Dingo\Api\Auth\Authenticator
-	 */
-	protected $auth;
+    /**
+     * API authenticator instance.
+     * 
+     * @var \Dingo\Api\Auth\Authenticator
+     */
+    protected $auth;
 
-	/**
-	 * API rate limiter instance.
-	 * 
-	 * @var \Dingo\Api\Http\RateLimit\RateLimiter
-	 */
+    /**
+     * API rate limiter instance.
+     * 
+     * @var \Dingo\Api\Http\RateLimit\RateLimiter
+     */
     protected $limiter;
 
     /**
@@ -41,51 +41,51 @@ class RateLimitFilter extends Filter
      * @param  \Dingo\Api\Http\RateLimit\RateLimiter  $limiter
      * @return void
      */
-	public function __construct(Router $router, Authenticator $auth, RateLimiter $limiter)
-	{
-		$this->router = $router;
-		$this->auth = $auth;
-		$this->limiter = $limiter;
-	}
+    public function __construct(Router $router, Authenticator $auth, RateLimiter $limiter)
+    {
+        $this->router = $router;
+        $this->auth = $auth;
+        $this->limiter = $limiter;
+    }
 
-	/**
-	 * Perform rate limiting before a request is executed.
-	 * 
+    /**
+     * Perform rate limiting before a request is executed.
+     * 
      * @param  \Dingo\Api\Routing\Route  $route
      * @param  \Illuminate\Http\Request  $request
      * @return mixed
      * @throws \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException
      */
-	public function filter(Route $route, Request $request)
-	{
-		if ($this->requestIsInternal($request) || $this->requestIsRegular($request)) {
+    public function filter(Route $route, Request $request)
+    {
+        if ($this->requestIsInternal($request) || $this->requestIsRegular($request)) {
             return null;
         }
 
         $this->limiter->rateLimitRequest($request);
 
-        if ( ! $this->limiter->requestWasRateLimited()) {
-        	return null;
+        if (! $this->limiter->requestWasRateLimited()) {
+            return null;
         }
 
         $this->attachResponseAfterFilter();
 
         if ($this->limiter->exceededRateLimit()) {
-        	throw new AccessDeniedHttpException;
+            throw new AccessDeniedHttpException;
         }
-	}
+    }
 
-	/**
-	 * Attach the after filter to adjust the response.
-	 * 
-	 * @return void
-	 */
-	protected function attachResponseAfterFilter()
-	{
-		$this->router->after(function (Request $request, Response $response) {
-	        $response->headers->set('X-RateLimit-Limit', $this->limiter->getThrottle()->getRequests());
-	        $response->headers->set('X-RateLimit-Remaining', $this->limiter->getRemainingRequests());
-	        $response->headers->set('X-RateLimit-Reset', $this->limiter->getRateLimitExpiration());
-		});
-	}
+    /**
+     * Attach the after filter to adjust the response.
+     * 
+     * @return void
+     */
+    protected function attachResponseAfterFilter()
+    {
+        $this->router->after(function (Request $request, Response $response) {
+            $response->headers->set('X-RateLimit-Limit', $this->limiter->getThrottle()->getRequests());
+            $response->headers->set('X-RateLimit-Remaining', $this->limiter->getRemainingRequests());
+            $response->headers->set('X-RateLimit-Reset', $this->limiter->getRateLimitExpiration());
+        });
+    }
 }
