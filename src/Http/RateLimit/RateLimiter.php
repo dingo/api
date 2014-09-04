@@ -38,6 +38,13 @@ class RateLimiter
     protected $throttle;
 
     /**
+     * Illuminate request instance being throttled.
+     * 
+     * @var \Illuminate\Http\Request
+     */
+    protected $request;
+
+    /**
      * Create a new rate limiter instance.
      * 
      * @param  \Illuminate\Cache\CacheManager  $cache
