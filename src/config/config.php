@@ -93,8 +93,8 @@ return [
     */
 
     'throttling' => [
-        'authenticated'   => new Dingo\Api\Http\RateLimit\AuthenticatedThrottle(['requests' => 1000, 'expires' => 60]),
-        'unauthenticated' => new Dingo\Api\Http\RateLimit\UnauthenticatedThrottle(['requests' => 100, 'expires'  => 60])
+        'authenticated'   => new Dingo\Api\Http\RateLimit\AuthenticatedThrottle(['limit' => 1000, 'expires' => 60]),
+        'unauthenticated' => new Dingo\Api\Http\RateLimit\UnauthenticatedThrottle(['limit' => 100, 'expires'  => 60])
     ],
 
     /*
