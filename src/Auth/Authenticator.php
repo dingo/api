@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 class Authenticator
 {
     /**
-     * API router instance.
+     * API router instance,
      * 
      * @var \Dingo\Api\Routing\Router
      */
@@ -157,7 +157,9 @@ class Authenticator
      */
     public function getUser()
     {
-        if ($this->user) return $this->user;
+        if ($this->user) {
+            return $this->user;
+        }
 
         try {
             return $this->user = $this->authenticate();

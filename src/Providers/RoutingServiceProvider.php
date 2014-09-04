@@ -13,22 +13,24 @@ class RoutingServiceProvider extends ServiceProvider
      * 
      * @return void
      */
-	public function boot()
-	{
-		$this->app->bindShared('router', function ($app) {
+    public function boot()
+    {
+        $this->app->bindShared('router', function ($app) {
             $router = new Router($app['events'], $app);
 
-            if ($app['env'] == 'testing') $router->disableFilters();
+            if ($app['env'] == 'testing') {
+                $router->disableFilters();
+            }
 
             $router->setControllerDispatcher(new ControllerDispatcher($router, $app));
 
             return $router;
         });
-        
+
         $this->app->booted([$this, 'setRouterDefaults']);
 
         parent::boot();
-	}
+    }
 
     /**
      * Set the default configuration options on the router.

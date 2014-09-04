@@ -9,53 +9,53 @@ use Illuminate\Routing\ControllerDispatcher as IlluminateControllerDispatcher;
 
 class ControllerDispatcher extends IlluminateControllerDispatcher
 {
-	/**
-	 * API dispatcher instance.
-	 * 
-	 * @var \Dingo\Api\Dispatcher
-	 */
-	protected $api;
+    /**
+     * API dispatcher instance.
+     * 
+     * @var \Dingo\Api\Dispatcher
+     */
+    protected $api;
 
-	/**
-	 * API authenticator instance.
-	 * 
-	 * @var \Dingo\Api\Auth\Authenticator
-	 */
-	protected $auth;
+    /**
+     * API authenticator instance.
+     * 
+     * @var \Dingo\Api\Auth\Authenticator
+     */
+    protected $auth;
 
-	/**
-	 * API response builder instance.
-	 * 
-	 * @var \Dingo\Api\Http\ResponseBuilder
-	 */
-	protected $response;
+    /**
+     * API response builder instance.
+     * 
+     * @var \Dingo\Api\Http\ResponseBuilder
+     */
+    protected $response;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	protected function makeController($controller)
-	{
-		$instance = parent::makeController($controller);
+    /**
+     * {@inheritDoc}
+     */
+    protected function makeController($controller)
+    {
+        $instance = parent::makeController($controller);
 
-		$this->injectControllerDependencies($instance);
+        $this->injectControllerDependencies($instance);
 
-		return $instance;
-	}
+        return $instance;
+    }
 
-	/**
-	 * Inject the controller dependencies into the controller instance.
-	 * 
-	 * @param  \Illuminate\Routing\Controller  $instance
-	 * @return void
-	 */
-	protected function injectControllerDependencies($instance)
-	{
-		if ($instance instanceof Controller) {
-			$instance->setDispatcher($this->getDispatcher());
-			$instance->setAuthenticator($this->getAuthenticator());
-			$instance->setResponseBuilder($this->getResponseBuilder());
-		}
-	}
+    /**
+     * Inject the controller dependencies into the controller instance.
+     * 
+     * @param  \Illuminate\Routing\Controller  $instance
+     * @return void
+     */
+    protected function injectControllerDependencies($instance)
+    {
+        if ($instance instanceof Controller) {
+            $instance->setDispatcher($this->getDispatcher());
+            $instance->setAuthenticator($this->getAuthenticator());
+            $instance->setResponseBuilder($this->getResponseBuilder());
+        }
+    }
 
     /**
      * Set the API dispatcher instance.
@@ -97,7 +97,7 @@ class ControllerDispatcher extends IlluminateControllerDispatcher
      */
     public function getDispatcher()
     {
-    	return $this->api ?: $this->container['api.dispatcher'];
+        return $this->api ?: $this->container['api.dispatcher'];
     }
 
     /**
@@ -107,7 +107,7 @@ class ControllerDispatcher extends IlluminateControllerDispatcher
      */
     public function getAuthenticator()
     {
-    	return $this->api ?: $this->container['api.auth'];
+        return $this->api ?: $this->container['api.auth'];
     }
 
     /**
@@ -117,6 +117,6 @@ class ControllerDispatcher extends IlluminateControllerDispatcher
      */
     public function getResponseBuilder()
     {
-    	return $this->api ?: $this->container['api.response'];
+        return $this->api ?: $this->container['api.response'];
     }
 }

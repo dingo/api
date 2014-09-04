@@ -12,28 +12,28 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class AuthFilter extends Filter
 {
-	/**
-	 * API router instance.
-	 * 
-	 * @var \Dingo\Api\Routing\Router
-	 */
-	protected $router;
+    /**
+     * API router instance.
+     * 
+     * @var \Dingo\Api\Routing\Router
+     */
+    protected $router;
 
-	/**
-	 * Illuminate events dispatcher instance.
-	 * 
-	 * @var \Illuminate\Events\Dispatcher
-	 */
-	protected $events;
+    /**
+     * Illuminate events dispatcher instance.
+     * 
+     * @var \Illuminate\Events\Dispatcher
+     */
+    protected $events;
 
-	/**
-	 * API authenticator instance.
-	 * 
-	 * @var \Dingo\Api\Auth\Authenticator
-	 */
-	protected $auth;
+    /**
+     * API authenticator instance.
+     * 
+     * @var \Dingo\Api\Auth\Authenticator
+     */
+    protected $auth;
 
-	/**
+    /**
      * Create a new authentication handler instance.
      * 
      * @param  Dingo\Api\Routing\Router  $router
@@ -54,9 +54,9 @@ class AuthFilter extends Filter
      * @param  \Illuminate\Http\Request  $request
      * @return mixed
      */
-	public function filter(Route $route, Request $request)
-	{
-		if ($this->requestIsInternal($request) || $this->requestIsRegular($request) || $this->routeNotProtected($route) || $this->userIsLogged()) {
+    public function filter(Route $route, Request $request)
+    {
+        if ($this->requestIsInternal($request) || $this->requestIsRegular($request) || $this->routeNotProtected($route) || $this->userIsLogged()) {
             return null;
         }
 
@@ -67,5 +67,5 @@ class AuthFilter extends Filter
         } catch (UnauthorizedHttpException $exception) {
             return $this->events->until('router.exception', [$exception]);
         }
-	}
+    }
 }

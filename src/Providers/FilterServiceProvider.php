@@ -13,8 +13,8 @@ class FilterServiceProvider extends ServiceProvider
      * 
      * @return void
      */
-	public function register()
-	{
+    public function register()
+    {
         $this->app->bind('Dingo\Api\Http\Filter\AuthFilter', function ($app) {
             return new AuthFilter($app['router'], $app['events'], $app['api.auth']);
         });
@@ -22,5 +22,5 @@ class FilterServiceProvider extends ServiceProvider
         $this->app->bind('Dingo\Api\Http\Filter\RateLimitFilter', function ($app) {
             return new RateLimitFilter($app['router'], $app['api.auth'], $app['api.limiter']);
         });
-	}
+    }
 }
