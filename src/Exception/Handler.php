@@ -41,11 +41,13 @@ class Handler
             if ($exception instanceof $hint) {
                 $response = call_user_func($handler, $exception);
 
-                if (! $response instanceof Response) {
-                    $response = new Response($response, $exception instanceof HttpExceptionInterface ? $exception->getStatusCode() : 200);
-                }
+                if (! is_null($response)) {
+                    if (! $response instanceof Response) {
+                        $response = new Response($response, $exception instanceof HttpExceptionInterface ? $exception->getStatusCode() : 200);
+                    }
 
-                return $response;
+                    return $response;
+                }
             }
         }
     }
