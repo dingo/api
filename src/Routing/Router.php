@@ -152,7 +152,10 @@ class Router extends IlluminateRouter
             return parent::dispatch($request);
         }
         
-        list ($this->requestedVersion, $this->requestedFormat) = $this->parseAcceptHeader($request);
+        list ($version, $format) = $this->parseAcceptHeader($request);
+
+        $this->requestedVersion = $version;
+        $this->requestedFormat = $format;
 
         $this->container->instance('Illuminate\Http\Request', $request);
 
@@ -173,9 +176,9 @@ class Router extends IlluminateRouter
             }
         }
 
-        $response->getFormatter($this->requestedFormat)->setRequest($request);
-
         $this->container->forgetInstance('Illuminate\Http\Request');
+
+        $response->getFormatter($format)->setRequest($request)->setResponse($response);
 
         if ($request instanceof InternalRequest) {
             return $response;
