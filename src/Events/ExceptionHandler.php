@@ -6,6 +6,7 @@ use Exception;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Exception\Handler;
 use Dingo\Api\Exception\ResourceException;
+use Illuminate\Http\Response as IlluminateResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class ExceptionHandler
@@ -40,7 +41,11 @@ class ExceptionHandler
         if ($this->handler->willHandle($exception)) {
             $response = $this->handler->handle($exception);
 
-            return Response::makeFromExisting($response);
+            if ($response instanceof IlluminateResponse) {
+                $response = Response::makeFromExisting($response);
+            }
+
+            return $response;
         } elseif (! $exception instanceof HttpExceptionInterface) {
             throw $exception;
         }
