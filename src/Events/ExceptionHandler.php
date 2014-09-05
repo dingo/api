@@ -41,11 +41,7 @@ class ExceptionHandler
         if ($this->handler->willHandle($exception)) {
             $response = $this->handler->handle($exception);
 
-            if ($response instanceof IlluminateResponse) {
-                $response = Response::makeFromExisting($response);
-            }
-
-            return $response;
+            return Response::makeFromExisting($response);
         } elseif (! $exception instanceof HttpExceptionInterface) {
             throw $exception;
         }
