@@ -345,7 +345,7 @@ class Dispatcher
      */
     protected function buildAcceptHeader()
     {
-        return 'application/vnd.'.$this->router->getVendor().'.'.$this->version.'+json';
+        return 'application/vnd.'.$this->router->getVendor().'.'.$this->version.'+'.$this->router->getDefaultFormat();
     }
 
     /**
