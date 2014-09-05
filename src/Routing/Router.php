@@ -173,7 +173,13 @@ class Router extends IlluminateRouter
             }
         }
 
+        $response->getFormatter($this->requestedFormat)->setRequest($request);
+
         $this->container->forgetInstance('Illuminate\Http\Request');
+
+        if ($request instanceof InternalRequest) {
+            return $response;
+        }
 
         return $response->morph($this->requestedFormat);
     }
