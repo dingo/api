@@ -38,16 +38,18 @@ class Handler
     public function handle(Exception $exception)
     {
         foreach ($this->handlers as $hint => $handler) {
-            if ($exception instanceof $hint) {
-                $response = call_user_func($handler, $exception);
+            if (! $exception instanceof $hint) {
+                continue;
+            }
 
-                if (! is_null($response)) {
-                    if (! $response instanceof Response) {
-                        $response = new Response($response, $exception instanceof HttpExceptionInterface ? $exception->getStatusCode() : 200);
-                    }
-
-                    return $response;
+            $response = $handler($exception);
+            
+            if (! is_null($response)) {
+                if (! $response instanceof Response) {
+                    $response = new Response($response, $exception instanceof HttpExceptionInterface ? $exception->getStatusCode() : 200);
                 }
+
+                return $response;
             }
         }
     }
