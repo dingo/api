@@ -7,6 +7,7 @@
 - Authentication and Rate Limiting are now filters. Both can be changed on a per-route basis.
 - Rate limiting now makes use of different throttles so the configuration has changed slightly.
 - The response builder will now return the original response instance to internal requests and is decoupled from Fractal.
+- Removed `Response::api()` macro, you can now use `API::response()` to make a new response builder from closure based routes.
 
 ### v0.6.5
 
