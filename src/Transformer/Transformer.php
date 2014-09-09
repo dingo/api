@@ -2,6 +2,7 @@
 
 namespace Dingo\Api\Transformer;
 
+use Closure;
 use RuntimeException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -50,25 +51,11 @@ abstract class Transformer
      *
      * @param  string  $class
      * @param  string|callable|object  $resolver
-     * @return \Dingo\Api\Transformer\Factory
+     * @return \Dingo\Api\Transformer\Binding
      */
-    public function register($class, $resolver)
+    public function register($class, $resolver, array $parameters = [], Closure $after = null)
     {
-        $this->bindings[$class] = $resolver;
-
-        return $this;
-    }
-
-    /**
-     * Alias for register.
-     *
-     * @param  string  $class
-     * @param  string|callable|object  $resolver
-     * @return \Dingo\Api\Transformer\Factory
-     */
-    public function registerBinding($class, $resolver)
-    {
-        return $this->register($class, $resolver);
+        return $this->bindings[$class] = new Binding($this->container, $resolver, $parameters, $after);
     }
 
     /**
@@ -81,7 +68,7 @@ abstract class Transformer
     {
         $binding = $this->getBinding($response);
 
-        return $this->transformResponse($response, $this->resolveTransformerBinding($binding));
+        return $this->transformResponse($response, $binding->resolveTransformer(), $binding);
     }
 
     /**
@@ -91,7 +78,7 @@ abstract class Transformer
      * @param  object  $transformer
      * @return mixed
      */
-    abstract public function transformResponse($response, $transformer);
+    abstract public function transformResponse($response, $transformer, $binding);
 
     /**
      * Determine if a response is transformable.
@@ -116,37 +103,18 @@ abstract class Transformer
     }
 
     /**
-     * Resolve a transfomer binding instance.
-     *
-     * @param  string|callable|object  $binding
-     * @return mixed
-     */
-    protected function resolveTransformerBinding($binding)
-    {
-        if (is_string($binding)) {
-            return $this->container->make($binding);
-        } elseif (is_callable($binding)) {
-            return call_user_func($binding, $this->container);
-        }
-
-        return $binding;
-    }
-
-    /**
      * Get a registered transformer binding.
      *
      * @param  string|object  $class
-     * @return string|callable|object
+     * @return \Dingo\Api\Transformer\Binding
      * @throws \RuntimeException
      */
     protected function getBinding($class)
     {
         if ($this->isCollection($class)) {
             return $this->getBindingFromCollection($class);
-        }
-
-        if ($this->boundByContract($class)) {
-            return $class->getTransformer();
+        } elseif ($this->boundByContract($class)) {
+            return $this->createContractBinding($class);
         }
 
         $class = is_object($class) ? get_class($class) : $class;
@@ -156,6 +124,17 @@ abstract class Transformer
         }
 
         return $this->bindings[$class];
+    }
+
+    /**
+     * Create a new binding for an instance bound by a contract.
+     * 
+     * @param  object  $instance
+     * @return \Dingo\Api\Transformer\Binding
+     */
+    protected function createContractBinding($instance)
+    {
+        return new Binding($instance->getTransformer());
     }
 
     /**
@@ -187,18 +166,18 @@ abstract class Transformer
     }
 
     /**
-     * Determine if the class is bound by the transformable contract.
+     * Determine if the instance is bound by the transformable contract.
      *
-     * @param  string|object  $class
+     * @param  string|object  $instance
      * @return bool
      */
-    protected function boundByContract($class)
+    protected function boundByContract($instance)
     {
-        if ($this->isCollection($class)) {
-            $class = $class->first();
+        if ($this->isCollection($instance)) {
+            $instance = $instance->first();
         }
 
-        return is_object($class) and $class instanceof TransformableInterface;
+        return is_object($instance) and $instance instanceof TransformableInterface;
     }
 
     /**

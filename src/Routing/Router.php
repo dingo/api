@@ -13,6 +13,7 @@ use Dingo\Api\Http\Response as ApiResponse;
 use Illuminate\Routing\Route as IlluminateRoute;
 use Illuminate\Routing\Router as IlluminateRouter;
 use Illuminate\Http\Response as IlluminateResponse;
+use Dingo\Api\Http\Response\Builder as ResponseBuilder;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -179,11 +180,11 @@ class Router extends IlluminateRouter
 
         $this->container->forgetInstance('Illuminate\Http\Request');
 
-        $response->getFormatter($format)->setRequest($request)->setResponse($response);
-
         if ($request instanceof InternalRequest) {
             return $response;
         }
+
+        $response->getFormatter($format)->setRequest($request)->setResponse($response);
 
         return $response->morph($this->requestedFormat);
     }
@@ -276,16 +277,18 @@ class Router extends IlluminateRouter
      */
     protected function prepareResponse($request, $response)
     {
+        if ($response instanceof ResponseBuilder) {
+            $response = $response->build();
+        }
+
         $response = parent::prepareResponse($request, $response);
 
         if ($this->requestTargettingApi($request)) {
-
             if ($response instanceof IlluminateResponse) {
                 $response = ApiResponse::makeFromExisting($response);
             }
 
             if ($response->isSuccessful() && $this->getConditionalRequest()) {
-
                 if (! $response->headers->has('ETag')) {
                     $response->setEtag(md5($response->getContent()));
                 }

@@ -6,12 +6,12 @@ use RuntimeException;
 use Dingo\Api\Dispatcher;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Auth\Authenticator;
-use Dingo\Api\Http\ResponseBuilder;
 use League\Fractal\Manager as Fractal;
 use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Console\ApiRoutesCommand;
 use Dingo\Api\Http\RateLimit\RateLimiter;
 use Dingo\Api\Transformer\FractalTransformer;
+use Dingo\Api\Http\Response\Factory as ResponseFactory;
 use Illuminate\Support\Facades\Response as ResponseFacade;
 
 class ApiServiceProvider extends ServiceProvider
@@ -33,7 +33,7 @@ class ApiServiceProvider extends ServiceProvider
             return $app['api.auth'];
         });
 
-        $this->app->bind('Dingo\Api\Http\ResponseBuilder', function ($app) {
+        $this->app->bind('Dingo\Api\Http\Response\Builder', function ($app) {
             return $app['api.response'];
         });
 
@@ -155,13 +155,7 @@ class ApiServiceProvider extends ServiceProvider
     protected function registerResponseBuilder()
     {
         $this->app->bindShared('api.response', function ($app) {
-            $transformer = $app['api.transformer'];
-
-            if (! $transformer instanceof FractalTransformer) {
-                $transformer = new FractalTransformer(new Fractal);
-            }
-
-            return new ResponseBuilder($transformer);
+            return new ResponseFactory($app['api.transformer']);
         });
     }
 

@@ -4,7 +4,7 @@ namespace Dingo\Api\Routing;
 
 use Dingo\Api\Dispatcher;
 use Dingo\Api\Auth\Authenticator;
-use Dingo\Api\Http\ResponseBuilder;
+use Dingo\Api\Http\Response\Factory as ResponseFactory;
 use Illuminate\Routing\ControllerDispatcher as IlluminateControllerDispatcher;
 
 class ControllerDispatcher extends IlluminateControllerDispatcher
@@ -24,9 +24,9 @@ class ControllerDispatcher extends IlluminateControllerDispatcher
     protected $auth;
 
     /**
-     * API response builder instance.
+     * API response factory instance.
      * 
-     * @var \Dingo\Api\Http\ResponseBuilder
+     * @var \Dingo\Api\Http\Response\Factory
      */
     protected $response;
 
@@ -53,7 +53,7 @@ class ControllerDispatcher extends IlluminateControllerDispatcher
         if ($instance instanceof Controller) {
             $instance->setDispatcher($this->getDispatcher());
             $instance->setAuthenticator($this->getAuthenticator());
-            $instance->setResponseBuilder($this->getResponseBuilder());
+            $instance->setResponseFactory($this->getResponseFactory());
         }
     }
 
@@ -80,12 +80,12 @@ class ControllerDispatcher extends IlluminateControllerDispatcher
     }
 
     /**
-     * Set the API response builder instance.
+     * Set the API response factory instance.
      * 
-     * @param  \Dingo\Api\Http\ResponseBuilder  $response
+     * @param  \Dingo\Api\Http\Response\Factory  $response
      * @return void
      */
-    public function setResponseBuilder(ResponseBuilder $response)
+    public function setResponseFactory(ResponseFactory $response)
     {
         $this->response = $response;
     }
@@ -107,16 +107,16 @@ class ControllerDispatcher extends IlluminateControllerDispatcher
      */
     public function getAuthenticator()
     {
-        return $this->api ?: $this->container['api.auth'];
+        return $this->auth ?: $this->container['api.auth'];
     }
 
     /**
-     * Get the API response builder instance.
+     * Get the API response factory instance.
      * 
-     * @return \Dingo\Api\Http\ResponseBuilder
+     * @return \Dingo\Api\Http\Response\Factory
      */
-    public function getResponseBuilder()
+    public function getResponseFactory()
     {
-        return $this->api ?: $this->container['api.response'];
+        return $this->response ?: $this->container['api.response'];
     }
 }
