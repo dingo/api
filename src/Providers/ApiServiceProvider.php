@@ -7,13 +7,10 @@ use Dingo\Api\Dispatcher;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Auth\Authenticator;
 use Illuminate\Foundation\AliasLoader;
-use League\Fractal\Manager as Fractal;
 use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Console\ApiRoutesCommand;
 use Dingo\Api\Http\RateLimit\RateLimiter;
-use Dingo\Api\Transformer\FractalTransformer;
 use Dingo\Api\Http\Response\Factory as ResponseFactory;
-use Illuminate\Support\Facades\Response as ResponseFacade;
 
 class ApiServiceProvider extends ServiceProvider
 {
@@ -27,16 +24,8 @@ class ApiServiceProvider extends ServiceProvider
         $this->package('dingo/api', 'api', __DIR__.'/../');
 
         $this->prepareContainerBindings();
-
         $this->prepareCompatibility();
-
-        $this->prepareResponseFormats();
-
-        ResponseFacade::macro('api', function () {
-            return $this->app['api.response'];
-        });
-
-        Response::setTransformer($this->app['api.transformer']);
+        $this->prepareResponse();
     }
 
     /**
@@ -77,12 +66,12 @@ class ApiServiceProvider extends ServiceProvider
     }
 
     /**
-     * Boot the response formats.
+     * Prepare the response formats and transformer.
      *
      * @return array
      * @throws \RuntimeException
      */
-    protected function prepareResponseFormats()
+    protected function prepareResponse()
     {
         $formats = $this->prepareConfigInstances($this->app['config']['api::formats']);
 
@@ -91,6 +80,7 @@ class ApiServiceProvider extends ServiceProvider
         }
 
         Response::setFormatters($formats);
+        Response::setTransformer($this->app['api.transformer']);
     }
 
     /**
