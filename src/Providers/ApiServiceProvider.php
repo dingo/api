@@ -26,27 +26,37 @@ class ApiServiceProvider extends ServiceProvider
     {
         $this->package('dingo/api', 'api', __DIR__.'/../');
 
-        $this->app->bind('Dingo\Api\Dispatcher', function ($app) {
-            return $app['api.dispatcher'];
-        });
+        $this->prepareContainerBindings();
 
-        $this->app->bind('Dingo\Api\Auth\Shield', function ($app) {
-            return $app['api.auth'];
-        });
+        $this->prepareCompatibility();
 
-        $this->app->bind('Dingo\Api\Http\Response\Builder', function ($app) {
-            return $app['api.response'];
-        });
+        $this->prepareResponseFormats();
 
         ResponseFacade::macro('api', function () {
             return $this->app['api.response'];
         });
 
         Response::setTransformer($this->app['api.transformer']);
+    }
 
-        $this->prepareCompatibility();
+    /**
+     * Prepare the container bindings.
+     * 
+     * @return void
+     */
+    protected function prepareContainerBindings()
+    {
+        $this->app->bind('Dingo\Api\Dispatcher', function ($app) {
+            return $app['api.dispatcher'];
+        });
 
-        $this->prepareResponseFormats();
+        $this->app->bind('Dingo\Api\Auth\Authenticator', function ($app) {
+            return $app['api.auth'];
+        });
+
+        $this->app->bind('Dingo\Api\Http\Response\Builder', function ($app) {
+            return $app['api.response'];
+        });
     }
 
     /**
