@@ -4,7 +4,7 @@ namespace Dingo\Api\Routing;
 
 use Dingo\Api\Dispatcher;
 use Dingo\Api\Auth\Authenticator;
-use Dingo\Api\Http\ResponseBuilder;
+use Dingo\Api\Http\Response\Factory as ResponseFactory;
 use Illuminate\Routing\Controller as IlluminateController;
 
 abstract class Controller extends IlluminateController
@@ -24,9 +24,9 @@ abstract class Controller extends IlluminateController
     protected $auth;
 
     /**
-     * API response builder instance.
+     * API response factory instance.
      * 
-     * @var \Dingo\Api\Http\ResponseBuilder
+     * @var \Dingo\Api\Http\Response\Factory
      */
     protected $response;
 
@@ -150,12 +150,12 @@ abstract class Controller extends IlluminateController
     }
 
     /**
-     * Set the API response builder instance.
+     * Set the API response factory instance.
      * 
-     * @param  \Dingo\Api\Http\ResponseBuilder  $response
+     * @param  \Dingo\Api\Http\Response\Factory  $response
      * @return void
      */
-    public function setResponseBuilder(ResponseBuilder $response)
+    public function setResponseFactory(ResponseFactory $response)
     {
         $this->response = $response;
     }
