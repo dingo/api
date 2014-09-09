@@ -33,15 +33,15 @@ class API extends Facade
     }
 
     /**
-     * Transform a class into a Fractal transformer.
+     * Register a class transformer.
      *
      * @param  string  $class
      * @param  string|\Closure  $transformer
-     * @return \Dingo\Api\Transformer
+     * @return \Dingo\Api\Transformer\Binding
      */
     public static function transform($class, $transformer)
     {
-        return static::$app['api.transformer']->registerBinding($class, $transformer);
+        return static::$app['api.transformer']->register($class, $transformer);
     }
 
     /**
