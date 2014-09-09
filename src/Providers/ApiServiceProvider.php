@@ -6,6 +6,7 @@ use RuntimeException;
 use Dingo\Api\Dispatcher;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Auth\Authenticator;
+use Illuminate\Foundation\AliasLoader;
 use League\Fractal\Manager as Fractal;
 use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Console\ApiRoutesCommand;
@@ -43,7 +44,26 @@ class ApiServiceProvider extends ServiceProvider
 
         Response::setTransformer($this->app['api.transformer']);
 
+        $this->prepareCompatibility();
+
         $this->prepareResponseFormats();
+    }
+
+    /**
+     * Prepare any compatibility for earlier or later versions of Laravel.
+     * 
+     * @return void
+     */
+    protected function prepareCompatibility()
+    {
+        // Laravel 4.3 moved the "RoutesCommand" to "RouteListCommand" so we'll alias the command
+        // for users that are using Laravel 4.3. This allows us to continue to extend the
+        // "RoutesCommand" in the "ApiRoutesCommand".
+        if (class_exists('Illuminate\Foundation\Console\RouteListCommand')) {
+            $loader = AliasLoader::getInstance();
+
+            $loader->alias('Illuminate\Foundation\Console\RoutesCommand', 'Illuminate\Foundation\Console\RouteListCommand');
+        }
     }
 
     /**
