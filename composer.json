@@ -12,7 +12,7 @@
     "require": {
         "php": ">=5.4.0",
         "illuminate/support": "~4.1",
-        "league/fractal": "0.8.*"
+        "league/fractal": "0.9.*"
     },
     "require-dev": {
         "lucadegasperi/oauth2-server-laravel": "1.0.*",
