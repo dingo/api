@@ -73,4 +73,14 @@ class API extends Facade
     {
         return static::$app['router']->getCurrentRequest() instanceof InternalRequest;
     }
+
+    /**
+     * Get the response factory to begin building a response.
+     * 
+     * @return \Dingo\Api\Http\Response\Factory
+     */
+    public static function response()
+    {
+        return static::$app['api.response'];
+    }
 }
