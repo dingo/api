@@ -9,13 +9,33 @@ use Dingo\Api\Transformer\Transformer;
 
 class Factory
 {
+    /**
+     * API transformer instance.
+     * 
+     * @var \Dingo\Api\Transformer\Transformer
+     */
     protected $transformer;
 
+    /**
+     * Create a new response factory instance.
+     * 
+     * @param  \Dingo\Api\Transformer\Transformer  $transformer
+     * @return void
+     */
     public function __construct(Transformer $transformer)
     {
         $this->transformer = $transformer;
     }
 
+    /**
+     * Bind a collection to a transformer and start building a response.
+     * 
+     * @param  \Illuminate\Support\Collection  $collection
+     * @param  object  $transformer
+     * @param  array  $parameters
+     * @param  \Closure  $after
+     * @return \Dingo\Api\Response\Builder
+     */
     public function collection($collection, $transformer, array $parameters = [], Closure $after = null)
     {
         $class = get_class($collection->first());
@@ -25,6 +45,14 @@ class Factory
         return new Builder($collection, $binding);
     }
 
+    /**
+     * Bind an item to a transformer and start building a response.
+     * 
+     * @param  object  $item
+     * @param  object  $transformer
+     * @param  array  $parameters
+     * @return \Dingo\Api\Response\Builder
+     */
     public function item($item, $transformer, array $parameters = [])
     {
         $class = get_class($item);
@@ -34,6 +62,15 @@ class Factory
         return new Builder($item, $binding);
     }
 
+    /**
+     * Bind a paginator to a transformer and start building a response.
+     * 
+     * @param  \Illuminate\Pagination\Paginator  $paginator
+     * @param  object  $transformer
+     * @param  array  $parameters
+     * @param  \Closure  $after
+     * @return \Dingo\Api\Response\Builder
+     */
     public function paginator($paginator, $transformer, array $parameters = [], Closure $after = null)
     {
         $collection = $pagination->getCollection();
@@ -42,7 +79,7 @@ class Factory
 
         $binding = $this->transformer->register($class, $transformer, $parameters, $after);
 
-        return new Builder($collection, $binding);
+        return new Builder($paginator, $binding);
     }
 
     /**
@@ -126,17 +163,17 @@ class Factory
      * @return mixed
      * @throws \BadMethodCallException
      */
-public function __call($method, $parameters)
-{
-    if (Str::startsWith($method, 'with')) {
-        return call_user_func_array([$this, substr($method, 4)], $parameters);
+    public function __call($method, $parameters)
+    {
+        if (Str::startsWith($method, 'with')) {
+            return call_user_func_array([$this, substr($method, 4)], $parameters);
 
-    // Because PHP won't let us name the method "array" we'll simply watch for it
-    // in here and return the new binding. Gross.
-    } elseif ($method == 'array') {
-        return new Builder($parameters[0]);
+        // Because PHP won't let us name the method "array" we'll simply watch for it
+        // in here and return the new binding. Gross.
+        } elseif ($method == 'array') {
+            return new Builder($parameters[0]);
+        }
+
+        throw new BadMethodCallException('Method '.$method.' does not exist on class.');
     }
-
-    throw new BadMethodCallException('Method '.$method.' does not exist on class.');
-}
 }
