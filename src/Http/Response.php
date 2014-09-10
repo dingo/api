@@ -52,6 +52,9 @@ class Response extends IlluminateResponse
 
         $formatter = static::getFormatter($format);
 
+        // Pass the current response to the formatter.
+        $formatter->setApiResponse($this);
+
         // Set the "Content-Type" header of the response to that which
         // is defined by the formatter being used. Before setting it
         // we'll get the original content type in case we need to
