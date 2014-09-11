@@ -2,7 +2,7 @@
 
 namespace Dingo\Api\Routing;
 
-use Illuminate\Routing\Route;
+use Illuminate\Routing\Route as IlluminateRoute;
 use Illuminate\Container\Container;
 
 class ControllerReviser
@@ -30,7 +30,7 @@ class ControllerReviser
      * @param  \Illuminate\Routing\Route  $route
      * @return \Illuminate\Routing\Route
      */
-    public function revise(Route $route)
+    public function revise(IlluminateRoute $route)
     {
         if ($this->routingToController($route)) {
             list ($class, $method) = explode('@', $route->getActionName());
@@ -56,7 +56,7 @@ class ControllerReviser
      * @param  \Illuminate\Routing\Route  $route
      * @return bool
      */
-    protected function routingToController(Route $route)
+    protected function routingToController(IlluminateRoute $route)
     {
         return is_string(array_get($route->getAction(), 'controller'));
     }
