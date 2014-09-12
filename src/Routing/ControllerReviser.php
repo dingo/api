@@ -2,8 +2,8 @@
 
 namespace Dingo\Api\Routing;
 
-use Illuminate\Routing\Route as IlluminateRoute;
 use Illuminate\Container\Container;
+use Illuminate\Routing\Route as IlluminateRoute;
 
 class ControllerReviser
 {
