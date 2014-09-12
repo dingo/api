@@ -27,9 +27,7 @@ class RoutingServiceProvider extends ServiceProvider
             return $router;
         });
 
-        $this->app->booted([$this, 'setRouterDefaults']);
-
-        parent::boot();
+        $this->setRouterDefaults();
     }
 
     /**

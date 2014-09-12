@@ -317,7 +317,7 @@ class Router extends IlluminateRouter
         $collection = $this->getApiRouteCollectionFromRequest($request) ?: $this->getDefaultApiRouteCollection();
 
         try {
-            $collection->match($request);
+            $collection->matchesRequest($request);
         } catch (NotFoundHttpException $exception) {
             return $this->requestsTargettingApi[$key] = false;
         } catch (MethodNotAllowedHttpException $exception) {

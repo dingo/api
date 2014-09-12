@@ -106,6 +106,7 @@ class ApiServiceProvider extends ServiceProvider
      */
     protected function registerProviders()
     {
+        $this->app->register('Dingo\Api\Providers\ConfigServiceProvider');
         $this->app->register('Dingo\Api\Providers\RoutingServiceProvider');
         $this->app->register('Dingo\Api\Providers\FilterServiceProvider');
         $this->app->register('Dingo\Api\Providers\EventServiceProvider');
