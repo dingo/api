@@ -31,7 +31,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Dingo\\Api\\": "src"
+            "Dingo\\Api\\": "src",
+            "Dingo\\Api\\Tests\\": "tests"
         }
     },
     "extra": {
