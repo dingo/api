@@ -417,16 +417,4 @@ class Dispatcher
 
         $this->request->replace($previous->input());
     }
-
-    /**
-     * Build a request identifier by joining the verb and URI together.
-     *
-     * @param  string  $verb
-     * @param  string  $uri
-     * @return string
-     */
-    protected function buildRequestIdentifier($verb, $uri)
-    {
-        return $verb.' '.$uri;
-    }
 }
