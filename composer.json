@@ -16,6 +16,7 @@
     },
     "require-dev": {
         "lucadegasperi/oauth2-server-laravel": "1.0.*",
+        "tymon/jwt-auth": "0.3.*",
         "illuminate/routing": "~4.1",
         "illuminate/events": "~4.1",
         "illuminate/auth": "~4.1",
@@ -27,7 +28,8 @@
         "squizlabs/php_codesniffer": "1.*"
     },
     "suggest": {
-        "lucadegasperi/oauth2-server-laravel": "Use the League OAuth 2.0 server to protect your API."
+        "lucadegasperi/oauth2-server-laravel": "Use the League OAuth 2.0 server to protect your API.",
+        "tymon/jwt-auth": "Protect your API with JSON Web Tokens"
     },
     "autoload": {
         "psr-4": {
