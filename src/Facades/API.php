@@ -18,7 +18,7 @@ class API extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'dingo.api.dispatcher';
+        return 'api.dispatcher';
     }
 
     /**
@@ -29,19 +29,19 @@ class API extends Facade
      */
     public static function error(Closure $callback)
     {
-        return static::$app['dingo.api.exception']->register($callback);
+        return static::$app['api.exception']->register($callback);
     }
 
     /**
-     * Transform a class into a Fractal transformer.
+     * Register a class transformer.
      *
      * @param  string  $class
      * @param  string|\Closure  $transformer
-     * @return \Dingo\Api\Transformer
+     * @return \Dingo\Api\Transformer\Binding
      */
     public static function transform($class, $transformer)
     {
-        return static::$app['dingo.api.transformer']->registerBinding($class, $transformer);
+        return static::$app['api.transformer']->register($class, $transformer);
     }
 
     /**
@@ -51,7 +51,7 @@ class API extends Facade
      */
     public static function auth()
     {
-        return static::$app['dingo.api.auth'];
+        return static::$app['api.auth'];
     }
 
     /**
@@ -61,7 +61,7 @@ class API extends Facade
      */
     public static function user()
     {
-        return static::$app['dingo.api.auth']->getUser();
+        return static::$app['api.auth']->getUser();
     }
 
     /**
@@ -72,5 +72,15 @@ class API extends Facade
     public static function internal()
     {
         return static::$app['router']->getCurrentRequest() instanceof InternalRequest;
+    }
+
+    /**
+     * Get the response factory to begin building a response.
+     * 
+     * @return \Dingo\Api\Http\Response\Factory
+     */
+    public static function response()
+    {
+        return static::$app['api.response'];
     }
 }

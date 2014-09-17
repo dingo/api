@@ -3,22 +3,21 @@
 namespace Dingo\Api\Auth;
 
 use Exception;
-use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
-use Illuminate\Routing\Route;
+use Illuminate\Routing\Router;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Container\Container;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class Shield
+class Authenticator
 {
     /**
-     * Illuminate auth instance.
-     *
-     * @var \Illuminate\Auth\AuthManager
+     * API router instance,
+     * 
+     * @var \Dingo\Api\Routing\Router
      */
-    protected $auth;
+    protected $router;
 
     /**
      * Illuminate application container instance.
@@ -28,7 +27,7 @@ class Shield
     protected $container;
 
     /**
-     * Array of authentication providers.
+     * Array of available authentication providers.
      *
      * @var array
      */
@@ -49,53 +48,63 @@ class Shield
     protected $user;
 
     /**
-     * Illuminate request instance.
-     * 
-     * @var \Illuminate\Http\Request
-     */
-    protected $request;
-
-    /**
-     * Illuminate route instance.
-     * 
-     * @var \Illumimate\Routing\Route
-     */
-    protected $route;
-
-    /**
-     * Create a new Dingo\Api\Authentication instance.
+     * Create a new authenticator instance.
      *
-     * @param  \Illuminate\Auth\AuthManager  $auth
+     * @param  \Dingo\Api\Routing\Router  $router
      * @param  \Illuminate\Container\Container  $container
      * @param  array  $providers
      * @return void
      */
-    public function __construct(AuthManager $auth, Container $container, array $providers)
+    public function __construct(Router $router, Container $container, array $providers)
     {
-        $this->auth = $auth;
+        $this->router = $router;
         $this->container = $container;
-        $this->providers = $providers;
+        $this->providers = $this->prepareProviders($providers);
+    }
+
+    /**
+     * Prepare the available authentication providers.
+     * 
+     * @param  array  $providers
+     * @return array
+     */
+    protected function prepareProviders(array $providers)
+    {
+        foreach ($providers as $key => $provider) {
+            $providers[$key] = $this->createProvider($provider);
+        }
+
+        return $providers;
+    }
+
+    /**
+     * Create an authentication provider.
+     * 
+     * @param  mixed  $provider
+     * @return mixed
+     */
+    protected function createProvider($provider)
+    {
+        return is_callable($provider) ? call_user_func($provider, $this->container) : $provider;
     }
 
     /**
      * Authenticate the current request.
      *
-     * @return null|\Dingo\Api\Http\Response
+     * @param  array  $providers
+     * @return mixed
+     * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
      */
-    public function authenticate()
+    public function authenticate(array $providers = [])
     {
-        if (! $this->request || ! $this->route) {
-            return;
-        }
-
         $exceptionStack = [];
 
         // Spin through each of the registered authentication providers and attempt to
         // authenticate through one of them. This allows a developer to implement
         // and allow a number of different authentication mechanisms.
-        foreach ($this->providers as $key => $provider) {
+        foreach ($this->filterProviders($providers) as $provider) {
             try {
-                $user = $provider->authenticate($this->request, $this->route);
+                $user = $provider->authenticate($this->router->getCurrentRequest(), $this->router->getCurrentRoute());
 
                 $this->providerUsed = $provider;
 
@@ -109,6 +118,18 @@ class Shield
             }
         }
 
+        $this->throwUnauthorizedException($exceptionStack);
+    }
+
+    /**
+     * Throw the first exception from the exception stack.
+     * 
+     * @param  array  $exceptionStack
+     * @return void
+     * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
+     */
+    protected function throwUnauthorizedException(array $exceptionStack)
+    {
         $exception = array_shift($exceptionStack);
 
         if ($exception === null) {
@@ -116,6 +137,17 @@ class Shield
         }
 
         throw $exception;
+    }
+
+    /**
+     * Filter the requested providers from the available providers.
+     * 
+     * @param  array  $providers
+     * @return array
+     */
+    protected function filterProviders(array $providers)
+    {
+        return array_intersect_key($this->providers, array_flip($providers));
     }
 
     /**
@@ -132,7 +164,7 @@ class Shield
         try {
             return $this->user = $this->authenticate();
         } catch (Exception $exception) {
-            return;
+            return null;
         }
     }
 
@@ -166,7 +198,7 @@ class Shield
      */
     public function check()
     {
-        return ! is_null($this->user());
+        return ! is_null($this->user);
     }
 
     /**
@@ -180,32 +212,6 @@ class Shield
     }
 
     /**
-     * Set the request instance.
-     * 
-     * @param  \Illuminate\Routing\Route  $route
-     * @return \Dingo\Api\Auth\Shield
-     */
-    public function setRequest(Request $request)
-    {
-        $this->request = $request;
-
-        return $this;
-    }
-
-    /**
-     * Set the route instance.
-     * 
-     * @param  \Illuminate\Routing\Route  $route
-     * @return \Dingo\Api\Auth\Shield
-     */
-    public function setRoute(Route $route)
-    {
-        $this->route = $route;
-
-        return $this;
-    }
-
-    /**
      * Extend the authentication layer with a custom provider.
      *
      * @param  string  $key
@@ -214,6 +220,6 @@ class Shield
      */
     public function extend($key, $provider)
     {
-        $this->providers[$key] = is_callable($provider) ? call_user_func($provider, $this->container) : $provider;
+        $this->providers[$key] = $this->createProvider($provider);
     }
 }

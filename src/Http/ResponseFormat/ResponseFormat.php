@@ -12,7 +12,14 @@ abstract class ResponseFormat
     protected $request;
 
     /**
-     * Set the request intance.
+     * Illuminate response instance.
+     * 
+     * @var \Illuminate\Http\Response
+     */
+    protected $response;
+
+    /**
+     * Set the request instance.
      * 
      * @param  \Illuminate\Http\Request  $request
      * @return \Dingo\Api\Http\ResponseFormat\ResponseFormat
@@ -20,6 +27,19 @@ abstract class ResponseFormat
     public function setRequest($request)
     {
         $this->request = $request;
+
+        return $this;
+    }
+
+    /**
+     * Set the response instance.
+     * 
+     * @param  \Illuminate\Http\Response  $response
+     * @return \Dingo\Api\Http\ResponseFormat\ResponseFormat
+     */
+    public function setResponse($response)
+    {
+        $this->response = $response;
 
         return $this;
     }

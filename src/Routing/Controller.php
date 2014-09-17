@@ -3,8 +3,8 @@
 namespace Dingo\Api\Routing;
 
 use Dingo\Api\Dispatcher;
-use Dingo\Api\Auth\Shield;
-use Dingo\Api\Http\ResponseBuilder;
+use Dingo\Api\Auth\Authenticator;
+use Dingo\Api\Http\Response\Factory as ResponseFactory;
 use Illuminate\Routing\Controller as IlluminateController;
 
 abstract class Controller extends IlluminateController
@@ -17,16 +17,16 @@ abstract class Controller extends IlluminateController
     protected $api;
 
     /**
-     * API authentication shield instance.
+     * API authenticator instance.
      *
-     * @var \Dingo\Api\Auth\Shield
+     * @var \Dingo\Api\Auth\Authenticator
      */
     protected $auth;
 
     /**
-     * API response builder instance.
+     * API response factory instance.
      * 
-     * @var \Dingo\Api\Http\ResponseBuilder
+     * @var \Dingo\Api\Http\Response\Factory
      */
     protected $response;
 
@@ -50,21 +50,6 @@ abstract class Controller extends IlluminateController
      * @var array
      */
     protected $scopedMethods = [];
-
-    /**
-     * Create a new controller instance.
-     *
-     * @param  \Dingo\Api\Dispatcher  $api
-     * @param  \Dingo\Api\Auth\Shield  $auth
-     * @param  \Dingo\Api\Http\ResponseBuilder  $response
-     * @return void
-     */
-    public function __construct(Dispatcher $api, Shield $auth, ResponseBuilder $response)
-    {
-        $this->api = $api;
-        $this->auth = $auth;
-        $this->response = $response;
-    }
 
     /**
      * Set the scopes for all or a subset of methods.
@@ -140,6 +125,39 @@ abstract class Controller extends IlluminateController
     public function getScopedMethods()
     {
         return $this->scopedMethods;
+    }
+
+    /**
+     * Set the API dispatcher instance.
+     * 
+     * @param  \Dingo\Api\Dispatcher  $api
+     * @return void
+     */
+    public function setDispatcher(Dispatcher $api)
+    {
+        $this->api = $api;
+    }
+
+    /**
+     * Set the API authenticator instance.
+     * 
+     * @param  \Dingo\Api\Auth\Authenticator  $auth
+     * @return void
+     */
+    public function setAuthenticator(Authenticator $auth)
+    {
+        $this->auth = $auth;
+    }
+
+    /**
+     * Set the API response factory instance.
+     * 
+     * @param  \Dingo\Api\Http\Response\Factory  $response
+     * @return void
+     */
+    public function setResponseFactory(ResponseFactory $response)
+    {
+        $this->response = $response;
     }
 
     /**

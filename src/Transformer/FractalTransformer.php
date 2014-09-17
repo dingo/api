@@ -2,6 +2,8 @@
 
 namespace Dingo\Api\Transformer;
 
+use Closure;
+use League\Fractal\TransformerAbstract;
 use League\Fractal\Manager as Fractal;
 use League\Fractal\Resource\Item as FractalItem;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
@@ -36,7 +38,6 @@ class FractalTransformer extends Transformer
      * Create a new fractal transformer instance.
      *
      * @param  \League\Fractal\Manager  $fractal
-     * @param  \Illuminate\Http\Request  $request
      * @param  string  $includeKey
      * @param  string  $includeSeparator
      * @return void
@@ -55,11 +56,11 @@ class FractalTransformer extends Transformer
      * @param  object  $transformer
      * @return array
      */
-    public function transformResponse($response, $transformer)
+    public function transformResponse($response, $transformer, $binding)
     {
         $this->parseFractalIncludes();
 
-        $resource = $this->createResource($response, $transformer);
+        $resource = $this->createResource($response, $transformer, $binding->getParameters());
 
         // If the response is a paginator then we'll create a new paginator
         // adapter for Laravel and set the paginator instance on our
@@ -69,6 +70,12 @@ class FractalTransformer extends Transformer
 
             $resource->setPaginator($paginator);
         }
+
+        foreach ($binding->getMeta() as $key => $value) {
+            $resource->setMetaValue($key, $value);
+        }
+
+        $binding->fireCallback($resource);
 
         return $this->fractal->createData($resource)->toArray();
     }
@@ -88,16 +95,19 @@ class FractalTransformer extends Transformer
      * Create a Fractal resource instance.
      *
      * @param  mixed  $response
-     * @param  \League\Fractal\TransformerAbstract
+     * @param  \League\Fractal\TransformerAbstract  $transformer
+     * @param  array  $parameters
      * @return \League\Fractal\Resource\Item|\League|Fractal\Resource\Collection
      */
-    protected function createResource($response, $transformer)
+    protected function createResource($response, $transformer, array $parameters)
     {
-        if ($response instanceof IlluminatePaginator or $response instanceof IlluminateCollection) {
-            return new FractalCollection($response, $transformer);
+        $key = isset($parameters['key']) ? $parameters['key'] : null;
+
+        if ($response instanceof IlluminatePaginator || $response instanceof IlluminateCollection) {
+            return new FractalCollection($response, $transformer, $key);
         }
 
-        return new FractalItem($response, $transformer);
+        return new FractalItem($response, $transformer, $key);
     }
 
     /**
@@ -107,7 +117,9 @@ class FractalTransformer extends Transformer
      */
     public function parseFractalIncludes()
     {
-        $includes = array_filter(explode($this->includeSeparator, $this->request->get($this->includeKey)));
+        $request = $this->getCurrentRequest();
+        
+        $includes = array_filter(explode($this->includeSeparator, $request->get($this->includeKey)));
 
         $this->fractal->parseIncludes($includes);
     }
