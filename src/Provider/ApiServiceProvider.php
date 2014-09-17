@@ -21,8 +21,6 @@ class ApiServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->package('dingo/api', 'api', __DIR__.'/../');
-
         $this->prepareContainerBindings();
         $this->prepareCompatibility();
         $this->prepareResponse();
