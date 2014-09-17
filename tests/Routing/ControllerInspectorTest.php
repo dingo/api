@@ -18,7 +18,7 @@ class ControllerInspectorTest extends PHPUnit_Framework_TestCase
 
     public function testControllerMethodIsRoutable()
     {
-        $method = new ReflectionMethod('Dingo\Api\Tests\Stubs\ControllerStub', 'getRoutableMethod');
+        $method = new ReflectionMethod('Dingo\Api\Tests\Stubs\ControllerStub', 'getIndex');
         $inspector = new ControllerInspector;
         $this->assertTrue($inspector->isRoutable($method, 'Dingo\Api\Tests\Stubs\ControllerStub'));
     }
