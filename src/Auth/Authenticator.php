@@ -121,6 +121,10 @@ class Authenticator
      */
     protected function filterProviders(array $providers)
     {
+        if (empty($providers)) {
+            return $this->providers;
+        }
+
         return array_intersect_key($this->providers, array_flip($providers));
     }
 
@@ -197,7 +201,7 @@ class Authenticator
         if (is_callable($provider)) {
             $provider = $provider($this->container);
         }
-        
+
         $this->providers[$key] = $provider;
     }
 }
