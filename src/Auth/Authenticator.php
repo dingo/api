@@ -59,33 +59,7 @@ class Authenticator
     {
         $this->router = $router;
         $this->container = $container;
-        $this->providers = $this->prepareProviders($providers);
-    }
-
-    /**
-     * Prepare the available authentication providers.
-     * 
-     * @param  array  $providers
-     * @return array
-     */
-    protected function prepareProviders(array $providers)
-    {
-        foreach ($providers as $key => $provider) {
-            $providers[$key] = $this->createProvider($provider);
-        }
-
-        return $providers;
-    }
-
-    /**
-     * Create an authentication provider.
-     * 
-     * @param  mixed  $provider
-     * @return mixed
-     */
-    protected function createProvider($provider)
-    {
-        return is_callable($provider) ? call_user_func($provider, $this->container) : $provider;
+        $this->providers = $providers;
     }
 
     /**
@@ -220,6 +194,10 @@ class Authenticator
      */
     public function extend($key, $provider)
     {
-        $this->providers[$key] = $this->createProvider($provider);
+        if (is_callable($provider)) {
+            $provider = $provider($this->container);
+        }
+        
+        $this->providers[$key] = $provider;
     }
 }
