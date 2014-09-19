@@ -1,6 +1,6 @@
 <?php
 
-namespace Dingo\Api\Providers;
+namespace Dingo\Api\Provider;
 
 use RuntimeException;
 use Dingo\Api\Dispatcher;
@@ -106,10 +106,10 @@ class ApiServiceProvider extends ServiceProvider
      */
     protected function registerProviders()
     {
-        $this->app->register('Dingo\Api\Providers\ConfigServiceProvider');
-        $this->app->register('Dingo\Api\Providers\RoutingServiceProvider');
-        $this->app->register('Dingo\Api\Providers\FilterServiceProvider');
-        $this->app->register('Dingo\Api\Providers\EventServiceProvider');
+        $this->app->register('Dingo\Api\Provider\ConfigServiceProvider');
+        $this->app->register('Dingo\Api\Provider\RoutingServiceProvider');
+        $this->app->register('Dingo\Api\Provider\FilterServiceProvider');
+        $this->app->register('Dingo\Api\Provider\EventServiceProvider');
     }
 
     /**

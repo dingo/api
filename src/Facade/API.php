@@ -1,10 +1,10 @@
 <?php
 
-namespace Dingo\Api\Facades;
+namespace Dingo\Api\Facade;
 
 use Closure;
 use Dingo\Api\Http\InternalRequest;
-use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\Facade\Facade;
 
 /**
  * @see \Dingo\Api\Routing\Router

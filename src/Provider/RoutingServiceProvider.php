@@ -1,6 +1,6 @@
 <?php
 
-namespace Dingo\Api\Providers;
+namespace Dingo\Api\Provider;
 
 use Dingo\Api\Routing\Router;
 use Dingo\Api\Routing\ControllerDispatcher;

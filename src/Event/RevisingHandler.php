@@ -1,6 +1,6 @@
 <?php
 
-namespace Dingo\Api\Events;
+namespace Dingo\Api\Event;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;

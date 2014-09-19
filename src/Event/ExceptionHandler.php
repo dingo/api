@@ -1,6 +1,6 @@
 <?php
 
-namespace Dingo\Api\Events;
+namespace Dingo\Api\Event;
 
 use Exception;
 use Dingo\Api\Http\Response;

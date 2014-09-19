@@ -1,6 +1,6 @@
 <?php
 
-namespace Dingo\Api\Providers;
+namespace Dingo\Api\Provider;
 
 use Dingo\Api\Http\Filter\AuthFilter;
 use Illuminate\Support\ServiceProvider;

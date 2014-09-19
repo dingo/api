@@ -1,10 +1,10 @@
 <?php
 
-namespace Dingo\Api\Providers;
+namespace Dingo\Api\Provider;
 
 use Dingo\Api\Exception\Handler;
-use Dingo\Api\Events\RevisingHandler;
-use Dingo\Api\Events\ExceptionHandler;
+use Dingo\Api\Event\RevisingHandler;
+use Dingo\Api\Event\ExceptionHandler;
 use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Routing\ControllerReviser;
 
@@ -17,8 +17,8 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app['events']->listen('router.exception', 'Dingo\Api\Events\ExceptionHandler');
-        $this->app['events']->listen('router.matched', 'Dingo\Api\Events\RevisingHandler');
+        $this->app['events']->listen('router.exception', 'Dingo\Api\Event\ExceptionHandler');
+        $this->app['events']->listen('router.matched', 'Dingo\Api\Event\RevisingHandler');
         
         $this->app['router']->filter('api.auth', 'Dingo\Api\Http\Filter\AuthFilter');
         $this->app['router']->filter('api.throttle', 'Dingo\Api\Http\Filter\RateLimitFilter');
@@ -31,11 +31,11 @@ class EventServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind('Dingo\Api\Events\ExceptionHandler', function ($app) {
+        $this->app->bind('Dingo\Api\Event\ExceptionHandler', function ($app) {
             return new ExceptionHandler(new Handler);
         });
 
-        $this->app->bind('Dingo\Api\Events\RevisingHandler', function ($app) {
+        $this->app->bind('Dingo\Api\Event\RevisingHandler', function ($app) {
             return new RevisingHandler($app['router'], new ControllerReviser($app));
         });
     }

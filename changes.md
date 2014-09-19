@@ -8,6 +8,7 @@
 - Rate limiting now makes use of different throttles so the configuration has changed slightly.
 - The response builder will now return the original response instance to internal requests and is decoupled from Fractal.
 - Removed `Response::api()` macro, you can now use `API::response()` to make a new response builder from closure based routes.
+- Made namespaces more consistent by making them all singular.
 
 ### v0.6.5
 
