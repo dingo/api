@@ -1,7 +1,7 @@
 ### v0.7.*@dev (develop)
 
 - Refactoring of a lot of the core.
-- `Dingo\Api\ApiServiceProvider` is now at `Dingo\Api\Providers\ApiServiceProvider`. It has been split up into several smaller service providers.
+- `Dingo\Api\ApiServiceProvider` is now at `Dingo\Api\Provider\ApiServiceProvider`. It has been split up into several smaller service providers.
 - Some dependencies are now injected into controller via setters instead of in the constructor. ([#111](https://github.com/dingo/api/issues/111))
 - Global router "after" filter is now fired even when an exception is thrown and caught by the API.
 - Authentication and Rate Limiting are now filters. Both can be changed on a per-route basis.
