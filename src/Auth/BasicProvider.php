@@ -47,7 +47,9 @@ class BasicProvider extends AuthorizationProvider
     {
         $this->validateAuthorizationHeader($request);
 
-        if ($response = $this->auth->onceBasic($this->identifier) and $response->getStatusCode() === 401) {
+        $response = $this->auth->onceBasic($this->identifier, $request);
+
+        if ($response->getStatusCode() === 401) {
             throw new UnauthorizedHttpException('Basic', 'Invalid authentication credentials.');
         }
 

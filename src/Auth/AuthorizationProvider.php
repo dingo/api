@@ -2,6 +2,7 @@
 
 namespace Dingo\Api\Auth;
 
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -23,9 +24,11 @@ abstract class AuthorizationProvider extends Provider
      */
     public function validateAuthorizationHeader(Request $request)
     {
-        if (! starts_with(strtolower($request->headers->get('authorization')), $this->getAuthorizationMethod())) {
-            throw new BadRequestHttpException;
+        if (Str::startsWith(strtolower($request->headers->get('authorization')), $this->getAuthorizationMethod())) {
+            return true;
         }
+
+        throw new BadRequestHttpException;
     }
 
     /**
