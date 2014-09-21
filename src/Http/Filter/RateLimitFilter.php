@@ -2,11 +2,10 @@
 
 namespace Dingo\Api\Http\Filter;
 
-use Dingo\Api\Http\Response;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
+use Illuminate\Http\Response;
 use Dingo\Api\Routing\Router;
-use Dingo\Api\Auth\Authenticator;
 use Dingo\Api\Http\RateLimit\RateLimiter;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -20,13 +19,6 @@ class RateLimitFilter extends Filter
     protected $router;
 
     /**
-     * API authenticator instance.
-     * 
-     * @var \Dingo\Api\Auth\Authenticator
-     */
-    protected $auth;
-
-    /**
      * API rate limiter instance.
      * 
      * @var \Dingo\Api\Http\RateLimit\RateLimiter
@@ -37,14 +29,12 @@ class RateLimitFilter extends Filter
      * Create a new rate limit filter instance.
      * 
      * @param  \Dingo\Api\Routing\Router  $router
-     * @param  \Dingo\Api\Auth\Authenticator  $auth
      * @param  \Dingo\Api\Http\RateLimit\RateLimiter  $limiter
      * @return void
      */
-    public function __construct(Router $router, Authenticator $auth, RateLimiter $limiter)
+    public function __construct(Router $router, RateLimiter $limiter)
     {
         $this->router = $router;
-        $this->auth = $auth;
         $this->limiter = $limiter;
     }
 
@@ -60,7 +50,7 @@ class RateLimitFilter extends Filter
      */
     public function filter(Route $route, Request $request, $limit = 0, $expires = 0)
     {
-        if ($this->requestIsInternal($request) || $this->requestIsRegular($request)) {
+        if ($this->requestIsInternal($request)) {
             return null;
         }
 
@@ -70,7 +60,7 @@ class RateLimitFilter extends Filter
             return null;
         }
 
-        $this->attachResponseAfterFilter();
+        $this->attachAfterFilter();
 
         if ($this->limiter->exceededRateLimit()) {
             throw new AccessDeniedHttpException;
@@ -82,7 +72,7 @@ class RateLimitFilter extends Filter
      * 
      * @return void
      */
-    protected function attachResponseAfterFilter()
+    protected function attachAfterFilter()
     {
         $this->router->after(function (Request $request, Response $response) {
             $response->headers->set('X-RateLimit-Limit', $this->limiter->getThrottle()->getLimit());

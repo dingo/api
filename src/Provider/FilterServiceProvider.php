@@ -20,7 +20,7 @@ class FilterServiceProvider extends ServiceProvider
         });
 
         $this->app->bind('Dingo\Api\Http\Filter\RateLimitFilter', function ($app) {
-            return new RateLimitFilter($app['router'], $app['api.auth'], $app['api.limiter']);
+            return new RateLimitFilter($app['router'], $app['api.limiter']);
         });
     }
 }

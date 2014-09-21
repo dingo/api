@@ -204,4 +204,19 @@ class RateLimiter
     {
         return $this->retrieve('expires');
     }
+
+    /**
+     * Extend the rate limiter by adding a new throttle.
+     * 
+     * @param  callable|\Dingo\Api\Http\RateLimit\Throttle  $throttle
+     * @return void
+     */
+    public function extend($throttle)
+    {
+        if (is_callable($throttle)) {
+            $throttle = call_user_func($throttle, $this->container);
+        }
+
+        $this->throttles->push($throttle);
+    }
 }

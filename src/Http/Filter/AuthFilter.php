@@ -37,7 +37,8 @@ class AuthFilter extends Filter
      * Create a new authentication handler instance.
      * 
      * @param  Dingo\Api\Routing\Router  $router
-     * @param  Dingo\Api\Auth\Shield  $auth
+     * @param  Illuminate\Events\Dispatcher  $events
+     * @param  Dingo\Api\Auth\Authenticator  $auth
      * @return void
      */
     public function __construct(Router $router, Dispatcher $events, Authenticator $auth)
@@ -52,11 +53,12 @@ class AuthFilter extends Filter
      * 
      * @param  \Dingo\Api\Routing\Route  $route
      * @param  \Illuminate\Http\Request  $request
+     * @param  dynamic  $provider
      * @return mixed
      */
     public function filter(Route $route, Request $request)
     {
-        if ($this->requestIsInternal($request) || $this->requestIsRegular($request) || $this->routeNotProtected($route) || $this->userIsLogged()) {
+        if ($this->requestIsInternal($request) || $this->routeNotProtected($route) || $this->userIsLogged()) {
             return null;
         }
 
