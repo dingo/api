@@ -77,7 +77,7 @@ class RateLimitFilterTest extends PHPUnit_Framework_TestCase
         $request = Request::create('test', 'GET');
         $route = new Route(['GET'], 'test', ['protected' => true]);
 
-        $this->limiter->extend(new ThrottleStub([]));
+        $this->limiter->extend(new ThrottleStub(['limit' => 0]));
 
         $this->filter->filter($route, $request);
     }
