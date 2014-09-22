@@ -11,7 +11,7 @@ abstract class Throttle
      * 
      * @var array
      */
-    protected $options = ['limit' => 0, 'expires' => 60];
+    protected $options = ['limit' => 60, 'expires' => 60];
 
     /**
      * Create a new throttle instance.
@@ -19,7 +19,7 @@ abstract class Throttle
      * @param  array  $options
      * @return void
      */
-    public function __construct(array $options)
+    public function __construct(array $options = [])
     {
         $this->options = array_merge($this->options, $options);
     }

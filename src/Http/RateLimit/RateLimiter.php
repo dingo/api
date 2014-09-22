@@ -82,7 +82,7 @@ class RateLimiter
         // limiting will not be imposed for the request.
         } else {
             $this->throttle = $this->getMatchingThrottles()->sort(function ($a, $b) {
-                return $a->getRequests() < $b->getRequests();
+                return $a->getLimit() < $b->getLimit();
             })->first();
         }
 
@@ -102,7 +102,7 @@ class RateLimiter
      */
     public function exceededRateLimit()
     {
-        return $this->retrieve('requests') > $this->throttle->getLimit();
+        return $this->requestWasRateLimited() ? $this->retrieve('requests') > $this->throttle->getLimit() : false;
     }
 
     /**
