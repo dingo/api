@@ -163,7 +163,6 @@ class ResponseBuilder
     /**
      * Build the response.
      *
-     * @param  array|\League\Fractal\Resource\ResourceInterface  $data
      * @return \Illuminate\Http\Response
      */
     public function build()
