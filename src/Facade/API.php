@@ -4,7 +4,7 @@ namespace Dingo\Api\Facade;
 
 use Closure;
 use Dingo\Api\Http\InternalRequest;
-use Illuminate\Support\Facade\Facade;
+use Illuminate\Support\Facades\Facade;
 
 /**
  * @see \Dingo\Api\Routing\Router
