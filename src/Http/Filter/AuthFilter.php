@@ -65,7 +65,7 @@ class AuthFilter extends Filter
         $providers = array_slice(func_get_args(), 2);
 
         try {
-            return $this->auth->authenticate($providers);
+            $this->auth->authenticate($providers);
         } catch (UnauthorizedHttpException $exception) {
             return $this->events->until('router.exception', [$exception]);
         }
