@@ -1,13 +1,13 @@
 <?php
 
-namespace Dingo\Api\Http\Response;
+namespace Dingo\Api\Http;
 
 use Closure;
 use BadMethodCallException;
 use Illuminate\Support\Str;
 use Dingo\Api\Transformer\Transformer;
 
-class Factory
+class ResponseFactory
 {
     /**
      * API transformer instance.

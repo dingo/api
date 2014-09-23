@@ -6,11 +6,11 @@ use RuntimeException;
 use Dingo\Api\Dispatcher;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Auth\Authenticator;
+use Dingo\Api\Http\ResponseFactory;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Console\ApiRoutesCommand;
 use Dingo\Api\Http\RateLimit\RateLimiter;
-use Dingo\Api\Http\Response\Factory as ResponseFactory;
 
 class ApiServiceProvider extends ServiceProvider
 {
@@ -41,7 +41,7 @@ class ApiServiceProvider extends ServiceProvider
             return $app['api.auth'];
         });
 
-        $this->app->bind('Dingo\Api\Http\Response\Builder', function ($app) {
+        $this->app->bind('Dingo\Api\Http\ResponseFactory', function ($app) {
             return $app['api.response'];
         });
     }
@@ -93,7 +93,7 @@ class ApiServiceProvider extends ServiceProvider
         $this->registerTransformer();
         $this->registerAuthenticator();
         $this->registerRateLimiter();
-        $this->registerResponseBuilder();
+        $this->registerResponseFactory();
         $this->registerCommands();
     }
 
@@ -167,11 +167,11 @@ class ApiServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register the API response builder.
+     * Register the API response factory.
      * 
      * @return void
      */
-    protected function registerResponseBuilder()
+    protected function registerResponseFactory()
     {
         $this->app->bindShared('api.response', function ($app) {
             return new ResponseFactory($app['api.transformer']);

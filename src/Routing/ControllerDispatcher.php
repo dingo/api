@@ -4,7 +4,7 @@ namespace Dingo\Api\Routing;
 
 use Dingo\Api\Dispatcher;
 use Dingo\Api\Auth\Authenticator;
-use Dingo\Api\Http\Response\Factory as ResponseFactory;
+use Dingo\Api\Http\ResponseFactory;
 use Illuminate\Routing\ControllerDispatcher as IlluminateControllerDispatcher;
 
 class ControllerDispatcher extends IlluminateControllerDispatcher
@@ -26,7 +26,7 @@ class ControllerDispatcher extends IlluminateControllerDispatcher
     /**
      * API response factory instance.
      * 
-     * @var \Dingo\Api\Http\Response\Factory
+     * @var \Dingo\Api\Http\ResponseFactory
      */
     protected $response;
 
@@ -82,7 +82,7 @@ class ControllerDispatcher extends IlluminateControllerDispatcher
     /**
      * Set the API response factory instance.
      * 
-     * @param  \Dingo\Api\Http\Response\Factory  $response
+     * @param  \Dingo\Api\Http\ResponseFactory  $response
      * @return void
      */
     public function setResponseFactory(ResponseFactory $response)

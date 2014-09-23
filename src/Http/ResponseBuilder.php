@@ -1,11 +1,10 @@
 <?php
 
-namespace Dingo\Api\Http\Response;
+namespace Dingo\Api\Http;
 
-use Dingo\Api\Http\Response;
 use Dingo\Api\Transformer\Binding;
 
-class Builder
+class ResponseBuilder
 {
     /**
      * Transformer binding instance.
