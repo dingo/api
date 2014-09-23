@@ -368,7 +368,7 @@ class Router extends IlluminateRouter
 
     /**
      * Get the default API route collection.
-     * 
+     *
      * @return \Dingo\Api\Routing\ApiRouteCollection|null
      */
     public function getDefaultApiRouteCollection()

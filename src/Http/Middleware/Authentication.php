@@ -105,7 +105,7 @@ class Authentication implements HttpKernelInterface
 
     /**
      * Get the API route collection for the given request.
-     * 
+     *
      * @param  \Symfony\Component\HttpFoundation\Request  $request
      * @return \Dingo\Api\Routing\ApiRouteCollection
      */

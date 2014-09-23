@@ -24,7 +24,7 @@ class JsonpResponseFormat extends JsonResponseFormat
 
     /**
      * Get the callback from the query string.
-     * 
+     *
      * @return string
      */
     protected function getCallback()
