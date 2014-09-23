@@ -8,6 +8,7 @@ use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
 use PHPUnit_Framework_TestCase;
 use Illuminate\Events\Dispatcher;
+use Dingo\Api\Http\ResponseBuilder;
 use Dingo\Api\Http\InternalRequest;
 use Dingo\Api\Exception\ResourceException;
 use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
@@ -419,6 +420,20 @@ class RouterTest extends PHPUnit_Framework_TestCase {
 
         $this->router->setDefaultVersion('v2');
         $request = Request::create('api/foo', 'GET');
+        $this->assertEquals('bar', $this->router->dispatch($request)->getContent());
+    }
+
+
+    public function testRouterPreparesResponseBuilderResponse()
+    {
+        $request = Request::create('foo', 'GET');
+
+        $this->router->api(['version' => 'v1'], function () {
+            $this->router->get('foo', function () {
+                return new ResponseBuilder('bar');
+            });
+        });
+
         $this->assertEquals('bar', $this->router->dispatch($request)->getContent());
     }
 }
