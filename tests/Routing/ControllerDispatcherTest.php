@@ -43,12 +43,12 @@ class ControllerDispatcherTest extends PHPUnit_Framework_TestCase
 
         $dispatcher->setAuthenticator(Mockery::mock('Dingo\Api\Auth\Authenticator'));
         $dispatcher->setDispatcher(Mockery::mock('Dingo\Api\Dispatcher'));
-        $dispatcher->setResponseFactory(Mockery::mock('Dingo\Api\Http\Response\Factory'));
+        $dispatcher->setResponseFactory(Mockery::mock('Dingo\Api\Http\ResponseFactory'));
 
         $response = $dispatcher->dispatch($route, $request, 'Dingo\Api\Tests\Stubs\ControllerStub', 'getIndex');
 
         $this->assertEquals('foo', $response);
-        $this->assertInstanceOf('Dingo\Api\Http\Response\Factory', $_SERVER['ControllerDispatcherTestResponse']);
+        $this->assertInstanceOf('Dingo\Api\Http\ResponseFactory', $_SERVER['ControllerDispatcherTestResponse']);
         $this->assertInstanceOf('Dingo\Api\Auth\Authenticator', $_SERVER['ControllerDispatcherTestAuth']);
         $this->assertInstanceOf('Dingo\Api\Dispatcher', $_SERVER['ControllerDispatcherTestApi']);
     }
