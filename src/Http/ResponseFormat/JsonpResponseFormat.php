@@ -1,8 +1,5 @@
 <?php namespace Dingo\Api\Http\ResponseFormat;
 
-use Illuminate\Http\Request as IlluminateRequest;
-use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
-
 class JsonpResponseFormat extends JsonResponseFormat
 {
     /**

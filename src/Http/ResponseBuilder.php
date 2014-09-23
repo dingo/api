@@ -2,7 +2,6 @@
 
 namespace Dingo\Api\Http;
 
-use League\Fractal\Manager as Fractal;
 use Dingo\Api\Transformer\FractalTransformer;
 use League\Fractal\Resource\Item as FractalItem;
 use League\Fractal\Serializer\SerializerAbstract;

@@ -3,7 +3,6 @@
 namespace Dingo\Api\Routing;
 
 use Exception;
-use RuntimeException;
 use BadMethodCallException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
@@ -13,7 +12,6 @@ use Dingo\Api\Exception\ResourceException;
 use Dingo\Api\Http\Response as ApiResponse;
 use Illuminate\Routing\Router as IlluminateRouter;
 use Illuminate\Http\Response as IlluminateResponse;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;

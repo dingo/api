@@ -39,7 +39,7 @@ class JsonResponseFormat extends ResponseFormat
     /**
      * Format other response type such as a string or integer.
      *
-     * @param  string  $string
+     * @param  string  $content
      * @return string
      */
     public function formatOther($content)
