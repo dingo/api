@@ -150,6 +150,17 @@ class ResponseBuilder
     }
 
     /**
+     * Set the response status code.
+     * 
+     * @param  int  $statusCode
+     * @return \Dingo\Api\Http\ResponseBuilder
+     */
+    public function statusCode($statusCode)
+    {
+        return $this->setStatusCode($statusCode);
+    }
+
+    /**
      * Build the response.
      *
      * @param  array|\League\Fractal\Resource\ResourceInterface  $data
