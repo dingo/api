@@ -34,7 +34,7 @@ class ResponseFactory
      * @param  object  $transformer
      * @param  array  $parameters
      * @param  \Closure  $after
-     * @return \Dingo\Api\Response\Builder
+     * @return \Dingo\Api\Http\ResponseBuilder
      */
     public function collection($collection, $transformer, array $parameters = [], Closure $after = null)
     {
@@ -42,7 +42,7 @@ class ResponseFactory
 
         $binding = $this->transformer->register($class, $transformer, $parameters, $after);
 
-        return new Builder($collection, $binding);
+        return new ResponseBuilder($collection, $binding);
     }
 
     /**
@@ -51,7 +51,7 @@ class ResponseFactory
      * @param  object  $item
      * @param  object  $transformer
      * @param  array  $parameters
-     * @return \Dingo\Api\Response\Builder
+     * @return \Dingo\Api\Http\ResponseBuilder
      */
     public function item($item, $transformer, array $parameters = [])
     {
@@ -59,7 +59,7 @@ class ResponseFactory
 
         $binding = $this->transformer->register($class, $transformer, $parameters);
 
-        return new Builder($item, $binding);
+        return new ResponseBuilder($item, $binding);
     }
 
     /**
@@ -69,17 +69,17 @@ class ResponseFactory
      * @param  object  $transformer
      * @param  array  $parameters
      * @param  \Closure  $after
-     * @return \Dingo\Api\Response\Builder
+     * @return \Dingo\Api\Http\ResponseBuilder
      */
     public function paginator($paginator, $transformer, array $parameters = [], Closure $after = null)
     {
-        $collection = $pagination->getCollection();
+        $collection = $paginator->getCollection();
 
         $class = get_class($collection->first());
 
         $binding = $this->transformer->register($class, $transformer, $parameters, $after);
 
-        return new Builder($paginator, $binding);
+        return new ResponseBuilder($paginator, $binding);
     }
 
     /**
@@ -171,7 +171,7 @@ class ResponseFactory
         // Because PHP won't let us name the method "array" we'll simply watch for it
         // in here and return the new binding. Gross.
         } elseif ($method == 'array') {
-            return new Builder($parameters[0]);
+            return new ResponseBuilder($parameters[0]);
         }
 
         throw new BadMethodCallException('Method '.$method.' does not exist on class.');
