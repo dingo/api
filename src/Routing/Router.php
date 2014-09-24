@@ -92,7 +92,7 @@ class Router extends IlluminateRouter
 
     /**
      * Indicates if API routes are being added.
-     * 
+     *
      * @var bool
      */
     protected $addingApiRoutes = false;
@@ -153,7 +153,7 @@ class Router extends IlluminateRouter
         if (! $this->requestTargettingApi($request)) {
             return parent::dispatch($request);
         }
-        
+
         list ($version, $format) = $this->parseAcceptHeader($request);
 
         $this->requestedVersion = $version;
@@ -241,7 +241,7 @@ class Router extends IlluminateRouter
 
     /**
      * Attach the API before filters to the route.
-     * 
+     *
      * @param  \Dingo\Api\Routing\Route  $route
      * @return \Dingo\Api\Routing\Route
      */
@@ -359,7 +359,7 @@ class Router extends IlluminateRouter
 
     /**
      * Get the default API route collection.
-     * 
+     *
      * @return \Dingo\Api\Routing\ApiRouteCollection|null
      */
     public function getDefaultApiRouteCollection()
@@ -465,7 +465,7 @@ class Router extends IlluminateRouter
     /**
      * Set the default API format.
      *
-     * @param  string  $defaultformat
+     * @param  string  $defaultFormat
      * @return void
      */
     public function setDefaultFormat($defaultFormat)

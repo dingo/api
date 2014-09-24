@@ -11,21 +11,21 @@ class ControllerDispatcher extends IlluminateControllerDispatcher
 {
     /**
      * API dispatcher instance.
-     * 
+     *
      * @var \Dingo\Api\Dispatcher
      */
     protected $api;
 
     /**
      * API authenticator instance.
-     * 
+     *
      * @var \Dingo\Api\Auth\Authenticator
      */
     protected $auth;
 
     /**
      * API response factory instance.
-     * 
+     *
      * @var \Dingo\Api\Http\ResponseFactory
      */
     protected $response;
@@ -44,7 +44,7 @@ class ControllerDispatcher extends IlluminateControllerDispatcher
 
     /**
      * Inject the controller dependencies into the controller instance.
-     * 
+     *
      * @param  \Illuminate\Routing\Controller  $instance
      * @return void
      */
@@ -59,7 +59,7 @@ class ControllerDispatcher extends IlluminateControllerDispatcher
 
     /**
      * Set the API dispatcher instance.
-     * 
+     *
      * @param  \Dingo\Api\Dispatcher  $api
      * @return void
      */
@@ -70,7 +70,7 @@ class ControllerDispatcher extends IlluminateControllerDispatcher
 
     /**
      * Set the API authenticator instance.
-     * 
+     *
      * @param  \Dingo\Api\Auth\Authenticator  $auth
      * @return void
      */
@@ -81,7 +81,7 @@ class ControllerDispatcher extends IlluminateControllerDispatcher
 
     /**
      * Set the API response factory instance.
-     * 
+     *
      * @param  \Dingo\Api\Http\ResponseFactory  $response
      * @return void
      */
@@ -92,7 +92,7 @@ class ControllerDispatcher extends IlluminateControllerDispatcher
 
     /**
      * Get the API dispatcher instance.
-     * 
+     *
      * @return \Dingo\Api\Dispatcher
      */
     public function getDispatcher()
@@ -102,7 +102,7 @@ class ControllerDispatcher extends IlluminateControllerDispatcher
 
     /**
      * Get the API authenticator instance.
-     * 
+     *
      * @return \Dingo\Api\Auth\Authenticator
      */
     public function getAuthenticator()
@@ -112,8 +112,8 @@ class ControllerDispatcher extends IlluminateControllerDispatcher
 
     /**
      * Get the API response factory instance.
-     * 
-     * @return \Dingo\Api\Http\Response\Factory
+     *
+     * @return \Dingo\Api\Http\ResponseFactory
      */
     public function getResponseFactory()
     {
