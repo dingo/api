@@ -74,7 +74,7 @@ class Dispatcher
 
     /**
      * Request uploaded files.
-     * 
+     *
      * @var array
      */
     protected $files = [];
@@ -117,7 +117,7 @@ class Dispatcher
 
     /**
      * Attach files to be uploaded.
-     * 
+     *
      * @param  array  $files
      * @return \Dingo\Api\Dispatcher
      */

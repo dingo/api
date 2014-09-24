@@ -49,14 +49,14 @@ class Shield
 
     /**
      * Illuminate request instance.
-     * 
+     *
      * @var \Illuminate\Http\Request
      */
     protected $request;
 
     /**
      * Illuminate route instance.
-     * 
+     *
      * @var \Illumimate\Routing\Route
      */
     protected $route;
@@ -180,7 +180,7 @@ class Shield
 
     /**
      * Set the request instance.
-     * 
+     *
      * @param  \Illuminate\Routing\Route  $route
      * @return \Dingo\Api\Auth\Shield
      */
@@ -193,7 +193,7 @@ class Shield
 
     /**
      * Set the route instance.
-     * 
+     *
      * @param  \Illuminate\Routing\Route  $route
      * @return \Dingo\Api\Auth\Shield
      */

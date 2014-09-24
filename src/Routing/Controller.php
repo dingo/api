@@ -25,7 +25,7 @@ abstract class Controller extends IlluminateController
 
     /**
      * API response builder instance.
-     * 
+     *
      * @var \Dingo\Api\Http\ResponseBuilder
      */
     protected $response;
@@ -144,7 +144,7 @@ abstract class Controller extends IlluminateController
 
     /**
      * Magically handle calls to the response builder.
-     * 
+     *
      * @param  string  $method
      * @param  array  $parameters
      * @return mixed

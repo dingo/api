@@ -27,14 +27,14 @@ class LeagueOAuth2Provider extends AuthorizationProvider
 
     /**
      * Callback to fetch a user.
-     * 
+     *
      * @var callable
      */
     protected $userCallback;
 
     /**
      * Callback to fetch a client.
-     * 
+     *
      * @var callable
      */
     protected $clientCallback;
@@ -89,7 +89,7 @@ class LeagueOAuth2Provider extends AuthorizationProvider
 
     /**
      * Resolve the resource owner.
-     * 
+     *
      * @return mixed
      */
     protected function resolveResourceOwner()
@@ -116,7 +116,7 @@ class LeagueOAuth2Provider extends AuthorizationProvider
 
     /**
      * Set the callback to fetch a user.
-     * 
+     *
      * @param  callable  $callback
      * @return \Dingo\Api\Auth\LeagueOAuth2Provider
      */
@@ -129,7 +129,7 @@ class LeagueOAuth2Provider extends AuthorizationProvider
 
     /**
      * Set the callback to fetch a client.
-     * 
+     *
      * @param  callable  $callback
      * @return \Dingo\Api\Auth\LeagueOAuth2Provider
      */

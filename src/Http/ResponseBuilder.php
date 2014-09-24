@@ -36,14 +36,14 @@ class ResponseBuilder
 
     /**
      * The Fractal serializer.
-     * 
+     *
      * @var \League\Fractal\Serializer\SerializerAbstract
      */
     protected $serializer;
 
     /**
      * Array of meta data.
-     * 
+     *
      * @var array
      */
     protected $meta = [];
@@ -124,7 +124,7 @@ class ResponseBuilder
 
     /**
      * Return an error response.
-     * 
+     *
      * @param  string|array  $error
      * @param  int  $statusCode
      * @return \Illuminate\Http\Response
@@ -142,7 +142,7 @@ class ResponseBuilder
 
     /**
      * Add a Fractal meta key and value pair.
-     * 
+     *
      * @param  string  $key
      * @param  mixed  $value
      * @return \Dingo\Api\Http\ResponseBuilder
@@ -156,7 +156,7 @@ class ResponseBuilder
 
     /**
      * Add a Fractal meta key and value pair.
-     * 
+     *
      * @param  string  $key
      * @param  mixed  $value
      * @return \Dingo\Api\Http\ResponseBuilder
@@ -197,7 +197,7 @@ class ResponseBuilder
 
     /**
      * Reset this response builder instance.
-     * 
+     *
      * @return void
      */
     protected function reset()
@@ -224,7 +224,7 @@ class ResponseBuilder
 
     /**
      * Add an array of headers.
-     * 
+     *
      * @param  array  $headers
      * @return \Dingo\Api\Http\ResponseBuilder
      */
@@ -237,7 +237,7 @@ class ResponseBuilder
 
     /**
      * Add a header to the response.
-     * 
+     *
      * @param  string  $name
      * @param  string  $value
      * @return \Dingo\Api\Http\ResponseBuilder
@@ -249,7 +249,7 @@ class ResponseBuilder
 
     /**
      * Add an array of headers.
-     * 
+     *
      * @param  array  $headers
      * @return \Dingo\Api\Http\ResponseBuilder
      */
@@ -273,7 +273,7 @@ class ResponseBuilder
 
     /**
      * Return a 404 not found error.
-     * 
+     *
      * @param  string|array  $message
      * @return \Illuminate\Http\Response
      */
@@ -284,7 +284,7 @@ class ResponseBuilder
 
     /**
      * Return a 400 bad request error.
-     * 
+     *
      * @param  string|array  $message
      * @return \Illuminate\Http\Response
      */
@@ -295,7 +295,7 @@ class ResponseBuilder
 
     /**
      * Return a 403 forbidden error.
-     * 
+     *
      * @param  string|array  $message
      * @return \Illuminate\Http\Response
      */
@@ -306,7 +306,7 @@ class ResponseBuilder
 
     /**
      * Return a 500 internal server error.
-     * 
+     *
      * @param  string|array  $message
      * @return \Illuminate\Http\Response
      */
@@ -317,7 +317,7 @@ class ResponseBuilder
 
     /**
      * Return a 401 unauthorized error.
-     * 
+     *
      * @param  string|array  $message
      * @return \Illuminate\Http\Response
      */
@@ -328,7 +328,7 @@ class ResponseBuilder
 
     /**
      * Set the Fractal serializer.
-     * 
+     *
      * @param  \League\Fractal\Serializer\SerializerAbstract  $serializer
      * @return \Dingo\Api\Http\ResponseBuilder
      */
@@ -341,7 +341,7 @@ class ResponseBuilder
 
     /**
      * Set the Fractal serializer.
-     * 
+     *
      * @param  \League\Fractal\Serializer\SerializerAbstract  $serializer
      * @return \Dingo\Api\Http\ResponseBuilder
      */
