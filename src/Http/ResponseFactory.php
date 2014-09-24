@@ -46,6 +46,19 @@ class ResponseFactory
     }
 
     /**
+     * Respond with a no content response.
+     *
+     * @return \Dingo\Api\Http\ResponseBuilder
+     */
+    public function noContent()
+    {
+        $response = new ResponseBuilder(null);
+        $response->setStatusCode(204);
+
+        return $response;
+    }
+
+    /**
      * Bind a collection to a transformer and start building a response.
      *
      * @param  \Illuminate\Support\Collection  $collection
