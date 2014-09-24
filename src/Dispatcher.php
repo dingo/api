@@ -5,7 +5,6 @@ namespace Dingo\Api;
 use RuntimeException;
 use Dingo\Api\Auth\Shield;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Dingo\Api\Routing\Router;
 use Illuminate\Auth\GenericUser;
 use Dingo\Api\Http\InternalRequest;

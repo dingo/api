@@ -4,7 +4,6 @@ namespace Dingo\Api\Auth;
 
 use Exception;
 use Illuminate\Http\Request;
-use Dingo\Api\Http\Response;
 use Illuminate\Routing\Route;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Container\Container;
