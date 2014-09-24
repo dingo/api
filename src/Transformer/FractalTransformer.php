@@ -97,7 +97,7 @@ class FractalTransformer extends Transformer
      * @param  mixed  $response
      * @param  \League\Fractal\TransformerAbstract  $transformer
      * @param  array  $parameters
-     * @return \League\Fractal\Resource\Item|\League|Fractal\Resource\Collection
+     * @return \League\Fractal\Resource\Item|\League\Fractal\Resource\Collection
      */
     protected function createResource($response, $transformer, array $parameters)
     {
