@@ -23,6 +23,19 @@ class ResponseFactoryTest extends PHPUnit_Framework_TestCase
         Mockery::close();
     }
 
+    public function testMakingACreatedResponse()
+    {
+        $response = $this->factory->created()->build();
+        $responseWithLocation = $this->factory->created('test')->build();
+
+        $this->assertEquals($response->getStatusCode(), 201);
+        $this->assertFalse($response->headers->has('Location'));
+
+        $this->assertEquals($responseWithLocation->getStatusCode(), 201);
+        $this->assertTrue($responseWithLocation->headers->has('Location'));
+        $this->assertEquals($responseWithLocation->headers->get('Location'), 'test');
+    }
+
 
     public function testMakingCollectionRegistersUnderlyingClassWithTransformer()
     {

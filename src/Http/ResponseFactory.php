@@ -11,14 +11,14 @@ class ResponseFactory
 {
     /**
      * API transformer instance.
-     * 
+     *
      * @var \Dingo\Api\Transformer\Transformer
      */
     protected $transformer;
 
     /**
      * Create a new response factory instance.
-     * 
+     *
      * @param  \Dingo\Api\Transformer\Transformer  $transformer
      * @return void
      */
@@ -28,8 +28,26 @@ class ResponseFactory
     }
 
     /**
+     * Respond with a created response and associate a location if provided.
+     *
+     * @param null|string $location
+     * @return \Dingo\Api\Http\ResponseBuilder
+     */
+    public function created($location = null)
+    {
+        $response = new ResponseBuilder(null);
+        $response->setStatusCode(201);
+
+        if ( ! is_null($location)) {
+            $response->addHeader('Location', $location);
+        }
+
+        return $response;
+    }
+
+    /**
      * Bind a collection to a transformer and start building a response.
-     * 
+     *
      * @param  \Illuminate\Support\Collection  $collection
      * @param  object  $transformer
      * @param  array  $parameters
@@ -47,7 +65,7 @@ class ResponseFactory
 
     /**
      * Bind an item to a transformer and start building a response.
-     * 
+     *
      * @param  object  $item
      * @param  object  $transformer
      * @param  array  $parameters
@@ -64,7 +82,7 @@ class ResponseFactory
 
     /**
      * Bind a paginator to a transformer and start building a response.
-     * 
+     *
      * @param  \Illuminate\Pagination\Paginator  $paginator
      * @param  object  $transformer
      * @param  array  $parameters
@@ -84,7 +102,7 @@ class ResponseFactory
 
     /**
      * Return an error response.
-     * 
+     *
      * @param  string|array  $error
      * @param  int  $statusCode
      * @return \Illuminate\Http\Response
@@ -99,10 +117,10 @@ class ResponseFactory
 
         return $this->array($error)->setStatusCode($statusCode);
     }
-    
+
     /**
      * Return a 404 not found error.
-     * 
+     *
      * @param  string|array  $message
      * @return \Illuminate\Http\Response
      */
@@ -113,7 +131,7 @@ class ResponseFactory
 
     /**
      * Return a 400 bad request error.
-     * 
+     *
      * @param  string|array  $message
      * @return \Illuminate\Http\Response
      */
@@ -124,7 +142,7 @@ class ResponseFactory
 
     /**
      * Return a 403 forbidden error.
-     * 
+     *
      * @param  string|array  $message
      * @return \Illuminate\Http\Response
      */
@@ -135,7 +153,7 @@ class ResponseFactory
 
     /**
      * Return a 500 internal server error.
-     * 
+     *
      * @param  string|array  $message
      * @return \Illuminate\Http\Response
      */
@@ -146,7 +164,7 @@ class ResponseFactory
 
     /**
      * Return a 401 unauthorized error.
-     * 
+     *
      * @param  string|array  $message
      * @return \Illuminate\Http\Response
      */
@@ -157,7 +175,7 @@ class ResponseFactory
 
     /**
      * Call magic methods beginning with "with".
-     * 
+     *
      * @param  string  $method
      * @param  array  $parameters
      * @return mixed
