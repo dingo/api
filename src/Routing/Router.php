@@ -461,7 +461,7 @@ class Router extends IlluminateRouter
     /**
      * Set the default API format.
      *
-     * @param  string  $defaultformat
+     * @param  string  $defaultFormat
      * @return void
      */
     public function setDefaultFormat($defaultFormat)

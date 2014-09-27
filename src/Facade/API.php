@@ -76,8 +76,8 @@ class API extends Facade
 
     /**
      * Get the response factory to begin building a response.
-     * 
-     * @return \Dingo\Api\Http\Response\Factory
+     *
+     * @return \Dingo\Api\Http\ResponseFactory
      */
     public static function response()
     {
