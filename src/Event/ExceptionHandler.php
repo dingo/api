@@ -6,21 +6,20 @@ use Exception;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Exception\Handler;
 use Dingo\Api\Exception\ResourceException;
-use Illuminate\Http\Response as IlluminateResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class ExceptionHandler
 {
     /**
      * API exception handler instance.
-     * 
+     *
      * @var \Dingo\Api\Exception\Handler
      */
     protected $handler;
 
     /**
      * Create a new exception handler instance.
-     * 
+     *
      * @param  \Dingo\Api\Exception\Handler  $handler
      * @return void
      */
@@ -31,7 +30,7 @@ class ExceptionHandler
 
     /**
      * Handle an exception thrown during dispatching of an API request.
-     * 
+     *
      * @param  \Exception  $exception
      * @return \Dingo\Api\Http\Response
      * @throws \Exception

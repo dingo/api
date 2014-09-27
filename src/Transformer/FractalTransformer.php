@@ -2,8 +2,6 @@
 
 namespace Dingo\Api\Transformer;
 
-use Closure;
-use League\Fractal\TransformerAbstract;
 use League\Fractal\Manager as Fractal;
 use League\Fractal\Resource\Item as FractalItem;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
@@ -118,7 +116,7 @@ class FractalTransformer extends Transformer
     public function parseFractalIncludes()
     {
         $request = $this->getCurrentRequest();
-        
+
         $includes = array_filter(explode($this->includeSeparator, $request->get($this->includeKey)));
 
         $this->fractal->parseIncludes($includes);
