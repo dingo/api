@@ -145,7 +145,7 @@ class Authentication implements HttpKernelInterface
     {
         $action = $route->getAction();
 
-	    return in_array('protected', $action, true) || array_get($action, 'protected') === true;
+        return in_array('protected', $action, true) || array_get($action, 'protected') === true;
     }
 
     /**
