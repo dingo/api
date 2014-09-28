@@ -111,7 +111,7 @@ class LeagueOAuth2Provider extends AuthorizationProvider
     {
         $action = $route->getAction();
 
-        return isset($action['scopes']) ? (array) $action['scopes'] : [];
+        return (array) array_get($action, 'scopes', []);
     }
 
     /**
