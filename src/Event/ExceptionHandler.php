@@ -49,9 +49,9 @@ class ExceptionHandler
             $message = sprintf('%d %s', $exception->getStatusCode(), Response::$statusTexts[$exception->getStatusCode()]);
         }
 
-        $response = ['message' => $message];
+        $response = ['message' => $message, 'status_code' => $exception->getStatusCode()];
 
-        if ($exception instanceof ResourceException and $exception->hasErrors()) {
+        if ($exception instanceof ResourceException && $exception->hasErrors()) {
             $response['errors'] = $exception->getErrors();
         }
 

@@ -123,7 +123,7 @@ class ResponseFactory
     public function error($error, $statusCode)
     {
         if (! is_array($error)) {
-            $error = ['error' => $error];
+            $error = ['message' => $error];
         }
 
         $error = array_merge(['status_code'  => $statusCode], $error);
