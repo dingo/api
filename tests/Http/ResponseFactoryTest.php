@@ -23,6 +23,7 @@ class ResponseFactoryTest extends PHPUnit_Framework_TestCase
         Mockery::close();
     }
 
+
     public function testMakingACreatedResponse()
     {
         $response = $this->factory->created()->build();
@@ -34,6 +35,14 @@ class ResponseFactoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($responseWithLocation->getStatusCode(), 201);
         $this->assertTrue($responseWithLocation->headers->has('Location'));
         $this->assertEquals($responseWithLocation->headers->get('Location'), 'test');
+    }
+
+
+    public function testMakingANoContentResponse()
+    {
+        $response = $this->factory->noContent()->build();
+        $this->assertEquals($response->getStatusCode(), 204);
+        $this->assertEquals($response->getContent(), '');
     }
 
 

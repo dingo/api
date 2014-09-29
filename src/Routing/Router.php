@@ -5,17 +5,13 @@ namespace Dingo\Api\Routing;
 use Exception;
 use BadMethodCallException;
 use Illuminate\Http\Request;
-use Illuminate\Events\Dispatcher;
-use Illuminate\Container\Container;
 use Dingo\Api\Http\ResponseBuilder;
 use Dingo\Api\Http\InternalRequest;
-use Dingo\Api\Exception\ResourceException;
 use Dingo\Api\Http\Response as ApiResponse;
 use Illuminate\Routing\Route as IlluminateRoute;
 use Illuminate\Routing\Router as IlluminateRouter;
 use Illuminate\Http\Response as IlluminateResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 class Router extends IlluminateRouter
@@ -92,7 +88,7 @@ class Router extends IlluminateRouter
 
     /**
      * Indicates if API routes are being added.
-     * 
+     *
      * @var bool
      */
     protected $addingApiRoutes = false;
@@ -153,7 +149,7 @@ class Router extends IlluminateRouter
         if (! $this->requestTargettingApi($request)) {
             return parent::dispatch($request);
         }
-        
+
         list ($version, $format) = $this->parseAcceptHeader($request);
 
         $this->requestedVersion = $version;
@@ -241,7 +237,7 @@ class Router extends IlluminateRouter
 
     /**
      * Attach the API before filters to the route.
-     * 
+     *
      * @param  \Dingo\Api\Routing\Route  $route
      * @return \Dingo\Api\Routing\Route
      */
@@ -465,7 +461,7 @@ class Router extends IlluminateRouter
     /**
      * Set the default API format.
      *
-     * @param  string  $defaultformat
+     * @param  string  $defaultFormat
      * @return void
      */
     public function setDefaultFormat($defaultFormat)

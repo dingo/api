@@ -4,7 +4,6 @@ namespace Dingo\Api\Transformer;
 
 use Closure;
 use RuntimeException;
-use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Container\Container;
 use Illuminate\Pagination\Paginator;
@@ -27,7 +26,7 @@ abstract class Transformer
 
     /**
      * Get the current request instance.
-     * 
+     *
      * @return \Illuminate\Http\Request
      */
     public function getCurrentRequest()
@@ -128,7 +127,7 @@ abstract class Transformer
 
     /**
      * Create a new binding for an instance bound by a contract.
-     * 
+     *
      * @param  object  $instance
      * @return \Dingo\Api\Transformer\Binding
      */

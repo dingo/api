@@ -3,9 +3,7 @@
 namespace Dingo\Api\Auth;
 
 use Exception;
-use Dingo\Api\Http\Response;
 use Illuminate\Routing\Router;
-use Illuminate\Auth\AuthManager;
 use Illuminate\Container\Container;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -14,7 +12,7 @@ class Authenticator
 {
     /**
      * API router instance,
-     * 
+     *
      * @var \Dingo\Api\Routing\Router
      */
     protected $router;
@@ -97,7 +95,7 @@ class Authenticator
 
     /**
      * Throw the first exception from the exception stack.
-     * 
+     *
      * @param  array  $exceptionStack
      * @return void
      * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
@@ -115,7 +113,7 @@ class Authenticator
 
     /**
      * Filter the requested providers from the available providers.
-     * 
+     *
      * @param  array  $providers
      * @return array
      */
