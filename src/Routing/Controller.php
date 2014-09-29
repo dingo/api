@@ -162,7 +162,7 @@ abstract class Controller extends IlluminateController
 
     /**
      * Magically handle calls to the response builder.
-     * 
+     *
      * @param  string  $method
      * @param  array  $parameters
      * @return mixed

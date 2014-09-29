@@ -359,7 +359,7 @@ class Router extends IlluminateRouter
 
     /**
      * Get the default API route collection.
-     * 
+     *
      * @return \Dingo\Api\Routing\ApiRouteCollection|null
      */
     public function getDefaultApiRouteCollection()
@@ -375,7 +375,7 @@ class Router extends IlluminateRouter
      */
     public function getApiRouteCollection($version)
     {
-        return isset($this->api[$version]) ? $this->api[$version] : null;
+        return array_get($this->api, $version);
     }
 
     /**

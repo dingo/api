@@ -4,7 +4,6 @@ namespace Dingo\Api;
 
 use RuntimeException;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Dingo\Api\Routing\Router;
 use Illuminate\Auth\GenericUser;
 use Dingo\Api\Auth\Authenticator;
@@ -75,7 +74,7 @@ class Dispatcher
 
     /**
      * Request uploaded files.
-     * 
+     *
      * @var array
      */
     protected $files = [];
@@ -118,7 +117,7 @@ class Dispatcher
 
     /**
      * Attach files to be uploaded.
-     * 
+     *
      * @param  array  $files
      * @return \Dingo\Api\Dispatcher
      */
