@@ -145,7 +145,7 @@ class Authentication implements HttpKernelInterface
     {
         $action = $route->getAction();
 
-        return in_array('protected', $action, true) || (isset($action['protected']) && $action['protected'] === true);
+        return in_array('protected', $action, true) || array_get($action, 'protected') === true;
     }
 
     /**
@@ -156,7 +156,7 @@ class Authentication implements HttpKernelInterface
      */
     public function __get($binding)
     {
-        $binding = isset($this->mappings[$binding]) ? $this->mappings[$binding] : $binding;
+        $binding = array_get($this->mappings, $binding, $binding);
 
         if (isset($this->bindings[$binding])) {
             return $this->bindings[$binding];

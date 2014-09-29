@@ -382,7 +382,7 @@ class Router extends IlluminateRouter
      */
     public function getApiRouteCollection($version)
     {
-        return isset($this->api[$version]) ? $this->api[$version] : null;
+        return array_get($this->api, $version);
     }
 
     /**
