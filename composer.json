@@ -29,7 +29,7 @@
     },
     "suggest": {
         "lucadegasperi/oauth2-server-laravel": "Use the League OAuth 2.0 server to protect your API.",
-        "tymon/jwt-auth": "Protet your API with JSON Web Tokens"
+        "tymon/jwt-auth": "Protect your API with JSON Web Tokens"
     },
     "autoload": {
         "psr-4": {
