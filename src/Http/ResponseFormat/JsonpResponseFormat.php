@@ -1,8 +1,5 @@
 <?php namespace Dingo\Api\Http\ResponseFormat;
 
-use Illuminate\Http\Request as IlluminateRequest;
-use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
-
 class JsonpResponseFormat extends JsonResponseFormat
 {
     /**
@@ -24,7 +21,7 @@ class JsonpResponseFormat extends JsonResponseFormat
 
     /**
      * Get the callback from the query string.
-     * 
+     *
      * @return string
      */
     protected function getCallback()

@@ -33,7 +33,7 @@ class ApiServiceProvider extends ServiceProvider
 
     /**
      * Boot the container bindings.
-     * 
+     *
      * @return void
      */
     protected function bootContainerBindings()
@@ -53,7 +53,7 @@ class ApiServiceProvider extends ServiceProvider
 
     /**
      * Boot the response facade macro.
-     * 
+     *
      * @return void
      */
     protected function bootResponseMacro()
@@ -65,7 +65,7 @@ class ApiServiceProvider extends ServiceProvider
 
     /**
      * Boot the response transformer.
-     * 
+     *
      * @return void
      */
     protected function bootResponseTransformer()
@@ -100,7 +100,7 @@ class ApiServiceProvider extends ServiceProvider
 
     /**
      * Boot the current route and the authentication.
-     * 
+     *
      * @return void
      */
     protected function bootRouteAndAuthentication()
@@ -142,7 +142,7 @@ class ApiServiceProvider extends ServiceProvider
 
     /**
      * Register the booting event.
-     * 
+     *
      * @return void
      */
     protected function registerBootingEvent()
@@ -180,7 +180,7 @@ class ApiServiceProvider extends ServiceProvider
 
     /**
      * Register the API response builder.
-     * 
+     *
      * @return void
      */
     protected function registerResponseBuilder()

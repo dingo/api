@@ -13,7 +13,7 @@ abstract class ResponseFormat
 
     /**
      * Set the request intance.
-     * 
+     *
      * @param  \Illuminate\Http\Request  $request
      * @return \Dingo\Api\Http\ResponseFormat\ResponseFormat
      */

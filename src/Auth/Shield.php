@@ -4,7 +4,6 @@ namespace Dingo\Api\Auth;
 
 use Exception;
 use Illuminate\Http\Request;
-use Dingo\Api\Http\Response;
 use Illuminate\Routing\Route;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Container\Container;
@@ -50,14 +49,14 @@ class Shield
 
     /**
      * Illuminate request instance.
-     * 
+     *
      * @var \Illuminate\Http\Request
      */
     protected $request;
 
     /**
      * Illuminate route instance.
-     * 
+     *
      * @var \Illumimate\Routing\Route
      */
     protected $route;
@@ -181,7 +180,7 @@ class Shield
 
     /**
      * Set the request instance.
-     * 
+     *
      * @param  \Illuminate\Routing\Route  $route
      * @return \Dingo\Api\Auth\Shield
      */
@@ -194,7 +193,7 @@ class Shield
 
     /**
      * Set the route instance.
-     * 
+     *
      * @param  \Illuminate\Routing\Route  $route
      * @return \Dingo\Api\Auth\Shield
      */
