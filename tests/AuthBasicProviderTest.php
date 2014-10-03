@@ -26,7 +26,7 @@ class AuthBasicProviderTest extends PHPUnit_Framework_TestCase {
 	{
 		$request = Request::create('foo', 'GET');
 		$provider = new BasicProvider($this->auth);
-		$provider->authenticate($request);
+		$provider->authenticate($request, m::mock('Illuminate\Routing\Route'));
 	}
 
 
