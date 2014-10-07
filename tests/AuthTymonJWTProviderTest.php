@@ -6,77 +6,70 @@ use Illuminate\Routing\Route;
 use Dingo\Api\Auth\TymonJWTProvider;
 use Tymon\JWTAuth\Exceptions\JWTAuthException;
 
-class AuthTymonJWTProviderTest extends PHPUnit_Framework_TestCase {
+class AuthTymonJWTProviderTest extends PHPUnit_Framework_TestCase
+{
+    public function tearDown()
+    {
+        m::close();
+    }
 
-
-	public function tearDown()
-	{
-		m::close();
-	}
-
-
-	/**
+    /**
 	 * @expectedException \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
 	 */
-	public function testValidatingAuthorizationHeaderFailsAndThrowsException()
-	{
-		$request = Request::create('foo', 'GET');
-		$provider = new TymonJWTProvider($this->getAuthMock());
-		$provider->authenticate($request, new Route('/foo', 'GET', []));
-	}
+    public function testValidatingAuthorizationHeaderFailsAndThrowsException()
+    {
+        $request = Request::create('foo', 'GET');
+        $provider = new TymonJWTProvider($this->getAuthMock());
+        $provider->authenticate($request, new Route('/foo', 'GET', []));
+    }
 
-
-	/**
+    /**
 	 * @expectedException \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
 	 */
-	public function testAuthenticatingFailsAndThrowsException()
-	{
-		$request = Request::create('foo', 'GET');
-		$request->headers->set('authorization', 'Bearer foo');
+    public function testAuthenticatingFailsAndThrowsException()
+    {
+        $request = Request::create('foo', 'GET');
+        $request->headers->set('authorization', 'Bearer foo');
 
-		$provider = new TymonJWTProvider($resource = $this->getAuthMock());
-		$resource->shouldReceive('login')->andThrow(new JWTAuthException('foo'));
+        $provider = new TymonJWTProvider($resource = $this->getAuthMock());
+        $resource->shouldReceive('login')->andThrow(new JWTAuthException('foo'));
 
-		$provider->authenticate($request, new Route('/foo', 'GET', []));
-	}
+        $provider->authenticate($request, new Route('/foo', 'GET', []));
+    }
 
+    public function testAuthenticatingSucceedsAndReturnsUserObject()
+    {
+        $request = Request::create('foo', 'GET');
+        $request->headers->set('authorization', 'Bearer foo');
 
-	public function testAuthenticatingSucceedsAndReturnsUserObject()
-	{
-		$request = Request::create('foo', 'GET');
-		$request->headers->set('authorization', 'Bearer foo');
+        $provider = new TymonJWTProvider($resource = $this->getAuthMock());
+        $user = (object) ['id' => 1];
 
-		$provider = new TymonJWTProvider($resource = $this->getAuthMock());		
-		$user = (object) ['id' => 1];
+        $resource->shouldReceive('login')->andReturn($user);
+        $resource->shouldReceive('getSubject')->andReturn(1);
 
-		$resource->shouldReceive('login')->andReturn($user);
-		$resource->shouldReceive('getSubject')->andReturn(1);
+        $this->assertEquals(1, $resource->getSubject());
 
-		$this->assertEquals(1, $resource->getSubject());
+        $this->assertEquals(1, $provider->authenticate($request, new Route('/foo', 'GET', []))->id);
+    }
 
-		$this->assertEquals(1, $provider->authenticate($request, new Route('/foo', 'GET', []))->id);
-	}
+    public function testAuthenticatingWithQueryStringSucceedsAndReturnsUserObject()
+    {
+        $request = Request::create('foo', 'GET', ['token' => 'foo']);
 
+        $provider = new TymonJWTProvider($resource = $this->getAuthMock());
+        $user = (object) ['id' => 1];
 
-	public function testAuthenticatingWithQueryStringSucceedsAndReturnsUserObject()
-	{
-		$request = Request::create('foo', 'GET', ['token' => 'foo']);
+        $resource->shouldReceive('login')->andReturn($user);
+        $resource->shouldReceive('getSubject')->andReturn(1);
 
-		$provider = new TymonJWTProvider($resource = $this->getAuthMock());		
-		$user = (object) ['id' => 1];
+        $this->assertEquals(1, $resource->getSubject());
 
-		$resource->shouldReceive('login')->andReturn($user);
-		$resource->shouldReceive('getSubject')->andReturn(1);
+        $this->assertEquals(1, $provider->authenticate($request, new Route('/foo', 'GET', []))->id);
+    }
 
-		$this->assertEquals(1, $resource->getSubject());
-
-		$this->assertEquals(1, $provider->authenticate($request, new Route('/foo', 'GET', []))->id);
-	}
-
-
-	protected function getAuthMock()
-	{
-		return m::mock('Tymon\JWTAuth\JWTAuth');
-	}
-
+    protected function getAuthMock()
+    {
+        return m::mock('Tymon\JWTAuth\JWTAuth');
+    }
 }
