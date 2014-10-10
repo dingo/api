@@ -197,7 +197,7 @@ class Authenticator
     public function extend($key, $provider)
     {
         if (is_callable($provider)) {
-            $provider = $provider($this->container);
+            $provider = call_user_func($provider, $this->container);
         }
 
         $this->providers[$key] = $provider;
