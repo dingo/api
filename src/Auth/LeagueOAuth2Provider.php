@@ -4,7 +4,7 @@ namespace Dingo\Api\Auth;
 
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Route;
+use Dingo\Api\Routing\Route;
 use League\OAuth2\Server\Resource;
 use League\OAuth2\Server\Exception\InvalidAccessTokenException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;

@@ -3,7 +3,7 @@
 namespace Dingo\Api\Auth;
 
 use Illuminate\Http\Request;
-use Illuminate\Routing\Route;
+use Dingo\Api\Routing\Route;
 use Illuminate\Auth\AuthManager;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
