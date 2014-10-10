@@ -10,6 +10,17 @@ class JsonpResponseFormat extends JsonResponseFormat
     protected $callbackName = 'callback';
 
     /**
+     * Create a new JSONP response formatter instance.
+     *
+     * @param  string  $callbackName
+     * @return void
+     */
+    public function __construct($callbackName = 'callback')
+    {
+        $this->callbackName = $callbackName;
+    }
+
+    /**
      * Determine if a callback is valid.
      *
      * @return bool
