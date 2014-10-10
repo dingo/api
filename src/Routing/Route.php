@@ -17,16 +17,30 @@ class Route extends IlluminateRoute
             $action['protected'] = is_array($action['protected']) ? last($action['protected']) : $action['protected'];
         }
 
+        if (isset($action['scopes'])) {
+            $action['scopes'] = is_array($action['scopes']) ? $action['scopes'] : explode('|', $action['scopes']);
+        }
+
         return $action;
     }
 
     /**
      * Determine if the route is protected.
-     * 
+     *
      * @return bool
      */
     public function isProtected()
     {
-        return in_array('protected', $this->action, true) || (isset($this->action['protected']) && $this->action['protected'] === true);
+        return in_array('protected', $this->action, true) || array_get($this->action, 'protected') === true;
+    }
+
+    /**
+     * Get the routes scopes.
+     *
+     * @return array
+     */
+    public function scopes()
+    {
+        return array_get($this->action, 'scopes', []);
     }
 }

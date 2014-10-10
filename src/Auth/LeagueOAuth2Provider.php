@@ -26,18 +26,18 @@ class LeagueOAuth2Provider extends AuthorizationProvider
     protected $httpHeadersOnly = false;
 
     /**
-     * Callback to fetch a user.
+     * User resolver.
      *
      * @var callable
      */
-    protected $userCallback;
+    protected $userResolver;
 
     /**
-     * Callback to fetch a client.
+     * Client resolver.
      *
      * @var callable
      */
-    protected $clientCallback;
+    protected $clientResolver;
 
     /**
      * Create a new Dingo\Api\Auth\OAuth2Provider instance.
@@ -58,28 +58,22 @@ class LeagueOAuth2Provider extends AuthorizationProvider
      * @param  \Illuminate\Http\Request  $request
      * @param  \Illuminate\Routing\Route  $route
      * @return mixed
+     * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
      */
     public function authenticate(Request $request, Route $route)
     {
         try {
             $this->validateAuthorizationHeader($request);
         } catch (Exception $exception) {
-            // If we catch an exception here it means the header was missing so we'll
-            // now look for the access token in the query string. If we don't have
-            // the query string either then we'll re-throw the exception.
             if (! $request->query('access_token', false)) {
                 throw $exception;
             }
         }
 
         try {
-            $this->resource->isValid($this->httpHeadersOnly);
+            $this->validateRouteScopes($route);
 
-            foreach ($this->getRouteScopes($route) as $scope) {
-                if (! $this->resource->hasScope($scope)) {
-                    throw new InvalidAccessTokenException('Requested scope "'.$scope.'" is not associated with this access token.');
-                }
-            }
+            $this->resource->isValid($this->httpHeadersOnly);
 
             return $this->resolveResourceOwner();
         } catch (InvalidAccessTokenException $exception) {
@@ -95,47 +89,57 @@ class LeagueOAuth2Provider extends AuthorizationProvider
     protected function resolveResourceOwner()
     {
         if ($this->resource->getOwnerType() == 'client') {
-            return call_user_func($this->clientCallback, $this->resource->getOwnerId());
+            return call_user_func($this->clientResolver, $this->resource->getOwnerId());
         }
 
-        return call_user_func($this->userCallback, $this->resource->getOwnerId());
+        return call_user_func($this->userResolver, $this->resource->getOwnerId());
     }
 
     /**
-     * Get the routes scopes.
+     * Validate a routes scopes.
      *
-     * @param  \Illuminate\Routing\Route  $route
-     * @return array
+     * @return bool
+     * @throws \League\OAuth2\Server\Exception\InvalidAccessTokenException
      */
-    protected function getRouteScopes(Route $route)
+    protected function validateRouteScopes(Route $route)
     {
-        $action = $route->getAction();
+        $scopes = $route->scopes();
 
-        return (array) array_get($action, 'scopes', []);
+        if (empty($scopes)) {
+            return true;
+        }
+
+        foreach ($scopes as $scope) {
+            if ($this->resource->hasScope($scope)) {
+                return true;
+            }
+        }
+
+        throw new InvalidAccessTokenException('Access token is not associated with any of the requested scopes.');
     }
 
     /**
-     * Set the callback to fetch a user.
+     * Set the resolver to fetch a user.
      *
-     * @param  callable  $callback
+     * @param  callable  $resolver
      * @return \Dingo\Api\Auth\LeagueOAuth2Provider
      */
-    public function setUserCallback(callable $callback)
+    public function setUserResolver(callable $resolver)
     {
-        $this->userCallback = $callback;
+        $this->userResolver = $resolver;
 
         return $this;
     }
 
     /**
-     * Set the callback to fetch a client.
+     * Set the resolver to fetch a client.
      *
-     * @param  callable  $callback
+     * @param  callable  $resolver
      * @return \Dingo\Api\Auth\LeagueOAuth2Provider
      */
-    public function setClientCallback(callable $callback)
+    public function setClientResolver(callable $resolver)
     {
-        $this->clientCallback = $callback;
+        $this->clientResolver = $resolver;
 
         return $this;
     }
