@@ -25,17 +25,6 @@ class LeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase
 
 
     /**
-     * @expectedException \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
-     */
-    public function testExceptionThrownWhenAuthorizationHeaderIsInvalid()
-    {
-        $request = Request::create('GET', '/');
-
-        $this->provider->authenticate($request, new Route('GET', '/', []));
-    }
-
-
-    /**
      * @expectedException \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
      */
     public function testExceptionThrownWhenNoScopesProvided()
