@@ -41,8 +41,8 @@ class ResponseFactoryTest extends PHPUnit_Framework_TestCase
     public function testMakingANoContentResponse()
     {
         $response = $this->factory->noContent()->build();
-        $this->assertEquals($response->getStatusCode(), 204);
-        $this->assertEquals($response->getContent(), '');
+        $this->assertEquals(204, $response->getStatusCode());
+        $this->assertEquals('', $response->getContent());
     }
 
 
@@ -70,5 +70,59 @@ class ResponseFactoryTest extends PHPUnit_Framework_TestCase
 
         $this->factory->paginator(new Paginator(Mockery::mock('Illuminate\Pagination\Factory'), [new UserStub], 1), 'test');
         $this->factory->withPaginator(new Paginator(Mockery::mock('Illuminate\Pagination\Factory'), [new UserStub], 1), 'test');
+    }
+
+
+    public function testMakingErrorNotFoundResponse()
+    {
+        $response = $this->factory->errorNotFound()->build();
+        $this->assertEquals($response->getStatusCode(), 404);
+        $this->assertEquals($response->getContent(), '{"status_code":404,"message":"Not Found"}');
+    }
+
+
+    public function testMakingBadRequestResponse()
+    {
+        $response = $this->factory->errorBadRequest()->build();
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('{"status_code":400,"message":"Bad Request"}', $response->getContent());
+    }
+
+
+    public function testMakingForbiddenResponse()
+    {
+        $response = $this->factory->errorForbidden()->build();
+        $this->assertEquals(403, $response->getStatusCode());
+        $this->assertEquals('{"status_code":403,"message":"Forbidden"}', $response->getContent());
+    }
+
+
+    public function testMakingInternalErrorResponse()
+    {
+        $response = $this->factory->errorInternal()->build();
+        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertEquals('{"status_code":500,"message":"Internal Error"}', $response->getContent());
+    }
+
+
+    public function testMakingUnauthorizedErrorResponse()
+    {
+        $response = $this->factory->errorUnauthorized()->build();
+        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertEquals('{"status_code":401,"message":"Unauthorized"}', $response->getContent());
+    }
+
+
+    public function testMakingArrayResponse()
+    {
+        $response = $this->factory->array(['foo' => 'bar'])->build();
+        $this->assertEquals('{"foo":"bar"}', $response->getContent());
+    }
+
+
+    public function testPrefixingWithCallsMethodsCorrectly()
+    {
+        $response = $this->factory->withArray(['foo' => 'bar'])->build();
+        $this->assertEquals('{"foo":"bar"}', $response->getContent());
     }
 }
