@@ -63,14 +63,30 @@ class AuthenticatorTest extends PHPUnit_Framework_TestCase
         $provider = Mockery::mock('Dingo\Api\Auth\Provider');
         $provider->shouldReceive('authenticate')->once()->with($request, $route)->andReturn((object) ['id' => 1]);
 
+        $auth = new Authenticator($this->router, $this->container, ['provider' => $provider]);
+
+        $user = $auth->authenticate();
+
+        $this->assertEquals(1, $user->id);
+    }
+
+
+    public function testProvidersAreFilteredWhenSpecificProviderIsRequested()
+    {
+        $this->router->setCurrentRoute($route = new Route(['GET'], 'foo', ['protected' => true]));
+        $this->router->setCurrentRequest($request = Request::create('foo', 'GET'));
+
+        $provider = Mockery::mock('Dingo\Api\Auth\Provider');
+        $provider->shouldReceive('authenticate')->once()->with($request, $route)->andReturn(true);
+        $provider->shouldReceive('assert')->once()->andReturn('one');
+
         $auth = new Authenticator($this->router, $this->container, [
             'one' => $provider,
             'two' => Mockery::mock('Dingo\Api\Auth\Provider')
         ]);
 
-        $user = $auth->authenticate(['one']);
-
-        $this->assertEquals(1, $user->id);
+        $auth->authenticate(['one']);
+        $this->assertEquals('one', $auth->getProviderUsed()->assert());
     }
 
 
