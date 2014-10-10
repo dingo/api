@@ -197,7 +197,7 @@ class ResponseFactory
     public function __call($method, $parameters)
     {
         if (Str::startsWith($method, 'with')) {
-            return call_user_func_array([$this, substr($method, 4)], $parameters);
+            return call_user_func_array([$this, Str::camel(substr($method, 4))], $parameters);
 
         // Because PHP won't let us name the method "array" we'll simply watch for it
         // in here and return the new binding. Gross.
