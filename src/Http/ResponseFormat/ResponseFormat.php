@@ -13,14 +13,14 @@ abstract class ResponseFormat
 
     /**
      * Illuminate response instance.
-     * 
+     *
      * @var \Illuminate\Http\Response
      */
     protected $response;
 
     /**
      * Set the request instance.
-     * 
+     *
      * @param  \Illuminate\Http\Request  $request
      * @return \Dingo\Api\Http\ResponseFormat\ResponseFormat
      */
@@ -33,7 +33,7 @@ abstract class ResponseFormat
 
     /**
      * Set the response instance.
-     * 
+     *
      * @param  \Illuminate\Http\Response  $response
      * @return \Dingo\Api\Http\ResponseFormat\ResponseFormat
      */
@@ -67,14 +67,6 @@ abstract class ResponseFormat
      * @return string
      */
     abstract public function formatArray($content);
-
-    /**
-     * Format other response type such as a string or integer.
-     *
-     * @param  string  $content
-     * @return string
-     */
-    abstract public function formatOther($content);
 
     /**
      * Get the response content type.

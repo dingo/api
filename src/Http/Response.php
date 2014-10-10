@@ -65,11 +65,9 @@ class Response extends IlluminateResponse
             $content = $formatter->formatEloquentModel($content);
         } elseif ($content instanceof EloquentCollection) {
             $content = $formatter->formatEloquentCollection($content);
-        } elseif (is_array($content) or $content instanceof ArrayableInterface) {
+        } elseif (is_array($content) || $content instanceof ArrayableInterface) {
             $content = $formatter->formatArray($content);
         } else {
-            $content = $formatter->formatOther($content);
-
             $this->headers->set('content-type', $contentType);
         }
 

@@ -37,17 +37,6 @@ class JsonResponseFormat extends ResponseFormat
     }
 
     /**
-     * Format other response type such as a string or integer.
-     *
-     * @param  string  $content
-     * @return string
-     */
-    public function formatOther($content)
-    {
-        return $content;
-    }
-
-    /**
      * Format an array or instance implementing ArrayableInterface.
      *
      * @param  array|\Illuminate\Support\Contracts\ArrayableInterface  $content
