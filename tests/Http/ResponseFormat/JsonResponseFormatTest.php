@@ -15,7 +15,6 @@ class JsonResponseFormatTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         Response::setFormatters(['json' => new JsonResponseFormat]);
-        Response::setTransformer(Mockery::mock('Dingo\Api\Transformer\Transformer')->shouldReceive('transformableResponse')->andReturn(false)->getMock());
     }
 
 
@@ -59,7 +58,7 @@ class JsonResponseFormatTest extends PHPUnit_Framework_TestCase
     }
 
 
-    public function testMorphingArrayableInterface()
+    public function testMorphingArray()
     {
         $messages = new MessageBag(['foo' => 'bar']);
 

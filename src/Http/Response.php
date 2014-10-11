@@ -2,10 +2,10 @@
 
 namespace Dingo\Api\Http;
 
+use ArrayObject;
 use RuntimeException;
 use Dingo\Api\Transformer\Transformer;
 use Illuminate\Http\Response as IlluminateResponse;
-use Illuminate\Support\Contracts\ArrayableInterface;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
@@ -46,18 +46,13 @@ class Response extends IlluminateResponse
     {
         $content = $this->getOriginalContent();
 
-        if (static::$transformer->transformableResponse($content)) {
+        if (isset(static::$transformer) && static::$transformer->transformableResponse($content)) {
             $content = static::$transformer->transform($content);
         }
 
         $formatter = static::getFormatter($format);
 
-        // Set the "Content-Type" header of the response to that which
-        // is defined by the formatter being used. Before setting it
-        // we'll get the original content type in case we need to
-        // resort to that because of a response that is unable
-        // to be formatted.
-        $contentType = $this->headers->get('content-type');
+        $defaultContentType = $this->headers->get('content-type');
 
         $this->headers->set('content-type', $formatter->getContentType());
 
@@ -65,14 +60,12 @@ class Response extends IlluminateResponse
             $content = $formatter->formatEloquentModel($content);
         } elseif ($content instanceof EloquentCollection) {
             $content = $formatter->formatEloquentCollection($content);
-        } elseif (is_array($content) || $content instanceof ArrayableInterface) {
+        } elseif (is_array($content) || $content instanceof ArrayObject) {
             $content = $formatter->formatArray($content);
         } else {
-            $this->headers->set('content-type', $contentType);
+            $this->headers->set('content-type', $defaultContentType);
         }
 
-        // Directly set the property because using setContent results in
-        // the original content also being updated.
         $this->content = $content;
 
         return $this;
