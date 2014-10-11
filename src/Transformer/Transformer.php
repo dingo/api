@@ -54,7 +54,7 @@ abstract class Transformer
      */
     public function register($class, $resolver, array $parameters = [], Closure $after = null)
     {
-        return $this->bindings[$class] = new Binding($this->container, $resolver, $parameters, $after);
+        return $this->bindings[$class] = $this->createBinding($resolver, $parameters, $after);
     }
 
     /**
@@ -126,6 +126,19 @@ abstract class Transformer
     }
 
     /**
+     * Create a new binding instance.
+     *
+     * @param  string|callable|object  $resolver
+     * @param  array  $parameters
+     * @param  \Closure  $callback
+     * @return \Dingo\Api\Transformer\Binding
+     */
+    protected function createBinding($resolver, array $parameters = [], Closure $callback = null)
+    {
+        return new Binding($this->container ?: new Container, $resolver, $parameters, $callback);
+    }
+
+    /**
      * Create a new binding for an instance bound by a contract.
      *
      * @param  object  $instance
@@ -133,7 +146,7 @@ abstract class Transformer
      */
     protected function createContractBinding($instance)
     {
-        return new Binding($instance->getTransformer());
+        return $this->createBinding($instance->getTransformer());
     }
 
     /**
