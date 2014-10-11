@@ -28,7 +28,7 @@ class ApiServiceProvider extends ServiceProvider
 
     /**
      * Prepare the container bindings.
-     * 
+     *
      * @return void
      */
     protected function prepareContainerBindings()
@@ -48,7 +48,7 @@ class ApiServiceProvider extends ServiceProvider
 
     /**
      * Prepare any compatibility for earlier or later versions of Laravel.
-     * 
+     *
      * @return void
      */
     protected function prepareCompatibility()
@@ -71,13 +71,7 @@ class ApiServiceProvider extends ServiceProvider
      */
     protected function prepareResponse()
     {
-        $formats = $this->prepareConfigInstances($this->app['config']['api::formats']);
-
-        if (empty($formats)) {
-            throw new RuntimeException('No registered response formats.');
-        }
-
-        Response::setFormatters($formats);
+        Response::setFormatters($this->prepareConfigInstances($this->app['config']['api::formats']));
         Response::setTransformer($this->app['api.transformer']);
     }
 
@@ -99,7 +93,7 @@ class ApiServiceProvider extends ServiceProvider
 
     /**
      * Register the remaining service providers.
-     * 
+     *
      * @return void
      */
     protected function registerProviders()
@@ -154,7 +148,7 @@ class ApiServiceProvider extends ServiceProvider
 
     /**
      * Register the API rate limiter.
-     * 
+     *
      * @return void
      */
     protected function registerRateLimiter()
@@ -168,7 +162,7 @@ class ApiServiceProvider extends ServiceProvider
 
     /**
      * Register the API response factory.
-     * 
+     *
      * @return void
      */
     protected function registerResponseFactory()
@@ -194,7 +188,7 @@ class ApiServiceProvider extends ServiceProvider
 
     /**
      * Prepare an array of instantiable configuration instances.
-     * 
+     *
      * @param  array  $instances
      * @return array
      */
@@ -209,7 +203,7 @@ class ApiServiceProvider extends ServiceProvider
 
     /**
      * Prepare an instantiable configuration instance.
-     * 
+     *
      * @param  mixed  $instance
      * @return object
      */

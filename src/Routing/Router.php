@@ -159,6 +159,14 @@ class Router extends IlluminateRouter
 
         try {
             $response = parent::dispatch($request);
+
+            if ($request instanceof InternalRequest) {
+                return $response;
+            } else {
+                $response->getFormatter($format)
+                         ->setRequest($request)
+                         ->setResponse($response);
+            }
         } catch (Exception $exception) {
             if ($request instanceof InternalRequest) {
                 throw $exception;
@@ -174,15 +182,9 @@ class Router extends IlluminateRouter
             }
         }
 
-        $this->container->forgetInstance('Illuminate\Http\Request');
+        $format = $response->hasFormatter($format) ? $format : $this->defaultFormat;
 
-        if ($request instanceof InternalRequest) {
-            return $response;
-        }
-
-        $response->getFormatter($format)->setRequest($request)->setResponse($response);
-
-        return $response->morph($this->requestedFormat);
+        return $response->morph($format);
     }
 
     /**

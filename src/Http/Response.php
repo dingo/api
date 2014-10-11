@@ -3,11 +3,11 @@
 namespace Dingo\Api\Http;
 
 use ArrayObject;
-use RuntimeException;
 use Dingo\Api\Transformer\Transformer;
 use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 
 class Response extends IlluminateResponse
 {
@@ -80,11 +80,22 @@ class Response extends IlluminateResponse
      */
     public static function getFormatter($format)
     {
-        if (! isset(static::$formatters[$format])) {
-            throw new RuntimeException('Response formatter "'.$format.'" has not been registered.');
+        if (! static::hasFormatter($format)) {
+            throw new NotAcceptableHttpException('Unable to format response according to Accept header.');
         }
 
         return static::$formatters[$format];
+    }
+
+    /**
+     * Determine if a response formatter has been registered.
+     *
+     * @param  string  $format
+     * @return bool
+     */
+    public static function hasFormatter($format)
+    {
+        return isset(static::$formatters[$format]);
     }
 
     /**
