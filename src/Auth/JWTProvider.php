@@ -34,7 +34,7 @@ class JWTProvider extends AuthorizationProvider
      * Authenticate request with a JWT
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Illuminate\Routing\Route $route
+     * @param  \Dingo\Api\Routing\Route $route
      * @return mixed
      */
     public function authenticate(Request $request, Route $route)
