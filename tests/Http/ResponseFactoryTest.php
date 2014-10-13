@@ -57,7 +57,7 @@ class ResponseFactoryTest extends PHPUnit_Framework_TestCase
 
     public function testMakingItemsRegistersClassWithTransformer()
     {
-        $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', []);
+        $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], null);
 
         $this->factory->item(new UserStub, 'test');
         $this->factory->withItem(new UserStub, 'test');

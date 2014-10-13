@@ -84,11 +84,11 @@ class ResponseFactory
      * @param  array  $parameters
      * @return \Dingo\Api\Http\ResponseBuilder
      */
-    public function item($item, $transformer, array $parameters = [])
+    public function item($item, $transformer, array $parameters = [], Closure $after = null)
     {
         $class = get_class($item);
 
-        $binding = $this->transformer->register($class, $transformer, $parameters);
+        $binding = $this->transformer->register($class, $transformer, $parameters, $after);
 
         return new ResponseBuilder($item, $binding);
     }
