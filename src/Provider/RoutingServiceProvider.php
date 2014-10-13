@@ -3,6 +3,8 @@
 namespace Dingo\Api\Provider;
 
 use Dingo\Api\Routing\Router;
+use Illuminate\Support\Collection;
+use Dingo\Api\Routing\UrlGenerator;
 use Dingo\Api\Routing\ControllerDispatcher;
 use Illuminate\Routing\RoutingServiceProvider as ServiceProvider;
 
@@ -10,7 +12,7 @@ class RoutingServiceProvider extends ServiceProvider
 {
     /**
      * Boot the service provider.
-     * 
+     *
      * @return void
      */
     public function boot()
@@ -27,12 +29,20 @@ class RoutingServiceProvider extends ServiceProvider
             return $router;
         });
 
+        $this->app->bindShared('url', function ($app) {
+            $routes = Collection::make($app['router']->getRoutes())->merge($app['router']->getApiRoutes());
+
+            return new UrlGenerator($routes, $app->rebinding('request', function ($app, $request) {
+                $app['url']->setRequest($request);
+            }));
+        });
+
         $this->setRouterDefaults();
     }
 
     /**
      * Set the default configuration options on the router.
-     * 
+     *
      * @return void
      */
     public function setRouterDefaults()

@@ -28,7 +28,7 @@ class RouteCollection extends IlluminateRouteCollection
      * @param  array  $options
      * @return void
      */
-    public function __construct($version, array $options)
+    public function __construct($version, array $options = [])
     {
         $this->version = $version;
         $this->options = $options;
