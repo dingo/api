@@ -1,4 +1,4 @@
-### v0.7.*@dev (develop)
+### v0.7.*@dev (master)
 
 - Refactoring of a lot of the core.
 - `Dingo\Api\ApiServiceProvider` is now at `Dingo\Api\Provider\ApiServiceProvider`. It has been split up into several smaller service providers.
