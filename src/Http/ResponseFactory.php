@@ -38,7 +38,7 @@ class ResponseFactory
         $response = new ResponseBuilder(null);
         $response->setStatusCode(201);
 
-        if ( ! is_null($location)) {
+        if (! is_null($location)) {
             $response->addHeader('Location', $location);
         }
 
