@@ -8,14 +8,14 @@ abstract class Throttle
 {
     /**
      * Array of throttle options.
-     * 
+     *
      * @var array
      */
     protected $options = ['limit' => 60, 'expires' => 60];
 
     /**
      * Create a new throttle instance.
-     * 
+     *
      * @param  array  $options
      * @return void
      */
@@ -26,7 +26,7 @@ abstract class Throttle
 
     /**
      * Attempt to match the throttle against a given condition.
-     * 
+     *
      * @param  \Illuminate\Container\Container  $app
      * @return bool
      */
@@ -34,7 +34,7 @@ abstract class Throttle
 
     /**
      * Get the throttles options.
-     * 
+     *
      * @return array
      */
     public function getOptions()
@@ -44,7 +44,7 @@ abstract class Throttle
 
     /**
      * Get the throttles request limit.
-     * 
+     *
      * @return int
      */
     public function getLimit()
@@ -54,7 +54,7 @@ abstract class Throttle
 
     /**
      * Get the time in minutes that the throttles request limit will expire.
-     * 
+     *
      * @return int
      */
     public function getExpires()

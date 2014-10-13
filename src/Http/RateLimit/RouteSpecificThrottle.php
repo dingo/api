@@ -8,7 +8,7 @@ class RouteSpecificThrottle extends Throttle
 {
     /**
      * Route specific throttles always match.
-     * 
+     *
      * @param  \Illuminate\Container\Container  $app
      * @return bool
      */

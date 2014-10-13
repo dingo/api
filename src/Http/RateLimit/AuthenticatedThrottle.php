@@ -8,7 +8,7 @@ class AuthenticatedThrottle extends Throttle
 {
     /**
      * Authenticated throttle will be matched when request is authenticated.
-     * 
+     *
      * @param  \Illuminate\Container\Container  $app
      * @return bool
      */

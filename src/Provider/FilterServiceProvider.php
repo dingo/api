@@ -10,7 +10,7 @@ class FilterServiceProvider extends ServiceProvider
 {
     /**
      * Register bindings for the service provider.
-     * 
+     *
      * @return void
      */
     public function register()

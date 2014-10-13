@@ -25,7 +25,7 @@ abstract class Controller extends IlluminateController
 
     /**
      * API response factory instance.
-     * 
+     *
      * @var \Dingo\Api\Http\ResponseFactory
      */
     protected $response;
@@ -129,7 +129,7 @@ abstract class Controller extends IlluminateController
 
     /**
      * Set the API dispatcher instance.
-     * 
+     *
      * @param  \Dingo\Api\Dispatcher  $api
      * @return void
      */
@@ -140,7 +140,7 @@ abstract class Controller extends IlluminateController
 
     /**
      * Set the API authenticator instance.
-     * 
+     *
      * @param  \Dingo\Api\Auth\Authenticator  $auth
      * @return void
      */
@@ -151,7 +151,7 @@ abstract class Controller extends IlluminateController
 
     /**
      * Set the API response factory instance.
-     * 
+     *
      * @param  \Dingo\Api\Http\ResponseFactory  $response
      * @return void
      */
