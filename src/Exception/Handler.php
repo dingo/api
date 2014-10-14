@@ -43,7 +43,7 @@ class Handler
             }
 
             $response = $handler($exception);
-            
+
             if (! is_null($response)) {
                 if (! $response instanceof Response) {
                     $response = new Response($response, $exception instanceof HttpExceptionInterface ? $exception->getStatusCode() : 200);

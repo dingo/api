@@ -10,42 +10,42 @@ class Binding
 {
     /**
      * Illuminate container instance.
-     * 
+     *
      * @var \Illuminate\Container\Container
      */
     protected $container;
 
     /**
      * Binding resolver.
-     * 
+     *
      * @var mixed
      */
     protected $resolver;
 
     /**
      * Array of parameters.
-     * 
+     *
      * @var array
      */
     protected $parameters = [];
 
     /**
      * Callback fired during transformation.
-     * 
+     *
      * @var  \Closure
      */
     protected $callback;
 
     /**
      * Array of meta data.
-     * 
+     *
      * @var array
      */
     protected $meta = [];
 
     /**
      * Create a new binding instance.
-     * 
+     *
      * @param  \Illuminate\Container\Container  $container
      * @param  mixed  $resolver
      * @param  array  $parameters
@@ -81,7 +81,7 @@ class Binding
 
     /**
      * Fire the binding callback.
-     * 
+     *
      * @param  string|array  $parameters
      * @return void
      */
@@ -94,7 +94,7 @@ class Binding
 
     /**
      * Get the binding parameters.
-     * 
+     *
      * @return array
      */
     public function getParameters()
@@ -104,7 +104,7 @@ class Binding
 
     /**
      * Set the meta data for the binding.
-     * 
+     *
      * @param  array  $meta
      * @return void
      */
@@ -115,7 +115,7 @@ class Binding
 
     /**
      * Add a meta data key/value pair.
-     * 
+     *
      * @param  string  $key
      * @param  mixed  $value
      * @return void
@@ -127,7 +127,7 @@ class Binding
 
     /**
      * Get the binding meta data.
-     * 
+     *
      * @return array
      */
     public function getMeta()

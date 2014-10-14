@@ -11,21 +11,21 @@ class RevisingHandler
 {
     /**
      * API router instance.
-     * 
+     *
      * @var \Dingo\Api\Routing\Router
      */
     protected $router;
-    
+
     /**
      * API controller reviser instance.
-     * 
+     *
      * @var \Dingo\Api\Routing\ControllerReviser
      */
     protected $reviser;
 
     /**
      * Create a new revising handler instance.
-     * 
+     *
      * @param  \Dingo\Api\Routing\Router  $router
      * @param  \Dingo\Api\Routing\ControllerReviser  $reviser
      * @return void
@@ -38,7 +38,7 @@ class RevisingHandler
 
     /**
      * Handle the revising of a controller for API requests.
-     * 
+     *
      * @param  \Illuminate\Routing\Route  $route
      * @param  \Illuminate\Http\Request  $request
      * @return void

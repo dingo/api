@@ -41,7 +41,7 @@ class JWTProviderTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('foo', 'GET');
         $request->headers->set('authorization', 'Bearer foo');
-        
+
         $this->auth->shouldReceive('login')->andThrow(new JWTAuthException('foo'));
 
         $this->provider->authenticate($request, new Route('/foo', 'GET', []));

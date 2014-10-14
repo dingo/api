@@ -5,7 +5,6 @@ namespace Dingo\Api\Tests\Auth;
 use Mockery;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
-use Dingo\Api\Routing\Router;
 use PHPUnit_Framework_TestCase;
 use Dingo\Api\Auth\LeagueOAuth2Provider;
 

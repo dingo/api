@@ -252,7 +252,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
                 $this->assertEquals('bazinga', $this->router->getCurrentRequest()->input('foo'));
             });
         });
-        
+
         $this->dispatcher->with(['foo' => 'bar'])->post('foo');
     }
 
@@ -276,7 +276,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
                 $this->assertEquals('bazinga', $this->router->currentRouteName());
             }]);
         });
-        
+
         $this->dispatcher->post('foo');
     }
 }

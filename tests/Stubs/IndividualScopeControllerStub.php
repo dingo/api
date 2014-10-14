@@ -13,6 +13,6 @@ class IndividualScopeControllerStub extends Controller
 
     public function index()
     {
-        
+
     }
 }

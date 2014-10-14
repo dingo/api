@@ -29,7 +29,7 @@ class ResponseBuilder
 
     /**
      * Original resource object.
-     * 
+     *
      * @var mixed
      */
     protected $original;
@@ -49,7 +49,7 @@ class ResponseBuilder
 
     /**
      * Add a meta key and value pair.
-     * 
+     *
      * @param  string  $key
      * @param  mixed  $value
      * @return \Dingo\Api\Http\ResponseBuilder
@@ -63,7 +63,7 @@ class ResponseBuilder
 
     /**
      * Add a meta key and value pair.
-     * 
+     *
      * @param  string  $key
      * @param  mixed  $value
      * @return \Dingo\Api\Http\ResponseBuilder
@@ -75,7 +75,7 @@ class ResponseBuilder
 
     /**
      * Set the meta data for the response.
-     * 
+     *
      * @param  array  $meta
      * @return \Dingo\Api\Http\ResponseBuilder
      */
@@ -102,7 +102,7 @@ class ResponseBuilder
 
     /**
      * Add an array of headers.
-     * 
+     *
      * @param  array  $headers
      * @return \Dingo\Api\Http\ResponseBuilder
      */
@@ -115,7 +115,7 @@ class ResponseBuilder
 
     /**
      * Add a header to the response.
-     * 
+     *
      * @param  string  $name
      * @param  string  $value
      * @return \Dingo\Api\Http\ResponseBuilder
@@ -127,7 +127,7 @@ class ResponseBuilder
 
     /**
      * Add an array of headers.
-     * 
+     *
      * @param  array  $headers
      * @return \Dingo\Api\Http\ResponseBuilder
      */
@@ -151,7 +151,7 @@ class ResponseBuilder
 
     /**
      * Set the response status code.
-     * 
+     *
      * @param  int  $statusCode
      * @return \Dingo\Api\Http\ResponseBuilder
      */

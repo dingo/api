@@ -10,7 +10,7 @@ abstract class Filter
 {
     /**
      * Indicates if a request is internal.
-     * 
+     *
      * @param  \Illuminate\Http\Request  $request
      * @return bool
      */
@@ -21,7 +21,7 @@ abstract class Filter
 
     /**
      * Indicates if a route is not protected.
-     * 
+     *
      * @param  \Dingo\Api\Routing\Route  $route
      * @return bool
      */
@@ -32,7 +32,7 @@ abstract class Filter
 
     /**
      * Indicates if a user is logged in.
-     * 
+     *
      * @return bool
      */
     protected function userIsLogged()

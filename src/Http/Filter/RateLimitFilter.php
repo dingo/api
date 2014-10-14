@@ -13,21 +13,21 @@ class RateLimitFilter extends Filter
 {
     /**
      * API router instance.
-     * 
+     *
      * @var \Dingo\Api\Routing\Router
      */
     protected $router;
 
     /**
      * API rate limiter instance.
-     * 
+     *
      * @var \Dingo\Api\Http\RateLimit\RateLimiter
      */
     protected $limiter;
 
     /**
      * Create a new rate limit filter instance.
-     * 
+     *
      * @param  \Dingo\Api\Routing\Router  $router
      * @param  \Dingo\Api\Http\RateLimit\RateLimiter  $limiter
      * @return void
@@ -40,7 +40,7 @@ class RateLimitFilter extends Filter
 
     /**
      * Perform rate limiting before a request is executed.
-     * 
+     *
      * @param  \Dingo\Api\Routing\Route  $route
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $limit
@@ -69,7 +69,7 @@ class RateLimitFilter extends Filter
 
     /**
      * Attach the after filter to adjust the response.
-     * 
+     *
      * @return void
      */
     protected function attachAfterFilter()

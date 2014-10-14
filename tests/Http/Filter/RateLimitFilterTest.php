@@ -2,7 +2,6 @@
 
 namespace Dingo\Api\Tests\Http\Filter;
 
-use Mockery;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
 use Dingo\Api\Http\Response;
