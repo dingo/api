@@ -24,7 +24,7 @@ class RateLimitFilterTest extends PHPUnit_Framework_TestCase
 
         $this->router = new Router(new Dispatcher($this->container), $this->container);
         $this->cache = new CacheManager($this->container);
-        $this->limiter = new RateLimiter($this->cache, $this->container, []);
+        $this->limiter = new RateLimiter($this->container, $this->cache, []);
         $this->filter = new RateLimitFilter($this->router, $this->limiter);
     }
 

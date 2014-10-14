@@ -10,18 +10,18 @@ use Illuminate\Container\Container;
 class RateLimiter
 {
     /**
-     * Illuminate cache instance.
-     *
-     * @var \Illuminate\Cache\CacheManager
-     */
-    protected $cache;
-
-    /**
      * Illuminate container instance.
      *
      * @var \Illuminate\Container\Container
      */
     protected $container;
+
+    /**
+     * Illuminate cache instance.
+     *
+     * @var \Illuminate\Cache\CacheManager
+     */
+    protected $cache;
 
     /**
      * Registered throttles.
@@ -47,12 +47,12 @@ class RateLimiter
     /**
      * Create a new rate limiter instance.
      *
-     * @param  \Illuminate\Cache\CacheManager  $cache
      * @param  \Illuminate\Container\Container  $container
+     * @param  \Illuminate\Cache\CacheManager  $cache
      * @param  array  $throttles
      * @return void
      */
-    public function __construct(CacheManager $cache, Container $container, array $throttles)
+    public function __construct(Container $container, CacheManager $cache, array $throttles)
     {
         $this->cache = $cache;
         $this->container = $container;

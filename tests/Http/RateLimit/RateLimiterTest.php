@@ -16,7 +16,7 @@ class RateLimiterTest extends PHPUnit_Framework_TestCase
         $this->container = new Container;
         $this->container['config'] = ['cache.driver' => 'array'];
         $this->cache = new CacheManager($this->container);
-        $this->limiter = new RateLimiter($this->cache, $this->container, []);
+        $this->limiter = new RateLimiter($this->container, $this->cache, []);
     }
 
 

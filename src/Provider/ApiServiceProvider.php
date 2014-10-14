@@ -21,8 +21,12 @@ class ApiServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->prepareContainerBindings();
-        $this->prepareResponse();
+        $this->setupContainerBindings();
+
+        Response::setFormatters(
+            $this->prepareConfigInstances($this->app['config']['api::formats'])
+        );
+        Response::setTransformer($this->app['api.transformer']);
     }
 
     /**
@@ -30,7 +34,7 @@ class ApiServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function prepareContainerBindings()
+    protected function setupContainerBindings()
     {
         $this->app->bind('Dingo\Api\Dispatcher', function ($app) {
             return $app['api.dispatcher'];
@@ -43,18 +47,6 @@ class ApiServiceProvider extends ServiceProvider
         $this->app->bind('Dingo\Api\Http\ResponseFactory', function ($app) {
             return $app['api.response'];
         });
-    }
-
-    /**
-     * Prepare the response formats and transformer.
-     *
-     * @return array
-     * @throws \RuntimeException
-     */
-    protected function prepareResponse()
-    {
-        Response::setFormatters($this->prepareConfigInstances($this->app['config']['api::formats']));
-        Response::setTransformer($this->app['api.transformer']);
     }
 
     /**
@@ -136,7 +128,7 @@ class ApiServiceProvider extends ServiceProvider
         $this->app->bindShared('api.limiter', function ($app) {
             $throttles = $this->prepareConfigInstances($app['config']['api::throttling']);
 
-            return new RateLimiter($app['cache'], $app, $throttles);
+            return new RateLimiter($app, $app['cache'], $throttles);
         });
     }
 
