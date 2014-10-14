@@ -3,6 +3,7 @@
 namespace Dingo\Api\Routing;
 
 use Illuminate\Http\Request;
+use Dingo\Api\Http\Response;
 use Illuminate\Routing\RouteCollection as IlluminateRouteCollection;
 
 class RouteCollection extends IlluminateRouteCollection
@@ -125,5 +126,19 @@ class RouteCollection extends IlluminateRouteCollection
     protected function filterAndExplode($array)
     {
         return array_filter(explode('/', $array));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getOtherMethodsRoute($request, array $others)
+    {
+        if ($request->method() == 'OPTIONS') {
+            return (new Route('OPTIONS', $request->path(), function() use ($others) {
+                return new Response('', 200, ['Allow' => implode(',', $others)]);
+            }))->bind($request);
+        } else {
+            $this->methodNotAllowed($others);
+        }
     }
 }
