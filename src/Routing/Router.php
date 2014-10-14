@@ -104,7 +104,7 @@ class Router extends IlluminateRouter
     public function api($options, callable $callback)
     {
         if (! isset($options['version'])) {
-            throw new BadMethodCallException('Unable to register API without an API version.');
+            throw new BadMethodCallException('Unable to register API route group without a version.');
         }
 
         $options['version'] = (array) $options['version'];
@@ -160,8 +160,15 @@ class Router extends IlluminateRouter
         try {
             $response = parent::dispatch($request);
 
+            // If the request is internal then we don't need to run the response
+            // through the formatter as an internal request will get the
+            // raw response that was returned.
             if ($request instanceof InternalRequest) {
                 return $response;
+
+            // We'll try to set the request and the response on the formatter
+            // now so that we can catch any exceptions that may be thrown
+            // due to a badly requested format.
             } else {
                 $response->getFormatter($format)
                          ->setRequest($request)
@@ -182,6 +189,10 @@ class Router extends IlluminateRouter
             }
         }
 
+        // This goes hand in hand with the above. We'll check to see if a
+        // formatter exists for the requested response format. If not
+        // then we'll revert to the default format because we are
+        // most likely formatting an error response.
         $format = $response->hasFormatter($format) ? $format : $this->defaultFormat;
 
         return $response->morph($format);
