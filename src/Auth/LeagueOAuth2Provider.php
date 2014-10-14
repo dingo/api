@@ -40,7 +40,7 @@ class LeagueOAuth2Provider extends AuthorizationProvider
     protected $clientResolver;
 
     /**
-     * Create a new Dingo\Api\Auth\OAuth2Provider instance.
+     * Create a new OAuth 2.0 provider instance.
      *
      * @param  \League\OAuth2\Server\Resource  $resource
      * @param  bool  $httpHeadersOnly

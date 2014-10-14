@@ -6,7 +6,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-abstract class AuthorizationProvider extends Provider
+abstract class AuthorizationProvider implements ProviderInterface
 {
     /**
      * Array of provider specific options.

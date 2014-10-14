@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 class Authenticator
 {
     /**
-     * API router instance,
+     * API router instance.
      *
      * @var \Dingo\Api\Routing\Router
      */
@@ -34,7 +34,7 @@ class Authenticator
     /**
      * The provider used for authentication.
      *
-     * @var \Dingo\Api\Auth\Provider
+     * @var \Dingo\Api\Auth\ProviderInterface
      */
     protected $providerUsed;
 
@@ -158,7 +158,7 @@ class Authenticator
      * Set the authenticated user.
      *
      * @param  \Illuminate\Auth\GenericUser|\Illuminate\Database\Eloquent\Model  $user
-     * @return \Dingo\Api\Authentication
+     * @return \Dingo\Api\Auth\Authenticator
      */
     public function setUser($user)
     {
@@ -180,7 +180,7 @@ class Authenticator
     /**
      * Get the provider used for authentication.
      *
-     * @return \Dingo\Api\Auth\Provider
+     * @return \Dingo\Api\Auth\ProviderInterface
      */
     public function getProviderUsed()
     {

@@ -5,7 +5,7 @@ namespace Dingo\Api\Auth;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
 
-abstract class Provider
+interface ProviderInterface
 {
     /**
      * Authenticate the request and return the authenticated user instance.
@@ -14,5 +14,5 @@ abstract class Provider
      * @param  \Dingo\Api\Routing\Route  $route
      * @return mixed
      */
-    abstract public function authenticate(Request $request, Route $route);
+    public function authenticate(Request $request, Route $route);
 }

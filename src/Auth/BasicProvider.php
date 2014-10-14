@@ -24,7 +24,7 @@ class BasicProvider extends AuthorizationProvider
     protected $identifier;
 
     /**
-     * Create a new Dingo\Api\Auth\BasicProvider instance.
+     * Create a new basic provider instance.
      *
      * @param  \Illuminate\Auth\AuthManager  $auth
      * @param  string  $identifier

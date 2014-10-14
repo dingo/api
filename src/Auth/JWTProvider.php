@@ -3,15 +3,14 @@
 namespace Dingo\Api\Auth;
 
 use Exception;
+use Tymon\JWTAuth\JWTAuth;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
-use Tymon\JWTAuth\JWTAuth;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class JWTProvider extends AuthorizationProvider
 {
-
     /**
      * The JWTAuth instance
      *
@@ -20,7 +19,7 @@ class JWTProvider extends AuthorizationProvider
     protected $auth;
 
     /**
-     * Create a new Dingo\Api\Auth\JWTProvider instance.
+     * Create a new JWT provider instance.
      *
      * @param  \Tymon\JWTAuth\JWTAuth $auth
      * @return void
@@ -34,7 +33,7 @@ class JWTProvider extends AuthorizationProvider
      * Authenticate request with a JWT
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Dingo\Api\Routing\Route $route
+     * @param  \Dingo\Api\Routing\Route  $route
      * @return mixed
      */
     public function authenticate(Request $request, Route $route)
@@ -54,11 +53,12 @@ class JWTProvider extends AuthorizationProvider
      * @param  \Illuminate\Http\Request $request
      * @return string
      */
-    protected function getToken($request)
+    protected function getToken(Request $request)
     {
         try {
             $this->validateAuthorizationHeader($request);
-            $token = $this->parseAuthHeader($request);
+
+            $token = $this->parseAuthorizationHeader($request);
         } catch (Exception $exception) {
             if (! $token = $request->query('token', false)) {
                 throw $exception;
@@ -71,10 +71,10 @@ class JWTProvider extends AuthorizationProvider
     /**
      * Parse JWT from the authorization header
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return string
      */
-    protected function parseAuthHeader($request)
+    protected function parseAuthorizationHeader(Request $request)
     {
         return trim(str_ireplace($this->getAuthorizationMethod(), '', $request->header('authorization')));
     }
