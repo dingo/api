@@ -13,7 +13,7 @@ class ResponseFactoryTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->transformer = Mockery::mock('Dingo\Api\Transformer\Transformer');
+        $this->transformer = Mockery::mock('Dingo\Api\Transformer\TransformerFactory');
         $this->factory = new ResponseFactory($this->transformer);
     }
 

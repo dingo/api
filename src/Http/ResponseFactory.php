@@ -5,24 +5,25 @@ namespace Dingo\Api\Http;
 use Closure;
 use BadMethodCallException;
 use Illuminate\Support\Str;
-use Dingo\Api\Transformer\Transformer;
+use Illuminate\Pagination\Paginator;
+use Dingo\Api\Transformer\TransformerFactory;
 
 class ResponseFactory
 {
     /**
-     * API transformer instance.
+     * API transformer factory instance.
      *
-     * @var \Dingo\Api\Transformer\Transformer
+     * @var \Dingo\Api\Transformer\TransformerFactory
      */
     protected $transformer;
 
     /**
      * Create a new response factory instance.
      *
-     * @param  \Dingo\Api\Transformer\Transformer  $transformer
+     * @param  \Dingo\Api\Transformer\TransformerFactory  $transformer
      * @return void
      */
-    public function __construct(Transformer $transformer)
+    public function __construct(TransformerFactory $transformer)
     {
         $this->transformer = $transformer;
     }
@@ -61,7 +62,7 @@ class ResponseFactory
     /**
      * Bind a collection to a transformer and start building a response.
      *
-     * @param  \Illuminate\Support\Collection  $collection
+     * @param  object  $collection
      * @param  object  $transformer
      * @param  array  $parameters
      * @param  \Closure  $after
@@ -82,6 +83,7 @@ class ResponseFactory
      * @param  object  $item
      * @param  object  $transformer
      * @param  array  $parameters
+     * @param  \Closure  $after
      * @return \Dingo\Api\Http\ResponseBuilder
      */
     public function item($item, $transformer, array $parameters = [], Closure $after = null)
@@ -102,7 +104,7 @@ class ResponseFactory
      * @param  \Closure  $after
      * @return \Dingo\Api\Http\ResponseBuilder
      */
-    public function paginator($paginator, $transformer, array $parameters = [], Closure $after = null)
+    public function paginator(Paginator $paginator, $transformer, array $parameters = [], Closure $after = null)
     {
         $collection = $paginator->getCollection();
 

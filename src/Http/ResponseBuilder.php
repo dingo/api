@@ -11,7 +11,14 @@ class ResponseBuilder
      *
      * @var \Dingo\Api\Transformer\Binding
      */
-    protected $transformer;
+    protected $binding;
+
+    /**
+     * Response content.
+     *
+     * @var mixed
+     */
+    protected $response;
 
     /**
      * The HTTP response headers.
@@ -26,13 +33,6 @@ class ResponseBuilder
      * @var int
      */
     protected $statusCode = 200;
-
-    /**
-     * Original resource object.
-     *
-     * @var mixed
-     */
-    protected $original;
 
     /**
      * Create a new response builder instance.
