@@ -17,12 +17,12 @@
     "require-dev": {
         "lucadegasperi/oauth2-server-laravel": "1.0.*",
         "tymon/jwt-auth": "0.3.*",
-        "illuminate/routing": "~4.1",
-        "illuminate/events": "~4.1",
-        "illuminate/auth": "~4.1",
-        "illuminate/database": "~4.1",
-        "illuminate/pagination": "~4.1",
-        "illuminate/console": "~4.1",
+        "illuminate/routing": "4.2.*",
+        "illuminate/events": "4.2.*",
+        "illuminate/auth": "4.2.*",
+        "illuminate/database": "4.2.*",
+        "illuminate/pagination": "4.2.*",
+        "illuminate/console": "4.2.*",
         "phpunit/phpunit": "~4.0",
         "mockery/mockery": "~0.9",
         "squizlabs/php_codesniffer": "~1.5"
