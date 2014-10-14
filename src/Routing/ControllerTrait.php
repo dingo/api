@@ -7,7 +7,7 @@ use Dingo\Api\Auth\Authenticator;
 use Dingo\Api\Http\ResponseFactory;
 use Illuminate\Routing\Controller as IlluminateController;
 
-abstract class Controller extends IlluminateController
+trait ControllerTrait
 {
     /**
      * API dispatcher instance.
@@ -171,8 +171,8 @@ abstract class Controller extends IlluminateController
     {
         if (method_exists($this->response, $method)) {
             return call_user_func_array([$this->response, $method], $parameters);
+        } elseif (method_exists($this, '__call')) {
+            return $this->__call($method, $parameters);
         }
-
-        return parent::__call($method, $parameters);
     }
 }

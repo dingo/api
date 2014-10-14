@@ -18,14 +18,6 @@ class ControllerDispatcherTest extends PHPUnit_Framework_TestCase
     ];
 
 
-    public function setUp()
-    {
-        foreach ($this->keys as $key) {
-            $_SERVER[$key] = null;
-        }
-    }
-
-
     public function tearDown()
     {
         foreach ($this->keys as $key) {
@@ -39,11 +31,13 @@ class ControllerDispatcherTest extends PHPUnit_Framework_TestCase
         $request = Request::create('test', 'GET');
         $route = new Route(['GET'], 'test', ['uses' => function () {}]);
         $route->bind($request);
-        $dispatcher = new ControllerDispatcher(Mockery::mock('Illuminate\Routing\RouteFiltererInterface'), new Container);
 
-        $dispatcher->setAuthenticator(Mockery::mock('Dingo\Api\Auth\Authenticator'));
-        $dispatcher->setDispatcher(Mockery::mock('Dingo\Api\Dispatcher'));
-        $dispatcher->setResponseFactory(Mockery::mock('Dingo\Api\Http\ResponseFactory'));
+        $container = new Container;
+        $container['api.dispatcher'] = Mockery::mock('Dingo\Api\Dispatcher');
+        $container['api.auth'] = Mockery::mock('Dingo\Api\Auth\Authenticator');
+        $container['api.response'] = Mockery::mock('Dingo\Api\Http\ResponseFactory');
+
+        $dispatcher = new ControllerDispatcher(Mockery::mock('Illuminate\Routing\RouteFiltererInterface'), $container);
 
         $response = $dispatcher->dispatch($route, $request, 'Dingo\Api\Tests\Stubs\ControllerStub', 'getIndex');
 

@@ -37,7 +37,7 @@ class ControllerReviser
 
             $controller = $this->resolveController($class);
 
-            if ($controller instanceof Controller) {
+            if (in_array('Dingo\Api\Routing\ControllerTrait', class_uses($controller))) {
                 $action = $route->getAction();
 
                 $action = $this->reviseProtectedMethods($action, $controller, $method);

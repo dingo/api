@@ -2,10 +2,13 @@
 
 namespace Dingo\Api\Tests\Stubs;
 
-use Dingo\Api\Routing\Controller;
+use Illuminate\Routing\Controller;
+use Dingo\Api\Routing\ControllerTrait;
 
 class ControllerStub extends Controller
 {
+    use ControllerTrait;
+
     public function getIndex()
     {
         $_SERVER['ControllerDispatcherTestApi'] = $this->api;
