@@ -31,7 +31,20 @@ class Route extends IlluminateRoute
      */
     public function isProtected()
     {
-        return in_array('protected', $this->action, true) || array_get($this->action, 'protected') === true;
+        return array_get($this->action, 'protected', false) === true;
+    }
+
+    /**
+     * Set the routes protection.
+     *
+     * @param  bool  $protected
+     * @return \Dingo\Api\Routing\Route
+     */
+    public function setProtected($protected)
+    {
+        $this->action['protected'] = $protected;
+
+        return $this;
     }
 
     /**
@@ -42,5 +55,22 @@ class Route extends IlluminateRoute
     public function scopes()
     {
         return array_get($this->action, 'scopes', []);
+    }
+
+    /**
+     * Add scopes to the route.
+     *
+     * @param  array  $scopes
+     * @return \Dingo\Api\Routing\Route
+     */
+    public function addScopes(array $scopes)
+    {
+        if (! isset($this->action['scopes'])) {
+            $this->action['scopes'] = [];
+        }
+
+        $this->action['scopes'] = array_merge($this->action['scopes'], $scopes);
+
+        return $this;
     }
 }

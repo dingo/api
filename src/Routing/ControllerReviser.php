@@ -3,7 +3,6 @@
 namespace Dingo\Api\Routing;
 
 use Illuminate\Container\Container;
-use Illuminate\Routing\Route as IlluminateRoute;
 
 class ControllerReviser
 {
@@ -27,10 +26,10 @@ class ControllerReviser
     /**
      * Revise a controller route by updating the protection and scopes.
      *
-     * @param  \Illuminate\Routing\Route  $route
-     * @return \Illuminate\Routing\Route
+     * @param  \Dingo\Api\Routing\Route  $route
+     * @return \Dingo\Api\Routing\Route
      */
-    public function revise(IlluminateRoute $route)
+    public function revise(Route $route)
     {
         if ($this->routingToController($route)) {
             list ($class, $method) = explode('@', $route->getActionName());
@@ -38,12 +37,8 @@ class ControllerReviser
             $controller = $this->resolveController($class);
 
             if (in_array('Dingo\Api\Routing\ControllerTrait', class_uses($controller))) {
-                $action = $route->getAction();
-
-                $action = $this->reviseProtectedMethods($action, $controller, $method);
-                $action = $this->reviseScopedMethods($action, $controller, $method);
-
-                $route->setAction($action);
+                $this->reviseProtection($route, $controller, $method);
+                $this->reviseScopes($route, $controller, $method);
             }
         }
 
@@ -53,10 +48,10 @@ class ControllerReviser
     /**
      * Determine if the route is routing to a controller.
      *
-     * @param  \Illuminate\Routing\Route  $route
+     * @param  \Dingo\Api\Routing\Route  $route
      * @return bool
      */
-    protected function routingToController(IlluminateRoute $route)
+    protected function routingToController(Route $route)
     {
         return is_string(array_get($route->getAction(), 'controller'));
     }
@@ -65,49 +60,43 @@ class ControllerReviser
      * Revise the scopes of a controller method. Scopes defined on the
      * controller are merged with those in the route definition.
      *
-     * @param  \Illuminate\Routing\Route  $action
-     * @param  \Dingo\Api\Routing\Controller  $controller
+     * @param  \Dingo\Api\Routing\Route  $action
+     * @param  \Illuminate\Routing\Controller  $controller
      * @param  string  $method
-     * @return \Illuminate\Routing\Route
+     * @return void
      */
-    protected function reviseScopedMethods($action, $controller, $method)
+    protected function reviseScopes(Route $route, $controller, $method)
     {
-        if (! isset($action['scopes'])) {
-            $action['scopes'] = [];
+        $properties = $controller->getProperties();
+
+        if (isset($properties['*']['scopes'])) {
+            $route->addScopes($properties['*']['scopes']);
         }
 
-        $action['scopes'] = (array) $action['scopes'];
-
-        $scopedMethods = $controller->getScopedMethods();
-
-        if (isset($scopedMethods['*'])) {
-            $action['scopes'] = array_merge($action['scopes'], $scopedMethods['*']);
+        if (isset($properties[$method]['scopes'])) {
+            $route->addScopes($properties[$method]['scopes']);
         }
-
-        if (isset($scopedMethods[$method])) {
-            $action['scopes'] = array_merge($action['scopes'], $scopedMethods[$method]);
-        }
-
-        return $action;
     }
 
     /**
      * Revise the protected state of a controller method.
      *
-     * @param  \Illuminate\Routing\Route  $action
-     * @param  \Dingo\Api\Routing\Controller  $controller
+     * @param  \Dingo\Api\Routing\Route  $action
+     * @param  \Illuminate\Routing\Controller  $controller
      * @param  string  $method
-     * @return \Illuminate\Routing\Route
+     * @return void
      */
-    protected function reviseProtectedMethods($action, $controller, $method)
+    protected function reviseProtection(Route $route, $controller, $method)
     {
-        if (in_array($method, $controller->getProtectedMethods())) {
-            $action['protected'] = true;
-        } elseif (in_array($method, $controller->getUnprotectedMethods())) {
-            $action['protected'] = false;
+        $properties = $controller->getProperties();
+
+        if (isset($properties['*']['protected'])) {
+            $route->setProtected($properties['*']['protected']);
         }
 
-        return $action;
+        if (isset($properties[$method]['protected'])) {
+            $route->setProtected($properties[$method]['protected']);
+        }
     }
 
     /**
@@ -124,6 +113,6 @@ class ControllerReviser
             $this->container->instance($class, $controller);
         }
 
-        return $this->resolvedControllers[$class] = $controller;
+        return $controller;
     }
 }

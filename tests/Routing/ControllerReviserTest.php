@@ -2,7 +2,7 @@
 
 namespace Dingo\Api\Tests\Routing;
 
-use Illuminate\Routing\Route;
+use Dingo\Api\Routing\Route;
 use PHPUnit_Framework_TestCase;
 use Dingo\Api\Routing\ControllerReviser;
 

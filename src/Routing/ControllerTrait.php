@@ -31,40 +31,28 @@ trait ControllerTrait
     protected $response;
 
     /**
-     * Array of unprotected controller methods.
+     * Array of controller method properties.
      *
      * @var array
      */
-    protected $unprotected = [];
-
-    /**
-     * Array of protected controller methods.
-     *
-     * @var array
-     */
-    protected $protected = [];
-
-    /**
-     * Array of controller method scopes.
-     *
-     * @var array
-     */
-    protected $scopedMethods = [];
+    protected $properties = [];
 
     /**
      * Set the scopes for all or a subset of methods.
      *
      * @param  string|array  $scopes
      * @param  string|array  $methods
-     * @return \Dingo\Api\Routing\Controller
+     * @return \Illuminate\Routing\Controller
      */
     protected function scope($scopes, $methods = null)
     {
+        $scopes = $this->preparePropertyValue($scopes);
+
         if (is_null($methods)) {
-            $this->scopedMethods['*'] = (array) $scopes;
+            $this->properties['*']['scopes'] = $scopes;
         } else {
-            foreach ((array) $methods as $method) {
-                $this->scopedMethods[$method] = (array) $scopes;
+            foreach ($this->preparePropertyValue($methods) as $method) {
+                $this->properties[$method]['scopes'] = $scopes;
             }
         }
 
@@ -74,57 +62,64 @@ trait ControllerTrait
     /**
      * Unprotect controller methods.
      *
-     * @param  array  $methods
-     * @return \Dingo\Api\Routing\Controller
+     * @param  string|array  $methods
+     * @return \Illuminate\Routing\Controller
      */
-    protected function unprotect($methods)
+    protected function unprotect($methods = null)
     {
-        $this->unprotected = array_merge($this->unprotected, is_array($methods) ? $methods : func_get_args());
-
-        return $this;
+        return $this->setProtection($methods, false);
     }
 
     /**
      * Protect controller methods.
      *
-     * @param  array  $methods
-     * @return \Dingo\Api\Routing\Controller
+     * @param  string|array  $methods
+     * @return \Illuminate\Routing\Controller
      */
-    protected function protect($methods)
+    protected function protect($methods = null)
     {
-        $this->protected = array_merge($this->protected, is_array($methods) ? $methods : func_get_args());
+        return $this->setProtection($methods, true);
+    }
+
+    /**
+     * Set the protection of given methods.
+     *
+     * @param  string|array  $methods
+     * @param  bool  $protection
+     * @return \Illuminate\Routing\Controller
+     */
+    protected function setProtection($methods = null, $protection = true)
+    {
+        if (is_null($methods)) {
+            $this->properties['*']['protected'] = $protection;
+        } else {
+            foreach ($this->preparePropertyValue($methods) as $method) {
+                $this->properties[$method]['protected'] = $protection;
+            }
+        }
 
         return $this;
     }
 
     /**
-     * Get the protected controller methods.
+     * Prepare a property value.
      *
+     * @param  string|array  $value
      * @return array
      */
-    public function getProtectedMethods()
+    protected function preparePropertyValue($value)
     {
-        return $this->protected;
+        return is_string($value) ? explode('|', $value) : $value;
     }
 
     /**
-     * Get the unprotected controller methods.
+     * Get the controller method properties.
      *
      * @return array
      */
-    public function getUnprotectedMethods()
+    public function getProperties()
     {
-        return $this->unprotected;
-    }
-
-    /**
-     * Get the scoped methods.
-     *
-     * @return array
-     */
-    public function getScopedMethods()
-    {
-        return $this->scopedMethods;
+        return $this->properties;
     }
 
     /**
