@@ -7,7 +7,6 @@ use Dingo\Api\Dispatcher;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Auth\Authenticator;
 use Dingo\Api\Http\ResponseFactory;
-use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Console\ApiRoutesCommand;
 use Dingo\Api\Http\RateLimit\RateLimiter;
@@ -23,7 +22,6 @@ class ApiServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->prepareContainerBindings();
-        $this->prepareCompatibility();
         $this->prepareResponse();
     }
 
@@ -45,23 +43,6 @@ class ApiServiceProvider extends ServiceProvider
         $this->app->bind('Dingo\Api\Http\ResponseFactory', function ($app) {
             return $app['api.response'];
         });
-    }
-
-    /**
-     * Prepare any compatibility for earlier or later versions of Laravel.
-     *
-     * @return void
-     */
-    protected function prepareCompatibility()
-    {
-        // Laravel 4.3 moved the "RoutesCommand" to "RouteListCommand" so we'll alias the command
-        // for users that are using Laravel 4.3. This allows us to continue to extend the
-        // "RoutesCommand" in the "ApiRoutesCommand".
-        if (class_exists('Illuminate\Foundation\Console\RouteListCommand')) {
-            $loader = AliasLoader::getInstance();
-
-            $loader->alias('Illuminate\Foundation\Console\RoutesCommand', 'Illuminate\Foundation\Console\RouteListCommand');
-        }
     }
 
     /**
