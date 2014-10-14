@@ -16,7 +16,7 @@ class ControllerInspector extends IlluminateControllerInspector
      */
     public function isRoutable(ReflectionMethod $method, $controller = null)
     {
-        if ($method->class == 'Dingo\Api\Routing\Controller') {
+        if ($method->name == 'getProperties') {
             return false;
         }
 

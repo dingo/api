@@ -8,9 +8,9 @@ use Dingo\Api\Routing\ControllerInspector;
 
 class ControllerInspectorTest extends PHPUnit_Framework_TestCase
 {
-    public function testControllerMethodIsNotRoutable()
+    public function testControllerTraitGetPropertiesMethodIsNotRoutable()
     {
-        $method = new ReflectionMethod('Dingo\Api\Tests\Stubs\ControllerStub', 'scope');
+        $method = new ReflectionMethod('Dingo\Api\Tests\Stubs\ControllerStub', 'getProperties');
         $inspector = new ControllerInspector;
         $this->assertFalse($inspector->isRoutable($method, 'Dingo\Api\Tests\Stubs\ControllerStub'));
     }
