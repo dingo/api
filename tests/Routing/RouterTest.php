@@ -26,12 +26,6 @@ class RouterTest extends PHPUnit_Framework_TestCase {
         $this->router->setVendor('testing');
 
         Response::setFormatters(['json' => new JsonResponseFormat]);
-
-        $transformer = m::mock('Dingo\Api\Transformer\Transformer');
-        $transformer->shouldReceive('transformableResponse')->andReturn(false);
-        $transformer->shouldReceive('setRequest');
-
-        Response::setTransformer($transformer);
     }
 
 

@@ -8,7 +8,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Container\Container;
 use Illuminate\Pagination\Paginator;
 
-abstract class Transformer
+class TransformerFactory
 {
     /**
      * Illuminate container instance.
@@ -25,24 +25,23 @@ abstract class Transformer
     protected $bindings = [];
 
     /**
-     * Get the current request instance.
+     * Transformation layer being used to transform responses.
      *
-     * @return \Illuminate\Http\Request
+     * @var \Dingo\Api\Transformer\TransformerInterface
      */
-    public function getCurrentRequest()
-    {
-        return $this->container['router']->getCurrentRequest();
-    }
+    protected $transformer;
 
     /**
-     * Set the illuminate container instance.
+     * Create a new transformer factory instance.
      *
      * @param  \Illuminate\Container\Container  $container
+     * @param  \Dingo\Api\Transformer\TransformerInterface  $transformer
      * @return void
      */
-    public function setContainer(Container $container)
+    public function __construct(Container $container, TransformerInterface $transformer)
     {
         $this->container = $container;
+        $this->transformer = $transformer;
     }
 
     /**
@@ -67,17 +66,8 @@ abstract class Transformer
     {
         $binding = $this->getBinding($response);
 
-        return $this->transformResponse($response, $binding->resolveTransformer(), $binding);
+        return $this->transformer->transform($response, $binding->resolveTransformer(), $binding, $this->container['request']);
     }
-
-    /**
-     * Transform a response with a transformer.
-     *
-     * @param  string|object  $response
-     * @param  object  $transformer
-     * @return mixed
-     */
-    abstract public function transformResponse($response, $transformer, $binding);
 
     /**
      * Determine if a response is transformable.
@@ -135,7 +125,7 @@ abstract class Transformer
      */
     protected function createBinding($resolver, array $parameters = [], Closure $callback = null)
     {
-        return new Binding($this->container ?: new Container, $resolver, $parameters, $callback);
+        return new Binding($this->container, $resolver, $parameters, $callback);
     }
 
     /**
@@ -189,7 +179,7 @@ abstract class Transformer
             $instance = $instance->first();
         }
 
-        return is_object($instance) and $instance instanceof TransformableInterface;
+        return is_object($instance) && $instance instanceof TransformableInterface;
     }
 
     /**
@@ -200,7 +190,7 @@ abstract class Transformer
      */
     protected function isCollection($instance)
     {
-        return $instance instanceof Collection or $instance instanceof Paginator;
+        return $instance instanceof Collection || $instance instanceof Paginator;
     }
 
     /**

@@ -11,6 +11,7 @@ use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Console\ApiRoutesCommand;
 use Dingo\Api\Http\RateLimit\RateLimiter;
+use Dingo\Api\Transformer\TransformerFactory;
 
 class ApiServiceProvider extends ServiceProvider
 {
@@ -126,9 +127,7 @@ class ApiServiceProvider extends ServiceProvider
         $this->app->bindShared('api.transformer', function ($app) {
             $transformer = $this->prepareConfigInstance($app['config']['api::transformer']);
 
-            $transformer->setContainer($app);
-
-            return $transformer;
+            return new TransformerFactory($app, $transformer);
         });
     }
 

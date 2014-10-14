@@ -14,6 +14,7 @@
 - `LeagueOAuth2Provider` will now authenticate for any matching scopes instead of requiring all scopes.
 - Removed `ResponseFormat::formatOther` as non-formattable responses are returned as they are.
 - `Dingo\Api\Routing\Controller` is now `Dingo\Api\Routing\ControllerTrait`, you can now your own base controller and simply use the trait.
+- Custom transformation layers must now implement `Dingo\Api\Transformer\TransformerInterface`.
 
 ### v0.6.5
 

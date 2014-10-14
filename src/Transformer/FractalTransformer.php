@@ -2,6 +2,7 @@
 
 namespace Dingo\Api\Transformer;
 
+use Illuminate\Http\Request;
 use League\Fractal\Manager as Fractal;
 use League\Fractal\Resource\Item as FractalItem;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
@@ -9,7 +10,7 @@ use Illuminate\Support\Collection as IlluminateCollection;
 use Illuminate\Pagination\Paginator as IlluminatePaginator;
 use League\Fractal\Resource\Collection as FractalCollection;
 
-class FractalTransformer extends Transformer
+class FractalTransformer implements TransformerInterface
 {
     /**
      * Fractal manager instance.
@@ -50,11 +51,13 @@ class FractalTransformer extends Transformer
     /**
      * Transform a response with a transformer.
      *
-     * @param  string|object  $response
+     * @param  mixed  $response
      * @param  object  $transformer
+     * @param  \Dingo\Api\Transformer\Binding
+     * @param  \Illuminate\Http\Request
      * @return array
      */
-    public function transformResponse($response, $transformer, $binding)
+    public function transform($response, $transformer, Binding $binding, Request $request)
     {
         $this->parseFractalIncludes();
 

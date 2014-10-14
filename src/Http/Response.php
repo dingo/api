@@ -3,7 +3,7 @@
 namespace Dingo\Api\Http;
 
 use ArrayObject;
-use Dingo\Api\Transformer\Transformer;
+use Dingo\Api\Transformer\TransformerFactory;
 use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -19,9 +19,9 @@ class Response extends IlluminateResponse
     protected static $formatters = [];
 
     /**
-     * Transformer instance.
+     * Transformer factory instance.
      *
-     * @var \Dingo\Api\Transformer\Transformer
+     * @var \Dingo\Api\Transformer\TransformerFactory
      */
     protected static $transformer;
 
@@ -110,12 +110,12 @@ class Response extends IlluminateResponse
     }
 
     /**
-     * Set the transformer instance.
+     * Set the transformer factory instance.
      *
-     * @param  \Dingo\Api\Transformer\Transformer  $transformer
+     * @param  \Dingo\Api\Transformer\TransformerFactory  $transformer
      * @return void
      */
-    public static function setTransformer(Transformer $transformer)
+    public static function setTransformer(TransformerFactory $transformer)
     {
         static::$transformer = $transformer;
     }

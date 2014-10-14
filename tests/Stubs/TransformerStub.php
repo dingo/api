@@ -2,13 +2,16 @@
 
 namespace Dingo\Api\Tests\Stubs;
 
-use Dingo\Api\Transformer\Transformer;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Dingo\Api\Transformer\Binding;
+use Dingo\Api\Transformer\TransformerInterface;
 
-class TransformerStub extends Transformer
+class TransformerStub implements TransformerInterface
 {
-    public function transformResponse($response, $transformer, $binding)
+    public function transform($response, $transformer, Binding $binding, Request $request)
     {
-        if ($this->isCollection($response)) {
+        if ($response instanceof Collection) {
             return $response->transform(function ($response) use ($transformer) {
                 return $transformer->transform($response);
             })->toArray();
