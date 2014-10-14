@@ -57,15 +57,13 @@ class JWTProvider extends AuthorizationProvider
     {
         try {
             $this->validateAuthorizationHeader($request);
-
-            $token = $this->parseAuthorizationHeader($request);
         } catch (Exception $exception) {
             if (! $token = $request->query('token', false)) {
                 throw $exception;
             }
         }
 
-        return $token;
+        return $this->parseAuthorizationHeader($request);
     }
 
     /**
