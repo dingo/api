@@ -42,7 +42,7 @@ class JWTProviderTest extends PHPUnit_Framework_TestCase
         $request = Request::create('foo', 'GET');
         $request->headers->set('authorization', 'Bearer foo');
 
-        $this->auth->shouldReceive('login')->andThrow(new JWTAuthException('foo'));
+        $this->auth->shouldReceive('login')->with('foo')->andThrow(new JWTAuthException('foo'));
 
         $this->provider->authenticate($request, new Route('/foo', 'GET', []));
     }
@@ -53,12 +53,8 @@ class JWTProviderTest extends PHPUnit_Framework_TestCase
         $request = Request::create('foo', 'GET');
         $request->headers->set('authorization', 'Bearer foo');
 
-        $user = (object) ['id' => 1];
+        $this->auth->shouldReceive('login')->with('foo')->andReturn((object) ['id' => 1]);
 
-        $this->auth->shouldReceive('login')->andReturn($user);
-        $this->auth->shouldReceive('getSubject')->andReturn(1);
-
-        $this->assertEquals(1, $this->auth->getSubject());
         $this->assertEquals(1, $this->provider->authenticate($request, new Route('/foo', 'GET', []))->id);
     }
 
@@ -67,12 +63,8 @@ class JWTProviderTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('foo', 'GET', ['token' => 'foo']);
 
-        $user = (object) ['id' => 1];
+        $this->auth->shouldReceive('login')->with('foo')->andReturn((object) ['id' => 1]);
 
-        $this->auth->shouldReceive('login')->andReturn($user);
-        $this->auth->shouldReceive('getSubject')->andReturn(1);
-
-        $this->assertEquals(1, $this->auth->getSubject());
         $this->assertEquals(1, $this->provider->authenticate($request, new Route('/foo', 'GET', []))->id);
     }
 }
