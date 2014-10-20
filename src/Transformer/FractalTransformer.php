@@ -53,8 +53,8 @@ class FractalTransformer implements TransformerInterface
      *
      * @param  mixed  $response
      * @param  object  $transformer
-     * @param  \Dingo\Api\Transformer\Binding
-     * @param  \Illuminate\Http\Request
+     * @param  \Dingo\Api\Transformer\Binding  $binding
+     * @param  \Illuminate\Http\Request  $request
      * @return array
      */
     public function transform($response, $transformer, Binding $binding, Request $request)
@@ -114,7 +114,7 @@ class FractalTransformer implements TransformerInterface
     /**
      * Parse includes.
      *
-     * @param  \Illuminate\Http\Request
+     * @param  \Illuminate\Http\Request  $request
      * @return void
      */
     public function parseFractalIncludes(Request $request)
