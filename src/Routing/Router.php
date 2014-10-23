@@ -14,6 +14,7 @@ use Dingo\Api\Http\Response as ApiResponse;
 use Illuminate\Routing\Route as IlluminateRoute;
 use Illuminate\Routing\Router as IlluminateRouter;
 use Illuminate\Http\Response as IlluminateResponse;
+use Dingo\Api\Exception\InvalidAcceptHeaderException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
@@ -60,6 +61,13 @@ class Router extends IlluminateRouter
      * @var bool
      */
     protected $conditionalRequest;
+
+    /**
+     * Indicates if the request is in strict mode.
+     *
+     * @var bool
+     */
+    protected $strict;
 
     /**
      * Name of the authentication filter.
@@ -376,6 +384,8 @@ class Router extends IlluminateRouter
     {
         if (preg_match('#application/vnd\.'.$this->config->getVendor().'.(v[\d\.]+)\+(\w+)#', $request->header('accept'), $matches)) {
             return array_slice($matches, 1);
+        } elseif ($this->isStrict()) {
+            throw new InvalidAcceptHeaderException('Unable to match the "Accept" header for the API request.');
         }
 
         return [$this->config->getVersion(), $this->config->getFormat()];
@@ -472,5 +482,26 @@ class Router extends IlluminateRouter
     public function setConditionalRequest($conditionalRequest)
     {
         $this->conditionalRequest = $conditionalRequest;
+    }
+
+    /**
+     * Determine if the request should be treated as strict.
+     *
+     * @return bool
+     */
+    public function isStrict()
+    {
+        return $this->strict;
+    }
+
+    /**
+     * Enable or disable strict mode.
+     *
+     * @param  bool  $strict
+     * @return void
+     */
+    public function setStrict($strict)
+    {
+        $this->strict = $strict;
     }
 }

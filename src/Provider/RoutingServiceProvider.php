@@ -38,6 +38,7 @@ class RoutingServiceProvider extends ServiceProvider
 
             $router->setControllerDispatcher(new ControllerDispatcher($router, $app));
             $router->setConditionalRequest($app['config']->get('api::conditional_request'));
+            $router->setStrict($app['config']->get('api::strict'));
 
             return $router;
         });

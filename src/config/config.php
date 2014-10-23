@@ -67,6 +67,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Strict Mode
+    |--------------------------------------------------------------------------
+    |
+    | Enabling strict mode will require clients to send a valid Accept header
+    | with every request. This also voids the default API version, meaning
+    | your API will not be browsable via a web browser.
+    |
+    */
+
+    'strict' => false,
+
+    /*
+    |--------------------------------------------------------------------------
     | Authentication Providers
     |--------------------------------------------------------------------------
     |

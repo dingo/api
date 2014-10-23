@@ -430,4 +430,20 @@ class RouterTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals('bar', $this->router->dispatch($request)->getContent());
     }
+
+
+    /**
+     * @expectedException \Dingo\Api\Exception\InvalidAcceptHeaderException
+     */
+    public function testRouterThrowsExceptionWhenInvalidAcceptHeaderWithStrict()
+    {
+        $this->router->api(['version' => 'v1'], function () {
+            $this->router->get('foo', function () {
+                return 'bar';
+            });
+        });
+
+        $this->router->setStrict(true);
+        $this->router->dispatch(Request::create('foo', 'GET'));
+    }
 }
