@@ -3,22 +3,30 @@
 namespace Dingo\Api\Tests;
 
 use Mockery;
+use Dingo\Api\Config;
+use Dingo\Api\Dispatcher;
+use Illuminate\Http\Request;
+use Dingo\Api\Routing\Router;
 use PHPUnit_Framework_TestCase;
+use Dingo\Api\Auth\Authenticator;
+use Illuminate\Container\Container;
+use Illuminate\Routing\UrlGenerator;
+use Illuminate\Routing\RouteCollection;
+use Illuminate\Events\Dispatcher as EventDispatcher;
 
 class DispatcherTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->router = new \Dingo\Api\Routing\Router(new \Illuminate\Events\Dispatcher);
-        $this->router->setDefaultVersion('v1');
-        $this->router->setVendor('testing');
+        $this->config = new Config;
+        $this->router = new Router(new EventDispatcher, $this->config);
 
-        $this->request = \Illuminate\Http\Request::create('/', 'GET');
-        $this->auth = new \Dingo\Api\Auth\Authenticator($this->router, new \Illuminate\Container\Container, []);
+        $this->request = Request::create('/', 'GET');
+        $this->auth = new Authenticator($this->router, new Container, []);
 
-        $this->dispatcher = new \Dingo\Api\Dispatcher(
+        $this->dispatcher = new Dispatcher(
             $this->request,
-            new \Illuminate\Routing\UrlGenerator(new \Illuminate\Routing\RouteCollection, $this->request),
+            new UrlGenerator(new RouteCollection, $this->request),
             $this->router,
             $this->auth
         );

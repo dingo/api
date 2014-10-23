@@ -3,6 +3,7 @@
 namespace Dingo\Api\Tests\Routing;
 
 use Mockery as m;
+use Dingo\Api\Config;
 use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
@@ -20,10 +21,9 @@ class RouterTest extends PHPUnit_Framework_TestCase {
     public function setUp()
     {
         $this->events = new Dispatcher;
+        $this->config = new Config('v1', null, null, 'testing', 'json', false);
 
-        $this->router = new Router($this->events);
-        $this->router->setDefaultVersion('v1');
-        $this->router->setVendor('testing');
+        $this->router = new Router($this->events, $this->config);
 
         Response::setFormatters(['json' => new JsonResponseFormat]);
     }
@@ -44,7 +44,7 @@ class RouterTest extends PHPUnit_Framework_TestCase {
         });
 
         $request = Request::create('foo', 'GET');
-        $this->assertInstanceOf('Dingo\Api\Routing\RouteCollection', $this->router->getApiRouteCollection('v1'));
+        $this->assertInstanceOf('Dingo\Api\Routing\RouteCollection', $this->router->getApiRoutes()->get('v1'));
     }
 
 
@@ -103,7 +103,7 @@ class RouterTest extends PHPUnit_Framework_TestCase {
             });
         });
 
-        $route = $this->router->getApiRouteCollection('v1')->getRoutes()[0];
+        $route = $this->router->getApiRoutes()->get('v1')->getRoutes()[0];
         $this->assertTrue($route->getAction()['protected']);
     }
 
@@ -346,10 +346,10 @@ class RouterTest extends PHPUnit_Framework_TestCase {
         });
 
         $request = Request::create('/', 'GET');
-        $this->assertFalse($this->router->requestTargettingApi($request));
+        $this->assertFalse($this->router->isApiRequest($request));
 
         $request = Request::create('foo', 'GET');
-        $this->assertTrue($this->router->requestTargettingApi($request));
+        $this->assertTrue($this->router->isApiRequest($request));
     }
 
 
@@ -412,7 +412,7 @@ class RouterTest extends PHPUnit_Framework_TestCase {
             });
         });
 
-        $this->router->setDefaultVersion('v2');
+        $this->config->setVersion('v2');
         $request = Request::create('api/foo', 'GET');
         $this->assertEquals('bar', $this->router->dispatch($request)->getContent());
     }

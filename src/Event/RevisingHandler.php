@@ -45,7 +45,7 @@ class RevisingHandler
      */
     public function handle(Route $route, Request $request)
     {
-        if ($this->router->requestTargettingApi($request)) {
+        if ($this->router->isApiRequest($request)) {
             $this->reviser->revise($route);
         }
     }

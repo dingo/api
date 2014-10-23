@@ -3,10 +3,13 @@
 namespace Dingo\Api\Routing;
 
 use Exception;
+use Dingo\Api\Config;
 use BadMethodCallException;
 use Illuminate\Http\Request;
+use Illuminate\Events\Dispatcher;
 use Dingo\Api\Http\ResponseBuilder;
 use Dingo\Api\Http\InternalRequest;
+use Illuminate\Container\Container;
 use Dingo\Api\Http\Response as ApiResponse;
 use Illuminate\Routing\Route as IlluminateRoute;
 use Illuminate\Routing\Router as IlluminateRouter;
@@ -17,81 +20,76 @@ use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 class Router extends IlluminateRouter
 {
     /**
-     * An array of API route collections.
+     * API config instance.
+     *
+     * @var \Dingo\Api\Config
+     */
+    protected $config;
+
+    /**
+     * API version collection instance.
      *
      * @var array
      */
-    protected $api = [];
+    protected $api;
 
     /**
-     * The default API version.
+     * Current API version.
      *
      * @var string
      */
-    protected $defaultVersion = 'v1';
+    protected $currentVersion;
 
     /**
-     * The default API prefix.
+     * Current API format.
      *
      * @var string
      */
-    protected $defaultPrefix;
-
-    /**
-     * The default API domain.
-     *
-     * @var string
-     */
-    protected $defaultDomain;
-
-    /**
-     * The default API format.
-     *
-     * @var string
-     */
-    protected $defaultFormat = 'json';
-
-    /**
-     * The API vendor.
-     *
-     * @var string
-     */
-    protected $vendor;
-
-    /**
-     * Requested API version.
-     *
-     * @var string
-     */
-    protected $requestedVersion;
-
-    /**
-     * Requested format.
-     *
-     * @var string
-     */
-    protected $requestedFormat;
-
-    /**
-     * Indicates if conditional requests are enabled or disabled.
-     *
-     * @var bool
-     */
-    protected $conditionalRequest = true;
+    protected $currentFormat;
 
     /**
      * Array of requests targetting the API.
      *
      * @var array
      */
-    protected $requestsTargettingApi = [];
+    protected $apiRequests = [];
 
     /**
-     * Indicates if API routes are being added.
+     * Indicates if the request is a conditional request.
      *
      * @var bool
      */
-    protected $addingApiRoutes = false;
+    protected $conditionalRequest;
+
+    /**
+     * Name of the authentication filter.
+     *
+     * @var string
+     */
+    const API_FILTER_AUTH = 'api.auth';
+
+    /**
+     * Name of the throttling filter.
+     *
+     * @var string
+     */
+    const API_FILTER_THROTTLE = 'api.throttle';
+
+    /**
+     * Create a new router instance.
+     *
+     * @param  \Illuminate\Events\Dispatcher  $events
+     * @param  \Dingo\Api\Routing\Config  $config
+     * @param  \Illuminate\Container\Container  $container
+     * @return void
+     */
+    public function __construct(Dispatcher $events, Config $config, Container $container = null)
+    {
+        $this->config = $config;
+        $this->api = new VersionCollection($config);
+
+        parent::__construct($events, $container);
+    }
 
     /**
      * Register an API group.
@@ -101,39 +99,69 @@ class Router extends IlluminateRouter
      * @return void
      * @throws \BadMethodCallException
      */
-    public function api($options, callable $callback)
+    public function api(array $options, callable $callback)
     {
         if (! isset($options['version'])) {
             throw new BadMethodCallException('Unable to register API route group without a version.');
         }
 
+        $options = $this->setupGroupOptions($options);
+
+        $this->createRouteCollections($options);
+
+        $this->group($options, $callback);
+    }
+
+    /**
+     * Create the route collections with the given options.
+     *
+     * @param  array  $options
+     * @return void
+     */
+    protected function createRouteCollections(array $options)
+    {
+        foreach ($options['version'] as $version) {
+            if (! $this->api->has($version)) {
+                $this->api->add($version, $options);
+            }
+        }
+    }
+
+    /**
+     * Setup the API group options.
+     *
+     * @param  array  $options
+     * @return array
+     */
+    protected function setupGroupOptions(array $options)
+    {
+        $options['api'] = true;
+
         $options['version'] = (array) $options['version'];
 
-        $options[] = 'api';
-
         if (! isset($options['prefix'])) {
-            $options['prefix'] = $this->defaultPrefix;
+            $options['prefix'] = $this->config->getPrefix();
         }
 
         if (! isset($options['domain'])) {
-            $options['domain'] = $this->defaultDomain;
+            $options['domain'] = $this->config->getDomain();
         }
 
         if (isset($options['conditional_request'])) {
             $this->conditionalRequest = $options['conditional_request'];
         }
 
-        foreach ($options['version'] as $version) {
-            if (! isset($this->api[$version])) {
-                $this->api[$version] = new RouteCollection($version, array_except($options, 'version'));
-            }
-        }
+        return $options;
+    }
 
-        $this->addingApiRoutes = true;
-
-        $this->group($options, $callback);
-
-        $this->addingApiRoutes = false;
+    /**
+     * Determine if the router is currently routing to the API.
+     *
+     * @return bool
+     */
+    protected function routingToApi()
+    {
+        return ! empty($this->groupStack) && array_get(last($this->groupStack), 'api', false) === true;
     }
 
     /**
@@ -146,14 +174,14 @@ class Router extends IlluminateRouter
      */
     public function dispatch(Request $request)
     {
-        if (! $this->requestTargettingApi($request)) {
+        if (! $this->isApiRequest($request)) {
             return parent::dispatch($request);
         }
 
         list ($version, $format) = $this->parseAcceptHeader($request);
 
-        $this->requestedVersion = $version;
-        $this->requestedFormat = $format;
+        $this->currentVersion = $version;
+        $this->currentFormat = $format;
 
         $this->container->instance('Illuminate\Http\Request', $request);
 
@@ -203,7 +231,7 @@ class Router extends IlluminateRouter
      */
     protected function newRoute($methods, $uri, $action)
     {
-        if ($this->addingApiRoutes) {
+        if ($this->routingToApi()) {
             return new Route($methods, $uri, $action);
         }
 
@@ -222,7 +250,7 @@ class Router extends IlluminateRouter
     {
         $route = $this->createRoute($methods, $uri, $action);
 
-        if ($this->addingApiRoutes) {
+        if ($this->routingToApi()) {
             return $this->addApiRoute($this->attachApiFilters($route));
         }
 
@@ -240,7 +268,7 @@ class Router extends IlluminateRouter
         $versions = array_get(last($this->groupStack), 'version', []);
 
         foreach ($versions as $version) {
-            if ($collection = $this->getApiRouteCollection($version)) {
+            if ($collection = $this->api->get($version)) {
                 $collection->add($route);
             }
         }
@@ -258,7 +286,7 @@ class Router extends IlluminateRouter
     {
         $filters = $route->beforeFilters();
 
-        foreach (['api.auth', 'api.throttle'] as $filter) {
+        foreach ([static::API_FILTER_AUTH, static::API_FILTER_THROTTLE] as $filter) {
             if (! isset($filters[$filter])) {
                 $route->before($filter);
             }
@@ -272,8 +300,8 @@ class Router extends IlluminateRouter
      */
     protected function findRoute($request)
     {
-        if ($this->requestTargettingApi($request)) {
-            $route = $this->getApiRouteCollection($this->requestedVersion)->match($request);
+        if ($this->isApiRequest($request)) {
+            $route = $this->api->get($this->currentVersion)->match($request);
         } else {
             $route = $this->routes->match($request);
         }
@@ -292,12 +320,12 @@ class Router extends IlluminateRouter
 
         $response = parent::prepareResponse($request, $response);
 
-        if ($this->requestTargettingApi($request)) {
+        if ($this->isApiRequest($request)) {
             if ($response instanceof IlluminateResponse) {
                 $response = ApiResponse::makeFromExisting($response);
             }
 
-            if ($response->isSuccessful() && $this->getConditionalRequest()) {
+            if ($response->isSuccessful() && $this->requestsAreConditional()) {
                 if (! $response->headers->has('ETag')) {
                     $response->setEtag(md5($response->getContent()));
                 }
@@ -310,32 +338,32 @@ class Router extends IlluminateRouter
     }
 
     /**
-     * Determine if the current request is targetting an API.
+     * Determine if the request is an API request.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return bool
      */
-    public function requestTargettingApi($request)
+    public function isApiRequest($request)
     {
-        if (empty($this->api)) {
+        if ($this->api->isEmpty()) {
             return false;
-        } elseif (isset($this->requestsTargettingApi[$key = sha1($request)])) {
-            return $this->requestsTargettingApi[$key];
+        } elseif (isset($this->apiRequests[$key = sha1($request)])) {
+            return $this->apiRequests[$key];
         }
 
-        $collection = $this->getApiRouteCollectionFromRequest($request) ?: $this->getDefaultApiRouteCollection();
+        $collection = $this->api->getByRequest($request) ?: $this->api->getDefault();
 
         try {
             $collection->match($request);
         } catch (NotFoundHttpException $exception) {
-            return $this->requestsTargettingApi[$key] = false;
+            return $this->apiRequests[$key] = false;
         } catch (MethodNotAllowedHttpException $exception) {
             // If a method is not allowed then we can say that a route was matched
             // so the request is still targetting the API. This allows developers
             // to provide better error responses when clients send bad requests.
         }
 
-        return $this->requestsTargettingApi[$key] = true;
+        return $this->apiRequests[$key] = true;
     }
 
     /**
@@ -344,172 +372,33 @@ class Router extends IlluminateRouter
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function parseAcceptHeader(Request $request)
+    protected function parseAcceptHeader(Request $request)
     {
-        if (preg_match('#application/vnd\.'.$this->vendor.'.(v[\d\.]+)\+(\w+)#', $request->header('accept'), $matches)) {
+        if (preg_match('#application/vnd\.'.$this->config->getVendor().'.(v[\d\.]+)\+(\w+)#', $request->header('accept'), $matches)) {
             return array_slice($matches, 1);
         }
 
-        return [$this->defaultVersion, $this->defaultFormat];
+        return [$this->config->getVersion(), $this->config->getFormat()];
     }
 
     /**
-     * Get a matching API route collection from the request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return null|\Dingo\Api\Routing\ApiRouteCollection
-     */
-    public function getApiRouteCollectionFromRequest(Request $request)
-    {
-        return array_first($this->api, function ($key, $collection) use ($request) {
-            return $collection->matchesRequest($request);
-        });
-    }
-
-    /**
-     * Get the default API route collection.
-     *
-     * @return \Dingo\Api\Routing\ApiRouteCollection|null
-     */
-    public function getDefaultApiRouteCollection()
-    {
-        return $this->getApiRouteCollection($this->defaultVersion);
-    }
-
-    /**
-     * Get an API route collection for a given version.
-     *
-     * @param  string  $version
-     * @return \Dingo\Api\Routing\ApiRouteCollection|null
-     */
-    public function getApiRouteCollection($version)
-    {
-        return array_get($this->api, $version);
-    }
-
-    /**
-     * Set the default API version.
-     *
-     * @param  string  $defaultVersion
-     * @return void
-     */
-    public function setDefaultVersion($defaultVersion)
-    {
-        $this->defaultVersion = $defaultVersion;
-    }
-
-    /**
-     * Get the default API version.
+     * Get the current API format.
      *
      * @return string
      */
-    public function getDefaultVersion()
+    public function getCurrentFormat()
     {
-        return $this->defaultVersion;
+        return $this->currentFormat;
     }
 
     /**
-     * Set the default API prefix.
-     *
-     * @param  string  $defaultPrefix
-     * @return void
-     */
-    public function setDefaultPrefix($defaultPrefix)
-    {
-        $this->defaultPrefix = $defaultPrefix;
-    }
-
-    /**
-     * Get the default API prefix.
+     * Get the current API version.
      *
      * @return string
      */
-    public function getDefaultPrefix()
+    public function getCurrentVersion()
     {
-        return $this->defaultPrefix;
-    }
-
-    /**
-     * Set the default API domain.
-     *
-     * @param  string  $defaultDomain
-     * @return void
-     */
-    public function setDefaultDomain($defaultDomain)
-    {
-        $this->defaultDomain = $defaultDomain;
-    }
-
-    /**
-     * Get the default API domain.
-     *
-     * @return string
-     */
-    public function getDefaultDomain()
-    {
-        return $this->defaultDomain;
-    }
-
-    /**
-     * Set the API vendor.
-     *
-     * @param  string  $vendor
-     * @return void
-     */
-    public function setVendor($vendor)
-    {
-        $this->vendor = $vendor;
-    }
-
-    /**
-     * Get the API vendor.
-     *
-     * @return string
-     */
-    public function getVendor()
-    {
-        return $this->vendor;
-    }
-
-    /**
-     * Set the default API format.
-     *
-     * @param  string  $defaultFormat
-     * @return void
-     */
-    public function setDefaultFormat($defaultFormat)
-    {
-        $this->defaultFormat = $defaultFormat;
-    }
-
-    /**
-     * Get the default API format.
-     *
-     * @return string
-     */
-    public function getDefaultFormat()
-    {
-        return $this->defaultFormat;
-    }
-
-    /**
-     * Get the requested version.
-     *
-     * @return string
-     */
-    public function getRequestedVersion()
-    {
-        return $this->requestedVersion;
-    }
-
-    /**
-     * Get the requested format.
-     *
-     * @return string
-     */
-    public function getRequestedFormat()
-    {
-        return $this->requestedFormat;
+        return $this->currentVersion;
     }
 
     /**
@@ -545,13 +434,33 @@ class Router extends IlluminateRouter
     }
 
     /**
-     * Get the array of registered API route collections.
+     * Get the API version collection containing the API routes.
      *
-     * @return array
+     * @return \Dingo\Api\Routing\VersionCollection
      */
     public function getApiRoutes()
     {
         return $this->api;
+    }
+
+    /**
+     * Get the routing configuration.
+     *
+     * @return \Dingo\Api\Routing\Config
+     */
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
+    /**
+     * Determine if conditional requests are enabled.
+     *
+     * @return string
+     */
+    public function requestsAreConditional()
+    {
+        return $this->conditionalRequest;
     }
 
     /**
@@ -563,15 +472,5 @@ class Router extends IlluminateRouter
     public function setConditionalRequest($conditionalRequest)
     {
         $this->conditionalRequest = $conditionalRequest;
-    }
-
-    /**
-     * Check conditional requests are enabled.
-     *
-     * @return bool
-     */
-    public function getConditionalRequest()
-    {
-        return $this->conditionalRequest;
     }
 }

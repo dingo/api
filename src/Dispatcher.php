@@ -139,7 +139,7 @@ class Dispatcher
      */
     public function be($user)
     {
-        if (! $user instanceof Model and ! $user instanceof GenericUser) {
+        if (! $user instanceof Model && ! $user instanceof GenericUser) {
             throw new RuntimeException('User must be an instance of either Illuminate\Database\Eloquent\Model or Illuminate\Auth\GenericUser.');
         }
 
@@ -196,9 +196,9 @@ class Dispatcher
      */
     public function route($name, $routeParameters = [], $parameters = [])
     {
-        $version = $this->version ?: $this->router->getDefaultVersion();
+        $version = $this->version ?: $this->router->getConfig()->getVersion();
 
-        $route = $this->router->getApiRouteCollection($version)->getByName($name);
+        $route = $this->router->getApiRoutes()->get($version)->getByName($name);
 
         $uri = ltrim($this->url->route($name, $routeParameters, false, $route), '/');
 
@@ -215,9 +215,9 @@ class Dispatcher
      */
     public function action($action, $actionParameters = [], $parameters = [])
     {
-        $version = $this->version ?: $this->router->getDefaultVersion();
+        $version = $this->version ?: $this->router->getConfig()->getVersion();
 
-        $route = $this->router->getApiRouteCollection($version)->getByAction($action);
+        $route = $this->router->getApiRoutes()->get($version)->getByAction($action);
 
         $uri = ltrim($this->url->route($action, $actionParameters, false, $route), '/');
 
@@ -313,15 +313,15 @@ class Dispatcher
     protected function createRequest($verb, $uri, $parameters)
     {
         if (! isset($this->version)) {
-            $this->version = $this->router->getDefaultVersion();
+            $this->version = $this->router->getConfig()->getVersion();
         }
 
         // Once we have a version we can go ahead and grab the API collection,
         // if one exists, from the router.
-        $api = $this->router->getApiRouteCollection($this->version);
+        $api = $this->router->getApiRoutes()->get($this->version);
 
-        if ($prefix = $api->option('prefix') and ! starts_with($uri, $prefix)) {
-            $uri = "{$prefix}/{$uri}";
+        if (($prefix = $api->option('prefix')) && ! starts_with($uri, $prefix)) {
+            $uri = sprintf('%s/%s', $prefix, $uri);
         }
 
         $parameters = array_merge($this->parameters, (array) $parameters);
@@ -344,7 +344,7 @@ class Dispatcher
      */
     protected function buildAcceptHeader()
     {
-        return 'application/vnd.'.$this->router->getVendor().'.'.$this->version.'+'.$this->router->getDefaultFormat();
+        return sprintf('application/vnd.%s.%s+%s', $this->router->getConfig()->getVendor(), $this->version, $this->router->getConfig()->getFormat());
     }
 
     /**

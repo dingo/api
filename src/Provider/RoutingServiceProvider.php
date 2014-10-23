@@ -2,6 +2,7 @@
 
 namespace Dingo\Api\Provider;
 
+use Dingo\Api\Config;
 use Dingo\Api\Routing\Router;
 use Illuminate\Support\Collection;
 use Dingo\Api\Routing\UrlGenerator;
@@ -17,18 +18,38 @@ class RoutingServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->replaceBoundRouter();
+        $this->replaceBoundUrlGenerator();
+    }
+
+    /**
+     * Replace the bound router.
+     *
+     * @return void
+     */
+    protected function replaceBoundRouter()
+    {
         $this->app->bindShared('router', function ($app) {
-            $router = new Router($app['events'], $app);
+            $router = new Router($app['events'], $app['api.routing.config'], $app);
 
             if ($app['env'] == 'testing') {
                 $router->disableFilters();
             }
 
             $router->setControllerDispatcher(new ControllerDispatcher($router, $app));
+            $router->setConditionalRequest($app['config']->get('api::conditional_request'));
 
             return $router;
         });
+    }
 
+    /**
+     * Replace the bound URL generator.
+     *
+     * @return void
+     */
+    protected function replaceBoundUrlGenerator()
+    {
         $this->app->bindShared('url', function ($app) {
             $routes = Collection::make($app['router']->getRoutes())->merge($app['router']->getApiRoutes());
 
@@ -36,24 +57,27 @@ class RoutingServiceProvider extends ServiceProvider
                 $app['url']->setRequest($request);
             }));
         });
-
-        $this->setRouterDefaults();
     }
 
     /**
-     * Set the default configuration options on the router.
+     * Register bindings for the service provider.
      *
      * @return void
      */
-    public function setRouterDefaults()
+    public function register()
     {
-        $config = $this->app['config']['api::config'];
+        parent::register();
 
-        $this->app['router']->setDefaultVersion($config['version']);
-        $this->app['router']->setDefaultPrefix($config['prefix']);
-        $this->app['router']->setDefaultDomain($config['domain']);
-        $this->app['router']->setDefaultFormat($config['default_format']);
-        $this->app['router']->setVendor($config['vendor']);
-        $this->app['router']->setConditionalRequest($config['conditional_request']);
+        $this->app->bindShared('api.routing.config', function ($app) {
+            $config = $app['config']->get('api::config');
+
+            return new Config(
+                $config['version'],
+                $config['prefix'],
+                $config['domain'],
+                $config['vendor'],
+                $config['default_format']
+            );
+        });
     }
 }

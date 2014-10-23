@@ -3,6 +3,7 @@
 namespace Dingo\Api\Tests\Auth;
 
 use Mockery;
+use Dingo\Api\Config;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
 use Dingo\Api\Routing\Router;
@@ -17,7 +18,7 @@ class AuthenticatorTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->container = new Container;
-        $this->router = new Router(Mockery::mock('Illuminate\Events\Dispatcher'), $this->container);
+        $this->router = new Router(Mockery::mock('Illuminate\Events\Dispatcher'), new Config, $this->container);
     }
 
 

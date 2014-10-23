@@ -134,7 +134,7 @@ class RouteCollection extends IlluminateRouteCollection
     protected function getOtherMethodsRoute($request, array $others)
     {
         if ($request->method() == 'OPTIONS') {
-            return (new Route('OPTIONS', $request->path(), function() use ($others) {
+            return (new Route('OPTIONS', $request->path(), function () use ($others) {
                 return new Response('', 200, ['Allow' => implode(',', $others)]);
             }))->bind($request);
         } else {
