@@ -66,11 +66,25 @@ class Dispatcher
     protected $version;
 
     /**
+     * Request headers.
+     *
+     * @var array
+     */
+    protected $headers = [];
+
+    /**
      * Request parameters.
      *
      * @var array
      */
     protected $parameters = [];
+
+    /**
+     * Request raw content.
+     *
+     * @var string
+     */
+    protected $content;
 
     /**
      * Request uploaded files.
@@ -187,6 +201,20 @@ class Dispatcher
     }
 
     /**
+     * Set a header to be sent on the next API request.
+     *
+     * @param  string  $key
+     * @param  string  $value
+     * @return \Dingo\Api\Dispatcher
+     */
+    public function header($key, $value)
+    {
+        $this->headers[$key] = $value;
+
+        return $this;
+    }
+
+    /**
      * Perform an API request to a named route.
      *
      * @param  string  $name
@@ -241,11 +269,12 @@ class Dispatcher
      *
      * @param  string  $uri
      * @param  string|array  $parameters
+     * @param  string  $content
      * @return mixed
      */
-    public function post($uri, $parameters = [])
+    public function post($uri, $parameters = [], $content = '')
     {
-        return $this->queueRequest('post', $uri, $parameters);
+        return $this->queueRequest('post', $uri, $parameters, $content);
     }
 
     /**
@@ -253,11 +282,12 @@ class Dispatcher
      *
      * @param  string  $uri
      * @param  string|array  $parameters
+     * @param  string  $content
      * @return mixed
      */
-    public function put($uri, $parameters = [])
+    public function put($uri, $parameters = [], $content = '')
     {
-        return $this->queueRequest('put', $uri, $parameters);
+        return $this->queueRequest('put', $uri, $parameters, $content);
     }
 
     /**
@@ -265,11 +295,12 @@ class Dispatcher
      *
      * @param  string  $uri
      * @param  string|array  $parameters
+     * @param  string  $content
      * @return mixed
      */
-    public function patch($uri, $parameters = [])
+    public function patch($uri, $parameters = [], $content = '')
     {
-        return $this->queueRequest('patch', $uri, $parameters);
+        return $this->queueRequest('patch', $uri, $parameters, $content);
     }
 
     /**
@@ -277,11 +308,12 @@ class Dispatcher
      *
      * @param  string  $uri
      * @param  string|array  $parameters
+     * @param  string  $content
      * @return mixed
      */
-    public function delete($uri, $parameters = [])
+    public function delete($uri, $parameters = [], $content = '')
     {
-        return $this->queueRequest('delete', $uri, $parameters);
+        return $this->queueRequest('delete', $uri, $parameters, $content);
     }
 
     /**
@@ -290,11 +322,12 @@ class Dispatcher
      * @param  string  $verb
      * @param  string  $uri
      * @param  string|array  $parameters
+     * @param  string  $content
      * @return mixed
      */
-    protected function queueRequest($verb, $uri, $parameters)
+    protected function queueRequest($verb, $uri, $parameters, $content)
     {
-        $request = $this->requestStack[] = $this->createRequest($verb, $uri, $parameters);
+        $request = $this->requestStack[] = $this->createRequest($verb, $uri, $parameters, $content);
 
         $this->request->replace($request->input());
         $this->request->files->replace($request->file());
@@ -308,9 +341,10 @@ class Dispatcher
      * @param  string  $verb
      * @param  string  $uri
      * @param  string|array  $parameters
+     * @param  string  $content
      * @return \Dingo\Api\Http\InternalRequest
      */
-    protected function createRequest($verb, $uri, $parameters)
+    protected function createRequest($verb, $uri, $parameters, $content)
     {
         if (! isset($this->version)) {
             $this->version = $this->router->getConfig()->getVersion();
@@ -326,10 +360,14 @@ class Dispatcher
 
         $parameters = array_merge($this->parameters, (array) $parameters);
 
-        $request = InternalRequest::create($uri, $verb, $parameters, [], $this->files);
+        $request = InternalRequest::create($uri, $verb, $parameters, [], $this->files, [], $content);
 
         if ($domain = $api->option('domain')) {
             $request->headers->set('host', $domain);
+        }
+
+        foreach ($this->headers as $header => $value) {
+            $request->headers->set($header, $value);
         }
 
         $request->headers->set('accept', $this->buildAcceptHeader());
