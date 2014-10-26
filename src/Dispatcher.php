@@ -325,7 +325,7 @@ class Dispatcher
      * @param  string  $content
      * @return mixed
      */
-    protected function queueRequest($verb, $uri, $parameters, $content)
+    protected function queueRequest($verb, $uri, $parameters, $content = '')
     {
         $request = $this->requestStack[] = $this->createRequest($verb, $uri, $parameters, $content);
 
