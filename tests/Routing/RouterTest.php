@@ -43,8 +43,14 @@ class RouterTest extends PHPUnit_Framework_TestCase {
             });
         });
 
-        $request = Request::create('foo', 'GET');
+        $this->router->api('v2', function () {
+            $this->router->get('foo', function () {
+                return 'bar';
+            });
+        });
+
         $this->assertInstanceOf('Dingo\Api\Routing\RouteCollection', $this->router->getApiVersions()->get('v1'));
+        $this->assertInstanceOf('Dingo\Api\Routing\RouteCollection', $this->router->getApiVersions()->get('v2'));
     }
 
 
