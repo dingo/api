@@ -28,7 +28,8 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
             $this->request,
             new UrlGenerator(new RouteCollection, $this->request),
             $this->router,
-            $this->auth
+            $this->auth,
+            $this->config
         );
     }
 

@@ -45,6 +45,13 @@ class Dispatcher
     protected $auth;
 
     /**
+     * API config instance.
+     *
+     * @var \Dingo\Api\Config
+     */
+    protected $config;
+
+    /**
      * Internal request stack.
      *
      * @var array
@@ -93,14 +100,16 @@ class Dispatcher
      * @param  \Illuminate\Routing\UrlGenerator  $url
      * @param  \Dingo\Api\Routing\Router  $router
      * @param  \Dingo\Api\Auth\Authenticator  $auth
+     * @param  \Dingo\Api\Config  $config
      * @return void
      */
-    public function __construct(Request $request, UrlGenerator $url, Router $router, Authenticator $auth)
+    public function __construct(Request $request, UrlGenerator $url, Router $router, Authenticator $auth, Config $config)
     {
         $this->request = $request;
         $this->url = $url;
         $this->router = $router;
         $this->auth = $auth;
+        $this->config = $config;
 
         $this->setupRequestStack();
     }
@@ -196,7 +205,7 @@ class Dispatcher
      */
     public function route($name, $routeParameters = [], $parameters = [])
     {
-        $version = $this->version ?: $this->router->getConfig()->getVersion();
+        $version = $this->version ?: $this->config->getVersion();
 
         $route = $this->router->getApiVersions()->get($version)->getByName($name);
 
@@ -215,7 +224,7 @@ class Dispatcher
      */
     public function action($action, $actionParameters = [], $parameters = [])
     {
-        $version = $this->version ?: $this->router->getConfig()->getVersion();
+        $version = $this->version ?: $this->config->getVersion();
 
         $route = $this->router->getApiVersions()->get($version)->getByAction($action);
 
@@ -313,7 +322,7 @@ class Dispatcher
     protected function createRequest($verb, $uri, $parameters)
     {
         if (! isset($this->version)) {
-            $this->version = $this->router->getConfig()->getVersion();
+            $this->version = $this->config->getVersion();
         }
 
         // Once we have a version we can go ahead and grab the API collection,
@@ -344,7 +353,7 @@ class Dispatcher
      */
     protected function buildAcceptHeader()
     {
-        return sprintf('application/vnd.%s.%s+%s', $this->router->getConfig()->getVendor(), $this->version, $this->router->getConfig()->getFormat());
+        return sprintf('application/vnd.%s.%s+%s', $this->config->getVendor(), $this->version, $this->config->getFormat());
     }
 
     /**

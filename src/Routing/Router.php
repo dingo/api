@@ -454,16 +454,6 @@ class Router extends IlluminateRouter
     }
 
     /**
-     * Get the routing configuration.
-     *
-     * @return \Dingo\Api\Routing\Config
-     */
-    public function getConfig()
-    {
-        return $this->config;
-    }
-
-    /**
      * Determine if conditional requests are enabled.
      *
      * @return string
