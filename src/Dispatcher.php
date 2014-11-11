@@ -198,7 +198,7 @@ class Dispatcher
     {
         $version = $this->version ?: $this->router->getConfig()->getVersion();
 
-        $route = $this->router->getApiRoutes()->get($version)->getByName($name);
+        $route = $this->router->getApiVersions()->get($version)->getByName($name);
 
         $uri = ltrim($this->url->route($name, $routeParameters, false, $route), '/');
 
@@ -217,7 +217,7 @@ class Dispatcher
     {
         $version = $this->version ?: $this->router->getConfig()->getVersion();
 
-        $route = $this->router->getApiRoutes()->get($version)->getByAction($action);
+        $route = $this->router->getApiVersions()->get($version)->getByAction($action);
 
         $uri = ltrim($this->url->route($action, $actionParameters, false, $route), '/');
 
@@ -318,7 +318,7 @@ class Dispatcher
 
         // Once we have a version we can go ahead and grab the API collection,
         // if one exists, from the router.
-        $api = $this->router->getApiRoutes()->get($this->version);
+        $api = $this->router->getApiVersions()->get($this->version);
 
         if (($prefix = $api->option('prefix')) && ! starts_with($uri, $prefix)) {
             $uri = sprintf('%s/%s', $prefix, $uri);

@@ -448,7 +448,7 @@ class Router extends IlluminateRouter
      *
      * @return \Dingo\Api\Routing\VersionCollection
      */
-    public function getApiRoutes()
+    public function getApiVersions()
     {
         return $this->api;
     }

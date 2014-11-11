@@ -44,7 +44,7 @@ class RouterTest extends PHPUnit_Framework_TestCase {
         });
 
         $request = Request::create('foo', 'GET');
-        $this->assertInstanceOf('Dingo\Api\Routing\RouteCollection', $this->router->getApiRoutes()->get('v1'));
+        $this->assertInstanceOf('Dingo\Api\Routing\RouteCollection', $this->router->getApiVersions()->get('v1'));
     }
 
 
@@ -103,7 +103,7 @@ class RouterTest extends PHPUnit_Framework_TestCase {
             });
         });
 
-        $route = $this->router->getApiRoutes()->get('v1')->getRoutes()[0];
+        $route = $this->router->getApiVersions()->get('v1')->getRoutes()[0];
         $this->assertTrue($route->getAction()['protected']);
     }
 

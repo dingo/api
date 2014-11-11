@@ -52,7 +52,7 @@ class RoutingServiceProvider extends ServiceProvider
     protected function replaceBoundUrlGenerator()
     {
         $this->app->bindShared('url', function ($app) {
-            $routes = Collection::make($app['router']->getRoutes())->merge($app['router']->getApiRoutes());
+            $routes = Collection::make($app['router']->getRoutes())->merge($app['router']->getApiVersions()->getRoutes());
 
             return new UrlGenerator($routes, $app->rebinding('request', function ($app, $request) {
                 $app['url']->setRequest($request);
