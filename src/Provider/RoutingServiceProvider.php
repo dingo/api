@@ -2,7 +2,6 @@
 
 namespace Dingo\Api\Provider;
 
-use Dingo\Api\Config;
 use Dingo\Api\Routing\Router;
 use Illuminate\Support\Collection;
 use Dingo\Api\Routing\UrlGenerator;
@@ -30,7 +29,7 @@ class RoutingServiceProvider extends ServiceProvider
     protected function replaceBoundRouter()
     {
         $this->app->bindShared('router', function ($app) {
-            $router = new Router($app['events'], $app['api.routing.config'], $app);
+            $router = new Router($app['events'], $app['api.config'], $app);
 
             if ($app['env'] == 'testing') {
                 $router->disableFilters();
@@ -52,33 +51,11 @@ class RoutingServiceProvider extends ServiceProvider
     protected function replaceBoundUrlGenerator()
     {
         $this->app->bindShared('url', function ($app) {
-            $routes = Collection::make($app['router']->getRoutes())->merge($app['router']->getApiRoutes());
+            $routes = Collection::make($app['router']->getRoutes())->merge($app['router']->getApiVersions()->getRoutes());
 
             return new UrlGenerator($routes, $app->rebinding('request', function ($app, $request) {
                 $app['url']->setRequest($request);
             }));
-        });
-    }
-
-    /**
-     * Register bindings for the service provider.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        parent::register();
-
-        $this->app->bindShared('api.routing.config', function ($app) {
-            $config = $app['config']->get('api::config');
-
-            return new Config(
-                $config['version'],
-                $config['prefix'],
-                $config['domain'],
-                $config['vendor'],
-                $config['default_format']
-            );
         });
     }
 }

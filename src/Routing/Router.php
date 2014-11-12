@@ -102,17 +102,13 @@ class Router extends IlluminateRouter
     /**
      * Register an API group.
      *
-     * @param  array  $options
+     * @param  array|string  $options
      * @param  callable  $callback
      * @return void
      * @throws \BadMethodCallException
      */
-    public function api(array $options, callable $callback)
+    public function api($options, callable $callback)
     {
-        if (! isset($options['version'])) {
-            throw new BadMethodCallException('Unable to register API route group without a version.');
-        }
-
         $options = $this->setupGroupOptions($options);
 
         $this->createRouteCollections($options);
@@ -138,11 +134,17 @@ class Router extends IlluminateRouter
     /**
      * Setup the API group options.
      *
-     * @param  array  $options
+     * @param  array|string  $options
      * @return array
      */
-    protected function setupGroupOptions(array $options)
+    protected function setupGroupOptions($options)
     {
+        if (is_string($options)) {
+            $options = ['version' => $options];
+        } elseif (! isset($options['version'])) {
+            throw new BadMethodCallException('Unable to register API route group without a version.');
+        }
+
         $options['api'] = true;
 
         $options['version'] = (array) $options['version'];
@@ -448,19 +450,9 @@ class Router extends IlluminateRouter
      *
      * @return \Dingo\Api\Routing\VersionCollection
      */
-    public function getApiRoutes()
+    public function getApiVersions()
     {
         return $this->api;
-    }
-
-    /**
-     * Get the routing configuration.
-     *
-     * @return \Dingo\Api\Routing\Config
-     */
-    public function getConfig()
-    {
-        return $this->config;
     }
 
     /**

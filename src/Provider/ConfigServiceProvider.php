@@ -2,6 +2,7 @@
 
 namespace Dingo\Api\Provider;
 
+use Dingo\Api\Config;
 use Illuminate\Support\ServiceProvider;
 
 class ConfigServiceProvider extends ServiceProvider
@@ -23,6 +24,16 @@ class ConfigServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bindShared('api.config', function ($app) {
+            $config = $app['config']->get('api::config');
+
+            return new Config(
+                $config['version'],
+                $config['prefix'],
+                $config['domain'],
+                $config['vendor'],
+                $config['default_format']
+            );
+        });
     }
 }
