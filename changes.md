@@ -16,6 +16,7 @@
 - `Dingo\Api\Routing\Controller` is now `Dingo\Api\Routing\ControllerTrait`, you can now your own base controller and simply use the trait.
 - Custom transformation layers must now implement `Dingo\Api\Transformer\TransformerInterface`.
 - Authentication providers must now implement the `Dingo\Api\Auth\ProviderInterface`.
+- Upgraded the League OAuth 2.0 package to version 4.
 
 ### v0.6.5
 

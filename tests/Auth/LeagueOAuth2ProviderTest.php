@@ -12,7 +12,7 @@ class LeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->server = Mockery::mock('League\OAuth2\Server\Resource');
+        $this->server = Mockery::mock('League\OAuth2\Server\ResourceServer');
         $this->provider = new LeagueOAuth2Provider($this->server, false);
     }
 
@@ -41,7 +41,7 @@ class LeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase
         $request = Request::create('GET', '/', [], [], [], ['HTTP_AUTHORIZATION' => 'Bearer 12345']);
 
         $this->server->shouldReceive('hasScope')->once()->with('foo')->andReturn(true);
-        $this->server->shouldReceive('isValid')->once()->andReturn(true);
+        $this->server->shouldReceive('isValidRequest')->once()->andReturn(true);
         $this->server->shouldReceive('getOwnerType')->once()->andReturn('client');
         $this->server->shouldReceive('getOwnerId')->once()->andReturn(1);
 
@@ -55,7 +55,7 @@ class LeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('GET', '/', [], [], [], ['HTTP_AUTHORIZATION' => 'Bearer 12345']);
 
-        $this->server->shouldReceive('isValid')->once()->andReturn(true);
+        $this->server->shouldReceive('isValidRequest')->once()->andReturn(true);
         $this->server->shouldReceive('getOwnerType')->once()->andReturn('client');
         $this->server->shouldReceive('getOwnerId')->once()->andReturn(1);
 
@@ -71,7 +71,7 @@ class LeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('GET', '/', [], [], [], ['HTTP_AUTHORIZATION' => 'Bearer 12345']);
 
-        $this->server->shouldReceive('isValid')->once()->andReturn(true);
+        $this->server->shouldReceive('isValidRequest')->once()->andReturn(true);
         $this->server->shouldReceive('getOwnerType')->once()->andReturn('user');
         $this->server->shouldReceive('getOwnerId')->once()->andReturn(1);
 

@@ -5,8 +5,9 @@ namespace Dingo\Api\Auth;
 use Exception;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
-use League\OAuth2\Server\Resource;
-use League\OAuth2\Server\Exception\InvalidAccessTokenException;
+use League\OAuth2\Server\ResourceServer;
+use League\OAuth2\Server\Exception\OAuthException;
+use League\OAuth2\Server\Exception\InvalidScopeException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class LeagueOAuth2Provider extends AuthorizationProvider
@@ -42,11 +43,11 @@ class LeagueOAuth2Provider extends AuthorizationProvider
     /**
      * Create a new OAuth 2.0 provider instance.
      *
-     * @param  \League\OAuth2\Server\Resource  $resource
+     * @param  \League\OAuth2\Server\ResourceServer  $resource
      * @param  bool  $httpHeadersOnly
      * @return void
      */
-    public function __construct(Resource $resource, $httpHeadersOnly = false)
+    public function __construct(ResourceServer $resource, $httpHeadersOnly = false)
     {
         $this->resource = $resource;
         $this->httpHeadersOnly = $httpHeadersOnly;
@@ -73,10 +74,10 @@ class LeagueOAuth2Provider extends AuthorizationProvider
         try {
             $this->validateRouteScopes($route);
 
-            $this->resource->isValid($this->httpHeadersOnly);
+            $this->resource->isValidRequest($this->httpHeadersOnly);
 
             return $this->resolveResourceOwner();
-        } catch (InvalidAccessTokenException $exception) {
+        } catch (OAuthException $exception) {
             throw new UnauthorizedHttpException('Bearer', $exception->getMessage(), $exception);
         }
     }
@@ -99,7 +100,7 @@ class LeagueOAuth2Provider extends AuthorizationProvider
      * Validate a routes scopes.
      *
      * @return bool
-     * @throws \League\OAuth2\Server\Exception\InvalidAccessTokenException
+     * @throws \League\OAuth2\Server\Exception\InvalidScopeException
      */
     protected function validateRouteScopes(Route $route)
     {
@@ -115,7 +116,7 @@ class LeagueOAuth2Provider extends AuthorizationProvider
             }
         }
 
-        throw new InvalidAccessTokenException('Access token is not associated with any of the requested scopes.');
+        throw new InvalidScopeException($scope);
     }
 
     /**
