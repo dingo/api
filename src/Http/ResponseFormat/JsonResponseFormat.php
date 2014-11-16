@@ -14,7 +14,15 @@ class JsonResponseFormat extends ResponseFormat
      */
     public function formatEloquentModel($model)
     {
-        $key = str_singular($model->getTable());
+        $modelTable = $model->getTable();
+
+        if ($model::$snakeAttributes) {
+            $key = $modelTable;
+        } else {
+            $key = lcfirst(studly_case($modelTable));
+        }
+
+        $key = str_singular($key);
 
         return $this->encode([$key => $model->toArray()]);
     }
@@ -31,7 +39,16 @@ class JsonResponseFormat extends ResponseFormat
             return $this->encode([]);
         }
 
-        $key = str_plural($collection->first()->getTable());
+        $model = $collection->first();
+        $modelTable = $model->getTable();
+
+        if ($model::$snakeAttributes) {
+            $key = $modelTable;
+        } else {
+            $key = lcfirst(studly_case($modelTable));
+        }
+
+        $key = str_plural($key);
 
         return $this->encode([$key => $collection->toArray()]);
     }
@@ -84,4 +101,5 @@ class JsonResponseFormat extends ResponseFormat
     {
         return json_encode($content);
     }
+
 }
