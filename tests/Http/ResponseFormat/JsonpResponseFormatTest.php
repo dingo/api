@@ -34,7 +34,7 @@ class JsonpResponseFormatTest extends PHPUnit_Framework_TestCase
     {
         $response = (new Response(new EloquentModelStub))->morph();
 
-        $this->assertEquals('foo({"user":{"foo":"bar"}});', $response->getContent());
+        $this->assertEquals('foo({"app_user":{"foo":"bar"}});', $response->getContent());
     }
 
 
@@ -42,7 +42,7 @@ class JsonpResponseFormatTest extends PHPUnit_Framework_TestCase
     {
         $response = (new Response(new Collection([new EloquentModelStub, new EloquentModelStub])))->morph();
 
-        $this->assertEquals('foo({"users":[{"foo":"bar"},{"foo":"bar"}]});', $response->getContent());
+        $this->assertEquals('foo({"app_users":[{"foo":"bar"},{"foo":"bar"}]});', $response->getContent());
     }
 
 

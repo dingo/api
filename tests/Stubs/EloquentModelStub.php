@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class EloquentModelStub extends Model {
 
-    protected $table = 'user';
+    protected $table = 'app_user';
 
     public function toArray()
     {

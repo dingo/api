@@ -22,6 +22,8 @@ class JsonResponseFormatTest extends PHPUnit_Framework_TestCase
     {
         Mockery::close();
 
+        EloquentModelStub::$snakeAttributes = true;
+
         Response::setFormatters([]);
     }
 
@@ -30,7 +32,7 @@ class JsonResponseFormatTest extends PHPUnit_Framework_TestCase
     {
         $response = (new Response(new EloquentModelStub))->morph();
 
-        $this->assertEquals('{"user":{"foo":"bar"}}', $response->getContent());
+        $this->assertEquals('{"app_user":{"foo":"bar"}}', $response->getContent());
     }
 
 
@@ -38,7 +40,7 @@ class JsonResponseFormatTest extends PHPUnit_Framework_TestCase
     {
         $response = (new Response(new Collection([new EloquentModelStub, new EloquentModelStub])))->morph();
 
-        $this->assertEquals('{"users":[{"foo":"bar"},{"foo":"bar"}]}', $response->getContent());
+        $this->assertEquals('{"app_users":[{"foo":"bar"},{"foo":"bar"}]}', $response->getContent());
     }
 
 
@@ -71,6 +73,26 @@ class JsonResponseFormatTest extends PHPUnit_Framework_TestCase
     public function testMorphingUnknownType()
     {
         $this->assertEquals(1, (new Response(1))->morph()->getContent());
+    }
+
+
+    public function testMorphingEloquentModelWithCamelCasing()
+    {
+        EloquentModelStub::$snakeAttributes = false;
+
+        $response = (new Response(new EloquentModelStub))->morph();
+
+        $this->assertEquals('{"appUser":{"foo":"bar"}}', $response->getContent());
+    }
+
+
+    public function testMorphingEloquentCollectionWithCamelCasing()
+    {
+        EloquentModelStub::$snakeAttributes = false;
+
+        $response = (new Response(new Collection([new EloquentModelStub, new EloquentModelStub])))->morph();
+
+        $this->assertEquals('{"appUsers":[{"foo":"bar"},{"foo":"bar"}]}', $response->getContent());
     }
 
 }

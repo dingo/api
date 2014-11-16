@@ -16,6 +16,10 @@ class JsonResponseFormat extends ResponseFormat
     {
         $key = str_singular($model->getTable());
 
+        if (! $model::$snakeAttributes) {
+            $key = camel_case($key);
+        }
+
         return $this->encode([$key => $model->toArray()]);
     }
 
@@ -31,7 +35,12 @@ class JsonResponseFormat extends ResponseFormat
             return $this->encode([]);
         }
 
-        $key = str_plural($collection->first()->getTable());
+        $model = $collection->first();
+        $key = str_plural($model->getTable());
+
+        if (! $model::$snakeAttributes) {
+            $key = camel_case($key);
+        }
 
         return $this->encode([$key => $collection->toArray()]);
     }
