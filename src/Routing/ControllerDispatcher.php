@@ -16,11 +16,28 @@ class ControllerDispatcher extends IlluminateControllerDispatcher
     {
         $instance = parent::makeController($controller);
 
-        if (in_array('Dingo\Api\Routing\ControllerTrait', class_uses($instance))) {
+        if ($this->controllerHasTrait($instance)) {
             $this->injectControllerDependencies($instance);
         }
 
         return $instance;
+    }
+
+    /**
+     * Determine if the controller instance has the trait.
+     *
+     * @param  object  $instance
+     * @return bool
+     */
+    protected function controllerHasTrait($instance)
+    {
+        $traits = class_uses($instance);
+
+        foreach (class_parents($instance) as $parent) {
+            $traits = array_merge($traits, class_uses($parent));
+        }
+
+        return in_array('Dingo\Api\Routing\ControllerTrait', $traits);
     }
 
     /**
