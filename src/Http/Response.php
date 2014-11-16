@@ -5,6 +5,7 @@ namespace Dingo\Api\Http;
 use ArrayObject;
 use Dingo\Api\Transformer\TransformerFactory;
 use Illuminate\Http\Response as IlluminateResponse;
+use Illuminate\Support\Contracts\ArrayableInterface;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
@@ -60,7 +61,7 @@ class Response extends IlluminateResponse
             $content = $formatter->formatEloquentModel($content);
         } elseif ($content instanceof EloquentCollection) {
             $content = $formatter->formatEloquentCollection($content);
-        } elseif (is_array($content) || $content instanceof ArrayObject) {
+        } elseif (is_array($content) || $content instanceof ArrayObject || $content instanceof ArrayableInterface) {
             $content = $formatter->formatArray($content);
         } else {
             $this->headers->set('content-type', $defaultContentType);
