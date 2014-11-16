@@ -2,7 +2,6 @@
 
 namespace Dingo\Api\Provider;
 
-use Dingo\Api\Exception\Handler;
 use Dingo\Api\Event\RevisingHandler;
 use Dingo\Api\Event\ExceptionHandler;
 use Illuminate\Support\ServiceProvider;
@@ -32,7 +31,7 @@ class EventServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind('Dingo\Api\Event\ExceptionHandler', function ($app) {
-            return new ExceptionHandler(new Handler);
+            return new ExceptionHandler($app['api.exception']);
         });
 
         $this->app->bind('Dingo\Api\Event\RevisingHandler', function ($app) {

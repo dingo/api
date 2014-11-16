@@ -5,6 +5,7 @@ namespace Dingo\Api\Provider;
 use RuntimeException;
 use Dingo\Api\Dispatcher;
 use Dingo\Api\Http\Response;
+use Dingo\Api\Exception\Handler;
 use Dingo\Api\Auth\Authenticator;
 use Dingo\Api\Http\ResponseFactory;
 use Illuminate\Support\ServiceProvider;
@@ -62,6 +63,7 @@ class ApiServiceProvider extends ServiceProvider
         $this->registerAuthenticator();
         $this->registerRateLimiter();
         $this->registerResponseFactory();
+        $this->registerExceptionHandler();
         $this->registerCommands();
     }
 
@@ -141,6 +143,18 @@ class ApiServiceProvider extends ServiceProvider
     {
         $this->app->bindShared('api.response', function ($app) {
             return new ResponseFactory($app['api.transformer']);
+        });
+    }
+
+    /**
+     * Register the API exception handler.
+     *
+     * @return void
+     */
+    protected function registerExceptionHandler()
+    {
+        $this->app->bindShared('api.exception', function ($app) {
+            return new Handler;
         });
     }
 
