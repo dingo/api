@@ -89,11 +89,15 @@ class LeagueOAuth2Provider extends AuthorizationProvider
      */
     protected function resolveResourceOwner()
     {
-        if ($this->resource->getOwnerType() == 'client') {
-            return call_user_func($this->clientResolver, $this->resource->getOwnerId());
+        $accessToken = $this->resource->getAccessToken();
+	    $sessionEntity = $this->resource->getSessionStorage()->getByAccessToken($accessToken);
+	    $ownerType = $sessionEntity->getOwnerType();
+	    
+        if ($ownerType == 'client') {
+            return call_user_func($this->clientResolver, $sessionEntity->getOwnerId());
         }
 
-        return call_user_func($this->userResolver, $this->resource->getOwnerId());
+        return call_user_func($this->userResolver, $sessionEntity->getOwnerId());
     }
 
     /**
@@ -111,7 +115,7 @@ class LeagueOAuth2Provider extends AuthorizationProvider
         }
 
         foreach ($scopes as $scope) {
-            if ($this->resource->hasScope($scope)) {
+            if ($this->resource->getScopeStorage()->get($scope) !== null) {
                 return true;
             }
         }
