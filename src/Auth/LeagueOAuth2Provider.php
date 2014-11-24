@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
 use League\OAuth2\Server\ResourceServer;
+use League\OAuth2\Server\Entity\AccessTokenEntity;
 use League\OAuth2\Server\Exception\OAuthException;
 use League\OAuth2\Server\Exception\InvalidScopeException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -72,11 +73,11 @@ class LeagueOAuth2Provider extends AuthorizationProvider
         }
 
         try {
-            $this->validateRouteScopes($route);
-
             $this->resource->isValidRequest($this->httpHeadersOnly);
 
-            return $this->resolveResourceOwner();
+            $this->validateRouteScopes($token = $this->resource->getAccessToken(), $route);
+
+            return $this->resolveResourceOwner($token);
         } catch (OAuthException $exception) {
             throw new UnauthorizedHttpException('Bearer', $exception->getMessage(), $exception);
         }
@@ -85,24 +86,29 @@ class LeagueOAuth2Provider extends AuthorizationProvider
     /**
      * Resolve the resource owner.
      *
+     * @param  \League\OAuth2\Server\Entity\AccessTokenEntity  $token
      * @return mixed
      */
-    protected function resolveResourceOwner()
+    protected function resolveResourceOwner(AccessTokenEntity $token)
     {
-        if ($this->resource->getOwnerType() == 'client') {
-            return call_user_func($this->clientResolver, $this->resource->getOwnerId());
+        $session = $token->getSession();
+
+        if ($session->getOwnerType() == 'client') {
+            return call_user_func($this->clientResolver, $session->getOwnerId());
         }
 
-        return call_user_func($this->userResolver, $this->resource->getOwnerId());
+        return call_user_func($this->userResolver, $session->getOwnerId());
     }
 
     /**
      * Validate a routes scopes.
      *
+     * @param  \League\OAuth2\Server\Entity\AccessTokenEntity  $token
+     * @param  \Dingo\Api\Routing\Route  $route
      * @return bool
      * @throws \League\OAuth2\Server\Exception\InvalidScopeException
      */
-    protected function validateRouteScopes(Route $route)
+    protected function validateRouteScopes(AccessTokenEntity $token, Route $route)
     {
         $scopes = $route->scopes();
 
@@ -111,7 +117,7 @@ class LeagueOAuth2Provider extends AuthorizationProvider
         }
 
         foreach ($scopes as $scope) {
-            if ($this->resource->hasScope($scope)) {
+            if ($token->hasScope($scope)) {
                 return true;
             }
         }
