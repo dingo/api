@@ -15,9 +15,8 @@ use Dingo\Api\Exception\ResourceException;
 use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class RouterTest extends PHPUnit_Framework_TestCase {
-
-
+class RouterTest extends PHPUnit_Framework_TestCase
+{
     public function setUp()
     {
         $this->events = new Dispatcher;
@@ -119,7 +118,7 @@ class RouterTest extends PHPUnit_Framework_TestCase {
      */
     public function testRegisteringApiRouteGroupWithoutVersionThrowsException()
     {
-        $this->router->api([], function(){});
+        $this->router->api([], function () {});
     }
 
 
@@ -387,8 +386,7 @@ class RouterTest extends PHPUnit_Framework_TestCase {
             });
         });
 
-        $this->router->api(['version' => 'v2.0.1', 'prefix' => 'api'], function ()
-        {
+        $this->router->api(['version' => 'v2.0.1', 'prefix' => 'api'], function () {
             $this->router->get('bar', function () {
                 return 'bar';
             });
