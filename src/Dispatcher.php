@@ -110,6 +110,13 @@ class Dispatcher
     protected $files = [];
 
     /**
+     * Domain for the request.
+     *
+     * @var string
+     */
+    protected $domain;
+
+    /**
      * Indicates whether the authenticated user is persisted.
      *
      * @var bool
@@ -200,6 +207,19 @@ class Dispatcher
     }
 
     /**
+     * Sets the domain to be used for the request.
+     *
+     * @param  string  $domain
+     * @return \Dingo\Api\Dispatcher
+     */
+    public function on($domain)
+    {
+        $this->domain = $domain;
+
+        return $this;
+    }
+
+    /**
      * Only authenticate with the given user for a single request.
      *
      * @return \Dingo\Api\Dispatcher
@@ -255,38 +275,34 @@ class Dispatcher
      * Perform an API request to a named route.
      *
      * @param  string  $name
-     * @param  string|array  $routeParameters
      * @param  string|array  $parameters
+     * @param  string|array  $requestParameters
      * @return mixed
      */
-    public function route($name, $routeParameters = [], $parameters = [])
+    public function route($name, $parameters = [], $requestParameters = [])
     {
         $version = $this->version ?: $this->config->getVersion();
 
-        $route = $this->router->getApiVersions()->get($version)->getByName($name);
+        $route = $this->router->getApiGroups()->getByDomainOrVersion($this->domain, $version)->getByName($name);
 
-        $uri = ltrim($this->url->route($name, $routeParameters, false, $route), '/');
-
-        return $this->queueRequest($route->methods()[0], $uri, $parameters);
+        return $this->queueRouteOrActionRequest($route, $name, $parameters, $requestParameters);
     }
 
     /**
      * Perform an API request to a controller action.
      *
      * @param  string  $action
-     * @param  string|array  $actionParameters
      * @param  string|array  $parameters
+     * @param  string|array  $requestParameters
      * @return mixed
      */
-    public function action($action, $actionParameters = [], $parameters = [])
+    public function action($action, $parameters = [], $requestParameters = [])
     {
         $version = $this->version ?: $this->config->getVersion();
 
-        $route = $this->router->getApiVersions()->get($version)->getByAction($action);
+        $route = $this->router->getApiGroups()->getByDomainOrVersion($this->domain, $version)->getByAction($action);
 
-        $uri = ltrim($this->url->route($action, $actionParameters, false, $route), '/');
-
-        return $this->queueRequest($route->methods()[0], $uri, $parameters);
+        return $this->queueRouteOrActionRequest($route, $action, $parameters, $requestParameters);
     }
 
     /**
@@ -354,6 +370,22 @@ class Dispatcher
     }
 
     /**
+     * Queue up and dispatch a new request to a route name or action.
+     *
+     * @param  \Dingo\Api\Routing\Route  $route
+     * @param  string  $name
+     * @param  string|array  $parameters
+     * @param  string|array  $requestParameters
+     * @return mixed
+     */
+    protected function queueRouteOrActionRequest($route, $name, $parameters, $requestParameters)
+    {
+        $uri = ltrim($this->url->route($name, $parameters, false, $route), '/');
+
+        return $this->queueRequest($route->methods()[0], $uri, $requestParameters);
+    }
+
+    /**
      * Queue up and dispatch a new request.
      *
      * @param  string  $verb
@@ -387,7 +419,13 @@ class Dispatcher
             $this->version = $this->config->getVersion();
         }
 
-        $api = $this->router->getApiVersions()->get($this->version);
+        $groups = $this->router->getApiGroups();
+
+        if (isset($this->domain)) {
+            $api = $groups->getByDomain($this->domain, $this->version);
+        } else {
+            $api = $groups->getByVersion($this->version);
+        }
 
         if (($prefix = $api->option('prefix')) && ! starts_with($uri, $prefix)) {
             $uri = sprintf('%s/%s', $prefix, $uri);
@@ -469,7 +507,7 @@ class Dispatcher
 
         $this->replaceRequestInstance();
 
-        $this->version = $this->content = null;
+        $this->version = $this->domain = $this->content = null;
 
         $this->parameters = $this->files = [];
     }

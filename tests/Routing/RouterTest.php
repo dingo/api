@@ -49,8 +49,8 @@ class RouterTest extends PHPUnit_Framework_TestCase {
             });
         });
 
-        $this->assertInstanceOf('Dingo\Api\Routing\RouteCollection', $this->router->getApiVersions()->get('v1'));
-        $this->assertInstanceOf('Dingo\Api\Routing\RouteCollection', $this->router->getApiVersions()->get('v2'));
+        $this->assertInstanceOf('Dingo\Api\Routing\RouteCollection', $this->router->getApiGroups()->getByVersion('v1'));
+        $this->assertInstanceOf('Dingo\Api\Routing\RouteCollection', $this->router->getApiGroups()->getByVersion('v2'));
     }
 
 
@@ -109,7 +109,7 @@ class RouterTest extends PHPUnit_Framework_TestCase {
             });
         });
 
-        $route = $this->router->getApiVersions()->get('v1')->getRoutes()[0];
+        $route = $this->router->getApiGroups()->getByVersion('v1')->getRoutes()[0];
         $this->assertTrue($route->getAction()['protected']);
     }
 

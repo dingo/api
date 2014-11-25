@@ -308,4 +308,30 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->dispatcher->json(['username' => 'jason'])->post('foo');
         $this->dispatcher->json('{"username":"mat"}')->post('bar');
     }
+
+
+    public function testInternalRequestsToDifferentDomains()
+    {
+        $this->router->api(['version' => ['v1', 'v2'], 'domain' => 'foo.bar'], function () {
+            $this->router->get('foo', function () {
+                return 'v1 and v2 on domain foo.bar';
+            });
+        });
+
+        $this->router->api(['version' => 'v1', 'domain' => 'foo.baz'], function () {
+            $this->router->get('foo', function () {
+                return 'v1 on domain foo.baz';
+            });
+        });
+
+        $this->router->api(['version' => 'v2', 'domain' => 'foo.baz'], function () {
+            $this->router->get('foo', function () {
+                return 'v2 on domain foo.baz';
+            });
+        });
+
+        $this->assertEquals('v1 and v2 on domain foo.bar', $this->dispatcher->on('foo.bar')->version('v2')->get('foo'));
+        $this->assertEquals('v1 on domain foo.baz', $this->dispatcher->on('foo.baz')->get('foo'));
+        $this->assertEquals('v2 on domain foo.baz', $this->dispatcher->on('foo.baz')->version('v2')->get('foo'));
+    }
 }

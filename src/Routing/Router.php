@@ -94,7 +94,7 @@ class Router extends IlluminateRouter
     public function __construct(Dispatcher $events, Config $config, Container $container = null)
     {
         $this->config = $config;
-        $this->api = new VersionCollection($config);
+        $this->api = new GroupCollection($config);
 
         parent::__construct($events, $container);
     }
@@ -125,9 +125,7 @@ class Router extends IlluminateRouter
     protected function createRouteCollections(array $options)
     {
         foreach ($options['version'] as $version) {
-            if (! $this->api->has($version)) {
-                $this->api->add($version, $options);
-            }
+            $this->api->add($version, $options);
         }
     }
 
@@ -275,12 +273,10 @@ class Router extends IlluminateRouter
      */
     protected function addApiRoute($route)
     {
-        $versions = array_get(last($this->groupStack), 'version', []);
+        $options = last($this->groupStack);
 
-        foreach ($versions as $version) {
-            if ($collection = $this->api->get($version)) {
-                $collection->add($route);
-            }
+        foreach ($this->api->getByOptions($options) as $collection) {
+            $collection->add($route);
         }
 
         return $route;
@@ -311,7 +307,7 @@ class Router extends IlluminateRouter
     protected function findRoute($request)
     {
         if ($this->isApiRequest($request)) {
-            $route = $this->api->get($this->currentVersion)->match($request);
+            $route = $this->api->getByVersion($this->currentVersion)->match($request);
         } else {
             $route = $this->routes->match($request);
         }
@@ -446,11 +442,11 @@ class Router extends IlluminateRouter
     }
 
     /**
-     * Get the API version collection containing the API routes.
+     * Get the API groups collection containing the API routes.
      *
-     * @return \Dingo\Api\Routing\VersionCollection
+     * @return \Dingo\Api\Routing\GroupCollection
      */
-    public function getApiVersions()
+    public function getApiGroups()
     {
         return $this->api;
     }

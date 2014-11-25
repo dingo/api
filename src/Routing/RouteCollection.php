@@ -48,6 +48,34 @@ class RouteCollection extends IlluminateRouteCollection
     }
 
     /**
+     * Determine if the collection will match on the vesrion.
+     *
+     * @param  array|string  $versions
+     * @return bool
+     */
+    public function matchesVersion($versions)
+    {
+        foreach ((array) $versions as $version) {
+            if ($this->version == $version) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Determine if the collection will match on the domain.
+     *
+     * @param  string  $domain
+     * @return bool
+     */
+    public function matchesDomain($domain)
+    {
+        return $this->option('domain') && $this->option('domain') == $domain;
+    }
+
+    /**
      * Determine if the routes within the collection will be a match for
      * the current request. If no prefix or domain is set on the
      * collection then it's assumed it will be a match.
@@ -57,12 +85,12 @@ class RouteCollection extends IlluminateRouteCollection
      */
     public function matchesRequest(Request $request)
     {
-        if ($this->matchesCollectionVersion($request)) {
+        if ($this->headerVersionMatches($request)) {
             if ($this->matchDomain($request)) {
                 return true;
             } elseif ($this->matchPrefix($request)) {
                 return true;
-            } elseif (! $this->option('prefix') and ! $this->option('domain')) {
+            } elseif (! $this->option('prefix') && ! $this->option('domain')) {
                 return true;
             }
         }
@@ -71,12 +99,12 @@ class RouteCollection extends IlluminateRouteCollection
     }
 
     /**
-     * Determine if the requested version matches the collection version.
+     * Determine if the header version matches the collection version.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return bool
      */
-    protected function matchesCollectionVersion($request)
+    protected function headerVersionMatches($request)
     {
         if (preg_match('#application/vnd\.\w+.(v[\d\.]+)\+\w+#', $request->header('accept'), $matches)) {
             list ($accept, $version) = $matches;
@@ -95,7 +123,7 @@ class RouteCollection extends IlluminateRouteCollection
      */
     protected function matchDomain($request)
     {
-        return $this->option('domain') and $request->header('host') == $this->option('domain');
+        return $this->option('domain') && $request->header('host') == $this->option('domain');
     }
 
     /**
