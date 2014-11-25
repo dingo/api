@@ -40,7 +40,7 @@ class ApiRoutesCommand extends RoutesCommand
     {
         parent::__construct($router);
 
-        $this->routes = $router->getApiVersions()->getRoutes();
+        $this->routes = $router->getApiGroups()->getRoutes();
     }
 
     /**
