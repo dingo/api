@@ -9,6 +9,7 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use Illuminate\Support\Collection as IlluminateCollection;
 use Illuminate\Pagination\Paginator as IlluminatePaginator;
 use League\Fractal\Resource\Collection as FractalCollection;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 class FractalTransformer implements TransformerInterface
 {
@@ -72,6 +73,10 @@ class FractalTransformer implements TransformerInterface
             $resource->setPaginator($paginator);
         }
 
+        if ($response instanceof EloquentCollection) {
+            $response->load($this->fractal->getRequestedIncludes());
+        }
+
         foreach ($binding->getMeta() as $key => $value) {
             $resource->setMetaValue($key, $value);
         }
@@ -112,7 +117,7 @@ class FractalTransformer implements TransformerInterface
     }
 
     /**
-     * Parse includes.
+     * Parse the includes.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return void
