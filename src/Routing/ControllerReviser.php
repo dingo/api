@@ -2,6 +2,7 @@
 
 namespace Dingo\Api\Routing;
 
+use BadMethodCallException;
 use Illuminate\Container\Container;
 
 class ControllerReviser
@@ -36,9 +37,11 @@ class ControllerReviser
 
             $controller = $this->resolveController($class);
 
-            if (in_array('Dingo\Api\Routing\ControllerTrait', class_uses($controller))) {
+            try {
                 $this->reviseProtection($route, $controller, $method);
                 $this->reviseScopes($route, $controller, $method);
+            } catch (BadMethodCallException $exception) {
+                // This controller does not utilize the trait.
             }
         }
 

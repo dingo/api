@@ -3,6 +3,7 @@
 namespace Dingo\Api\Routing;
 
 use Dingo\Api\Dispatcher;
+use BadMethodCallException;
 use Dingo\Api\Auth\Authenticator;
 use Dingo\Api\Http\ResponseFactory;
 use Illuminate\Routing\ControllerDispatcher as IlluminateControllerDispatcher;
@@ -16,28 +17,9 @@ class ControllerDispatcher extends IlluminateControllerDispatcher
     {
         $instance = parent::makeController($controller);
 
-        if ($this->controllerHasTrait($instance)) {
-            $this->injectControllerDependencies($instance);
-        }
+        $this->injectControllerDependencies($instance);
 
         return $instance;
-    }
-
-    /**
-     * Determine if the controller instance has the trait.
-     *
-     * @param  object  $instance
-     * @return bool
-     */
-    protected function controllerHasTrait($instance)
-    {
-        $traits = class_uses($instance);
-
-        foreach (class_parents($instance) as $parent) {
-            $traits = array_merge($traits, class_uses($parent));
-        }
-
-        return in_array('Dingo\Api\Routing\ControllerTrait', $traits);
     }
 
     /**
@@ -48,8 +30,12 @@ class ControllerDispatcher extends IlluminateControllerDispatcher
      */
     protected function injectControllerDependencies($instance)
     {
-        $instance->setDispatcher($this->container['api.dispatcher']);
-        $instance->setAuthenticator($this->container['api.auth']);
-        $instance->setResponseFactory($this->container['api.response']);
+        try {
+            $instance->setDispatcher($this->container['api.dispatcher']);
+            $instance->setAuthenticator($this->container['api.auth']);
+            $instance->setResponseFactory($this->container['api.response']);
+        } catch (BadMethodCallException $exception) {
+            // This controller does not utilize the trait.
+        }
     }
 }
