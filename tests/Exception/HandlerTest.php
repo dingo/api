@@ -7,7 +7,7 @@ use PHPUnit_Framework_TestCase;
 use Dingo\Api\Exception\Handler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
+class HandlerTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
@@ -17,14 +17,14 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
 
     public function testRegisterExceptionHandler()
     {
-        $this->exceptionHandler->register(function(HttpException $e){});
+        $this->exceptionHandler->register(function (HttpException $e) {});
         $this->assertArrayHasKey('Symfony\Component\HttpKernel\Exception\HttpException', $this->exceptionHandler->getHandlers());
     }
 
 
     public function testExceptionHandlerWillHandleExceptionPasses()
     {
-        $this->exceptionHandler->register(function(HttpException $e){});
+        $this->exceptionHandler->register(function (HttpException $e) {});
         $this->assertTrue($this->exceptionHandler->willHandle(new HttpException(404)));
     }
 
@@ -37,8 +37,7 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
 
     public function testExceptionHandlerHandlesException()
     {
-        $this->exceptionHandler->register(function(HttpException $e)
-        {
+        $this->exceptionHandler->register(function (HttpException $e) {
             return new Response('foo', 404);
         });
 
@@ -51,8 +50,7 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
 
     public function testExceptionHandlerHandlesExceptionAndCreatesNewResponse()
     {
-        $this->exceptionHandler->register(function(HttpException $e)
-        {
+        $this->exceptionHandler->register(function (HttpException $e) {
             return 'foo';
         });
 
