@@ -23,6 +23,7 @@
         "illuminate/database": "4.2.*",
         "illuminate/pagination": "4.2.*",
         "illuminate/console": "4.2.*",
+        "illuminate/filesystem": "4.2.*",
         "phpunit/phpunit": "~4.0",
         "mockery/mockery": "~0.9",
         "squizlabs/php_codesniffer": "~1.5"

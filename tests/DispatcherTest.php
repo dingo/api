@@ -11,6 +11,7 @@ use PHPUnit_Framework_TestCase;
 use Dingo\Api\Auth\Authenticator;
 use Illuminate\Container\Container;
 use Illuminate\Routing\UrlGenerator;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Routing\RouteCollection;
 use Illuminate\Events\Dispatcher as EventDispatcher;
 
@@ -21,6 +22,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->config = new Config;
         $this->router = new Router(new EventDispatcher, $this->config);
         $this->request = Request::create('/', 'GET');
+        $this->files = new Filesystem;
 
         $this->container = new Container;
         $this->container['request'] = $this->request;
@@ -29,6 +31,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
 
         $this->dispatcher = new Dispatcher(
             $this->container,
+            $this->files,
             new UrlGenerator(new RouteCollection, $this->request),
             $this->router,
             $this->auth,

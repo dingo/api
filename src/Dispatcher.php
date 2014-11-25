@@ -10,6 +10,7 @@ use Dingo\Api\Auth\Authenticator;
 use Illuminate\Container\Container;
 use Dingo\Api\Http\InternalRequest;
 use Illuminate\Routing\UrlGenerator;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Illuminate\Support\Facades\Request as RequestFacade;
@@ -26,11 +27,11 @@ class Dispatcher
     protected $container;
 
     /**
-     * Illuminate request instance.
+     * Illuminate filesystem instance.
      *
-     * @var \Illuminate\Http\Request
+     * @var \Illuminate\Filesystem\Filesystem
      */
-    protected $request;
+    protected $files;
 
     /**
      * Illuminate url generator instance.
@@ -107,7 +108,7 @@ class Dispatcher
      *
      * @var array
      */
-    protected $files = [];
+    protected $uploadedFiles = [];
 
     /**
      * Domain for the request.
@@ -127,16 +128,17 @@ class Dispatcher
      * Create a new dispatcher instance.
      *
      * @param  \Illuminate\Container\Container  $container
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Filesystem\Filesystem  $files
      * @param  \Illuminate\Routing\UrlGenerator  $url
      * @param  \Dingo\Api\Routing\Router  $router
      * @param  \Dingo\Api\Auth\Authenticator  $auth
      * @param  \Dingo\Api\Config  $config
      * @return void
      */
-    public function __construct(Container $container, UrlGenerator $url, Router $router, Authenticator $auth, Config $config)
+    public function __construct(Container $container, Filesystem $files, UrlGenerator $url, Router $router, Authenticator $auth, Config $config)
     {
         $this->container = $container;
+        $this->files = $files;
         $this->url = $url;
         $this->router = $router;
         $this->auth = $auth;
@@ -163,9 +165,18 @@ class Dispatcher
      */
     public function attach(array $files)
     {
-        foreach ($files as $key => $path) {
-            // Create a new instance of UploadedFile if not supplied with one
-            $this->files[$key] = $path instanceof UploadedFile ? $path : new UploadedFile($path, basename($path));
+        foreach ($files as $key => $file) {
+            if (is_array($file)) {
+                $file = new UploadedFile($file['path'], basename($file['path']), $file['mime'], $file['size']);
+            } elseif (is_string($file)) {
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+
+                $file = new UploadedFile($file, basename($file), finfo_file($finfo, $file), $this->files->size($file));
+            } elseif (! $file instanceof UploadedFile) {
+                continue;
+            }
+
+            $this->uploadedFiles[$key] = $file;
         }
 
         return $this;
@@ -433,7 +444,7 @@ class Dispatcher
 
         $parameters = array_merge($this->parameters, (array) $parameters);
 
-        $request = InternalRequest::create($uri, $verb, $parameters, [], $this->files, [], $this->content);
+        $request = InternalRequest::create($uri, $verb, $parameters, [], $this->uploadedFiles, [], $this->content);
 
         if ($domain = $api->option('domain')) {
             $request->headers->set('host', $domain);
@@ -509,7 +520,7 @@ class Dispatcher
 
         $this->version = $this->domain = $this->content = null;
 
-        $this->parameters = $this->files = [];
+        $this->parameters = $this->uploadedFiles = [];
     }
 
     /**
