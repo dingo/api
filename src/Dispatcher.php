@@ -133,7 +133,8 @@ class Dispatcher
     public function attach(array $files)
     {
         foreach ($files as $key => $path) {
-            $this->files[$key] = new UploadedFile($path, basename($path));
+            // Create a new instance of UploadedFile if not supplied with one
+            $this->files[$key] = $path instanceof UploadedFile ? $path : new UploadedFile($path, basename($path));
         }
 
         return $this;
