@@ -18,6 +18,11 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class Dispatcher
 {
+    /**
+     * Illuminate container instance.
+     *
+     * @var \Illuminate\Container\Container
+     */
     protected $container;
 
     /**
@@ -175,6 +180,23 @@ class Dispatcher
         $this->auth->setUser($user);
 
         return $this;
+    }
+
+    /**
+     * Send a JSON payload in the request body.
+     *
+     * @param  string|array  $content
+     * @return \Dingo\Api\Dispatcher
+     */
+    public function json($content)
+    {
+        if (is_array($content)) {
+            $content = json_encode($content);
+        }
+
+        $this->content = $content;
+
+        return $this->header('content-type', 'application/json');
     }
 
     /**
@@ -342,7 +364,11 @@ class Dispatcher
      */
     protected function queueRequest($verb, $uri, $parameters, $content = '')
     {
-        $this->container['request'] = $this->requestStack[] = $this->createRequest($verb, $uri, $parameters, $content);
+        if ($content != '') {
+            $this->content = $content;
+        }
+
+        $this->container['request'] = $this->requestStack[] = $this->createRequest($verb, $uri, $parameters);
 
         return $this->dispatch($this->container['request']);
     }
@@ -353,17 +379,14 @@ class Dispatcher
      * @param  string  $verb
      * @param  string  $uri
      * @param  string|array  $parameters
-     * @param  string  $content
      * @return \Dingo\Api\Http\InternalRequest
      */
-    protected function createRequest($verb, $uri, $parameters, $content)
+    protected function createRequest($verb, $uri, $parameters)
     {
         if (! isset($this->version)) {
             $this->version = $this->config->getVersion();
         }
 
-        // Once we have a version we can go ahead and grab the API collection,
-        // if one exists, from the router.
         $api = $this->router->getApiVersions()->get($this->version);
 
         if (($prefix = $api->option('prefix')) && ! starts_with($uri, $prefix)) {
@@ -372,7 +395,7 @@ class Dispatcher
 
         $parameters = array_merge($this->parameters, (array) $parameters);
 
-        $request = InternalRequest::create($uri, $verb, $parameters, [], $this->files, [], $content);
+        $request = InternalRequest::create($uri, $verb, $parameters, [], $this->files, [], $this->content);
 
         if ($domain = $api->option('domain')) {
             $request->headers->set('host', $domain);
@@ -446,7 +469,7 @@ class Dispatcher
 
         $this->replaceRequestInstance();
 
-        $this->version = null;
+        $this->version = $this->content = null;
 
         $this->parameters = $this->files = [];
     }

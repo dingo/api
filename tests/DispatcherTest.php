@@ -291,4 +291,21 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
 
         $this->dispatcher->post('foo');
     }
+
+
+    public function testSendingJsonPayload()
+    {
+        $this->router->api(['version' => 'v1'], function () {
+            $this->router->post('foo', function () {
+                $this->assertEquals('jason', $this->router->getCurrentRequest()->json('username'));
+            });
+
+            $this->router->post('bar', function () {
+                $this->assertEquals('mat', $this->router->getCurrentRequest()->json('username'));
+            });
+        });
+
+        $this->dispatcher->json(['username' => 'jason'])->post('foo');
+        $this->dispatcher->json('{"username":"mat"}')->post('bar');
+    }
 }
