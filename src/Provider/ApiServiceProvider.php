@@ -88,7 +88,7 @@ class ApiServiceProvider extends ServiceProvider
     protected function registerDispatcher()
     {
         $this->app->bindShared('api.dispatcher', function ($app) {
-            return new Dispatcher($app['request'], $app['url'], $app['router'], $app['api.auth'], $app['api.config']);
+            return new Dispatcher($app, $app['url'], $app['router'], $app['api.auth'], $app['api.config']);
         });
     }
 

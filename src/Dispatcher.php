@@ -7,15 +7,19 @@ use Illuminate\Http\Request;
 use Dingo\Api\Routing\Router;
 use Illuminate\Auth\GenericUser;
 use Dingo\Api\Auth\Authenticator;
+use Illuminate\Container\Container;
 use Dingo\Api\Http\InternalRequest;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Illuminate\Support\Facades\Request as RequestFacade;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class Dispatcher
 {
+    protected $container;
+
     /**
      * Illuminate request instance.
      *
@@ -110,6 +114,7 @@ class Dispatcher
     /**
      * Create a new dispatcher instance.
      *
+     * @param  \Illuminate\Container\Container  $container
      * @param  \Illuminate\Http\Request  $request
      * @param  \Illuminate\Routing\UrlGenerator  $url
      * @param  \Dingo\Api\Routing\Router  $router
@@ -117,9 +122,9 @@ class Dispatcher
      * @param  \Dingo\Api\Config  $config
      * @return void
      */
-    public function __construct(Request $request, UrlGenerator $url, Router $router, Authenticator $auth, Config $config)
+    public function __construct(Container $container, UrlGenerator $url, Router $router, Authenticator $auth, Config $config)
     {
-        $this->request = $request;
+        $this->container = $container;
         $this->url = $url;
         $this->router = $router;
         $this->auth = $auth;
@@ -135,7 +140,7 @@ class Dispatcher
      */
     protected function setupRequestStack()
     {
-        $this->requestStack[] = clone $this->request;
+        $this->requestStack[] = clone $this->container['request'];
     }
 
     /**
@@ -337,12 +342,9 @@ class Dispatcher
      */
     protected function queueRequest($verb, $uri, $parameters, $content = '')
     {
-        $request = $this->requestStack[] = $this->createRequest($verb, $uri, $parameters, $content);
+        $this->container['request'] = $this->requestStack[] = $this->createRequest($verb, $uri, $parameters, $content);
 
-        $this->request->replace($request->input());
-        $this->request->files->replace($request->file());
-
-        return $this->dispatch($request);
+        return $this->dispatch($this->container['request']);
     }
 
     /**
@@ -442,7 +444,7 @@ class Dispatcher
             $this->router->setCurrentRoute($route);
         }
 
-        $this->replaceRequestInput();
+        $this->replaceRequestInstance();
 
         $this->version = null;
 
@@ -450,18 +452,21 @@ class Dispatcher
     }
 
     /**
-     * Replace the request input with the previous request input.
+     * Replace the request instance with the previous request instance.
      *
      * @return void
      */
-    protected function replaceRequestInput()
+    protected function replaceRequestInstance()
     {
         array_pop($this->requestStack);
 
-        $previous = end($this->requestStack);
+        $this->container['request'] = end($this->requestStack);
 
-        $this->router->setCurrentRequest($previous);
+        $this->router->setCurrentRequest($this->container['request']);
 
-        $this->request->replace($previous->input());
+        // Facades cache the resolved instance so we need to clear out the
+        // request instance that may have been cached. Otherwise we'll
+        // may get unexpected results.
+        RequestFacade::clearResolvedInstance('request');
     }
 }

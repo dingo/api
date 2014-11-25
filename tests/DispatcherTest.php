@@ -20,12 +20,15 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
     {
         $this->config = new Config;
         $this->router = new Router(new EventDispatcher, $this->config);
-
         $this->request = Request::create('/', 'GET');
-        $this->auth = new Authenticator($this->router, new Container, []);
+
+        $this->container = new Container;
+        $this->container['request'] = $this->request;
+
+        $this->auth = new Authenticator($this->router, $this->container, []);
 
         $this->dispatcher = new Dispatcher(
-            $this->request,
+            $this->container,
             new UrlGenerator(new RouteCollection, $this->request),
             $this->router,
             $this->auth,
