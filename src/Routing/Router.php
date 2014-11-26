@@ -177,10 +177,11 @@ class Router extends IlluminateRouter
      * or an API response.
      *
      * @param  \Illuminate\Http\Request  $request
+     * @param  bool  $morph
      * @return \Illuminate\Http\Response|\Dingo\Api\Http\Response
      * @throws \Exception
      */
-    public function dispatch(Request $request)
+    public function dispatch(Request $request, $morph = true)
     {
         if (! $this->isApiRequest($request)) {
             return parent::dispatch($request);
@@ -196,20 +197,12 @@ class Router extends IlluminateRouter
         try {
             $response = parent::dispatch($request);
 
-            // If the request is internal then we don't need to run the response
-            // through the formatter as an internal request will get the
-            // raw response that was returned.
-            if ($request instanceof InternalRequest) {
-                return $response;
-
             // We'll try to set the request and the response on the formatter
             // now so that we can catch any exceptions that may be thrown
             // due to a badly requested format.
-            } else {
-                $response->getFormatter($format)
-                         ->setRequest($request)
-                         ->setResponse($response);
-            }
+            $response->getFormatter($format)
+                     ->setRequest($request)
+                     ->setResponse($response);
         } catch (Exception $exception) {
             if ($request instanceof InternalRequest) {
                 throw $exception;
@@ -229,9 +222,15 @@ class Router extends IlluminateRouter
         // formatter exists for the requested response format. If not
         // then we'll revert to the default format because we are
         // most likely formatting an error response.
-        $format = $response->hasFormatter($format) ? $format : $this->defaultFormat;
+        if ($morph) {
+            if (! $response->hasFormatter($format)) {
+                $format = $this->defaultFormat;
+            }
 
-        return $response->morph($format);
+            $response = $response->morph($format);
+        }
+
+        return $response;
     }
 
     /**

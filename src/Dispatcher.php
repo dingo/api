@@ -118,11 +118,18 @@ class Dispatcher
     protected $domain;
 
     /**
-     * Indicates whether the authenticated user is persisted.
+     * Indicates whether the returned response is the raw response object.
      *
      * @var bool
      */
-    protected $persistAuthenticatedUser = true;
+    protected $raw = false;
+
+    /**
+     * Indicates whether authentication is persisted.
+     *
+     * @var bool
+     */
+    protected $persistAuthentication = true;
 
     /**
      * Create a new dispatcher instance.
@@ -231,13 +238,25 @@ class Dispatcher
     }
 
     /**
+     * Return the raw response object once request is dispatched.
+     *
+     * @return \Dingo\Api\Dispatcher
+     */
+    public function raw()
+    {
+        $this->raw = true;
+
+        return $this;
+    }
+
+    /**
      * Only authenticate with the given user for a single request.
      *
      * @return \Dingo\Api\Dispatcher
      */
     public function once()
     {
-        $this->persistAuthenticatedUser = false;
+        $this->persistAuthentication = false;
 
         return $this;
     }
@@ -481,10 +500,12 @@ class Dispatcher
         $this->routeStack[] = $this->router->getCurrentRoute();
 
         try {
-            $response = $this->router->dispatch($request);
+            $response = $this->router->dispatch($request, ! $this->raw);
 
             if (! $response->isSuccessful()) {
                 throw new HttpException($response->getStatusCode(), $response->getOriginalContent());
+            } elseif (! $this->raw) {
+                $response = $response->getOriginalContent();
             }
         } catch (HttpExceptionInterface $exception) {
             $this->refreshRequestStack();
@@ -494,7 +515,7 @@ class Dispatcher
 
         $this->refreshRequestStack();
 
-        return $response->getOriginalContent();
+        return $response;
     }
 
     /**
@@ -506,10 +527,10 @@ class Dispatcher
      */
     protected function refreshRequestStack()
     {
-        if (! $this->persistAuthenticatedUser) {
+        if (! $this->persistAuthentication) {
             $this->auth->setUser(null);
 
-            $this->persistAuthenticatedUser = true;
+            $this->persistAuthentication = true;
         }
 
         if ($route = array_pop($this->routeStack)) {
@@ -517,6 +538,8 @@ class Dispatcher
         }
 
         $this->replaceRequestInstance();
+
+        $this->raw = false;
 
         $this->version = $this->domain = $this->content = null;
 

@@ -17,6 +17,7 @@
 - Custom transformation layers must now implement `Dingo\Api\Transformer\TransformerInterface`.
 - Authentication providers must now implement the `Dingo\Api\Auth\ProviderInterface`.
 - Upgraded the League OAuth 2.0 package to version 4.
+- Added a `Dispatcher::raw` method to return a raw response object instead of the original content.
 
 ### v0.6.5
 

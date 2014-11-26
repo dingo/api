@@ -6,6 +6,7 @@ use Mockery;
 use Dingo\Api\Config;
 use Dingo\Api\Dispatcher;
 use Illuminate\Http\Request;
+use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
 use PHPUnit_Framework_TestCase;
 use Dingo\Api\Auth\Authenticator;
@@ -14,29 +15,22 @@ use Illuminate\Routing\UrlGenerator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Routing\RouteCollection;
 use Illuminate\Events\Dispatcher as EventDispatcher;
+use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
 
 class DispatcherTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->config = new Config;
-        $this->router = new Router(new EventDispatcher, $this->config);
-        $this->request = Request::create('/', 'GET');
-        $this->files = new Filesystem;
+        $config = new Config;
+        $container = new Container;
+        $container['request'] = Request::create('/', 'GET');
+        $url = new UrlGenerator(new RouteCollection, $container['request']);
 
-        $this->container = new Container;
-        $this->container['request'] = $this->request;
+        $this->router = new Router(new EventDispatcher, $config);
+        $this->auth = new Authenticator($this->router, $container, []);
+        $this->dispatcher = new Dispatcher($container, new Filesystem, $url, $this->router, $this->auth, $config);
 
-        $this->auth = new Authenticator($this->router, $this->container, []);
-
-        $this->dispatcher = new Dispatcher(
-            $this->container,
-            $this->files,
-            new UrlGenerator(new RouteCollection, $this->request),
-            $this->router,
-            $this->auth,
-            $this->config
-        );
+        Response::setFormatters(['json' => new JsonResponseFormat]);
     }
 
 
@@ -334,5 +328,21 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('v1 and v2 on domain foo.bar', $this->dispatcher->on('foo.bar')->version('v2')->get('foo'));
         $this->assertEquals('v1 on domain foo.baz', $this->dispatcher->on('foo.baz')->get('foo'));
         $this->assertEquals('v2 on domain foo.baz', $this->dispatcher->on('foo.baz')->version('v2')->get('foo'));
+    }
+
+
+    public function testRequestingRawResponse()
+    {
+        $this->router->api('v1', function () {
+            $this->router->get('foo', function () {
+                return ['foo' => 'bar'];
+            });
+        });
+
+        $response = $this->dispatcher->raw()->get('foo');
+
+        $this->assertInstanceOf('Dingo\Api\Http\Response', $response);
+        $this->assertEquals('{"foo":"bar"}', $response->getContent());
+        $this->assertEquals(['foo' => 'bar'], $response->getOriginalContent());
     }
 }
