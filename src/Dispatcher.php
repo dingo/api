@@ -500,7 +500,7 @@ class Dispatcher
         $this->routeStack[] = $this->router->getCurrentRoute();
 
         try {
-            $response = $this->router->dispatch($request, ! $this->raw);
+            $response = $this->router->dispatch($request, $this->raw);
 
             if (! $response->isSuccessful()) {
                 throw new HttpException($response->getStatusCode(), $response->getOriginalContent());
