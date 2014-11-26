@@ -17,6 +17,12 @@
 - Custom transformation layers must now implement `Dingo\Api\Transformer\TransformerInterface`.
 - Authentication providers must now implement the `Dingo\Api\Auth\ProviderInterface`.
 - Upgraded the League OAuth 2.0 package to version 4.
+- Allow raw data to be sent with an internal request.
+- Allow custom headers to be set on internal requests.
+- Added a `Dispatcher::json` method to easily send raw JSON data with an internal request.
+- `Dispatcher::attach` now accepts either an array of file details or an array of `UploadedFile` instances.
+- Added a `Dispatcher::on` method to indicate which domain the dispatcher should work on.
+- Relations are automatically loaded when using Fractal includes.
 - Added a `Dispatcher::raw` method to return a raw response object instead of the original content.
 
 ### v0.6.5
