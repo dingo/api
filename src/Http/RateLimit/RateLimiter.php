@@ -45,6 +45,13 @@ class RateLimiter
     protected $request;
 
     /**
+     * The key prefix used when throttling route specific requests.
+     *
+     * @var string
+     */
+    protected $keyPrefix;
+
+    /**
      * Create a new rate limiter instance.
      *
      * @param  \Illuminate\Container\Container  $container
@@ -77,6 +84,8 @@ class RateLimiter
         if ($limit > 0 || $expires > 0) {
             $this->throttle = new RouteSpecificThrottle(['limit' => $limit, 'expires' => $expires]);
 
+            $this->keyPrefix = md5($request->path());
+
         // Otherwise we'll use the throttle that gives the consumer the largest
         // amount of requests. If no matching throttle is found then rate
         // limiting will not be imposed for the request.
@@ -90,9 +99,26 @@ class RateLimiter
             return;
         }
 
+        $this->prepareCacheStore();
+
         $this->cache('requests', 0, $this->throttle->getExpires());
-        $this->cache('expires', time() + ($this->throttle->getExpires() * 60), $this->throttle->getExpires());
+        $this->cache('expires', $this->throttle->getExpires(), $this->throttle->getExpires());
+        $this->cache('reset', time() + ($this->throttle->getExpires() * 60), $this->throttle->getExpires());
         $this->increment('requests');
+    }
+
+    /**
+     * Prepare the cache store.
+     *
+     * @return void
+     */
+    protected function prepareCacheStore()
+    {
+        if ($this->retrieve('expires') != $this->throttle->getExpires()) {
+            $this->forget('requests');
+            $this->forget('expires');
+            $this->forget('reset');
+        }
     }
 
     /**
@@ -125,7 +151,7 @@ class RateLimiter
      */
     protected function key($key)
     {
-        return sprintf('dingo.api.%s.%s', $key, $this->request->getClientIp());
+        return sprintf('dingo.api.%s.%s.%s', $this->keyPrefix, $key, $this->request->getClientIp());
     }
 
     /**
@@ -161,6 +187,17 @@ class RateLimiter
     protected function increment($key)
     {
         $this->cache->increment($this->key($key));
+    }
+
+    /**
+     * Forget a key in the cache.
+     *
+     * @param  string  $key
+     * @return void
+     */
+    protected function forget($key)
+    {
+        $this->cache->forget($this->key($key));
     }
 
     /**
@@ -200,9 +237,9 @@ class RateLimiter
      *
      * @return int
      */
-    public function getRateLimitExpiration()
+    public function getRateLimitReset()
     {
-        return $this->retrieve('expires');
+        return $this->retrieve('reset');
     }
 
     /**

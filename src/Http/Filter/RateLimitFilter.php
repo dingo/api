@@ -80,7 +80,7 @@ class RateLimitFilter extends Filter
         $this->router->after(function (Request $request, Response $response) {
             $response->headers->set('X-RateLimit-Limit', $this->limiter->getThrottle()->getLimit());
             $response->headers->set('X-RateLimit-Remaining', $this->limiter->getRemainingLimit());
-            $response->headers->set('X-RateLimit-Reset', $this->limiter->getRateLimitExpiration());
+            $response->headers->set('X-RateLimit-Reset', $this->limiter->getRateLimitReset());
         });
     }
 }
