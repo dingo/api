@@ -81,7 +81,9 @@ class Route extends IlluminateRoute
      */
     public function getAuthProviders()
     {
-        return (array) array_get($this->action, 'providers', []);
+        $providers = array_get($this->action, 'providers', []);
+
+        return is_array($providers) ? $providers : explode('|', $providers);
     }
 
     /**
