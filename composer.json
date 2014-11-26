@@ -15,7 +15,7 @@
         "league/fractal": "0.10.*"
     },
     "require-dev": {
-        "lucadegasperi/oauth2-server-laravel": "3.*@dev",
+        "lucadegasperi/oauth2-server-laravel": "3.0.*",
         "tymon/jwt-auth": "0.3.*",
         "illuminate/routing": "4.2.*",
         "illuminate/events": "4.2.*",
