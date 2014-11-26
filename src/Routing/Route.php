@@ -83,4 +83,26 @@ class Route extends IlluminateRoute
     {
         return (array) array_get($this->action, 'providers', []);
     }
+
+    /**
+     * Get the rate limit.
+     *
+     * @param  int  $default
+     * @return int
+     */
+    public function getRateLimit($default)
+    {
+        return array_get($this->action, 'limit', $default);
+    }
+
+    /**
+     * Get the rate limit expiration time.
+     *
+     * @param  int  $default
+     * @return int
+     */
+    public function getLimitExpiration($default)
+    {
+        return array_get($this->action, 'expires', $default);
+    }
 }

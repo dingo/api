@@ -81,4 +81,24 @@ class RateLimitFilterTest extends PHPUnit_Framework_TestCase
 
         $this->filter->filter($route, $request);
     }
+
+
+    public function testRateLimitingWithRouteLimiter()
+    {
+        $request = Request::create('test', 'GET');
+        $route = new Route(['GET'], 'test', ['protected' => true, 'limit' => 5, 'expires' => 10, 'uses' => function () {
+            return 'test';
+        }]);
+
+        $this->router->getRoutes()->add($route);
+
+        $this->assertNull($this->filter->filter($route, $request));
+
+        $response = $this->router->dispatch($request);
+        $this->assertArrayHasKey('x-ratelimit-limit', $response->headers->all());
+        $this->assertArrayHasKey('x-ratelimit-remaining', $response->headers->all());
+        $this->assertArrayHasKey('x-ratelimit-reset', $response->headers->all());
+        $this->assertEquals(4, $response->headers->get('x-ratelimit-remaining'));
+        $this->assertEquals(5, $response->headers->get('x-ratelimit-limit'));
+    }
 }

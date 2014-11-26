@@ -54,6 +54,9 @@ class RateLimitFilter extends Filter
             return null;
         }
 
+        $limit = $route->getRateLimit($limit);
+        $expires = $route->getLimitExpiration($expires);
+
         $this->limiter->rateLimitRequest($request, $limit, $expires);
 
         if (! $this->limiter->requestWasRateLimited()) {
