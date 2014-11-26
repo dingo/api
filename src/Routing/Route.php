@@ -73,4 +73,14 @@ class Route extends IlluminateRoute
 
         return $this;
     }
+
+    /**
+     * Get the routes authentication providers.
+     *
+     * @return array
+     */
+    public function getAuthProviders()
+    {
+        return (array) array_get($this->action, 'providers', []);
+    }
 }

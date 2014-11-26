@@ -61,7 +61,7 @@ class AuthFilter extends Filter
             return null;
         }
 
-        $providers = array_slice(func_get_args(), 2);
+        $providers = array_merge(array_slice(func_get_args(), 2), $route->getAuthProviders());
 
         try {
             $this->auth->authenticate($providers);

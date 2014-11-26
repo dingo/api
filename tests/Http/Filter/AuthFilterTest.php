@@ -77,10 +77,10 @@ class AuthFilterTest extends PHPUnit_Framework_TestCase
     public function testAuthSucceedsWithSpecificProvidersAndNoResponseIsReturned()
     {
         $request = Request::create('test', 'GET');
-        $route = new Route(['GET'], 'test', ['protected' => true]);
+        $route = new Route(['GET'], 'test', ['protected' => true, 'providers' => 'foo']);
 
         $this->auth->shouldReceive('check')->once()->andReturn(false);
-        $this->auth->shouldReceive('authenticate')->once()->with(['test']);
+        $this->auth->shouldReceive('authenticate')->once()->with(['test', 'foo']);
 
         $this->assertNull($this->filter->filter($route, $request, 'test'));
     }
