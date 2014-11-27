@@ -11,7 +11,7 @@ class WildcardScopeControllerStub extends Controller
 
     public function __construct()
     {
-        $this->scope(['foo', 'bar']);
+        $this->scopes(['foo', 'bar']);
     }
 
     public function index()

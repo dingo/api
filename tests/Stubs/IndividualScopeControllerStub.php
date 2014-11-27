@@ -11,7 +11,7 @@ class IndividualScopeControllerStub extends Controller
 
     public function __construct()
     {
-        $this->scope(['foo', 'bar'], 'index');
+        $this->scopes(['foo', 'bar'], 'index');
     }
 
     public function index()
