@@ -40,7 +40,7 @@ class Response extends IlluminateResponse
     /**
      * Morph the API response to the appropriate format.
      *
-     * @oaram  string  $format
+     * @param  string  $format
      * @return \Dingo\Api\Http\Response
      */
     public function morph($format = 'json')
