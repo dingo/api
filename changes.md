@@ -24,6 +24,7 @@
 - Added a `Dispatcher::on` method to indicate which domain the dispatcher should work on.
 - Relations are automatically loaded when using Fractal includes.
 - Added a `Dispatcher::raw` method to return a raw response object instead of the original content.
+- Renamed `ControllerTrait::scope` to `ControllerTrait::scopes` for consistency with other methods of definding scopes.
 
 ### v0.6.5
 

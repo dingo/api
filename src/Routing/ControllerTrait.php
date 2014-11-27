@@ -44,7 +44,7 @@ trait ControllerTrait
      * @param  string|array  $methods
      * @return \Illuminate\Routing\Controller
      */
-    protected function scope($scopes, $methods = null)
+    protected function scopes($scopes, $methods = null)
     {
         $scopes = $this->preparePropertyValue($scopes);
 
