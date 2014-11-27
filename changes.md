@@ -1,5 +1,7 @@
 ### v0.7.*@dev (master)
 
+### v0.7.0
+
 - Refactoring of a lot of the core.
 - `Dingo\Api\ApiServiceProvider` is now at `Dingo\Api\Provider\ApiServiceProvider`. It has been split up into several smaller service providers.
 - Some dependencies are now injected into controller via setters instead of in the constructor. ([#111](https://github.com/dingo/api/issues/111))
