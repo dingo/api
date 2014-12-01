@@ -1,5 +1,9 @@
 ### v0.7.*@dev (master)
 
+#### Fixed
+
+- Fixed inconsistent response when returning an empty paginator and using transformers.
+
 ### v0.7.1
 
 #### Fixed

@@ -106,9 +106,11 @@ class ResponseFactory
      */
     public function paginator(Paginator $paginator, $transformer, array $parameters = [], Closure $after = null)
     {
-        $collection = $paginator->getCollection();
-
-        $class = get_class($collection->first());
+        if ($paginator->isEmpty()) {
+            $class = get_class($paginator);
+        } else {
+            $class = get_class($paginator->first());
+        }
 
         $binding = $this->transformer->register($class, $transformer, $parameters, $after);
 

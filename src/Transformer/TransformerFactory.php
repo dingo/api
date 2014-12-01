@@ -100,7 +100,7 @@ class TransformerFactory
      */
     protected function getBinding($class)
     {
-        if ($this->isCollection($class)) {
+        if ($this->isCollection($class) && ! $class->isEmpty()) {
             return $this->getBindingFromCollection($class);
         } elseif ($this->boundByContract($class)) {
             return $this->createContractBinding($class);
@@ -158,7 +158,7 @@ class TransformerFactory
      */
     protected function hasBinding($class)
     {
-        if ($this->isCollection($class)) {
+        if ($this->isCollection($class) && ! $class->isEmpty()) {
             $class = $class->first();
         }
 
