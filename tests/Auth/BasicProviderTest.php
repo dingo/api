@@ -37,24 +37,11 @@ class BasicProviderTest extends PHPUnit_Framework_TestCase
     }
 
 
-    /**
-     * @expectedException \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
-     */
-    public function testNullResponseFromAuthManagerThrowsException()
-    {
-        $request = Request::create('GET', '/', [], [], [], ['HTTP_AUTHORIZATION' => 'Basic 12345']);
-
-        $this->auth->shouldReceive('onceBasic')->once()->with('email', $request)->andReturn(null);
-
-        $this->provider->authenticate($request, new Route(['GET'], '/', []));
-    }
-
-
     public function testValidCredentialsReturnsUser()
     {
         $request = Request::create('GET', '/', [], [], [], ['HTTP_AUTHORIZATION' => 'Basic 12345']);
 
-        $this->auth->shouldReceive('onceBasic')->once()->with('email', $request)->andReturn(new Response('', 200));
+        $this->auth->shouldReceive('onceBasic')->once()->with('email', $request)->andReturn(null);
         $this->auth->shouldReceive('user')->once()->andReturn('foo');
 
         $this->assertEquals('foo', $this->provider->authenticate($request, new Route(['GET'], '/', [])));
