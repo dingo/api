@@ -31,7 +31,7 @@ class Route extends IlluminateRoute
      */
     public function isProtected()
     {
-        $protected = $this->action['protected'];
+        $protected = array_get($this->action, 'protected', false);
 
         if (is_array($protected)) {
             return last($protected) === true;
