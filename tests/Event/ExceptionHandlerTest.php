@@ -70,4 +70,20 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(404, $response->getStatusCode());
         $this->assertEquals('error', $response->getContent());
     }
+
+
+    public function testExceptionHandledWithDebug()
+    {
+        $this->event->setDebug(true);
+
+        $this->handler->shouldReceive('willHandle')->once()->with($exception = new HttpException(404))->andReturn(false);
+
+        $response = $this->event->handle($exception);
+
+        $original = $response->getOriginalContent();
+
+        $this->assertArrayHasKey('debug', $original);
+        $this->assertEquals(79, $original['debug']['line']);
+        $this->assertEquals('ExceptionHandlerTest.php', basename($original['debug']['file']));
+    }
 }

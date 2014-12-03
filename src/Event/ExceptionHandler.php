@@ -18,14 +18,23 @@ class ExceptionHandler
     protected $handler;
 
     /**
+     * Indicates if debug mode is enabled.
+     *
+     * @var bool
+     */
+    protected $debug;
+
+    /**
      * Create a new exception handler instance.
      *
      * @param  \Dingo\Api\Exception\Handler  $handler
+     * @param  bool  $debug
      * @return void
      */
-    public function __construct(Handler $handler)
+    public function __construct(Handler $handler, $debug = false)
     {
         $this->handler = $handler;
+        $this->debug = $debug;
     }
 
     /**
@@ -59,6 +68,26 @@ class ExceptionHandler
             $response['code'] = $code;
         }
 
+        if ($this->debug) {
+            $response['debug'] = [
+                'line' => $exception->getLine(),
+                'file' => $exception->getFile(),
+                'class' => get_class($exception),
+                'trace' => $exception->getTrace()
+            ];
+        }
+
         return new Response($response, $exception->getStatusCode(), $exception->getHeaders());
+    }
+
+    /**
+     * Enable or disable debug mode.
+     *
+     * @param  bool  $debug
+     * @return void
+     */
+    public function setDebug($debug)
+    {
+        $this->debug = $debug;
     }
 }

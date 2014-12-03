@@ -6,6 +6,10 @@
 - Fixed bug with protected endpoints becoming unprotected when setting protection on both group and route.
 - Fixed bug where routes defined before the replacement of the bound router would be lost.
 
+#### Added
+
+- Added a `debug` configuration key which enables/disables a more detailed error response for some exceptions.
+
 ### v0.7.1
 
 #### Fixed
