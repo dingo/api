@@ -106,10 +106,20 @@ class RouterTest extends PHPUnit_Framework_TestCase
             $this->router->get('foo', function () {
                 return 'bar';
             });
+
+            $this->router->get('bar', ['protected' => true, function () {
+                return 'bar';
+            }]);
+
+            $this->router->get('baz', ['protected' => false, function () {
+                return 'bar';
+            }]);
         });
 
-        $route = $this->router->getApiGroups()->getByVersion('v1')->getRoutes()[0];
-        $this->assertTrue($route->getAction()['protected']);
+        $routes = $this->router->getApiGroups()->getByVersion('v1')->getRoutes();
+        $this->assertTrue($routes[0]->isProtected());
+        $this->assertTrue($routes[1]->isProtected());
+        $this->assertFalse($routes[2]->isProtected());
     }
 
 

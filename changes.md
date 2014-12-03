@@ -3,6 +3,7 @@
 #### Fixed
 
 - Fixed inconsistent response when returning an empty paginator and using transformers.
+- Fixed bug with protected endpoints becoming unprotected when setting protection on both group and route.
 
 ### v0.7.1
 
