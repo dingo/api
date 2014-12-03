@@ -16,6 +16,7 @@ use Illuminate\Routing\Router as IlluminateRouter;
 use Illuminate\Http\Response as IlluminateResponse;
 use Dingo\Api\Exception\InvalidAcceptHeaderException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Routing\RouteCollection as IlluminateRouteCollection;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 class Router extends IlluminateRouter
@@ -170,6 +171,29 @@ class Router extends IlluminateRouter
     protected function routingToApi()
     {
         return ! empty($this->groupStack) && array_get(last($this->groupStack), 'api', false) === true;
+    }
+
+    /**
+     * Add an existing collection of routes.
+     *
+     * @param  \Illuminate\Routing\RouteCollection  $routes
+     * @return void
+     */
+    public function addExistingRoutes(IlluminateRouteCollection $routes)
+    {
+        foreach ($routes as $route) {
+            $action = array_except($route->getAction(), 'uses');
+
+            $uri = $route->getUri();
+
+            if ($prefix = $route->getPrefix()) {
+                $uri = substr_replace($uri, '', 0, strlen($prefix)).'/';
+            }
+
+            $action['uses'] = array_pull($action, 'controller');
+
+            $this->addRoute($route->getMethods(), $uri, $action);
+        }
     }
 
     /**

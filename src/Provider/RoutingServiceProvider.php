@@ -28,7 +28,9 @@ class RoutingServiceProvider extends ServiceProvider
      */
     protected function replaceBoundRouter()
     {
-        $this->app->bindShared('router', function ($app) {
+        $routes = $this->app['router']->getRoutes();
+
+        $this->app->bindShared('router', function ($app) use ($routes) {
             $router = new Router($app['events'], $app['api.config'], $app);
 
             if ($app['env'] == 'testing') {
@@ -38,6 +40,7 @@ class RoutingServiceProvider extends ServiceProvider
             $router->setControllerDispatcher(new ControllerDispatcher($router, $app));
             $router->setConditionalRequest($app['config']->get('api::conditional_request'));
             $router->setStrict($app['config']->get('api::strict'));
+            $router->addExistingRoutes($routes);
 
             return $router;
         });
