@@ -57,7 +57,7 @@ class AuthFilter extends Filter
      */
     public function filter(Route $route, Request $request)
     {
-        if ($this->requestIsInternal($request) || $this->routeNotProtected($route) || $this->userIsLogged()) {
+        if ($this->routeNotProtected($route) || $this->userIsLogged()) {
             return null;
         }
 

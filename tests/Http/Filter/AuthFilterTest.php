@@ -26,15 +26,6 @@ class AuthFilterTest extends PHPUnit_Framework_TestCase
     }
 
 
-    public function testFilterBypassesInternalRequests()
-    {
-        $request = InternalRequest::create('test', 'GET');
-        $route = new Route(['GET'], 'test', ['protected' => true]);
-
-        $this->assertNull($this->filter->filter($route, $request));
-    }
-
-
     public function testFilterBypassesUnprotectedRoutes()
     {
         $request = Request::create('test', 'GET');
