@@ -46,7 +46,10 @@ class AuthFilterTest extends PHPUnit_Framework_TestCase
     }
 
 
-    public function testAuthFailsAndEventIsFired()
+    /**
+     * @expectedException \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
+     */
+    public function testAuthFailsAndExceptionIsThrown()
     {
         $request = Request::create('test', 'GET');
         $route = new Route(['GET'], 'test', ['protected' => true]);
@@ -55,13 +58,7 @@ class AuthFilterTest extends PHPUnit_Framework_TestCase
         $this->auth->shouldReceive('check')->once()->andReturn(false);
         $this->auth->shouldReceive('authenticate')->once()->with([])->andThrow($exception);
 
-        $this->events->listen('router.exception', function ($thrown) use ($exception) {
-            $this->assertSame($thrown, $exception);
-
-            return 'caught';
-        });
-
-        $this->assertEquals('caught', $this->filter->filter($route, $request));
+        $this->filter->filter($route, $request);
     }
 
 

@@ -6,6 +6,7 @@
 - Fixed bug with protected endpoints becoming unprotected when setting protection on both group and route.
 - Fixed bug where routes defined before the replacement of the bound router would be lost.
 - `AuthFilter` now require authentication for internal requests.
+- Don't catch exceptions and handle them within the `AuthFilter`, this causes issues with internal requests.
 
 #### Added
 
