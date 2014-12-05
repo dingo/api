@@ -15,7 +15,7 @@ class JWTProviderTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->auth = Mockery::mock('Tymon\JWTAuth\JWTAuth');
-        $this->container = new Container;
+        $this->container = Mockery::mock('Illuminate\Container\Container');
         $this->provider = new JWTProvider($this->auth, $this->container);
     }
 
