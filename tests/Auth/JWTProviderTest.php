@@ -6,6 +6,7 @@ use Mockery;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
 use Dingo\Api\Auth\JWTProvider;
+use Illuminate\Container\Container;
 use Tymon\JWTAuth\Exceptions\JWTAuthException;
 use PHPUnit_Framework_TestCase;
 
@@ -14,7 +15,8 @@ class JWTProviderTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->auth = Mockery::mock('Tymon\JWTAuth\JWTAuth');
-        $this->provider = new JWTProvider($this->auth);
+        $this->container = new Container;
+        $this->provider = new JWTProvider($this->auth, $this->container);
     }
 
 
