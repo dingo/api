@@ -6,6 +6,7 @@ use Exception;
 use Tymon\JWTAuth\JWTAuth;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
+use Illuminate\Auth\AuthManager;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
@@ -19,14 +20,23 @@ class JWTProvider extends AuthorizationProvider
     protected $auth;
 
     /**
+     * Illuminate application authorization manager.
+     *
+     * @var \Illuminate\Auth\AuthManager
+     */
+    protected $appAuth;
+
+    /**
      * Create a new JWT provider instance.
      *
-     * @param  \Tymon\JWTAuth\JWTAuth $auth
+     * @param  \Tymon\JWTAuth\JWTAuth       $auth
+     * @param  \Illuminate\Auth\AuthManager $appAuth
      * @return void
      */
-    public function __construct(JWTAuth $auth)
+    public function __construct(JWTAuth $auth, AuthManager $appAuth)
     {
-        $this->auth = $auth;
+        $this->auth    = $auth;
+        $this->appAuth = $appAuth;
     }
 
     /**
@@ -41,7 +51,9 @@ class JWTProvider extends AuthorizationProvider
         $token = $this->getToken($request);
 
         try {
-            return $this->auth->login($token);
+            $this->auth->login($token);
+
+            return $this->appAuth->user();
         } catch (JWTException $e) {
             throw new UnauthorizedHttpException('JWTAuth', $e->getMessage());
         }
