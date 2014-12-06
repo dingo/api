@@ -30,12 +30,16 @@ class Response extends IlluminateResponse
     /**
      * Make an API response from an existing Illuminate response.
      *
-     * @param  \Illuminate\Http\Response  $response
+     * @param  \Illuminate\Http\Response  $old
      * @return \Dingo\Api\Http\Response
      */
-    public static function makeFromExisting(IlluminateResponse $response)
+    public static function makeFromExisting(IlluminateResponse $old)
     {
-        return new static($response->getOriginalContent(), $response->getStatusCode(), $response->headers->all());
+        $new = static::create($old->getOriginalContent(), $old->getStatusCode());
+
+        $new->headers = $old->headers;
+
+        return $new;
     }
 
     /**

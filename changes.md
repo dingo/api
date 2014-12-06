@@ -13,6 +13,10 @@
 
 - Changed `ResponseBuilder::addHeader` to `ResponseBuilder::withHeader`.
 
+#### Fixed
+
+- Fixed bug where headers were not completely copied when creating a new response from an existing response.
+
 ### v0.7.3
 
 #### Removed
