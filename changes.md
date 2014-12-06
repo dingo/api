@@ -1,5 +1,9 @@
 ### v0.7.*@dev (master)
 
+#### Removed
+
+- Default throttles for rate limiting have been removed.
+
 ### v0.7.2
 
 #### Fixed
