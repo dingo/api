@@ -6,10 +6,10 @@ php:
   - 5.6
   - hhvm
 
-before_install:
-  - composer self-update
-  
-install:
-  - composer install --prefer-source --no-interaction --dev
+sudo: false
 
-script: phpunit
+install:
+  - travis_retry composer install --no-interaction --prefer-source
+
+script:
+  - vendor/bin/phpunit
