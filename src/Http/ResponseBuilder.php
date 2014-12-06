@@ -3,6 +3,7 @@
 namespace Dingo\Api\Http;
 
 use Dingo\Api\Transformer\Binding;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class ResponseBuilder
 {
@@ -26,6 +27,13 @@ class ResponseBuilder
      * @var array
      */
     protected $headers = [];
+
+    /**
+     * The HTTP response cookies.
+     *
+     * @var array
+     */
+    protected $cookies = [];
 
     /**
      * The HTTP response status code.
@@ -87,7 +95,31 @@ class ResponseBuilder
     }
 
     /**
-     * Add a header to the response
+     * Add a cookie to the response.
+     *
+     * @param  \Symfony\Component\HttpFoundation\Cookie  $cookie
+     * @return \Dingo\Api\Http\ResponseBuilder
+     */
+    public function withCookie(Cookie $cookie)
+    {
+        $this->cookies[] = $cookie;
+
+        return $this;
+    }
+
+    /**
+     * Add a cookie to the response.
+     *
+     * @param  \Symfony\Component\HttpFoundation\Cookie  $cookie
+     * @return \Dingo\Api\Http\ResponseBuilder
+     */
+    public function cookie(Cookie $cookie)
+    {
+        return $this->withCookie($cookie);
+    }
+
+    /**
+     * Add a header to the response.
      *
      * @param  string  $name
      * @param  string  $value
@@ -167,6 +199,14 @@ class ResponseBuilder
      */
     public function build()
     {
-        return new Response($this->response, $this->statusCode, $this->headers);
+        $response = new Response($this->response, $this->statusCode, $this->headers);
+
+        foreach ($this->cookies as $cookie) {
+            if ($cookie instanceof Cookie) {
+                $response->withCookie($cookie);
+            }
+        }
+
+        return $response;
     }
 }

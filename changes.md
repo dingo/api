@@ -1,5 +1,9 @@
 ### v0.7.*@dev (master)
 
+#### Added
+
+- Can now add cookies when using the response builder.
+
 ### v0.7.3
 
 #### Removed
