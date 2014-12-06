@@ -31,12 +31,10 @@ class ResponseBuilderTest extends PHPUnit_Framework_TestCase
         $builder = new ResponseBuilder('test');
         $builder->statusCode(302);
         $builder->header('Foo', 'Bar');
-        $builder->headers(['Yin' => 'Yang']);
 
         $response = $builder->build();
 
         $this->assertEquals('Bar', $response->headers->get('Foo'));
-        $this->assertEquals('Yang', $response->headers->get('Yin'));
         $this->assertEquals(302, $response->getStatusCode());
     }
 }

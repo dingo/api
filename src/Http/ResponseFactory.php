@@ -40,7 +40,7 @@ class ResponseFactory
         $response->setStatusCode(201);
 
         if (! is_null($location)) {
-            $response->addHeader('Location', $location);
+            $response->header('Location', $location);
         }
 
         return $response;
