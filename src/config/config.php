@@ -114,13 +114,12 @@ return [
     |
     | Consumers of your API can be limited to the amount of requests they can
     | make. You can create your own throttles or simply change the default
-    | throttles. To disable rate limiting simply remove all throttles.
+    | throttles.
     |
     */
 
     'throttling' => [
-        'authenticated'   => new Dingo\Api\Http\RateLimit\AuthenticatedThrottle(['limit' => 1000, 'expires' => 60]),
-        'unauthenticated' => new Dingo\Api\Http\RateLimit\UnauthenticatedThrottle(['limit' => 100, 'expires'  => 60])
+
     ],
 
     /*
