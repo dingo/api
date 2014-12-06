@@ -3,6 +3,7 @@
 #### Added
 
 - Can now add cookies when using the response builder.
+- Dispatcher can now internally send cookies.
 
 #### Removed
 

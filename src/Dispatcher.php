@@ -12,6 +12,7 @@ use Dingo\Api\Http\InternalRequest;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Model;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Illuminate\Support\Facades\Request as RequestFacade;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -88,6 +89,13 @@ class Dispatcher
      * @var array
      */
     protected $headers = [];
+
+    /**
+     * Request cookies.
+     *
+     * @var array
+     */
+    protected $cookies = [];
 
     /**
      * Request parameters.
@@ -302,6 +310,19 @@ class Dispatcher
     }
 
     /**
+     * Set a cookie to be sent on the next API request.
+     *
+     * @param  \Symfony\Component\HttpFoundation\Cookie  $cookie
+     * @return \Dingo\Api\Dispatcher
+     */
+    public function cookie(Cookie $cookie)
+    {
+        $this->cookies[] = $cookie;
+
+        return $this;
+    }
+
+    /**
      * Perform an API request to a named route.
      *
      * @param  string  $name
@@ -463,7 +484,7 @@ class Dispatcher
 
         $parameters = array_merge($this->parameters, (array) $parameters);
 
-        $request = InternalRequest::create($uri, $verb, $parameters, [], $this->uploadedFiles, [], $this->content);
+        $request = InternalRequest::create($uri, $verb, $parameters, $this->cookies, $this->uploadedFiles, [], $this->content);
 
         if ($domain = $api->option('domain')) {
             $request->headers->set('host', $domain);
