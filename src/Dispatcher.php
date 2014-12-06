@@ -430,7 +430,7 @@ class Dispatcher
             $this->content = $content;
         }
 
-        $this->container['request'] = $this->requestStack[] = $this->createRequest($verb, $uri, $parameters);
+        $this->container->instance('request', $this->requestStack[] = $this->createRequest($verb, $uri, $parameters));
 
         return $this->dispatch($this->container['request']);
     }
