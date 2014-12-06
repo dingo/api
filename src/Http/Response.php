@@ -3,6 +3,7 @@
 namespace Dingo\Api\Http;
 
 use ArrayObject;
+use UnexpectedValueException;
 use Dingo\Api\Transformer\TransformerFactory;
 use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Support\Contracts\ArrayableInterface;
@@ -70,6 +71,24 @@ class Response extends IlluminateResponse
         $this->content = $content;
 
         return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setContent($content)
+    {
+        // Attempt to set the content string, if we encounter an unexpected value
+        // then we most likely have an object that cannot be type cast. In that
+        // case we'll simply leave the content as null and set the original
+        // content value the continue.
+        try {
+            return parent::setContent($content);
+        } catch (UnexpectedValueException $exception) {
+            $this->original = $content;
+
+            return $this;
+        }
     }
 
     /**

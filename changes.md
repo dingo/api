@@ -4,6 +4,10 @@
 
 - Default throttles for rate limiting have been removed.
 
+#### Fixed
+
+- Fixed bug where any response object that could not be type cast as a string would throw an `UnexpectedValueException`.
+
 ### v0.7.2
 
 #### Fixed
