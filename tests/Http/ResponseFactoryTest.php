@@ -17,12 +17,10 @@ class ResponseFactoryTest extends PHPUnit_Framework_TestCase
         $this->factory = new ResponseFactory($this->transformer);
     }
 
-
     public function tearDown()
     {
         Mockery::close();
     }
-
 
     public function testMakingACreatedResponse()
     {
@@ -37,14 +35,12 @@ class ResponseFactoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($responseWithLocation->headers->get('Location'), 'test');
     }
 
-
     public function testMakingANoContentResponse()
     {
         $response = $this->factory->noContent()->build();
         $this->assertEquals(204, $response->getStatusCode());
         $this->assertEquals('', $response->getContent());
     }
-
 
     public function testMakingCollectionRegistersUnderlyingClassWithTransformer()
     {
@@ -54,7 +50,6 @@ class ResponseFactoryTest extends PHPUnit_Framework_TestCase
         $this->factory->withCollection(new Collection([new UserStub]), 'test');
     }
 
-
     public function testMakingItemsRegistersClassWithTransformer()
     {
         $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], null);
@@ -62,7 +57,6 @@ class ResponseFactoryTest extends PHPUnit_Framework_TestCase
         $this->factory->item(new UserStub, 'test');
         $this->factory->withItem(new UserStub, 'test');
     }
-
 
     public function testMakingPaginatorRegistersUnderlyingClassWithTransformer()
     {
@@ -72,14 +66,12 @@ class ResponseFactoryTest extends PHPUnit_Framework_TestCase
         $this->factory->withPaginator(new Paginator(Mockery::mock('Illuminate\Pagination\Factory'), [new UserStub], 1), 'test');
     }
 
-
     public function testMakingErrorNotFoundResponse()
     {
         $response = $this->factory->errorNotFound()->build();
         $this->assertEquals($response->getStatusCode(), 404);
         $this->assertEquals($response->getContent(), '{"status_code":404,"message":"Not Found"}');
     }
-
 
     public function testMakingBadRequestResponse()
     {
@@ -88,14 +80,12 @@ class ResponseFactoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('{"status_code":400,"message":"Bad Request"}', $response->getContent());
     }
 
-
     public function testMakingForbiddenResponse()
     {
         $response = $this->factory->errorForbidden()->build();
         $this->assertEquals(403, $response->getStatusCode());
         $this->assertEquals('{"status_code":403,"message":"Forbidden"}', $response->getContent());
     }
-
 
     public function testMakingInternalErrorResponse()
     {
@@ -104,7 +94,6 @@ class ResponseFactoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('{"status_code":500,"message":"Internal Error"}', $response->getContent());
     }
 
-
     public function testMakingUnauthorizedErrorResponse()
     {
         $response = $this->factory->errorUnauthorized()->build();
@@ -112,13 +101,11 @@ class ResponseFactoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('{"status_code":401,"message":"Unauthorized"}', $response->getContent());
     }
 
-
     public function testMakingArrayResponse()
     {
         $response = $this->factory->array(['foo' => 'bar'])->build();
         $this->assertEquals('{"foo":"bar"}', $response->getContent());
     }
-
 
     public function testPrefixingWithCallsMethodsCorrectly()
     {

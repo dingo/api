@@ -18,9 +18,11 @@ abstract class AuthorizationProvider implements ProviderInterface
     /**
      * Validate the requests authorization header for the provider.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return bool
+     * @param \Illuminate\Http\Request $request
+     *
      * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
+     *
+     * @return bool
      */
     public function validateAuthorizationHeader(Request $request)
     {

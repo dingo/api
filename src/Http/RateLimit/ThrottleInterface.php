@@ -9,7 +9,8 @@ interface ThrottleInterface
     /**
      * Attempt to match the throttle against a given condition.
      *
-     * @param  \Illuminate\Container\Container  $app
+     * @param \Illuminate\Container\Container $app
+     *
      * @return bool
      */
     public function match(Container $app);

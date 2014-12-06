@@ -48,9 +48,10 @@ class Authenticator
     /**
      * Create a new authenticator instance.
      *
-     * @param  \Dingo\Api\Routing\Router  $router
-     * @param  \Illuminate\Container\Container  $container
-     * @param  array  $providers
+     * @param \Dingo\Api\Routing\Router       $router
+     * @param \Illuminate\Container\Container $container
+     * @param array                           $providers
+     *
      * @return void
      */
     public function __construct(Router $router, Container $container, array $providers)
@@ -63,9 +64,11 @@ class Authenticator
     /**
      * Authenticate the current request.
      *
-     * @param  array  $providers
-     * @return mixed
+     * @param array $providers
+     *
      * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
+     *
+     * @return mixed
      */
     public function authenticate(array $providers = [])
     {
@@ -96,9 +99,11 @@ class Authenticator
     /**
      * Throw the first exception from the exception stack.
      *
-     * @param  array  $exceptionStack
-     * @return void
+     * @param array $exceptionStack
+     *
      * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
+     *
+     * @return void
      */
     protected function throwUnauthorizedException(array $exceptionStack)
     {
@@ -114,7 +119,8 @@ class Authenticator
     /**
      * Filter the requested providers from the available providers.
      *
-     * @param  array  $providers
+     * @param array $providers
+     *
      * @return array
      */
     protected function filterProviders(array $providers)
@@ -140,7 +146,7 @@ class Authenticator
         try {
             return $this->user = $this->authenticate();
         } catch (Exception $exception) {
-            return null;
+            return;
         }
     }
 
@@ -157,7 +163,8 @@ class Authenticator
     /**
      * Set the authenticated user.
      *
-     * @param  \Illuminate\Auth\GenericUser|\Illuminate\Database\Eloquent\Model  $user
+     * @param \Illuminate\Auth\GenericUser|\Illuminate\Database\Eloquent\Model $user
+     *
      * @return \Dingo\Api\Auth\Authenticator
      */
     public function setUser($user)
@@ -190,8 +197,9 @@ class Authenticator
     /**
      * Extend the authentication layer with a custom provider.
      *
-     * @param  string  $key
-     * @param  object|callable  $provider
+     * @param string          $key
+     * @param object|callable $provider
+     *
      * @return void
      */
     public function extend($key, $provider)

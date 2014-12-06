@@ -27,12 +27,10 @@ class RouterTest extends PHPUnit_Framework_TestCase
         Response::setFormatters(['json' => new JsonResponseFormat]);
     }
 
-
     public function tearDown()
     {
         m::close();
     }
-
 
     public function testRegisteringApiRoutes()
     {
@@ -51,7 +49,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Dingo\Api\Routing\RouteCollection', $this->router->getApiGroups()->getByVersion('v1'));
         $this->assertInstanceOf('Dingo\Api\Routing\RouteCollection', $this->router->getApiGroups()->getByVersion('v2'));
     }
-
 
     public function testRegisterApiRoutesWithMultipleVersions()
     {
@@ -76,7 +73,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('bar', $this->router->dispatch($request)->getContent());
     }
 
-
     public function testRegisterApiRoutesWithDifferentResponseForSameUri()
     {
         $this->router->api(['version' => 'v1'], function () {
@@ -98,7 +94,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $request->headers->set('accept', 'application/vnd.testing.v2+json');
         $this->assertEquals('bar', $this->router->dispatch($request)->getContent());
     }
-
 
     public function testApiRouteCollectionOptionsApplyToRoutes()
     {
@@ -122,7 +117,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($routes[2]->isProtected());
     }
 
-
     /**
      * @expectedException BadMethodCallException
      */
@@ -130,7 +124,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
     {
         $this->router->api([], function () {});
     }
-
 
     public function testApiRoutesWithPrefix()
     {
@@ -151,7 +144,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('bar', $this->router->dispatch($request)->getContent());
     }
 
-
     public function testApiRoutesWithDomains()
     {
         $this->router->api(['version' => 'v1', 'domain' => 'foo.bar'], function () {
@@ -171,7 +163,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('bar', $this->router->dispatch($request)->getContent());
     }
 
-
     public function testRouterDispatchesInternalRequests()
     {
         $this->router->api(['version' => 'v1'], function () {
@@ -185,7 +176,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('foo', $this->router->dispatch($request)->getContent());
     }
 
-
     public function testAddingRouteFallsThroughToRouterCollection()
     {
         $this->router->get('foo', function () {
@@ -194,7 +184,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
         $this->assertCount(1, $this->router->getRoutes());
     }
-
 
     public function testRouterPreparesNotModifiedIlluminateResponse()
     {
@@ -236,7 +225,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('bar', $response->getContent());
     }
 
-
     public function testRouterSkipNotModifiedResponseOutsideApi()
     {
         $this->router->group([], function () {
@@ -252,7 +240,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($response->headers->has('ETag'));
         $this->assertEquals('bar', $response->getContent());
     }
-
 
     public function testRouterHandlesExistingEtag()
     {
@@ -272,7 +259,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('"custom-etag"', $response->getETag());
         $this->assertEquals('bar', $response->getContent());
     }
-
 
     public function testRouterHandlesCustomEtag()
     {
@@ -294,7 +280,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('"custom-etag"', $response->getETag());
         $this->assertEquals(null, $response->getContent());
     }
-
 
     public function testRouterFiresExceptionEvent()
     {
@@ -318,7 +303,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(422, $response->getStatusCode());
     }
 
-
     /**
      * @expectedException Symfony\Component\HttpKernel\Exception\HttpException
      */
@@ -334,7 +318,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->router->dispatch($request);
     }
 
-
     public function testRouterIgnoresRouteGroupsWithAnApiPrefix()
     {
         $this->router->group(['prefix' => 'api'], function () {
@@ -346,7 +329,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $request = Request::create('api/foo', 'GET');
         $this->assertEquals('foo', $this->router->dispatch($request)->getContent());
     }
-
 
     public function testRequestTargettingAnApiWithNoPrefixOrDomain()
     {
@@ -367,7 +349,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->router->isApiRequest($request));
     }
 
-
     public function testRequestWithMultipleApisFindsTheCorrectApiRouteCollection()
     {
         $this->router->api(['version' => 'v1', 'prefix' => 'api'], function () {
@@ -386,7 +367,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $request->headers->set('accept', 'application/vnd.testing.v2+json');
         $this->assertEquals('bar', $this->router->dispatch($request)->getContent());
     }
-
 
     public function testApiCollectionsWithPointReleaseVersions()
     {
@@ -411,7 +391,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('bar', $this->router->dispatch($request)->getContent());
     }
 
-
     public function testRouterDefaultsToDefaultVersionCollectionWhenNoAcceptHeader()
     {
         $this->router->api(['version' => 'v1', 'prefix' => 'api'], function () {
@@ -431,7 +410,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('bar', $this->router->dispatch($request)->getContent());
     }
 
-
     public function testRouterPreparesResponseBuilderResponse()
     {
         $request = Request::create('foo', 'GET');
@@ -444,7 +422,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('bar', $this->router->dispatch($request)->getContent());
     }
-
 
     /**
      * @expectedException \Dingo\Api\Exception\InvalidAcceptHeaderException

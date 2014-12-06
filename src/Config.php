@@ -42,11 +42,12 @@ class Config
     /**
      * Create a new config instance.
      *
-     * @param  string  $version
-     * @param  string  $prefix
-     * @param  string  $domain
-     * @param  string  $vendor
-     * @param  string  $format
+     * @param string $version
+     * @param string $prefix
+     * @param string $domain
+     * @param string $vendor
+     * @param string $format
+     *
      * @return void
      */
     public function __construct($version = 'v1', $prefix = null, $domain = null, $vendor = null, $format = 'json')
@@ -111,7 +112,8 @@ class Config
     /**
      * Set the API version.
      *
-     * @param  string  $version
+     * @param string $version
+     *
      * @return void
      */
     public function setVersion($version)
@@ -122,7 +124,8 @@ class Config
     /**
      * Set the API format.
      *
-     * @param  string  $format
+     * @param string $format
+     *
      * @return void
      */
     public function setFormat($format)
@@ -133,7 +136,8 @@ class Config
     /**
      * Set the API vendor.
      *
-     * @param  string  $vendor
+     * @param string $vendor
+     *
      * @return void
      */
     public function setVendor($vendor)
@@ -144,7 +148,8 @@ class Config
     /**
      * Set the API domain.
      *
-     * @param  string  $domain
+     * @param string $domain
+     *
      * @return void
      */
     public function setDomain($domain)
@@ -155,7 +160,8 @@ class Config
     /**
      * Set the API prefix.
      *
-     * @param  string  $prefix
+     * @param string $prefix
+     *
      * @return void
      */
     public function setPrefix($prefix)

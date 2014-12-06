@@ -18,7 +18,6 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
         $this->event = new ExceptionHandler($this->handler);
     }
 
-
     /**
      * @expectedException Exception
      * @expectedExceptionMessage rethrow the exception
@@ -30,7 +29,6 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
         $this->handler->shouldReceive('willHandle')->once()->with($exception)->andReturn(false);
         $this->event->handle($exception);
     }
-
 
     public function testExceptionNotHandledByHandlerAndResponseGenerated()
     {
@@ -44,7 +42,6 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('{"message":"404 Not Found","status_code":404}', $response->getContent());
     }
 
-
     public function testExceptionNotHandledByHandlerAndResponseGeneratedWithErrors()
     {
         $exception = new ResourceException('error', ['field' => 'error'], null, [], 2);
@@ -56,7 +53,6 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(422, $response->getStatusCode());
         $this->assertEquals('{"message":"error","status_code":422,"errors":{"field":["error"]},"code":2}', $response->getContent());
     }
-
 
     public function testExceptionHandledByHandler()
     {
@@ -71,7 +67,6 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('error', $response->getContent());
     }
 
-
     public function testExceptionHandledWithDebug()
     {
         $this->event->setDebug(true);
@@ -83,7 +78,7 @@ class ExceptionHandlerTest extends PHPUnit_Framework_TestCase
         $original = $response->getOriginalContent();
 
         $this->assertArrayHasKey('debug', $original);
-        $this->assertEquals(79, $original['debug']['line']);
+        $this->assertEquals(74, $original['debug']['line']);
         $this->assertEquals('ExceptionHandlerTest.php', basename($original['debug']['file']));
     }
 }

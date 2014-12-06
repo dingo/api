@@ -20,7 +20,8 @@ class ResponseFactory
     /**
      * Create a new response factory instance.
      *
-     * @param  \Dingo\Api\Transformer\TransformerFactory  $transformer
+     * @param \Dingo\Api\Transformer\TransformerFactory $transformer
+     *
      * @return void
      */
     public function __construct(TransformerFactory $transformer)
@@ -32,6 +33,7 @@ class ResponseFactory
      * Respond with a created response and associate a location if provided.
      *
      * @param null|string $location
+     *
      * @return \Dingo\Api\Http\ResponseBuilder
      */
     public function created($location = null)
@@ -62,10 +64,11 @@ class ResponseFactory
     /**
      * Bind a collection to a transformer and start building a response.
      *
-     * @param  object  $collection
-     * @param  object  $transformer
-     * @param  array  $parameters
-     * @param  \Closure  $after
+     * @param object   $collection
+     * @param object   $transformer
+     * @param array    $parameters
+     * @param \Closure $after
+     *
      * @return \Dingo\Api\Http\ResponseBuilder
      */
     public function collection($collection, $transformer, array $parameters = [], Closure $after = null)
@@ -80,10 +83,11 @@ class ResponseFactory
     /**
      * Bind an item to a transformer and start building a response.
      *
-     * @param  object  $item
-     * @param  object  $transformer
-     * @param  array  $parameters
-     * @param  \Closure  $after
+     * @param object   $item
+     * @param object   $transformer
+     * @param array    $parameters
+     * @param \Closure $after
+     *
      * @return \Dingo\Api\Http\ResponseBuilder
      */
     public function item($item, $transformer, array $parameters = [], Closure $after = null)
@@ -98,10 +102,11 @@ class ResponseFactory
     /**
      * Bind a paginator to a transformer and start building a response.
      *
-     * @param  \Illuminate\Pagination\Paginator  $paginator
-     * @param  object  $transformer
-     * @param  array  $parameters
-     * @param  \Closure  $after
+     * @param \Illuminate\Pagination\Paginator $paginator
+     * @param object                           $transformer
+     * @param array                            $parameters
+     * @param \Closure                         $after
+     *
      * @return \Dingo\Api\Http\ResponseBuilder
      */
     public function paginator(Paginator $paginator, $transformer, array $parameters = [], Closure $after = null)
@@ -120,8 +125,9 @@ class ResponseFactory
     /**
      * Return an error response.
      *
-     * @param  string|array  $error
-     * @param  int  $statusCode
+     * @param string|array $error
+     * @param int          $statusCode
+     *
      * @return \Illuminate\Http\Response
      */
     public function error($error, $statusCode)
@@ -138,7 +144,8 @@ class ResponseFactory
     /**
      * Return a 404 not found error.
      *
-     * @param  string|array  $message
+     * @param string|array $message
+     *
      * @return \Illuminate\Http\Response
      */
     public function errorNotFound($message = 'Not Found')
@@ -149,7 +156,8 @@ class ResponseFactory
     /**
      * Return a 400 bad request error.
      *
-     * @param  string|array  $message
+     * @param string|array $message
+     *
      * @return \Illuminate\Http\Response
      */
     public function errorBadRequest($message = 'Bad Request')
@@ -160,7 +168,8 @@ class ResponseFactory
     /**
      * Return a 403 forbidden error.
      *
-     * @param  string|array  $message
+     * @param string|array $message
+     *
      * @return \Illuminate\Http\Response
      */
     public function errorForbidden($message = 'Forbidden')
@@ -171,7 +180,8 @@ class ResponseFactory
     /**
      * Return a 500 internal server error.
      *
-     * @param  string|array  $message
+     * @param string|array $message
+     *
      * @return \Illuminate\Http\Response
      */
     public function errorInternal($message = 'Internal Error')
@@ -182,7 +192,8 @@ class ResponseFactory
     /**
      * Return a 401 unauthorized error.
      *
-     * @param  string|array  $message
+     * @param string|array $message
+     *
      * @return \Illuminate\Http\Response
      */
     public function errorUnauthorized($message = 'Unauthorized')
@@ -193,10 +204,12 @@ class ResponseFactory
     /**
      * Call magic methods beginning with "with".
      *
-     * @param  string  $method
-     * @param  array  $parameters
-     * @return mixed
+     * @param string $method
+     * @param array  $parameters
+     *
      * @throws \BadMethodCallException
+     *
+     * @return mixed
      */
     public function __call($method, $parameters)
     {

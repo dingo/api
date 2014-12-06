@@ -6,4 +6,5 @@ use RuntimeException;
 
 class InvalidAcceptHeaderException extends RuntimeException
 {
+    //
 }

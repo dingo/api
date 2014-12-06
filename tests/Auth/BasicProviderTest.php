@@ -17,12 +17,10 @@ class BasicProviderTest extends PHPUnit_Framework_TestCase
         $this->provider = new BasicProvider($this->auth);
     }
 
-
     public function tearDown()
     {
         Mockery::close();
     }
-
 
     /**
      * @expectedException \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
@@ -35,7 +33,6 @@ class BasicProviderTest extends PHPUnit_Framework_TestCase
 
         $this->provider->authenticate($request, new Route(['GET'], '/', []));
     }
-
 
     public function testValidCredentialsReturnsUser()
     {

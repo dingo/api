@@ -30,7 +30,8 @@ class Response extends IlluminateResponse
     /**
      * Make an API response from an existing Illuminate response.
      *
-     * @param  \Illuminate\Http\Response  $old
+     * @param \Illuminate\Http\Response $old
+     *
      * @return \Dingo\Api\Http\Response
      */
     public static function makeFromExisting(IlluminateResponse $old)
@@ -45,7 +46,8 @@ class Response extends IlluminateResponse
     /**
      * Morph the API response to the appropriate format.
      *
-     * @param  string  $format
+     * @param string $format
+     *
      * @return \Dingo\Api\Http\Response
      */
     public function morph($format = 'json')
@@ -98,9 +100,11 @@ class Response extends IlluminateResponse
     /**
      * Get the formatter based on the requested format type.
      *
-     * @param  string  $format
-     * @return \Dingo\Api\Http\Format\FormatInterface
+     * @param string $format
+     *
      * @throws \RuntimeException
+     *
+     * @return \Dingo\Api\Http\Format\FormatInterface
      */
     public static function getFormatter($format)
     {
@@ -114,7 +118,8 @@ class Response extends IlluminateResponse
     /**
      * Determine if a response formatter has been registered.
      *
-     * @param  string  $format
+     * @param string $format
+     *
      * @return bool
      */
     public static function hasFormatter($format)
@@ -125,7 +130,8 @@ class Response extends IlluminateResponse
     /**
      * Set the response formatters.
      *
-     * @param  array  $formatters
+     * @param array $formatters
+     *
      * @return void
      */
     public static function setFormatters(array $formatters)
@@ -136,7 +142,8 @@ class Response extends IlluminateResponse
     /**
      * Set the transformer factory instance.
      *
-     * @param  \Dingo\Api\Transformer\TransformerFactory  $transformer
+     * @param \Dingo\Api\Transformer\TransformerFactory $transformer
+     *
      * @return void
      */
     public static function setTransformer(TransformerFactory $transformer)

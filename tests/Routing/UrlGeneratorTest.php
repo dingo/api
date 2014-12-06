@@ -18,7 +18,6 @@ class UrlGeneratorTest extends PHPUnit_Framework_TestCase
         $this->url = new UrlGenerator($this->routes = new Collection, $this->request = Request::create('http://www.foo.com/'));
     }
 
-
     public function testGeneratorDefaultsToApplicationRoutes()
     {
         $this->routes->push($app = new IlluminateRouteCollection);
@@ -31,7 +30,6 @@ class UrlGeneratorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('http://www.foo.com/app', $this->url->action('FooController@foo'));
     }
 
-
     public function testGeneratingNamedRoutes()
     {
         $this->routes->push($v1 = new ApiRouteCollection('v1'));
@@ -43,7 +41,6 @@ class UrlGeneratorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('http://www.foo.com/api', $this->url->route('foo'));
         $this->assertEquals('http://www.foo.com/api/bar', $this->url->route('bar'));
     }
-
 
     public function testGeneratingActionRoutes()
     {

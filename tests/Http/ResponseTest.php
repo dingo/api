@@ -17,7 +17,6 @@ class ResponseTest extends PHPUnit_Framework_TestCase
         Response::getFormatter('json');
     }
 
-
     public function testNonCastableObjectsSetAsOriginalContent()
     {
         $object = new stdClass;

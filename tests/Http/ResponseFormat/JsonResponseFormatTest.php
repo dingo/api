@@ -17,7 +17,6 @@ class JsonResponseFormatTest extends PHPUnit_Framework_TestCase
         Response::setFormatters(['json' => new JsonResponseFormat]);
     }
 
-
     public function tearDown()
     {
         Mockery::close();
@@ -27,14 +26,12 @@ class JsonResponseFormatTest extends PHPUnit_Framework_TestCase
         Response::setFormatters([]);
     }
 
-
     public function testMorphingEloquentModel()
     {
         $response = (new Response(new EloquentModelStub))->morph();
 
         $this->assertEquals('{"app_user":{"foo":"bar"}}', $response->getContent());
     }
-
 
     public function testMorphingEloquentCollection()
     {
@@ -43,7 +40,6 @@ class JsonResponseFormatTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('{"app_users":[{"foo":"bar"},{"foo":"bar"}]}', $response->getContent());
     }
 
-
     public function testMorphingEmptyEloquentCollection()
     {
         $response = (new Response(new Collection))->morph();
@@ -51,14 +47,12 @@ class JsonResponseFormatTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('[]', $response->getContent());
     }
 
-
     public function testMorphingString()
     {
         $response = (new Response('foo'))->morph();
 
         $this->assertEquals('foo', $response->getContent());
     }
-
 
     public function testMorphingArray()
     {
@@ -69,12 +63,10 @@ class JsonResponseFormatTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('{"foo":"bar","baz":{"foo":["bar"]}}', $response->getContent());
     }
 
-
     public function testMorphingUnknownType()
     {
         $this->assertEquals(1, (new Response(1))->morph()->getContent());
     }
-
 
     public function testMorphingEloquentModelWithCamelCasing()
     {
@@ -85,7 +77,6 @@ class JsonResponseFormatTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('{"appUser":{"foo":"bar"}}', $response->getContent());
     }
 
-
     public function testMorphingEloquentCollectionWithCamelCasing()
     {
         EloquentModelStub::$snakeAttributes = false;
@@ -94,5 +85,4 @@ class JsonResponseFormatTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('{"appUsers":[{"foo":"bar"},{"foo":"bar"}]}', $response->getContent());
     }
-
 }

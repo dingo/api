@@ -10,8 +10,9 @@ class ControllerInspector extends IlluminateControllerInspector
     /**
      * Determine if the given controller method is routable.
      *
-     * @param  ReflectionMethod  $method
-     * @param  string  $controller
+     * @param \ReflectionMethod $method
+     * @param string            $controller
+     *
      * @return bool
      */
     public function isRoutable(ReflectionMethod $method, $controller = null)

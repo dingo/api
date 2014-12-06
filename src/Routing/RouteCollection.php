@@ -25,8 +25,9 @@ class RouteCollection extends IlluminateRouteCollection
     /**
      * Create a new API route collection instance.
      *
-     * @param  string  $version
-     * @param  array  $options
+     * @param string $version
+     * @param array  $options
+     *
      * @return void
      */
     public function __construct($version, array $options = [])
@@ -38,8 +39,9 @@ class RouteCollection extends IlluminateRouteCollection
     /**
      * Get an option from the collection.
      *
-     * @param  string  $key
-     * @param  mixed  $default
+     * @param string $key
+     * @param mixed  $default
+     *
      * @return mixed
      */
     public function option($key, $default = null)
@@ -50,7 +52,8 @@ class RouteCollection extends IlluminateRouteCollection
     /**
      * Determine if the collection will match on the vesrion.
      *
-     * @param  array|string  $versions
+     * @param array|string $versions
+     *
      * @return bool
      */
     public function matchesVersion($versions)
@@ -67,7 +70,8 @@ class RouteCollection extends IlluminateRouteCollection
     /**
      * Determine if the collection will match on the domain.
      *
-     * @param  string  $domain
+     * @param string $domain
+     *
      * @return bool
      */
     public function matchesDomain($domain)
@@ -80,7 +84,8 @@ class RouteCollection extends IlluminateRouteCollection
      * the current request. If no prefix or domain is set on the
      * collection then it's assumed it will be a match.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return bool
      */
     public function matchesRequest(Request $request)
@@ -101,13 +106,14 @@ class RouteCollection extends IlluminateRouteCollection
     /**
      * Determine if the header version matches the collection version.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return bool
      */
     protected function headerVersionMatches($request)
     {
         if (preg_match('#application/vnd\.\w+.(v[\d\.]+)\+\w+#', $request->header('accept'), $matches)) {
-            list ($accept, $version) = $matches;
+            list($accept, $version) = $matches;
 
             return $version == $this->version;
         }
@@ -118,7 +124,8 @@ class RouteCollection extends IlluminateRouteCollection
     /**
      * Matches domain if is set on route group.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return bool
      */
     protected function matchDomain($request)
@@ -129,7 +136,8 @@ class RouteCollection extends IlluminateRouteCollection
     /**
      * Matches prefix if is set in route group.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return bool
      */
     protected function matchPrefix($request)
@@ -148,7 +156,8 @@ class RouteCollection extends IlluminateRouteCollection
     /**
      * Explode array on slash and remove empty values.
      *
-     * @param  array  $array
+     * @param array $array
+     *
      * @return array
      */
     protected function filterAndExplode($array)

@@ -13,14 +13,12 @@ class ControllerReviserTest extends PHPUnit_Framework_TestCase
         $this->reviser = new ControllerReviser;
     }
 
-
     public function testRoutingToRevisedControllerWithWildcardScopes()
     {
         $route = new Route('GET', '/', ['controller' => 'Dingo\Api\Tests\Stubs\WildcardScopeControllerStub@index']);
         $route = $this->reviser->revise($route);
         $this->assertEquals(['foo', 'bar'], $route->getAction()['scopes']);
     }
-
 
     public function testRoutingToRevisedControllerWithIndividualScopes()
     {
@@ -29,7 +27,6 @@ class ControllerReviserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(['foo', 'bar'], $route->getAction()['scopes']);
     }
 
-
     public function testRoutingToRevisedControllerMergesGroupScopes()
     {
         $route = new Route('GET', '/', ['controller' => 'Dingo\Api\Tests\Stubs\WildcardScopeControllerStub@index', 'scopes' => 'baz']);
@@ -37,14 +34,12 @@ class ControllerReviserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(['baz', 'foo', 'bar'], $route->getAction()['scopes']);
     }
 
-
     public function testRoutingToRevisedControllerWithProtectedMethod()
     {
         $route = new Route('GET', '/', ['controller' => 'Dingo\Api\Tests\Stubs\ProtectedControllerStub@index']);
         $route = $this->reviser->revise($route);
         $this->assertTrue($route->getAction()['protected']);
     }
-
 
     public function testRoutingToRevisedControllerWithUnprotectedMethod()
     {

@@ -87,9 +87,10 @@ class Router extends IlluminateRouter
     /**
      * Create a new router instance.
      *
-     * @param  \Illuminate\Events\Dispatcher  $events
-     * @param  \Dingo\Api\Routing\Config  $config
-     * @param  \Illuminate\Container\Container  $container
+     * @param \Illuminate\Events\Dispatcher   $events
+     * @param \Dingo\Api\Routing\Config       $config
+     * @param \Illuminate\Container\Container $container
+     *
      * @return void
      */
     public function __construct(Dispatcher $events, Config $config, Container $container = null)
@@ -103,10 +104,12 @@ class Router extends IlluminateRouter
     /**
      * Register an API group.
      *
-     * @param  array|string  $options
-     * @param  callable  $callback
-     * @return void
+     * @param array|string $options
+     * @param callable     $callback
+     *
      * @throws \BadMethodCallException
+     *
+     * @return void
      */
     public function api($options, callable $callback)
     {
@@ -120,7 +123,8 @@ class Router extends IlluminateRouter
     /**
      * Create the route collections with the given options.
      *
-     * @param  array  $options
+     * @param array $options
+     *
      * @return void
      */
     protected function createRouteCollections(array $options)
@@ -133,7 +137,8 @@ class Router extends IlluminateRouter
     /**
      * Setup the API group options.
      *
-     * @param  array|string  $options
+     * @param array|string $options
+     *
      * @return array
      */
     protected function setupGroupOptions($options)
@@ -176,7 +181,8 @@ class Router extends IlluminateRouter
     /**
      * Add an existing collection of routes.
      *
-     * @param  \Illuminate\Routing\RouteCollection  $routes
+     * @param \Illuminate\Routing\RouteCollection $routes
+     *
      * @return void
      */
     public function addExistingRoutes(IlluminateRouteCollection $routes)
@@ -200,10 +206,12 @@ class Router extends IlluminateRouter
      * Dispatch the request to the application and return either a regular response
      * or an API response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  bool  $morph
-     * @return \Illuminate\Http\Response|\Dingo\Api\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @param bool                     $morph
+     *
      * @throws \Exception
+     *
+     * @return \Illuminate\Http\Response|\Dingo\Api\Http\Response
      */
     public function dispatch(Request $request, $morph = true)
     {
@@ -211,7 +219,7 @@ class Router extends IlluminateRouter
             return parent::dispatch($request);
         }
 
-        list ($version, $format) = $this->parseAcceptHeader($request);
+        list($version, $format) = $this->parseAcceptHeader($request);
 
         $this->currentVersion = $version;
         $this->currentFormat = $format;
@@ -272,9 +280,10 @@ class Router extends IlluminateRouter
     /**
      * Add a new route to either the routers collection or an API collection.
      *
-     * @param  array|string  $methods
-     * @param  string  $uri
-     * @param  callable|array|string  $action
+     * @param array|string          $methods
+     * @param string                $uri
+     * @param callable|array|string $action
+     *
      * @return \Illuminate\Routing\Route
      */
     protected function addRoute($methods, $uri, $action)
@@ -291,7 +300,8 @@ class Router extends IlluminateRouter
     /**
      * Add a new route to an API collection.
      *
-     * @param  \Illuminate\Routing\Route  $route
+     * @param \Illuminate\Routing\Route $route
+     *
      * @return \Illuminate\Routing\Route
      */
     protected function addApiRoute($route)
@@ -308,7 +318,8 @@ class Router extends IlluminateRouter
     /**
      * Attach the API before filters to the route.
      *
-     * @param  \Dingo\Api\Routing\Route  $route
+     * @param \Dingo\Api\Routing\Route $route
+     *
      * @return \Dingo\Api\Routing\Route
      */
     protected function attachApiFilters(Route $route)
@@ -369,7 +380,8 @@ class Router extends IlluminateRouter
     /**
      * Determine if the request is an API request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return bool
      */
     public function isApiRequest($request)
@@ -398,7 +410,8 @@ class Router extends IlluminateRouter
     /**
      * Parse a requests accept header.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return array
      */
     protected function parseAcceptHeader(Request $request)
@@ -445,7 +458,8 @@ class Router extends IlluminateRouter
     /**
      * Set the current request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return void
      */
     public function setCurrentRequest(Request $request)
@@ -456,7 +470,8 @@ class Router extends IlluminateRouter
     /**
      * Set the current route.
      *
-     * @param  \Illuminate\Routing\Route  $route
+     * @param \Illuminate\Routing\Route $route
+     *
      * @return void
      */
     public function setCurrentRoute(IlluminateRoute $route)
@@ -487,7 +502,8 @@ class Router extends IlluminateRouter
     /**
      * Enable or disable conditional requests.
      *
-     * @param  bool  $conditionalRequest
+     * @param bool $conditionalRequest
+     *
      * @return void
      */
     public function setConditionalRequest($conditionalRequest)
@@ -508,7 +524,8 @@ class Router extends IlluminateRouter
     /**
      * Enable or disable strict mode.
      *
-     * @param  bool  $strict
+     * @param bool $strict
+     *
      * @return void
      */
     public function setStrict($strict)

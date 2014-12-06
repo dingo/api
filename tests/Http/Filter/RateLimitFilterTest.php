@@ -29,7 +29,6 @@ class RateLimitFilterTest extends PHPUnit_Framework_TestCase
         $this->filter = new RateLimitFilter($this->router, $this->limiter);
     }
 
-
     public function testFilterBypassesInternalRequests()
     {
         $request = InternalRequest::create('test', 'GET');
@@ -37,7 +36,6 @@ class RateLimitFilterTest extends PHPUnit_Framework_TestCase
 
         $this->assertNull($this->filter->filter($route, $request));
     }
-
 
     public function testFilterBypassesRequestsWithNoRateLimiting()
     {
@@ -48,7 +46,6 @@ class RateLimitFilterTest extends PHPUnit_Framework_TestCase
 
         $this->assertNull($this->filter->filter($route, $request));
     }
-
 
     public function testRateLimitingPassesAndResponseHeadersAreSet()
     {
@@ -68,7 +65,6 @@ class RateLimitFilterTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('x-ratelimit-reset', $response->headers->all());
     }
 
-
     /**
      * @expectedException Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException
      */
@@ -81,7 +77,6 @@ class RateLimitFilterTest extends PHPUnit_Framework_TestCase
 
         $this->filter->filter($route, $request);
     }
-
 
     public function testRateLimitingWithRouteLimiter()
     {

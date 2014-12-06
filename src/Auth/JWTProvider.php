@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 class JWTProvider extends AuthorizationProvider
 {
     /**
-     * The JWTAuth instance
+     * The JWTAuth instance.
      *
      * @var \Tymon\JWTAuth\JWTAuth
      */
@@ -21,7 +21,8 @@ class JWTProvider extends AuthorizationProvider
     /**
      * Create a new JWT provider instance.
      *
-     * @param  \Tymon\JWTAuth\JWTAuth $auth
+     * @param \Tymon\JWTAuth\JWTAuth $auth
+     *
      * @return void
      */
     public function __construct(JWTAuth $auth)
@@ -30,10 +31,11 @@ class JWTProvider extends AuthorizationProvider
     }
 
     /**
-     * Authenticate request with a JWT
+     * Authenticate request with a JWT.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Dingo\Api\Routing\Route  $route
+     * @param \Illuminate\Http\Request $request
+     * @param \Dingo\Api\Routing\Route $route
+     *
      * @return mixed
      */
     public function authenticate(Request $request, Route $route)
@@ -48,9 +50,10 @@ class JWTProvider extends AuthorizationProvider
     }
 
     /**
-     * Get the JWT from the request
+     * Get the JWT from the request.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return string
      */
     protected function getToken(Request $request)
@@ -69,9 +72,10 @@ class JWTProvider extends AuthorizationProvider
     }
 
     /**
-     * Parse JWT from the authorization header
+     * Parse JWT from the authorization header.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return string
      */
     protected function parseAuthorizationHeader(Request $request)

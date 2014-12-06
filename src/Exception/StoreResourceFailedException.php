@@ -1,5 +1,8 @@
-<?php namespace Dingo\Api\Exception;
+<?php
+
+namespace Dingo\Api\Exception;
 
 class StoreResourceFailedException extends ResourceException
 {
+    //
 }

@@ -19,7 +19,6 @@ class RateLimiterTest extends PHPUnit_Framework_TestCase
         $this->limiter = new RateLimiter($this->container, $this->cache, []);
     }
 
-
     public function testSettingSpecificLimitsOnRouteUsesRouteSpecificThrottle()
     {
         $this->limiter->rateLimitRequest(Request::create('test', 'GET'), 100, 100);
@@ -30,7 +29,6 @@ class RateLimiterTest extends PHPUnit_Framework_TestCase
         $this->assertSame(['limit' => 100, 'expires' => 100], $throttle->getOptions());
     }
 
-
     public function testThrottleWithHighestAmountOfRequestsIsUsedWhenMoreThanOneMatchingThrottle()
     {
         $this->limiter->extend($first = new ThrottleStub(['limit' => 100, 'expires' => 200]));
@@ -40,7 +38,6 @@ class RateLimiterTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame($first, $this->limiter->getThrottle());
     }
-
 
     public function testExceedingOfRateLimit()
     {
@@ -56,7 +53,6 @@ class RateLimiterTest extends PHPUnit_Framework_TestCase
         $this->limiter->rateLimitRequest($request);
         $this->assertTrue($this->limiter->exceededRateLimit());
     }
-
 
     public function testGettingTheRemainingLimit()
     {

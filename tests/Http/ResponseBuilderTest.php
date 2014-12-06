@@ -13,7 +13,6 @@ class ResponseBuilderTest extends PHPUnit_Framework_TestCase
         Mockery::close();
     }
 
-
     public function testAddingAndSettingMetaCallsUnderlyingTransformerBinding()
     {
         $binding = Mockery::mock('Dingo\Api\Transformer\Binding');
@@ -24,7 +23,6 @@ class ResponseBuilderTest extends PHPUnit_Framework_TestCase
         $builder->setMeta(['foo' => 'bar']);
         $builder->meta('foo', 'bar');
     }
-
 
     public function testBuildingWithCustomStatusCodeAndHeaders()
     {

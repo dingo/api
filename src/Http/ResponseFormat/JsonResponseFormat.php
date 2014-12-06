@@ -9,7 +9,8 @@ class JsonResponseFormat extends ResponseFormat
     /**
      * Format an Eloquent model.
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @param \Illuminate\Database\Eloquent\Model $model
+     *
      * @return string
      */
     public function formatEloquentModel($model)
@@ -26,7 +27,8 @@ class JsonResponseFormat extends ResponseFormat
     /**
      * Format an Eloquent collection.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection  $collection
+     * @param \Illuminate\Database\Eloquent\Collection $collection
+     *
      * @return string
      */
     public function formatEloquentCollection($collection)
@@ -48,7 +50,8 @@ class JsonResponseFormat extends ResponseFormat
     /**
      * Format an array or instance implementing ArrayableInterface.
      *
-     * @param  array|\Illuminate\Support\Contracts\ArrayableInterface  $content
+     * @param array|\Illuminate\Support\Contracts\ArrayableInterface $content
+     *
      * @return string
      */
     public function formatArray($content)
@@ -75,7 +78,8 @@ class JsonResponseFormat extends ResponseFormat
     /**
      * Morph a value to an array.
      *
-     * @param  array|\Illuminate\Support\Contracts\ArrayableInterface  $value
+     * @param array|\Illuminate\Support\Contracts\ArrayableInterface $value
+     *
      * @return array
      */
     protected function morphToArray($value)
@@ -86,7 +90,8 @@ class JsonResponseFormat extends ResponseFormat
     /**
      * Encode the content to its JSON representation.
      *
-     * @param  string  $content
+     * @param string $content
+     *
      * @return string
      */
     protected function encode($content)

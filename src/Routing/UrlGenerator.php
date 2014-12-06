@@ -12,8 +12,9 @@ class UrlGenerator extends IlluminateUrlGenerator
     /**
      * Create a new URL generator instance.
      *
-     * @param  \Illuminate\Support\Collection  $routes
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Support\Collection $routes
+     * @param \Illuminate\Http\Request       $request
+     *
      * @return void
      */
     public function __construct(Collection $routes, Request $request)
@@ -25,7 +26,7 @@ class UrlGenerator extends IlluminateUrlGenerator
     /**
      * {@inheritDoc}
      */
-    public function action($action, $parameters = array(), $absolute = true)
+    public function action($action, $parameters = [], $absolute = true)
     {
         return $this->route($action, $parameters, $absolute, $this->getRouteByAction($action));
     }
@@ -33,7 +34,7 @@ class UrlGenerator extends IlluminateUrlGenerator
     /**
      * {@inheritDoc}
      */
-    public function route($name, $parameters = array(), $absolute = true, $route = null)
+    public function route($name, $parameters = [], $absolute = true, $route = null)
     {
         $route = $route ?: $this->getRouteByName($name);
 
@@ -49,7 +50,8 @@ class UrlGenerator extends IlluminateUrlGenerator
     /**
      * Get a route by name from either the application routes or API routes.
      *
-     * @param  string  $name
+     * @param string $name
+     *
      * @return \Illuminate\Routing\Route|\Dingo\Api\Routing\Route|null
      */
     protected function getRouteByName($name)
@@ -66,7 +68,8 @@ class UrlGenerator extends IlluminateUrlGenerator
     /**
      * Get a route by name from either the application routes or API routes.
      *
-     * @param  string  $name
+     * @param string $name
+     *
      * @return \Illuminate\Routing\Route|\Dingo\Api\Routing\Route|null
      */
     protected function getRouteByAction($action)

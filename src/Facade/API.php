@@ -24,7 +24,8 @@ class API extends Facade
     /**
      * Bind an exception handler.
      *
-     * @param  \Closure  $callback
+     * @param \Closure $callback
+     *
      * @return void
      */
     public static function error(Closure $callback)
@@ -35,8 +36,9 @@ class API extends Facade
     /**
      * Register a class transformer.
      *
-     * @param  string  $class
-     * @param  string|\Closure  $transformer
+     * @param string          $class
+     * @param string|\Closure $transformer
+     *
      * @return \Dingo\Api\Transformer\Binding
      */
     public static function transform($class, $transformer)

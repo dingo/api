@@ -26,8 +26,9 @@ class RevisingHandler
     /**
      * Create a new revising handler instance.
      *
-     * @param  \Dingo\Api\Routing\Router  $router
-     * @param  \Dingo\Api\Routing\ControllerReviser  $reviser
+     * @param \Dingo\Api\Routing\Router            $router
+     * @param \Dingo\Api\Routing\ControllerReviser $reviser
+     *
      * @return void
      */
     public function __construct(Router $router, ControllerReviser $reviser)
@@ -39,8 +40,9 @@ class RevisingHandler
     /**
      * Handle the revising of a controller for API requests.
      *
-     * @param  \Illuminate\Routing\Route  $route
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Routing\Route $route
+     * @param \Illuminate\Http\Request  $request
+     *
      * @return void
      */
     public function handle(Route $route, Request $request)
