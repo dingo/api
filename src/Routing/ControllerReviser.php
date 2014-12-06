@@ -17,7 +17,9 @@ class ControllerReviser
     /**
      * Create a new controller reviser instance.
      *
-     * @param \Illuminate\Container\Container  $container
+     * @param \Illuminate\Container\Container $container
+     *
+     * @return void
      */
     public function __construct(Container $container = null)
     {
@@ -27,13 +29,14 @@ class ControllerReviser
     /**
      * Revise a controller route by updating the protection and scopes.
      *
-     * @param  \Dingo\Api\Routing\Route  $route
+     * @param \Dingo\Api\Routing\Route $route
+     *
      * @return \Dingo\Api\Routing\Route
      */
     public function revise(Route $route)
     {
         if ($this->routingToController($route)) {
-            list ($class, $method) = explode('@', $route->getActionName());
+            list($class, $method) = explode('@', $route->getActionName());
 
             $controller = $this->resolveController($class);
 
@@ -51,7 +54,8 @@ class ControllerReviser
     /**
      * Determine if the route is routing to a controller.
      *
-     * @param  \Dingo\Api\Routing\Route  $route
+     * @param \Dingo\Api\Routing\Route $route
+     *
      * @return bool
      */
     protected function routingToController(Route $route)
@@ -60,12 +64,14 @@ class ControllerReviser
     }
 
     /**
-     * Revise the scopes of a controller method. Scopes defined on the
-     * controller are merged with those in the route definition.
+     * Revise the scopes of a controller method.
      *
-     * @param  \Dingo\Api\Routing\Route  $action
-     * @param  \Illuminate\Routing\Controller  $controller
-     * @param  string  $method
+     * Scopes defined on the controller are merged with those in the route definition.
+     *
+     * @param \Dingo\Api\Routing\Route       $action
+     * @param \Illuminate\Routing\Controller $controller
+     * @param string                         $method
+     *
      * @return void
      */
     protected function reviseScopes(Route $route, $controller, $method)
@@ -84,9 +90,10 @@ class ControllerReviser
     /**
      * Revise the protected state of a controller method.
      *
-     * @param  \Dingo\Api\Routing\Route  $action
-     * @param  \Illuminate\Routing\Controller  $controller
-     * @param  string  $method
+     * @param \Dingo\Api\Routing\Route       $action
+     * @param \Illuminate\Routing\Controller $controller
+     * @param string                         $method
+     *
      * @return void
      */
     protected function reviseProtection(Route $route, $controller, $method)
@@ -105,7 +112,8 @@ class ControllerReviser
     /**
      * Resolve a controller from the container.
      *
-     * @param  string  $class
+     * @param string $class
+     *
      * @return \Illuminate\Routing\Controller
      */
     protected function resolveController($class)

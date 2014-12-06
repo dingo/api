@@ -12,5 +12,4 @@ class EloquentModelStub extends Model
     {
         return ['foo' => 'bar'];
     }
-
 }

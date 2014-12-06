@@ -11,9 +11,8 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->exceptionHandler = new handler;
+        $this->exceptionHandler = new Handler;
     }
-
 
     public function testRegisterExceptionHandler()
     {
@@ -21,19 +20,16 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('Symfony\Component\HttpKernel\Exception\HttpException', $this->exceptionHandler->getHandlers());
     }
 
-
     public function testExceptionHandlerWillHandleExceptionPasses()
     {
         $this->exceptionHandler->register(function (HttpException $e) {});
         $this->assertTrue($this->exceptionHandler->willHandle(new HttpException(404)));
     }
 
-
     public function testExceptionHandlerWillHandleExceptionFails()
     {
         $this->assertFalse($this->exceptionHandler->willHandle(new HttpException(404)));
     }
-
 
     public function testExceptionHandlerHandlesException()
     {
@@ -47,7 +43,6 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-
     public function testExceptionHandlerHandlesExceptionAndCreatesNewResponse()
     {
         $this->exceptionHandler->register(function (HttpException $e) {
@@ -60,7 +55,6 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('foo', $response->getContent());
         $this->assertEquals(404, $response->getStatusCode());
     }
-
 
     public function testExceptionHandlerReturnsNullWhenNoMatchingHandler()
     {

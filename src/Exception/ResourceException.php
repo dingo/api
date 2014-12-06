@@ -18,12 +18,13 @@ class ResourceException extends HttpException
     /**
      * Create a new resource exception instance.
      *
-     * @param  int  $statusCode
-     * @param  string  $message
-     * @param  \Illuminate\Support\MessageBag|array  $errors
-     * @param  \Exception  $previous
-     * @param  array  $headers
-     * @param  int  $code
+     * @param int                                  $statusCode
+     * @param string                               $message
+     * @param \Illuminate\Support\MessageBag|array $errors
+     * @param \Exception                           $previous
+     * @param array                                $headers
+     * @param int                                  $code
+     *
      * @return void
      */
     public function __construct($message = null, $errors = null, Exception $previous = null, $headers = [], $code = 0)
@@ -41,7 +42,7 @@ class ResourceException extends HttpException
      * Get the errors message bag.
      *
      * @return \Illuminate\Support\MessageBag
-     **/
+     */
     public function errors()
     {
         return $this->getErrors();
@@ -51,7 +52,7 @@ class ResourceException extends HttpException
      * Get the errors message bag.
      *
      * @return \Illuminate\Support\MessageBag
-     **/
+     */
     public function getErrors()
     {
         return $this->errors;

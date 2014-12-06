@@ -44,8 +44,9 @@ class LeagueOAuth2Provider extends AuthorizationProvider
     /**
      * Create a new OAuth 2.0 provider instance.
      *
-     * @param  \League\OAuth2\Server\ResourceServer  $resource
-     * @param  bool  $httpHeadersOnly
+     * @param \League\OAuth2\Server\ResourceServer $resource
+     * @param bool                                 $httpHeadersOnly
+     *
      * @return void
      */
     public function __construct(ResourceServer $resource, $httpHeadersOnly = false)
@@ -57,10 +58,12 @@ class LeagueOAuth2Provider extends AuthorizationProvider
     /**
      * Authenticate request with the OAuth 2.0 resource server.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Illuminate\Routing\Route  $route
-     * @return mixed
+     * @param \Illuminate\Http\Request  $request
+     * @param \Illuminate\Routing\Route $route
+     *
      * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
+     *
+     * @return mixed
      */
     public function authenticate(Request $request, Route $route)
     {
@@ -86,7 +89,8 @@ class LeagueOAuth2Provider extends AuthorizationProvider
     /**
      * Resolve the resource owner.
      *
-     * @param  \League\OAuth2\Server\Entity\AccessTokenEntity  $token
+     * @param \League\OAuth2\Server\Entity\AccessTokenEntity $token
+     *
      * @return mixed
      */
     protected function resolveResourceOwner(AccessTokenEntity $token)
@@ -103,10 +107,12 @@ class LeagueOAuth2Provider extends AuthorizationProvider
     /**
      * Validate a routes scopes.
      *
-     * @param  \League\OAuth2\Server\Entity\AccessTokenEntity  $token
-     * @param  \Dingo\Api\Routing\Route  $route
-     * @return bool
+     * @param \League\OAuth2\Server\Entity\AccessTokenEntity $token
+     * @param \Dingo\Api\Routing\Route                       $route
+     *
      * @throws \League\OAuth2\Server\Exception\InvalidScopeException
+     *
+     * @return bool
      */
     protected function validateRouteScopes(AccessTokenEntity $token, Route $route)
     {
@@ -128,7 +134,8 @@ class LeagueOAuth2Provider extends AuthorizationProvider
     /**
      * Set the resolver to fetch a user.
      *
-     * @param  callable  $resolver
+     * @param callable $resolver
+     *
      * @return \Dingo\Api\Auth\LeagueOAuth2Provider
      */
     public function setUserResolver(callable $resolver)
@@ -141,7 +148,8 @@ class LeagueOAuth2Provider extends AuthorizationProvider
     /**
      * Set the resolver to fetch a client.
      *
-     * @param  callable  $resolver
+     * @param callable $resolver
+     *
      * @return \Dingo\Api\Auth\LeagueOAuth2Provider
      */
     public function setClientResolver(callable $resolver)

@@ -28,8 +28,9 @@ class RateLimitFilter extends Filter
     /**
      * Create a new rate limit filter instance.
      *
-     * @param  \Dingo\Api\Routing\Router  $router
-     * @param  \Dingo\Api\Http\RateLimit\RateLimiter  $limiter
+     * @param \Dingo\Api\Routing\Router             $router
+     * @param \Dingo\Api\Http\RateLimit\RateLimiter $limiter
+     *
      * @return void
      */
     public function __construct(Router $router, RateLimiter $limiter)
@@ -41,17 +42,19 @@ class RateLimitFilter extends Filter
     /**
      * Perform rate limiting before a request is executed.
      *
-     * @param  \Dingo\Api\Routing\Route  $route
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $limit
-     * @param  int  $expires
-     * @return mixed
+     * @param \Dingo\Api\Routing\Route $route
+     * @param \Illuminate\Http\Request $request
+     * @param int                      $limit
+     * @param int                      $expires
+     *
      * @throws \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException
+     *
+     * @return mixed
      */
     public function filter(Route $route, Request $request, $limit = 0, $expires = 0)
     {
         if ($this->requestIsInternal($request)) {
-            return null;
+            return;
         }
 
         $limit = $route->getRateLimit($limit);
@@ -60,7 +63,7 @@ class RateLimitFilter extends Filter
         $this->limiter->rateLimitRequest($request, $limit, $expires);
 
         if (! $this->limiter->requestWasRateLimited()) {
-            return null;
+            return;
         }
 
         $this->attachAfterFilter();

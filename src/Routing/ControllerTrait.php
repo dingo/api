@@ -5,7 +5,6 @@ namespace Dingo\Api\Routing;
 use Dingo\Api\Dispatcher;
 use Dingo\Api\Auth\Authenticator;
 use Dingo\Api\Http\ResponseFactory;
-use Illuminate\Routing\Controller as IlluminateController;
 
 trait ControllerTrait
 {
@@ -40,8 +39,9 @@ trait ControllerTrait
     /**
      * Set the scopes for all or a subset of methods.
      *
-     * @param  string|array  $scopes
-     * @param  string|array  $methods
+     * @param string|array $scopes
+     * @param string|array $methods
+     *
      * @return \Illuminate\Routing\Controller
      */
     protected function scopes($scopes, $methods = null)
@@ -62,7 +62,8 @@ trait ControllerTrait
     /**
      * Unprotect controller methods.
      *
-     * @param  string|array  $methods
+     * @param string|array $methods
+     *
      * @return \Illuminate\Routing\Controller
      */
     protected function unprotect($methods = null)
@@ -73,7 +74,8 @@ trait ControllerTrait
     /**
      * Protect controller methods.
      *
-     * @param  string|array  $methods
+     * @param string|array $methods
+     *
      * @return \Illuminate\Routing\Controller
      */
     protected function protect($methods = null)
@@ -84,8 +86,9 @@ trait ControllerTrait
     /**
      * Set the protection of given methods.
      *
-     * @param  string|array  $methods
-     * @param  bool  $protection
+     * @param string|array $methods
+     * @param bool         $protection
+     *
      * @return \Illuminate\Routing\Controller
      */
     protected function setProtection($methods = null, $protection = true)
@@ -104,7 +107,8 @@ trait ControllerTrait
     /**
      * Prepare a property value.
      *
-     * @param  string|array  $value
+     * @param string|array $value
+     *
      * @return array
      */
     protected function preparePropertyValue($value)
@@ -125,7 +129,8 @@ trait ControllerTrait
     /**
      * Set the API dispatcher instance.
      *
-     * @param  \Dingo\Api\Dispatcher  $api
+     * @param \Dingo\Api\Dispatcher $api
+     *
      * @return void
      */
     public function setDispatcher(Dispatcher $api)
@@ -136,7 +141,8 @@ trait ControllerTrait
     /**
      * Set the API authenticator instance.
      *
-     * @param  \Dingo\Api\Auth\Authenticator  $auth
+     * @param \Dingo\Api\Auth\Authenticator $auth
+     *
      * @return void
      */
     public function setAuthenticator(Authenticator $auth)
@@ -147,7 +153,8 @@ trait ControllerTrait
     /**
      * Set the API response factory instance.
      *
-     * @param  \Dingo\Api\Http\ResponseFactory  $response
+     * @param \Dingo\Api\Http\ResponseFactory $response
+     *
      * @return void
      */
     public function setResponseFactory(ResponseFactory $response)
@@ -158,8 +165,9 @@ trait ControllerTrait
     /**
      * Magically handle calls to the response builder.
      *
-     * @param  string  $method
-     * @param  array  $parameters
+     * @param string $method
+     * @param array  $parameters
+     *
      * @return mixed
      */
     public function __call($method, $parameters)

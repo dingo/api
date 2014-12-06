@@ -33,12 +33,10 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         Response::setFormatters(['json' => new JsonResponseFormat]);
     }
 
-
     public function tearDown()
     {
         Mockery::close();
     }
-
 
     public function testInternalRequests()
     {
@@ -71,7 +69,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('yang', $this->dispatcher->delete('test'));
     }
 
-
     public function testInternalRequestWithVersionAndParameters()
     {
         $this->router->api(['version' => 'v1'], function () {
@@ -80,7 +77,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('test', $this->dispatcher->version('v1')->with(['foo' => 'bar'])->get('test'));
     }
-
 
     public function testInternalRequestWithPrefix()
     {
@@ -93,7 +89,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('test', $this->dispatcher->get('test'));
     }
 
-
     public function testInternalRequestWithDomain()
     {
         $this->router->api(['version' => 'v1', 'domain' => 'foo.bar'], function () {
@@ -104,7 +99,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('test', $this->dispatcher->get('test'));
     }
-
 
     /**
      * @expectedException Symfony\Component\HttpKernel\Exception\HttpException
@@ -117,7 +111,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
 
         $this->dispatcher->get('test');
     }
-
 
     /**
      * @expectedException Symfony\Component\HttpKernel\Exception\HttpException
@@ -133,7 +126,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->dispatcher->get('test');
     }
 
-
     /**
      * @expectedException \RuntimeException
      */
@@ -141,7 +133,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
     {
         $this->dispatcher->be('foo');
     }
-
 
     public function testPretendingToBeUserForSingleRequest()
     {
@@ -155,7 +146,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
 
         $this->dispatcher->be($user)->once()->get('test');
     }
-
 
     public function testInternalRequestUsingRouteName()
     {
@@ -173,7 +163,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('bar', $this->dispatcher->route('parameters', 'bar'));
     }
 
-
     public function testInternalRequestUsingControllerAction()
     {
         $this->router->api(['version' => 'v1'], function () {
@@ -182,7 +171,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('foo', $this->dispatcher->action('Dingo\Api\Tests\Stubs\InternalControllerDispatchingStub@index'));
     }
-
 
     public function testInternalRequestUsingRouteNameAndControllerAction()
     {
@@ -194,7 +182,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('foo', $this->dispatcher->route('foo'));
         $this->assertEquals('foo', $this->dispatcher->action('Dingo\Api\Tests\Stubs\InternalControllerDispatchingStub@index'));
     }
-
 
     public function testInternalRequestWithMultipleVersionsCallsCorrectVersion()
     {
@@ -214,7 +201,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('bar', $this->dispatcher->version('v2')->get('foo'));
         $this->assertEquals('bar', $this->dispatcher->version('v3')->get('foo'));
     }
-
 
     public function testInternalRequestWithNestedInternalRequest()
     {
@@ -239,7 +225,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('foobarbaz', $this->dispatcher->get('foo'));
     }
 
-
     public function testRequestStackIsMaintained()
     {
         $this->router->api(['version' => 'v1', 'prefix' => 'api'], function () {
@@ -262,7 +247,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
 
         $this->dispatcher->with(['foo' => 'bar'])->post('foo');
     }
-
 
     public function testRouteStackIsMaintained()
     {
@@ -287,7 +271,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->dispatcher->post('foo');
     }
 
-
     public function testSendingJsonPayload()
     {
         $this->router->api(['version' => 'v1'], function () {
@@ -303,7 +286,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->dispatcher->json(['username' => 'jason'])->post('foo');
         $this->dispatcher->json('{"username":"mat"}')->post('bar');
     }
-
 
     public function testInternalRequestsToDifferentDomains()
     {
@@ -329,7 +311,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('v1 on domain foo.baz', $this->dispatcher->on('foo.baz')->get('foo'));
         $this->assertEquals('v2 on domain foo.baz', $this->dispatcher->on('foo.baz')->version('v2')->get('foo'));
     }
-
 
     public function testRequestingRawResponse()
     {

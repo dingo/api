@@ -17,12 +17,10 @@ class JWTProviderTest extends PHPUnit_Framework_TestCase
         $this->provider = new JWTProvider($this->auth);
     }
 
-
     public function tearDown()
     {
         Mockery::close();
     }
-
 
     /**
      * @expectedException \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
@@ -32,7 +30,6 @@ class JWTProviderTest extends PHPUnit_Framework_TestCase
         $request = Request::create('foo', 'GET');
         $this->provider->authenticate($request, new Route('/foo', 'GET', []));
     }
-
 
     /**
      * @expectedException \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
@@ -47,7 +44,6 @@ class JWTProviderTest extends PHPUnit_Framework_TestCase
         $this->provider->authenticate($request, new Route('/foo', 'GET', []));
     }
 
-
     public function testAuthenticatingSucceedsAndReturnsUserObject()
     {
         $request = Request::create('foo', 'GET');
@@ -57,7 +53,6 @@ class JWTProviderTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(1, $this->provider->authenticate($request, new Route('/foo', 'GET', []))->id);
     }
-
 
     public function testAuthenticatingWithQueryStringSucceedsAndReturnsUserObject()
     {

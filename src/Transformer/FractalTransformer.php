@@ -37,9 +37,10 @@ class FractalTransformer implements TransformerInterface
     /**
      * Create a new fractal transformer instance.
      *
-     * @param  \League\Fractal\Manager  $fractal
-     * @param  string  $includeKey
-     * @param  string  $includeSeparator
+     * @param \League\Fractal\Manager $fractal
+     * @param string                  $includeKey
+     * @param string                  $includeSeparator
+     *
      * @return void
      */
     public function __construct(Fractal $fractal, $includeKey = 'include', $includeSeparator = ',')
@@ -52,10 +53,11 @@ class FractalTransformer implements TransformerInterface
     /**
      * Transform a response with a transformer.
      *
-     * @param  mixed  $response
-     * @param  object  $transformer
-     * @param  \Dingo\Api\Transformer\Binding  $binding
-     * @param  \Illuminate\Http\Request  $request
+     * @param mixed                          $response
+     * @param object                         $transformer
+     * @param \Dingo\Api\Transformer\Binding $binding
+     * @param \Illuminate\Http\Request       $request
+     *
      * @return array
      */
     public function transform($response, $transformer, Binding $binding, Request $request)
@@ -89,7 +91,8 @@ class FractalTransformer implements TransformerInterface
     /**
      * Create the Fractal paginator adapter.
      *
-     * @param  \Illuminate\Pagination\Paginator  $paginator
+     * @param \Illuminate\Pagination\Paginator $paginator
+     *
      * @return \League\Fractal\Pagination\IlluminatePaginatorAdapter
      */
     protected function createPaginatorAdapter(IlluminatePaginator $paginator)
@@ -100,9 +103,10 @@ class FractalTransformer implements TransformerInterface
     /**
      * Create a Fractal resource instance.
      *
-     * @param  mixed  $response
-     * @param  \League\Fractal\TransformerAbstract  $transformer
-     * @param  array  $parameters
+     * @param mixed                               $response
+     * @param \League\Fractal\TransformerAbstract $transformer
+     * @param array                               $parameters
+     *
      * @return \League\Fractal\Resource\Item|\League\Fractal\Resource\Collection
      */
     protected function createResource($response, $transformer, array $parameters)
@@ -119,7 +123,8 @@ class FractalTransformer implements TransformerInterface
     /**
      * Parse the includes.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return void
      */
     public function parseFractalIncludes(Request $request)

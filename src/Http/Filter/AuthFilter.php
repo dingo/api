@@ -7,7 +7,6 @@ use Dingo\Api\Routing\Route;
 use Dingo\Api\Routing\Router;
 use Dingo\Api\Auth\Authenticator;
 use Illuminate\Events\Dispatcher;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class AuthFilter extends Filter
 {
@@ -35,9 +34,10 @@ class AuthFilter extends Filter
     /**
      * Create a new authentication handler instance.
      *
-     * @param  Dingo\Api\Routing\Router  $router
-     * @param  Illuminate\Events\Dispatcher  $events
-     * @param  Dingo\Api\Auth\Authenticator  $auth
+     * @param Dingo\Api\Routing\Router     $router
+     * @param Illuminate\Events\Dispatcher $events
+     * @param Dingo\Api\Auth\Authenticator $auth
+     *
      * @return void
      */
     public function __construct(Router $router, Dispatcher $events, Authenticator $auth)
@@ -50,15 +50,16 @@ class AuthFilter extends Filter
     /**
      * Peform authentication before a request is executed.
      *
-     * @param  \Dingo\Api\Routing\Route  $route
-     * @param  \Illuminate\Http\Request  $request
-     * @param  dynamic  $provider
+     * @param \Dingo\Api\Routing\Route $route
+     * @param \Illuminate\Http\Request $request
+     * @param dynamic                  $provider
+     *
      * @return mixed
      */
     public function filter(Route $route, Request $request)
     {
         if ($this->routeNotProtected($route) || $this->userIsLogged()) {
-            return null;
+            return;
         }
 
         $providers = array_merge(array_slice(func_get_args(), 2), $route->getAuthProviders());

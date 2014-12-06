@@ -43,7 +43,8 @@ class Route extends IlluminateRoute
     /**
      * Set the routes protection.
      *
-     * @param  bool  $protected
+     * @param bool $protected
+     *
      * @return \Dingo\Api\Routing\Route
      */
     public function setProtected($protected)
@@ -66,7 +67,8 @@ class Route extends IlluminateRoute
     /**
      * Add scopes to the route.
      *
-     * @param  array  $scopes
+     * @param array $scopes
+     *
      * @return \Dingo\Api\Routing\Route
      */
     public function addScopes(array $scopes)
@@ -95,7 +97,8 @@ class Route extends IlluminateRoute
     /**
      * Get the rate limit.
      *
-     * @param  int  $default
+     * @param int $default
+     *
      * @return int
      */
     public function getRateLimit($default)
@@ -106,7 +109,8 @@ class Route extends IlluminateRoute
     /**
      * Get the rate limit expiration time.
      *
-     * @param  int  $default
+     * @param int $default
+     *
      * @return int
      */
     public function getLimitExpiration($default)

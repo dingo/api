@@ -14,7 +14,8 @@ abstract class Throttle implements ThrottleInterface
     /**
      * Create a new throttle instance.
      *
-     * @param  array  $options
+     * @param array $options
+     *
      * @return void
      */
     public function __construct(array $options = [])

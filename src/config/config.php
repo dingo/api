@@ -104,7 +104,7 @@ return [
     'auth' => [
         'basic' => function ($app) {
             return new Dingo\Api\Auth\BasicProvider($app['auth']);
-        }
+        },
     ],
 
     /*
@@ -151,7 +151,7 @@ return [
 
     'formats' => [
 
-        'json' => 'Dingo\Api\Http\ResponseFormat\JsonResponseFormat'
+        'json' => 'Dingo\Api\Http\ResponseFormat\JsonResponseFormat',
 
     ]
 

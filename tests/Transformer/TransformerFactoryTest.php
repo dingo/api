@@ -22,12 +22,10 @@ class TransformerFactoryTest extends PHPUnit_Framework_TestCase
         $this->factory = new TransformerFactory($container, new TransformerStub);
     }
 
-
     public function tearDown()
     {
         Mockery::close();
     }
-
 
     public function testResponseIsTransformable()
     {
@@ -38,14 +36,12 @@ class TransformerFactoryTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->factory->transformableResponse(new UserStub, new UserTransformerStub));
     }
 
-
     public function testResponseIsTransformableType()
     {
         $this->assertFalse($this->factory->transformableType(['foo' => 'bar']));
         $this->assertTrue($this->factory->transformableType('Foo'));
         $this->assertTrue($this->factory->transformableType((object) ['foo' => 'bar']));
     }
-
 
     public function testTransformingResponse()
     {
@@ -56,7 +52,6 @@ class TransformerFactoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(['name' => 'Jason'], $response);
     }
 
-
     public function testTransformingCollectionResponse()
     {
         $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub);
@@ -66,14 +61,12 @@ class TransformerFactoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals([['name' => 'Jason'], ['name' => 'Jason']], $response);
     }
 
-
     public function testTransformingResponseBoundByContract()
     {
         $response = $this->factory->transform(new UserContractStub);
 
         $this->assertEquals(['name' => 'Jason'], $response);
     }
-
 
     /**
      * @expectedException \RuntimeException

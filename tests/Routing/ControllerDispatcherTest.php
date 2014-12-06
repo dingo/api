@@ -14,9 +14,8 @@ class ControllerDispatcherTest extends PHPUnit_Framework_TestCase
     protected $keys = [
         'ControllerDispatcherTestApiValue',
         'ControllerDispatcherTestAuthValue',
-        'ControllerDispatcherTestResponseValue'
+        'ControllerDispatcherTestResponseValue',
     ];
-
 
     public function tearDown()
     {
@@ -24,7 +23,6 @@ class ControllerDispatcherTest extends PHPUnit_Framework_TestCase
             unset($_SERVER[$key]);
         }
     }
-
 
     public function testControllerDependenciesAreInjectedWhenControllerIsResolved()
     {

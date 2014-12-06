@@ -33,7 +33,8 @@ class ApiRoutesCommand extends RoutesCommand
     /**
      * Create a new route command instance.
      *
-     * @param  \Dingo\Api\Routing\Router  $router
+     * @param \Dingo\Api\Routing\Router $router
+     *
      * @return void
      */
     public function __construct(Router $router)
@@ -67,6 +68,7 @@ class ApiRoutesCommand extends RoutesCommand
      * Get the route information for a given route.
      *
      * @param \Illuminate\Routing\Route $route
+     *
      * @return array
      */
     protected function getRouteInformation(Route $route)
@@ -74,12 +76,12 @@ class ApiRoutesCommand extends RoutesCommand
         return $this->filterRoute(
             [
                 'host'      => $route->domain(),
-                'uri'       => implode('|', $route->methods()) . ' ' . $route->uri(),
+                'uri'       => implode('|', $route->methods()).' '.$route->uri(),
                 'name'      => $route->getName(),
                 'action'    => $route->getActionName(),
                 'version'   => implode(', ', array_get($route->getAction(), 'version')),
                 'protected' => array_get($route->getAction(), 'protected') ? 'Yes' : 'No',
-                'scopes'    => $this->getScopes($route)
+                'scopes'    => $this->getScopes($route),
             ]
         );
     }
@@ -87,18 +89,18 @@ class ApiRoutesCommand extends RoutesCommand
     /**
      * Filter the route by URI, Version, Scopes and / or name.
      *
-     * @param  array $route
+     * @param array $route
      *
      * @return array|null
      */
     protected function filterRoute(array $route)
     {
-        if (( $this->option('name') && ! $this->nameFilter($route) ) ||
-            ( $this->option('path') && ! $this->pathFilter($route) ) ||
-            ( $this->option('vers') && ! $this->versionFilter($route) ) ||
-            ( $this->option('scopes') && ! $this->scopeFilter($route) )
+        if (($this->option('name') && ! $this->nameFilter($route)) ||
+            ($this->option('path') && ! $this->pathFilter($route)) ||
+            ($this->option('vers') && ! $this->versionFilter($route)) ||
+            ($this->option('scopes') && ! $this->scopeFilter($route))
         ) {
-            return null;
+            return;
         } else {
             return $route;
         }
@@ -107,7 +109,7 @@ class ApiRoutesCommand extends RoutesCommand
     /**
      * Get the scopes of a route.
      *
-     * @param  \Illuminate\Routing\Route $route
+     * @param \Illuminate\Routing\Route $route
      *
      * @return string
      */

@@ -16,12 +16,10 @@ class LeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase
         $this->provider = new LeagueOAuth2Provider($this->server, false);
     }
 
-
     public function tearDown()
     {
         Mockery::close();
     }
-
 
     /**
      * @expectedException \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
@@ -39,7 +37,6 @@ class LeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase
 
         $this->provider->authenticate($request, new Route('GET', '/', ['scopes' => 'foo']));
     }
-
 
     public function testOnlyOneScopeRequiredToValidateCorrectly()
     {
@@ -62,7 +59,6 @@ class LeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase
         $this->assertNull($this->provider->authenticate($request, new Route('GET', '/', ['scopes' => 'foo|bar'])));
     }
 
-
     public function testClientIsResolved()
     {
         $request = Request::create('GET', '/', [], [], [], ['HTTP_AUTHORIZATION' => 'Bearer 12345']);
@@ -84,7 +80,6 @@ class LeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('foo', $this->provider->authenticate($request, new Route('GET', '/', [])));
     }
-
 
     public function testUserIsResolved()
     {

@@ -19,7 +19,8 @@ class Handler
     /**
      * Register a new exception handler.
      *
-     * @param  callable  $callback
+     * @param callable $callback
+     *
      * @return void
      */
     public function register(callable $callback)
@@ -32,7 +33,8 @@ class Handler
     /**
      * Handle an exception if it has an existing handler.
      *
-     * @param  \Exception  $exception
+     * @param \Exception $exception
+     *
      * @return \Illuminate\Http\Response
      */
     public function handle(Exception $exception)
@@ -57,7 +59,8 @@ class Handler
     /**
      * Determine if the handler will handle the given exception.
      *
-     * @param  \Exception  $exception
+     * @param \Exception $exception
+     *
      * @return bool
      */
     public function willHandle(Exception $exception)
@@ -70,7 +73,8 @@ class Handler
     /**
      * Get the hint for an exception handler.
      *
-     * @param  callable  $callback
+     * @param callable $callback
+     *
      * @return string
      */
     protected function handlerHint(callable $callback)

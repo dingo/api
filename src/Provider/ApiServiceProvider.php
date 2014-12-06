@@ -2,7 +2,6 @@
 
 namespace Dingo\Api\Provider;
 
-use RuntimeException;
 use Dingo\Api\Dispatcher;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Exception\Handler;
@@ -175,7 +174,8 @@ class ApiServiceProvider extends ServiceProvider
     /**
      * Prepare an array of instantiable configuration instances.
      *
-     * @param  array  $instances
+     * @param array $instances
+     *
      * @return array
      */
     protected function prepareConfigInstances(array $instances)
@@ -190,7 +190,8 @@ class ApiServiceProvider extends ServiceProvider
     /**
      * Prepare an instantiable configuration instance.
      *
-     * @param  mixed  $instance
+     * @param mixed $instance
+     *
      * @return object
      */
     protected function prepareConfigInstance($instance)

@@ -21,14 +21,12 @@ class JsonpResponseFormatTest extends PHPUnit_Framework_TestCase
         Response::setFormatters(['json' => $formatter]);
     }
 
-
     public function tearDown()
     {
         Mockery::close();
 
         Response::setFormatters([]);
     }
-
 
     public function testMorphingEloquentModel()
     {
@@ -37,14 +35,12 @@ class JsonpResponseFormatTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('foo({"app_user":{"foo":"bar"}});', $response->getContent());
     }
 
-
     public function testMorphingEloquentCollection()
     {
         $response = (new Response(new Collection([new EloquentModelStub, new EloquentModelStub])))->morph();
 
         $this->assertEquals('foo({"app_users":[{"foo":"bar"},{"foo":"bar"}]});', $response->getContent());
     }
-
 
     public function testMorphingEmptyEloquentCollection()
     {
@@ -53,14 +49,12 @@ class JsonpResponseFormatTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('foo([]);', $response->getContent());
     }
 
-
     public function testMorphingString()
     {
         $response = (new Response('foo'))->morph();
 
         $this->assertEquals('foo', $response->getContent());
     }
-
 
     public function testMorphingArray()
     {
@@ -71,10 +65,8 @@ class JsonpResponseFormatTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('foo({"foo":"bar","baz":{"foo":["bar"]}});', $response->getContent());
     }
 
-
     public function testMorphingUnknownType()
     {
         $this->assertEquals(1, (new Response(1))->morph()->getContent());
     }
-
 }

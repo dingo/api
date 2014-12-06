@@ -9,7 +9,6 @@ use Dingo\Api\Routing\Route;
 use Dingo\Api\Routing\Router;
 use PHPUnit_Framework_TestCase;
 use Illuminate\Events\Dispatcher;
-use Dingo\Api\Http\InternalRequest;
 use Illuminate\Container\Container;
 use Dingo\Api\Http\Filter\AuthFilter;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -25,7 +24,6 @@ class AuthFilterTest extends PHPUnit_Framework_TestCase
         $this->filter = new AuthFilter($this->router, $this->events, $this->auth);
     }
 
-
     public function testFilterBypassesUnprotectedRoutes()
     {
         $request = Request::create('test', 'GET');
@@ -33,7 +31,6 @@ class AuthFilterTest extends PHPUnit_Framework_TestCase
 
         $this->assertNull($this->filter->filter($route, $request));
     }
-
 
     public function testFilterBypassesAlreadyLoggedInUsers()
     {
@@ -44,7 +41,6 @@ class AuthFilterTest extends PHPUnit_Framework_TestCase
 
         $this->assertNull($this->filter->filter($route, $request));
     }
-
 
     /**
      * @expectedException \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
@@ -60,7 +56,6 @@ class AuthFilterTest extends PHPUnit_Framework_TestCase
 
         $this->filter->filter($route, $request);
     }
-
 
     public function testAuthSucceedsWithSpecificProvidersAndNoResponseIsReturned()
     {

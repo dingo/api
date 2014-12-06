@@ -4,8 +4,6 @@ namespace Dingo\Api\Routing;
 
 use Dingo\Api\Dispatcher;
 use BadMethodCallException;
-use Dingo\Api\Auth\Authenticator;
-use Dingo\Api\Http\ResponseFactory;
 use Illuminate\Routing\ControllerDispatcher as IlluminateControllerDispatcher;
 
 class ControllerDispatcher extends IlluminateControllerDispatcher
@@ -25,7 +23,8 @@ class ControllerDispatcher extends IlluminateControllerDispatcher
     /**
      * Inject the controller dependencies into the controller instance.
      *
-     * @param  \Illuminate\Routing\Controller  $instance
+     * @param \Illuminate\Routing\Controller $instance
+     *
      * @return void
      */
     protected function injectControllerDependencies($instance)

@@ -11,7 +11,8 @@ abstract class Filter
     /**
      * Indicates if a request is internal.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return bool
      */
     protected function requestIsInternal(Request $request)
@@ -22,7 +23,8 @@ abstract class Filter
     /**
      * Indicates if a route is not protected.
      *
-     * @param  \Dingo\Api\Routing\Route  $route
+     * @param \Dingo\Api\Routing\Route $route
+     *
      * @return bool
      */
     protected function routeNotProtected(Route $route)

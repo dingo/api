@@ -34,8 +34,9 @@ class TransformerFactory
     /**
      * Create a new transformer factory instance.
      *
-     * @param  \Illuminate\Container\Container  $container
-     * @param  \Dingo\Api\Transformer\TransformerInterface  $transformer
+     * @param \Illuminate\Container\Container             $container
+     * @param \Dingo\Api\Transformer\TransformerInterface $transformer
+     *
      * @return void
      */
     public function __construct(Container $container, TransformerInterface $transformer)
@@ -47,8 +48,9 @@ class TransformerFactory
     /**
      * Register a transformer binding resolver for a class.
      *
-     * @param  string  $class
-     * @param  string|callable|object  $resolver
+     * @param string                 $class
+     * @param string|callable|object $resolver
+     *
      * @return \Dingo\Api\Transformer\Binding
      */
     public function register($class, $resolver, array $parameters = [], Closure $after = null)
@@ -59,7 +61,8 @@ class TransformerFactory
     /**
      * Transform a response.
      *
-     * @param  string|object  $response
+     * @param string|object $response
+     *
      * @return mixed
      */
     public function transform($response)
@@ -72,7 +75,8 @@ class TransformerFactory
     /**
      * Determine if a response is transformable.
      *
-     * @param  mixed  $response
+     * @param mixed $response
+     *
      * @return bool
      */
     public function transformableResponse($response)
@@ -83,7 +87,8 @@ class TransformerFactory
     /**
      * Deteremine if a value is of a transformable type.
      *
-     * @param  mixed  $value
+     * @param mixed $value
+     *
      * @return bool
      */
     public function transformableType($value)
@@ -94,9 +99,11 @@ class TransformerFactory
     /**
      * Get a registered transformer binding.
      *
-     * @param  string|object  $class
-     * @return \Dingo\Api\Transformer\Binding
+     * @param string|object $class
+     *
      * @throws \RuntimeException
+     *
+     * @return \Dingo\Api\Transformer\Binding
      */
     protected function getBinding($class)
     {
@@ -118,9 +125,10 @@ class TransformerFactory
     /**
      * Create a new binding instance.
      *
-     * @param  string|callable|object  $resolver
-     * @param  array  $parameters
-     * @param  \Closure  $callback
+     * @param string|callable|object $resolver
+     * @param array                  $parameters
+     * @param \Closure               $callback
+     *
      * @return \Dingo\Api\Transformer\Binding
      */
     protected function createBinding($resolver, array $parameters = [], Closure $callback = null)
@@ -131,7 +139,8 @@ class TransformerFactory
     /**
      * Create a new binding for an instance bound by a contract.
      *
-     * @param  object  $instance
+     * @param object $instance
+     *
      * @return \Dingo\Api\Transformer\Binding
      */
     protected function createContractBinding($instance)
@@ -142,7 +151,8 @@ class TransformerFactory
     /**
      * Get a registered transformer binding from a collection of items.
      *
-     * @param  \Illuminate\Support\Collection  $collection
+     * @param \Illuminate\Support\Collection $collection
+     *
      * @return null|string|callable
      */
     protected function getBindingFromCollection($collection)
@@ -153,7 +163,8 @@ class TransformerFactory
     /**
      * Determine if a class has a transformer binding.
      *
-     * @param  string|object  $class
+     * @param string|object $class
+     *
      * @return bool
      */
     protected function hasBinding($class)
@@ -170,7 +181,8 @@ class TransformerFactory
     /**
      * Determine if the instance is bound by the transformable contract.
      *
-     * @param  string|object  $instance
+     * @param string|object $instance
+     *
      * @return bool
      */
     protected function boundByContract($instance)
@@ -185,7 +197,8 @@ class TransformerFactory
     /**
      * Determine if the instance is a collection.
      *
-     * @param  object  $instance
+     * @param object $instance
+     *
      * @return bool
      */
     protected function isCollection($instance)

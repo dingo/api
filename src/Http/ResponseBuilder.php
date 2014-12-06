@@ -45,8 +45,9 @@ class ResponseBuilder
     /**
      * Create a new response builder instance.
      *
-     * @param  mixed  $response
-     * @param  \Dingo\Api\Transformer\Binding  $binding
+     * @param mixed                          $response
+     * @param \Dingo\Api\Transformer\Binding $binding
+     *
      * @return void
      */
     public function __construct($response, Binding $binding = null)
@@ -58,8 +59,9 @@ class ResponseBuilder
     /**
      * Add a meta key and value pair.
      *
-     * @param  string  $key
-     * @param  mixed  $value
+     * @param string $key
+     * @param mixed  $value
+     *
      * @return \Dingo\Api\Http\ResponseBuilder
      */
     public function addMeta($key, $value)
@@ -72,8 +74,9 @@ class ResponseBuilder
     /**
      * Add a meta key and value pair.
      *
-     * @param  string  $key
-     * @param  mixed  $value
+     * @param string $key
+     * @param mixed  $value
+     *
      * @return \Dingo\Api\Http\ResponseBuilder
      */
     public function meta($key, $value)
@@ -84,7 +87,8 @@ class ResponseBuilder
     /**
      * Set the meta data for the response.
      *
-     * @param  array  $meta
+     * @param array $meta
+     *
      * @return \Dingo\Api\Http\ResponseBuilder
      */
     public function setMeta(array $meta)
@@ -97,7 +101,8 @@ class ResponseBuilder
     /**
      * Add a cookie to the response.
      *
-     * @param  \Symfony\Component\HttpFoundation\Cookie  $cookie
+     * @param \Symfony\Component\HttpFoundation\Cookie $cookie
+     *
      * @return \Dingo\Api\Http\ResponseBuilder
      */
     public function withCookie(Cookie $cookie)
@@ -110,7 +115,8 @@ class ResponseBuilder
     /**
      * Add a cookie to the response.
      *
-     * @param  \Symfony\Component\HttpFoundation\Cookie  $cookie
+     * @param \Symfony\Component\HttpFoundation\Cookie $cookie
+     *
      * @return \Dingo\Api\Http\ResponseBuilder
      */
     public function cookie(Cookie $cookie)
@@ -121,8 +127,9 @@ class ResponseBuilder
     /**
      * Add a header to the response.
      *
-     * @param  string  $name
-     * @param  string  $value
+     * @param string $name
+     * @param string $value
+     *
      * @return \Dingo\Api\Http\ResponseBuilder
      */
     public function withHeader($name, $value)
@@ -135,8 +142,9 @@ class ResponseBuilder
     /**
      * Add a header to the response.
      *
-     * @param  string  $name
-     * @param  string  $value
+     * @param string $name
+     * @param string $value
+     *
      * @return \Dingo\Api\Http\ResponseBuilder
      */
     public function header($name, $value)
@@ -147,7 +155,8 @@ class ResponseBuilder
     /**
      * Set the responses status code.
      *
-     * @param  int  $statusCode
+     * @param int $statusCode
+     *
      * @return \Dingo\Api\Http\ResponseBuilder
      */
     public function setStatusCode($statusCode)
@@ -160,7 +169,8 @@ class ResponseBuilder
     /**
      * Set the response status code.
      *
-     * @param  int  $statusCode
+     * @param int $statusCode
+     *
      * @return \Dingo\Api\Http\ResponseBuilder
      */
     public function statusCode($statusCode)

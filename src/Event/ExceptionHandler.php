@@ -27,8 +27,9 @@ class ExceptionHandler
     /**
      * Create a new exception handler instance.
      *
-     * @param  \Dingo\Api\Exception\Handler  $handler
-     * @param  bool  $debug
+     * @param \Dingo\Api\Exception\Handler $handler
+     * @param bool                         $debug
+     *
      * @return void
      */
     public function __construct(Handler $handler, $debug = false)
@@ -40,9 +41,11 @@ class ExceptionHandler
     /**
      * Handle an exception thrown during dispatching of an API request.
      *
-     * @param  \Exception  $exception
-     * @return \Dingo\Api\Http\Response
+     * @param \Exception $exception
+     *
      * @throws \Exception
+     *
+     * @return \Dingo\Api\Http\Response
      */
     public function handle(Exception $exception)
     {
@@ -73,7 +76,7 @@ class ExceptionHandler
                 'line' => $exception->getLine(),
                 'file' => $exception->getFile(),
                 'class' => get_class($exception),
-                'trace' => $exception->getTrace()
+                'trace' => $exception->getTrace(),
             ];
         }
 
@@ -83,7 +86,8 @@ class ExceptionHandler
     /**
      * Enable or disable debug mode.
      *
-     * @param  bool  $debug
+     * @param bool $debug
+     *
      * @return void
      */
     public function setDebug($debug)

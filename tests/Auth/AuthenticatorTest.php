@@ -21,7 +21,6 @@ class AuthenticatorTest extends PHPUnit_Framework_TestCase
         $this->router = new Router(Mockery::mock('Illuminate\Events\Dispatcher'), new Config, $this->container);
     }
 
-
     /**
      * @expectedException Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
      */
@@ -37,7 +36,6 @@ class AuthenticatorTest extends PHPUnit_Framework_TestCase
 
         $auth->authenticate();
     }
-
 
     /**
      * @expectedException Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
@@ -55,7 +53,6 @@ class AuthenticatorTest extends PHPUnit_Framework_TestCase
         $auth->authenticate();
     }
 
-
     public function testAuthenticationIsSuccessfulAndUserIsSet()
     {
         $this->router->setCurrentRoute($route = new Route(['GET'], 'foo', ['protected' => true]));
@@ -70,7 +67,6 @@ class AuthenticatorTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(1, $user->id);
     }
-
 
     public function testProvidersAreFilteredWhenSpecificProviderIsRequested()
     {
@@ -90,7 +86,6 @@ class AuthenticatorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('one', $auth->getProviderUsed()->assert());
     }
 
-
     public function testGettingUserWhenNotAuthenticatedAttemptsToAuthenticateAndReturnsNull()
     {
         $this->router->setCurrentRoute($route = new Route(['GET'], 'foo', ['protected' => true]));
@@ -100,7 +95,6 @@ class AuthenticatorTest extends PHPUnit_Framework_TestCase
 
         $this->assertNull($auth->user());
     }
-
 
     public function testGettingUserWhenAlreadyAuthenticatedReturnsUser()
     {

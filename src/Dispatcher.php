@@ -142,12 +142,13 @@ class Dispatcher
     /**
      * Create a new dispatcher instance.
      *
-     * @param  \Illuminate\Container\Container  $container
-     * @param  \Illuminate\Filesystem\Filesystem  $files
-     * @param  \Illuminate\Routing\UrlGenerator  $url
-     * @param  \Dingo\Api\Routing\Router  $router
-     * @param  \Dingo\Api\Auth\Authenticator  $auth
-     * @param  \Dingo\Api\Config  $config
+     * @param \Illuminate\Container\Container   $container
+     * @param \Illuminate\Filesystem\Filesystem $files
+     * @param \Illuminate\Routing\UrlGenerator  $url
+     * @param \Dingo\Api\Routing\Router         $router
+     * @param \Dingo\Api\Auth\Authenticator     $auth
+     * @param \Dingo\Api\Config                 $config
+     *
      * @return void
      */
     public function __construct(Container $container, Filesystem $files, UrlGenerator $url, Router $router, Authenticator $auth, Config $config)
@@ -175,7 +176,8 @@ class Dispatcher
     /**
      * Attach files to be uploaded.
      *
-     * @param  array  $files
+     * @param array $files
+     *
      * @return \Dingo\Api\Dispatcher
      */
     public function attach(array $files)
@@ -200,9 +202,11 @@ class Dispatcher
     /**
      * Internal request will be authenticated as the given user.
      *
-     * @param  \Illuminate\Auth\GenericUser|\Illuminate\Database\Eloquent\Model  $user
-     * @return \Dingo\Api\Dispatcher
+     * @param \Illuminate\Auth\GenericUser|\Illuminate\Database\Eloquent\Model $user
+     *
      * @throws \RuntimeException
+     *
+     * @return \Dingo\Api\Dispatcher
      */
     public function be($user)
     {
@@ -218,7 +222,8 @@ class Dispatcher
     /**
      * Send a JSON payload in the request body.
      *
-     * @param  string|array  $content
+     * @param string|array $content
+     *
      * @return \Dingo\Api\Dispatcher
      */
     public function json($content)
@@ -235,7 +240,8 @@ class Dispatcher
     /**
      * Sets the domain to be used for the request.
      *
-     * @param  string  $domain
+     * @param string $domain
+     *
      * @return \Dingo\Api\Dispatcher
      */
     public function on($domain)
@@ -272,7 +278,8 @@ class Dispatcher
     /**
      * Set the version of the API for the next request.
      *
-     * @param  string  $version
+     * @param string $version
+     *
      * @return \Dingo\Api\Dispatcher
      */
     public function version($version)
@@ -285,7 +292,8 @@ class Dispatcher
     /**
      * Set the parameters to be sent on the next API request.
      *
-     * @param  string|array  $parameters
+     * @param string|array $parameters
+     *
      * @return \Dingo\Api\Dispatcher
      */
     public function with($parameters)
@@ -298,8 +306,9 @@ class Dispatcher
     /**
      * Set a header to be sent on the next API request.
      *
-     * @param  string  $key
-     * @param  string  $value
+     * @param string $key
+     * @param string $value
+     *
      * @return \Dingo\Api\Dispatcher
      */
     public function header($key, $value)
@@ -312,7 +321,8 @@ class Dispatcher
     /**
      * Set a cookie to be sent on the next API request.
      *
-     * @param  \Symfony\Component\HttpFoundation\Cookie  $cookie
+     * @param \Symfony\Component\HttpFoundation\Cookie $cookie
+     *
      * @return \Dingo\Api\Dispatcher
      */
     public function cookie(Cookie $cookie)
@@ -325,9 +335,10 @@ class Dispatcher
     /**
      * Perform an API request to a named route.
      *
-     * @param  string  $name
-     * @param  string|array  $parameters
-     * @param  string|array  $requestParameters
+     * @param string       $name
+     * @param string|array $parameters
+     * @param string|array $requestParameters
+     *
      * @return mixed
      */
     public function route($name, $parameters = [], $requestParameters = [])
@@ -342,9 +353,10 @@ class Dispatcher
     /**
      * Perform an API request to a controller action.
      *
-     * @param  string  $action
-     * @param  string|array  $parameters
-     * @param  string|array  $requestParameters
+     * @param string       $action
+     * @param string|array $parameters
+     * @param string|array $requestParameters
+     *
      * @return mixed
      */
     public function action($action, $parameters = [], $requestParameters = [])
@@ -359,8 +371,9 @@ class Dispatcher
     /**
      * Perform API GET request.
      *
-     * @param  string  $uri
-     * @param  string|array  $parameters
+     * @param string       $uri
+     * @param string|array $parameters
+     *
      * @return mixed
      */
     public function get($uri, $parameters = [])
@@ -371,9 +384,10 @@ class Dispatcher
     /**
      * Perform API POST request.
      *
-     * @param  string  $uri
-     * @param  string|array  $parameters
-     * @param  string  $content
+     * @param string       $uri
+     * @param string|array $parameters
+     * @param string       $content
+     *
      * @return mixed
      */
     public function post($uri, $parameters = [], $content = '')
@@ -384,9 +398,10 @@ class Dispatcher
     /**
      * Perform API PUT request.
      *
-     * @param  string  $uri
-     * @param  string|array  $parameters
-     * @param  string  $content
+     * @param string       $uri
+     * @param string|array $parameters
+     * @param string       $content
+     *
      * @return mixed
      */
     public function put($uri, $parameters = [], $content = '')
@@ -397,9 +412,10 @@ class Dispatcher
     /**
      * Perform API PATCH request.
      *
-     * @param  string  $uri
-     * @param  string|array  $parameters
-     * @param  string  $content
+     * @param string       $uri
+     * @param string|array $parameters
+     * @param string       $content
+     *
      * @return mixed
      */
     public function patch($uri, $parameters = [], $content = '')
@@ -410,9 +426,10 @@ class Dispatcher
     /**
      * Perform API DELETE request.
      *
-     * @param  string  $uri
-     * @param  string|array  $parameters
-     * @param  string  $content
+     * @param string       $uri
+     * @param string|array $parameters
+     * @param string       $content
+     *
      * @return mixed
      */
     public function delete($uri, $parameters = [], $content = '')
@@ -423,10 +440,11 @@ class Dispatcher
     /**
      * Queue up and dispatch a new request to a route name or action.
      *
-     * @param  \Dingo\Api\Routing\Route  $route
-     * @param  string  $name
-     * @param  string|array  $parameters
-     * @param  string|array  $requestParameters
+     * @param \Dingo\Api\Routing\Route $route
+     * @param string                   $name
+     * @param string|array             $parameters
+     * @param string|array             $requestParameters
+     *
      * @return mixed
      */
     protected function queueRouteOrActionRequest($route, $name, $parameters, $requestParameters)
@@ -439,10 +457,11 @@ class Dispatcher
     /**
      * Queue up and dispatch a new request.
      *
-     * @param  string  $verb
-     * @param  string  $uri
-     * @param  string|array  $parameters
-     * @param  string  $content
+     * @param string       $verb
+     * @param string       $uri
+     * @param string|array $parameters
+     * @param string       $content
+     *
      * @return mixed
      */
     protected function queueRequest($verb, $uri, $parameters, $content = '')
@@ -459,9 +478,10 @@ class Dispatcher
     /**
      * Create a new internal request from an HTTP verb and URI.
      *
-     * @param  string  $verb
-     * @param  string  $uri
-     * @param  string|array  $parameters
+     * @param string       $verb
+     * @param string       $uri
+     * @param string|array $parameters
+     *
      * @return \Dingo\Api\Http\InternalRequest
      */
     protected function createRequest($verb, $uri, $parameters)
@@ -512,9 +532,11 @@ class Dispatcher
     /**
      * Attempt to dispatch an internal request.
      *
-     * @param  \Dingo\Api\Http\InternalRequest  $request
-     * @return mixed
+     * @param \Dingo\Api\Http\InternalRequest $request
+     *
      * @throws \Exception|\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface
+     *
+     * @return mixed
      */
     protected function dispatch(InternalRequest $request)
     {
@@ -540,9 +562,11 @@ class Dispatcher
     }
 
     /**
-     * Refresh the request stack by resetting the authentication,
-     * popping the last request from the stack, replacing the
-     * input, and resetting the version and parameters.
+     * Refresh the request stack.
+     *
+     * This is done by resetting the authentication, popping
+     * the last request from the stack, replacing the input,
+     * and resetting the version and parameters.
      *
      * @return void
      */

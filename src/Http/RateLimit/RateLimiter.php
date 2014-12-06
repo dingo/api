@@ -54,9 +54,10 @@ class RateLimiter
     /**
      * Create a new rate limiter instance.
      *
-     * @param  \Illuminate\Container\Container  $container
-     * @param  \Illuminate\Cache\CacheManager  $cache
-     * @param  array  $throttles
+     * @param \Illuminate\Container\Container $container
+     * @param \Illuminate\Cache\CacheManager  $cache
+     * @param array                           $throttles
+     *
      * @return void
      */
     public function __construct(Container $container, CacheManager $cache, array $throttles)
@@ -69,9 +70,10 @@ class RateLimiter
     /**
      * Execute the rate limiting for the given request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $limit
-     * @param  int  $expires
+     * @param \Illuminate\Http\Request $request
+     * @param int                      $limit
+     * @param int                      $expires
+     *
      * @return void
      */
     public function rateLimitRequest(Request $request, $limit = 0, $expires = 0)
@@ -146,7 +148,8 @@ class RateLimiter
     /**
      * Namespace a cache key.
      *
-     * @param  string  $key
+     * @param string $key
+     *
      * @return string
      */
     protected function key($key)
@@ -157,9 +160,10 @@ class RateLimiter
     /**
      * Cache a value under a given key for a certain amount of minutes.
      *
-     * @param  string  $key
-     * @param  mixed  $value
-     * @param  int  $minutes
+     * @param string $key
+     * @param mixed  $value
+     * @param int    $minutes
+     *
      * @return void
      */
     protected function cache($key, $value, $minutes)
@@ -170,7 +174,8 @@ class RateLimiter
     /**
      * Retrieve a value from the cache store.
      *
-     * @param  string  $key
+     * @param string $key
+     *
      * @return mixed
      */
     protected function retrieve($key)
@@ -181,7 +186,8 @@ class RateLimiter
     /**
      * Increment a key in the cache.
      *
-     * @param  string  $key
+     * @param string $key
+     *
      * @return void
      */
     protected function increment($key)
@@ -192,7 +198,8 @@ class RateLimiter
     /**
      * Forget a key in the cache.
      *
-     * @param  string  $key
+     * @param string $key
+     *
      * @return void
      */
     protected function forget($key)
@@ -245,7 +252,8 @@ class RateLimiter
     /**
      * Extend the rate limiter by adding a new throttle.
      *
-     * @param  callable|\Dingo\Api\Http\RateLimit\Throttle  $throttle
+     * @param callable|\Dingo\Api\Http\RateLimit\Throttle $throttle
+     *
      * @return void
      */
     public function extend($throttle)
