@@ -125,22 +125,9 @@ class ResponseBuilder
      * @param  string  $value
      * @return \Dingo\Api\Http\ResponseBuilder
      */
-    public function addHeader($name, $value)
+    public function withHeader($name, $value)
     {
         $this->headers[$name] = $value;
-
-        return $this;
-    }
-
-    /**
-     * Add an array of headers.
-     *
-     * @param  array  $headers
-     * @return \Dingo\Api\Http\ResponseBuilder
-     */
-    public function addHeaders(array $headers)
-    {
-        $this->headers = array_merge($this->headers, $headers);
 
         return $this;
     }
@@ -154,18 +141,7 @@ class ResponseBuilder
      */
     public function header($name, $value)
     {
-        return $this->addHeader($name, $value);
-    }
-
-    /**
-     * Add an array of headers.
-     *
-     * @param  array  $headers
-     * @return \Dingo\Api\Http\ResponseBuilder
-     */
-    public function headers(array $headers)
-    {
-        return $this->addHeaders($headers);
+        return $this->withHeader($name, $value);
     }
 
     /**

@@ -4,6 +4,14 @@
 
 - Can now add cookies when using the response builder.
 
+#### Removed
+
+- Removed `ResponseBuilder::addHeaders` and `ResponseBuilder::headers`.
+
+#### Changed
+
+- Changed `ResponseBuilder::addHeader` to `ResponseBuilder::withHeader`.
+
 ### v0.7.3
 
 #### Removed
