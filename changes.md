@@ -2,38 +2,38 @@
 
 ### v0.8.0
 
-#### Added
+##### Added
 
 - Can now add cookies when using the response builder.
 - Dispatcher can now internally send cookies.
 
-#### Removed
+##### Removed
 
 - Removed `ResponseBuilder::addHeaders` and `ResponseBuilder::headers`.
 
-#### Changed
+##### Changed
 
 - Changed `ResponseBuilder::addHeader` to `ResponseBuilder::withHeader`.
 
-#### Fixed
+##### Fixed
 
 - Fixed bug where headers were not completely copied when creating a new response from an existing response.
 - Fixed bug where request was not correctly rebound to the container.
 
 ### v0.7.3
 
-#### Removed
+##### Removed
 
 - Default throttles for rate limiting have been removed.
 
-#### Fixed
+##### Fixed
 
 - Fixed bug where any response object that could not be type cast as a string would throw an `UnexpectedValueException`.
 - Fixed bug where request was not bound as an instance resulting in rebounds not being fired.
 
 ### v0.7.2
 
-#### Fixed
+##### Fixed
 
 - Fixed inconsistent response when returning an empty paginator and using transformers.
 - Fixed bug with protected endpoints becoming unprotected when setting protection on both group and route.
@@ -41,19 +41,19 @@
 - `AuthFilter` now require authentication for internal requests.
 - Don't catch exceptions and handle them within the `AuthFilter`, this causes issues with internal requests.
 
-#### Added
+##### Added
 
 - Added a `debug` configuration key which enables/disables a more detailed error response for some exceptions.
 
 ### v0.7.1
 
-#### Fixed
+##### Fixed
 
 - Fixed bug with Basic authentication.
 
 ### v0.7.0
 
-#### General
+##### General
 
 - `Dingo\Api\ApiServiceProvider` is now at `Dingo\Api\Provider\ApiServiceProvider`. It has been split up into several smaller service providers.
 - Made namespaces more consistent by making them all singular.
@@ -62,7 +62,7 @@
 - Upgraded the League OAuth 2.0 package to version 4.
 - Renamed `ControllerTrait::scope` to `ControllerTrait::scopes` for consistency with other methods of definding scopes.
 
-#### Added
+##### Added
 
 - Some dependencies are now injected into controller via setters instead of in the constructor. ([#111](https://github.com/dingo/api/issues/111))
 - Authentication and Rate Limiting are now filters. Both can be changed on a per-route basis.
@@ -78,13 +78,13 @@
 - Relations are automatically loaded when using Fractal includes.
 - Added a `Dispatcher::raw` method to return a raw response object instead of the original content.
 
-#### Removed
+##### Removed
 
 - Removed `Response::api()` macro.
 - Removed `LeagueOAuth2Provider::setUserCallback` and `LeagueOAuth2Provider::setClientCallback`.
 - Removed `ResponseFormat::formatOther` as non-formattable responses are returned as they are.
 
-#### Bugs
+##### Fixed
 
 - Global router "after" filter is now fired even when an exception is thrown and caught by the API.
 - The response builder will now return the original response instance to internal requests and is decoupled from Fractal.
@@ -93,106 +93,106 @@
 
 ### v0.6.5
 
-#### Fixed
+##### Fixed
 
 - Fixed bug where conditional requests affected routes outside of the API. ([#141](https://github.com/dingo/api/issues/141))
 
 ### v0.6.4
 
-#### Fixed
+##### Fixed
 
 - Fixed incompatibility bug with the latest Laravel. ([#156](https://github.com/dingo/api/issues/156))
 
 ### v0.6.3
 
-#### Added
+##### Added
 
 - Basic implementation of attaching files for internal requests.
 
 ### v0.6.2
 
-#### Added
+##### Added
 
 - Added `addMeta` (and `meta` alias) to the `ResponseBuilder` to add Fractal meta data.
 
 ### v0.6.1
 
-#### Fixed
+##### Fixed
 
 - Fixed bug where the request was not being set on the transformer prior to dispatching the request.  ([#101](https://github.com/dingo/api/issues/101))
 
 ### v0.6.0
 
-#### General
+##### General
 
 - Refactored transformers. You can still use the `API::transform` method, however if you're using the underlying transformer instance to register your bindings you should now use `register`, e.g.,  `$app['dingo.api.transformer']->register('Class', 'ClassTransformer');`.
 - Can now grab the underlying Fractal instance, useful for custom serializers.
 - Converted codebase to PSR-2.
 - Authentication has been completely overhauled.
 
-#### Added
+##### Added
 
 - Added the [`ResponseBuilder`](https://github.com/dingo/api/wiki/Responses#response-builder).
 - Conditional requests can now be enabled/disabled globally or on groups and individual endpoints.
 
-#### Fixed
+##### Fixed
 
 - Non-morphable responses such as those created from `Response::download` can now be returned.
 - Fixed bug where headers set on a thrown exception were not properly set on the generated response.
 
 ### v0.5.0
 
-#### General
+##### General
 
 - Updated to the latest version of Fractal.
 
-#### Added
+##### Added
 
 - Added a `artisan api:routes` command.
 - Allow non-HTTP exceptions to be handled with `API::error` for better exception handling.
 
 ### v0.4.1
 
-#### Fixed
+##### Fixed
 
 - Properly check collections are transformable when bound by contract. ([#34](https://github.com/dingo/api/pull/37))
 
 ### v0.4.0
 
-#### Added
+##### Added
 
 - Transformation layer is now configurable meaning you can swap out Fractal for some other transformation library.
 - Transformable classes can now implement `Dingo\Api\Transformer\TransformableInterface` to return their respective transformer.
 
 ### v0.3.1
 
-#### Fixed
+##### Fixed
 
 - Fixed bug where collections were not detected as being a transformable type. ([#30](https://github.com/dingo/api/issues/30))
 
 ### v0.3.0
 
-#### General
+##### General
 
 - Change the `embeds` configuration key to `fractal_includes`.
 
-#### Fixed
+##### Fixed
 
 - Only resolve controllers when they are being used. This prevents controllers from being resolved for no particular reason and should be more efficient when using large number of controllers.
 
 ### v0.2.4
 
-#### General
+##### General
 
 - Configuration option for the default response format.
 
-#### Fixed
+##### Fixed
 
 - Properly queue and replace requests and route instances.
 
 ### v0.2.3
 
-#### General
+##### General
 
 - Default response format can now be configured in the configuration file.
 - Custom authentication providers that extend at runtime can be registered as instances.
@@ -201,42 +201,42 @@
 
 ### v0.2.3
 
-#### Fixed
+##### Fixed
 
 - Properly maintain request and route stacks.
 
 ### v0.2.2
 
-#### Fixed
+##### Fixed
 
 - Fixed bug where transformers would try to transform a non-transformable response.
 
 ### v0.2.1
 
-#### Added
+##### Added
 
 - Added Fractal pagination support.
 - Allow authentication providers to be extended at runtime.
 
 ### v0.2.0
 
-#### General
+##### General
 
 - Refactoring and simplifying of authentication layer.
 
-#### Added
+##### Added
 
 - Added Fractal transformers.
 
 ### v0.1.2
 
-#### Fixed
+##### Fixed
 
 - Router gracefully falls back to default API version if no exact matching collection is found.
 
 ### v0.1.1
 
-#### Fixed
+##### Fixed
 
 - APIs can now be versioned with point releases, e.g., `v1.1`.
 - Fixed bug where collections were prematurely matched resulting in 404s when the prematurely matched collection did not contain the correct routes. ([#16](https://github.com/dingo/api/issues/16))
