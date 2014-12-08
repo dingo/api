@@ -33,6 +33,7 @@ class GroupCollection
      * Create a new version collection instance.
      *
      * @param  \Dingo\Api\Config  $config
+     *
      * @return void
      */
     public function __construct(Config $config)
@@ -45,6 +46,7 @@ class GroupCollection
      *
      * @param  string  $version
      * @param  array  $options
+     *
      * @return \Dingo\Api\Routing\RouteCollection
      */
     public function add($version, array $options)
@@ -58,6 +60,7 @@ class GroupCollection
      * Determine if the version exists on the collection.
      *
      * @param  string  $version
+     *
      * @return bool
      */
     public function has($version)
@@ -69,6 +72,7 @@ class GroupCollection
      * Get a matching API route collection from the request.
      *
      * @param  \Illuminate\Http\Request  $request
+     *
      * @return \Dingo\Api\Routing\RouteCollection|null
      */
     public function getByRequest(Request $request)
@@ -92,8 +96,10 @@ class GroupCollection
      * Get an API route collection for a given version.
      *
      * @param  string  $version
-     * @return \Dingo\Api\Routing\RouteCollection|null
+     *
      * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
+     *
+     * @return \Dingo\Api\Routing\RouteCollection|null
      */
     public function getByVersion($version)
     {
@@ -113,6 +119,7 @@ class GroupCollection
      *
      * @param  string  $domain
      * @param  string  $version
+     *
      * @return \Dingo\Api\Routing\RouteCollection|null
      */
     public function getByDomain($domain, $version = null)
@@ -131,6 +138,7 @@ class GroupCollection
      *
      * @param  string  $domain
      * @param  string  $version
+     *
      * @return \Dingo\Api\Routing\RouteCollection|null
      */
     public function getByDomainOrVersion($domain, $version)
@@ -146,6 +154,7 @@ class GroupCollection
      * Get an API route collection for a given array of options.
      *
      * @param  array  $options
+     *
      * @return array
      */
     public function getByOptions($options)
