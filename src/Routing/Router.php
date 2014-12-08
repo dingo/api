@@ -16,6 +16,7 @@ use Illuminate\Routing\Router as IlluminateRouter;
 use Illuminate\Http\Response as IlluminateResponse;
 use Dingo\Api\Exception\InvalidAcceptHeaderException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Illuminate\Routing\RouteCollection as IlluminateRouteCollection;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
@@ -341,10 +342,16 @@ class Router extends IlluminateRouter
     protected function findRoute($request)
     {
         if ($this->isApiRequest($request)) {
-            $route = $this->api->getByVersion($this->currentVersion)->match($request);
+            $routes = $this->api->getByVersion($this->currentVersion);
         } else {
-            $route = $this->routes->match($request);
+            $routes = $this->routes;
         }
+
+        if (! $routes) {
+            throw new BadRequestHttpException("Requested API version is invalid.");
+        }
+
+        $route = $routes->match($request);
 
         return $this->current = $this->substituteBindings($route);
     }

@@ -4,7 +4,6 @@ namespace Dingo\Api\Routing;
 
 use Dingo\Api\Config;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class GroupCollection
 {
@@ -103,15 +102,9 @@ class GroupCollection
      */
     public function getByVersion($version)
     {
-        $group = array_first($this->groups, function ($key, $collection) use ($version) {
+        return array_first($this->groups, function ($key, $collection) use ($version) {
             return $collection->matchesVersion($version);
         });
-
-        if (is_null($group)) {
-            throw new BadRequestHttpException("Requested API version is invalid.");
-        }
-
-        return $group;
     }
 
     /**
