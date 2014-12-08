@@ -1,4 +1,6 @@
-### v0.7.*@dev (master)
+### v0.8.*@dev (master)
+
+### v0.8.0
 
 #### Added
 
@@ -16,6 +18,7 @@
 #### Fixed
 
 - Fixed bug where headers were not completely copied when creating a new response from an existing response.
+- Fixed bug where request was not correctly rebound to the container.
 
 ### v0.7.3
 

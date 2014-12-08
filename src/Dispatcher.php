@@ -600,7 +600,7 @@ class Dispatcher
     {
         array_pop($this->requestStack);
 
-        $this->container['request'] = end($this->requestStack);
+        $this->container->instance('request', end($this->requestStack));
 
         $this->router->setCurrentRequest($this->container['request']);
 
