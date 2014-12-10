@@ -1,5 +1,9 @@
 ### v0.8.*@dev (master)
 
+##### Deprecated
+
+- `Dingo\Api\Transformer\TransformableInterface` is now deprecated. It's recommended you use the Response Builder.
+
 ### v0.8.1
 
 ##### Added
