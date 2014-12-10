@@ -10,6 +10,7 @@
 ##### Fixed
 
 - Fixed bug where using the `Input` or `Request` facade prior to internal requests resulted in unexpected input behaviour.
+- Fixed recursive call to the `ControllerTrait::__call` method.
 
 ### v0.8.0
 

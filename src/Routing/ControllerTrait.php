@@ -174,8 +174,8 @@ trait ControllerTrait
     {
         if (method_exists($this->response, $method)) {
             return call_user_func_array([$this->response, $method], $parameters);
-        } elseif (method_exists($this, '__call')) {
-            return $this->__call($method, $parameters);
         }
+
+        return parent::__call($method, $parameters);
     }
 }
