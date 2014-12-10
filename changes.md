@@ -1,5 +1,12 @@
 ### v0.8.*@dev (master)
 
+### v0.8.1
+
+##### Added
+
+- `Symfony\Component\HttpKernel\Exception\BadRequestHttpException` is now thrown when invalid API version is requested.
+- Responses with HTTP error status codes will now throw a `Dingo\Api\Exception\InternalHttpException` when requested internally.
+
 ##### Fixed
 
 - Fixed bug where using the `Input` or `Request` facade prior to internal requests resulted in unexpected input behaviour.
