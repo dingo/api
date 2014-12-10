@@ -341,19 +341,17 @@ class Router extends IlluminateRouter
      */
     protected function findRoute($request)
     {
+        $collection = $this->getRoutes();
+
         if ($this->isApiRequest($request)) {
-            $routes = $this->api->getByVersion($this->currentVersion);
-        } else {
-            $routes = $this->routes;
+            $collection = $this->api->getByVersion($this->currentVersion);
         }
 
-        if (! $routes) {
-            throw new BadRequestHttpException("Requested API version is invalid.");
+        if (! $collection) {
+            throw new BadRequestHttpException('The requested API version is invalid.');
         }
 
-        $route = $routes->match($request);
-
-        return $this->current = $this->substituteBindings($route);
+        return $this->current = $this->substituteBindings($collection->match($request));
     }
 
     /**
