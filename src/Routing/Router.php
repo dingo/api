@@ -237,18 +237,7 @@ class Router extends IlluminateRouter
                      ->setRequest($request)
                      ->setResponse($response);
         } catch (Exception $exception) {
-            if ($request instanceof InternalRequest) {
-                throw $exception;
-            } else {
-                $response = $this->prepareResponse(
-                    $request,
-                    $this->events->until('router.exception', [$exception])
-                );
-
-                // When an exception is thrown it halts execution of the dispatch. We'll
-                // call the attached after filters for caught exceptions still.
-                $this->callFilter('after', $request, $response);
-            }
+            $response = $this->handleException($request, $exception);
         }
 
         // This goes hand in hand with the above. We'll check to see if a
@@ -261,6 +250,32 @@ class Router extends IlluminateRouter
             }
 
             $response = $response->morph($format);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Handle a thrown routing exception.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \Exception               $exception
+     *
+     * @return \Illuminate\Http\Response
+     */
+    protected function handleException(Request $request, Exception $exception)
+    {
+        if ($request instanceof InternalRequest) {
+            throw $exception;
+        } else {
+            $response = $this->prepareResponse(
+                $request,
+                $this->events->until('router.exception', [$exception])
+            );
+
+            // When an exception is thrown it halts execution of the dispatch. We'll
+            // call the attached after filters for caught exceptions still.
+            $this->callFilter('after', $request, $response);
         }
 
         return $response;
