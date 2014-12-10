@@ -542,6 +542,8 @@ class Dispatcher
     {
         $this->routeStack[] = $this->router->getCurrentRoute();
 
+        $this->clearCachedFacadeInstance();
+
         try {
             $response = $this->router->dispatch($request, $this->raw);
 
@@ -603,7 +605,15 @@ class Dispatcher
         $this->container->instance('request', end($this->requestStack));
 
         $this->router->setCurrentRequest($this->container['request']);
+    }
 
+    /**
+     * Clear the cached facade instance.
+     *
+     * @return void
+     */
+    protected function clearCachedFacadeInstance()
+    {
         // Facades cache the resolved instance so we need to clear out the
         // request instance that may have been cached. Otherwise we'll
         // may get unexpected results.

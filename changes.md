@@ -1,5 +1,9 @@
 ### v0.8.*@dev (master)
 
+##### Fixed
+
+- Fixed bug where using the `Input` or `Request` facade prior to internal requests resulted in unexpected input behaviour.
+
 ### v0.8.0
 
 ##### Added

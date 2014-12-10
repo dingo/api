@@ -17,19 +17,20 @@ use Illuminate\Routing\RouteCollection;
 use Dingo\Api\Exception\InternalHttpException;
 use Illuminate\Events\Dispatcher as EventDispatcher;
 use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
+use Illuminate\Support\Facades\Request as RequestFacade;
 
 class DispatcherTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
         $config = new Config;
-        $container = new Container;
-        $container['request'] = Request::create('/', 'GET');
-        $url = new UrlGenerator(new RouteCollection, $container['request']);
+        $this->container = new Container;
+        $this->container['request'] = Request::create('/', 'GET');
+        $url = new UrlGenerator(new RouteCollection, $this->container['request']);
 
         $this->router = new Router(new EventDispatcher, $config);
-        $this->auth = new Authenticator($this->router, $container, []);
-        $this->dispatcher = new Dispatcher($container, new Filesystem, $url, $this->router, $this->auth, $config);
+        $this->auth = new Authenticator($this->router, $this->container, []);
+        $this->dispatcher = new Dispatcher($this->container, new Filesystem, $url, $this->router, $this->auth, $config);
 
         Response::setFormatters(['json' => new JsonResponseFormat]);
     }
@@ -342,5 +343,22 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Dingo\Api\Http\Response', $response);
         $this->assertEquals('{"foo":"bar"}', $response->getContent());
         $this->assertEquals(['foo' => 'bar'], $response->getOriginalContent());
+    }
+
+    public function testUsingRequestFacadeDoesNotCacheRequestInstance()
+    {
+        RequestFacade::setFacadeApplication($this->container);
+
+        $this->router->api('v1', function () {
+            $this->router->get('foo', function () {
+                return RequestFacade::input('foo');
+            });
+        });
+
+        $this->assertNull(RequestFacade::input('foo'));
+
+        $response = $this->dispatcher->with(['foo' => 'bar'])->get('foo');
+
+        $this->assertEquals('bar', $response);
     }
 }
