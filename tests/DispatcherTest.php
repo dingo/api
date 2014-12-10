@@ -14,6 +14,7 @@ use Illuminate\Container\Container;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Routing\RouteCollection;
+use Dingo\Api\Exception\InternalHttpException;
 use Illuminate\Events\Dispatcher as EventDispatcher;
 use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
 
@@ -113,7 +114,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Symfony\Component\HttpKernel\Exception\HttpException
+     * @expectedException \Dingo\Api\Exception\InternalHttpException
      */
     public function testInternalRequestThrowsExceptionWhenResponseIsNotOkay()
     {
@@ -124,6 +125,22 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         });
 
         $this->dispatcher->get('test');
+    }
+
+    public function testInternalExceptionContainsResponseObject()
+    {
+        $this->router->api(['version' => 'v1'], function () {
+            $this->router->get('test', function () {
+                return new \Illuminate\Http\Response('test', 401);
+            });
+        });
+
+        try {
+            $this->dispatcher->get('test');
+        } catch (InternalHttpException $exception) {
+            $this->assertInstanceOf('Illuminate\Http\Response', $exception->getResponse());
+            $this->assertEquals('test', $exception->getResponse()->getContent());
+        }
     }
 
     /**

@@ -13,9 +13,9 @@ use Illuminate\Routing\UrlGenerator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\Cookie;
+use Dingo\Api\Exception\InternalHttpException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Illuminate\Support\Facades\Request as RequestFacade;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class Dispatcher
@@ -546,7 +546,7 @@ class Dispatcher
             $response = $this->router->dispatch($request, $this->raw);
 
             if (! $response->isSuccessful()) {
-                throw new HttpException($response->getStatusCode(), $response->getOriginalContent());
+                throw new InternalHttpException($response);
             } elseif (! $this->raw) {
                 $response = $response->getOriginalContent();
             }
