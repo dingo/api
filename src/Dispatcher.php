@@ -116,7 +116,7 @@ class Dispatcher
      *
      * @var array
      */
-    protected $uploadedFiles = [];
+    protected $uploads = [];
 
     /**
      * Domain for the request.
@@ -193,7 +193,7 @@ class Dispatcher
                 continue;
             }
 
-            $this->uploadedFiles[$key] = $file;
+            $this->uploads[$key] = $file;
         }
 
         return $this;
@@ -504,7 +504,7 @@ class Dispatcher
 
         $parameters = array_merge($this->parameters, (array) $parameters);
 
-        $request = InternalRequest::create($uri, $verb, $parameters, $this->cookies, $this->uploadedFiles, [], $this->content);
+        $request = InternalRequest::create($this->url->to($uri), $verb, $parameters, $this->cookies, $this->uploads, [], $this->content);
 
         if ($domain = $api->option('domain')) {
             $request->headers->set('host', $domain);
@@ -590,7 +590,7 @@ class Dispatcher
 
         $this->version = $this->domain = $this->content = null;
 
-        $this->parameters = $this->uploadedFiles = [];
+        $this->parameters = $this->uploads = [];
     }
 
     /**

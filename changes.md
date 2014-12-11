@@ -4,6 +4,10 @@
 
 - `Dingo\Api\Transformer\TransformableInterface` is now deprecated. It's recommended you use the Response Builder.
 
+##### Fixed
+
+- Fixed bug where some server variables were not being set properly.
+
 ### v0.8.1
 
 ##### Added
