@@ -170,7 +170,7 @@ class TransformerFactory
     protected function hasBinding($class)
     {
         if ($this->isCollection($class) && ! $class->isEmpty()) {
-            $class = $class->first();
+            $class = (object) $class->first();
         }
 
         $class = is_object($class) ? get_class($class) : $class;
