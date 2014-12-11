@@ -360,5 +360,6 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $response = $this->dispatcher->with(['foo' => 'bar'])->get('foo');
 
         $this->assertEquals('bar', $response);
+        $this->assertNull(RequestFacade::input('foo'));
     }
 }
