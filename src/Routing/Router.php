@@ -154,12 +154,12 @@ class Router extends IlluminateRouter
 
         $options['version'] = (array) $options['version'];
 
-        if (! isset($options['prefix'])) {
-            $options['prefix'] = $this->config->getPrefix();
+        if (! isset($options['prefix']) && $prefix = $this->config->getPrefix()) {
+            $options['prefix'] = $prefix;
         }
 
-        if (! isset($options['domain'])) {
-            $options['domain'] = $this->config->getDomain();
+        if (! isset($options['domain']) && $domain = $this->config->getDomain()) {
+            $options['domain'] = $domain;
         }
 
         if (isset($options['conditional_request'])) {

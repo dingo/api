@@ -151,7 +151,7 @@ class GroupCollection
     public function getByOptions($options)
     {
         return array_where($this->groups, function ($key, $collection) use ($options) {
-            if ($collection->matchesDomain($options['domain'], $options['version'])) {
+            if (isset($options['domain']) && $collection->matchesDomain($options['domain'], $options['version'])) {
                 return true;
             } elseif ($collection->matchesVersion($options['version'])) {
                 return true;

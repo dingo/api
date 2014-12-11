@@ -490,13 +490,7 @@ class Dispatcher
             $this->version = $this->config->getVersion();
         }
 
-        $groups = $this->router->getApiGroups();
-
-        if (isset($this->domain)) {
-            $api = $groups->getByDomain($this->domain, $this->version);
-        } else {
-            $api = $groups->getByVersion($this->version);
-        }
+        $api = $this->router->getApiGroups()->getByDomainOrVersion($this->domain, $this->version);
 
         if (($prefix = $api->option('prefix')) && ! starts_with($uri, $prefix)) {
             $uri = sprintf('%s/%s', $prefix, $uri);
@@ -585,6 +579,8 @@ class Dispatcher
         }
 
         $this->replaceRequestInstance();
+
+        $this->clearCachedFacadeInstance();
 
         $this->raw = false;
 
