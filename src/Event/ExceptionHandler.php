@@ -76,7 +76,7 @@ class ExceptionHandler
                 'line' => $exception->getLine(),
                 'file' => $exception->getFile(),
                 'class' => get_class($exception),
-                'trace' => $exception->getTrace(),
+                'trace' => $exception->getTraceAsString(),
             ];
         }
 

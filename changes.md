@@ -8,6 +8,7 @@
 
 - Fixed bug where some server variables were not being set properly.
 - Fixed inconsistent response when returning an empty collection that is meant to be transformed.
+- Fixed potential HHVM bug caused by `json_encode` being run on certain elements. Debug mode now returns trace as a string.
 
 ### v0.8.1
 
