@@ -76,7 +76,7 @@ class ExceptionHandler
                 'line' => $exception->getLine(),
                 'file' => $exception->getFile(),
                 'class' => get_class($exception),
-                'trace' => $exception->getTraceAsString(),
+                'trace' => explode(PHP_EOL, $exception->getTraceAsString())
             ];
         }
 

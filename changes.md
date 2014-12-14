@@ -1,5 +1,9 @@
 ### v0.8.*@dev (master)
 
+##### Fixed
+
+- Made the trace readable by exploding on the EOL character.
+
 ### v0.8.2
 
 ##### Deprecated
