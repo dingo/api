@@ -7,6 +7,7 @@
 ##### Fixed
 
 - Fixed bug where some server variables were not being set properly.
+- Fixed inconsistent response when returning an empty collection that is meant to be transformed.
 
 ### v0.8.1
 

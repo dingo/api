@@ -73,7 +73,11 @@ class ResponseFactory
      */
     public function collection($collection, $transformer, array $parameters = [], Closure $after = null)
     {
-        $class = get_class($collection->first());
+        if ($collection->isEmpty()) {
+            $class = get_class($collection);
+        } else {
+            $class = get_class($collection->first());
+        }
 
         $binding = $this->transformer->register($class, $transformer, $parameters, $after);
 
