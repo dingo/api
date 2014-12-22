@@ -206,6 +206,18 @@ class ResponseFactory
     }
 
     /**
+     * Return a 405 method not allowed error.
+     *
+     * @param string|array $message
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function errorMethodNotAllowed($message = 'Method not allowed')
+    {
+        return $this->error($message, 405);
+    }
+
+    /**
      * Call magic methods beginning with "with".
      *
      * @param string $method
