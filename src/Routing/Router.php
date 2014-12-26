@@ -246,7 +246,7 @@ class Router extends IlluminateRouter
         // most likely formatting an error response.
         if ($morph) {
             if (! $response->hasFormatter($format)) {
-                $format = $this->defaultFormat;
+                $format = $this->config->getFormat();
             }
 
             $response = $response->morph($format);
