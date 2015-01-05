@@ -150,10 +150,11 @@ class FractalTransformer implements TransformerInterface
     }
 
     /**
-     * Get includes as their array keys for eager loading
+     * Get includes as their array keys for eager loading.
      *
-     * @param  array|string $requestedIncludes
-     * @return array
+     * @param string|string[] $requestedIncludes
+     *
+     * @return string[]
      */
     public function getEagerLoads($transformer, $requestedIncludes)
     {
@@ -178,5 +179,4 @@ class FractalTransformer implements TransformerInterface
 
         return $eagerLoads;
     }
-
 }
