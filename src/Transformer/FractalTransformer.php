@@ -76,7 +76,9 @@ class FractalTransformer implements TransformerInterface
         }
 
         if ($response instanceof EloquentCollection) {
-            $response->load($this->fractal->getRequestedIncludes());
+            $requestedIncludes = $this->fractal->getRequestedIncludes();
+            $eagerLoads = $this->getEagerLoads($transformer, $requestedIncludes);
+            $response->load($eagerLoads);
         }
 
         foreach ($binding->getMeta() as $key => $value) {
@@ -129,7 +131,10 @@ class FractalTransformer implements TransformerInterface
      */
     public function parseFractalIncludes(Request $request)
     {
-        $includes = array_filter(explode($this->includeSeparator, $request->get($this->includeKey)));
+        $includes = $request->get($this->includeKey);
+
+        if(!is_array($includes))
+            $includes = array_filter(explode($this->includeSeparator, $includes));
 
         $this->fractal->parseIncludes($includes);
     }
@@ -143,4 +148,35 @@ class FractalTransformer implements TransformerInterface
     {
         return $this->fractal;
     }
+
+    /**
+     * Get includes as their array keys for eager loading
+     *
+     * @param  array|string $requestedIncludes
+     * @return array
+     */
+    public function getEagerLoads($transformer, $requestedIncludes)
+    {
+        if(!is_array($requestedIncludes))
+            $requestedIncludes = array($requestedIncludes);
+
+        $availableRequestedIncludes = array_intersect($transformer->getAvailableIncludes(), $requestedIncludes);
+        $defaultIncludes = $transformer->getDefaultIncludes();
+
+        $includes = array_merge($availableRequestedIncludes, $defaultIncludes);
+
+        $eagerLoads = array();
+
+        foreach ($includes as $includeKey => $includeName) {
+            if (gettype($includeKey) === "string") {
+                unset($includes[$includeKey]);
+                array_push($eagerLoads, $includeKey);
+            } else {
+                array_push($eagerLoads, $includeName);
+            }
+        }
+
+        return $eagerLoads;
+    }
+
 }
