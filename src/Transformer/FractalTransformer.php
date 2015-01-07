@@ -158,8 +158,9 @@ class FractalTransformer implements TransformerInterface
      */
     public function getEagerLoads($transformer, $requestedIncludes)
     {
-        if(!is_array($requestedIncludes))
+        if(!is_array($requestedIncludes)) {
             $requestedIncludes = array($requestedIncludes);
+        }
 
         $availableRequestedIncludes = array_intersect($transformer->getAvailableIncludes(), $requestedIncludes);
         $defaultIncludes = $transformer->getDefaultIncludes();
