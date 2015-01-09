@@ -85,4 +85,34 @@ class API extends Facade
     {
         return static::$app['api.response'];
     }
+    
+	/**
+	 * Handle dynamic static method calls into the method.
+	 *
+	 * @param  string  $method
+	 * @param  array   $parameters
+	 * @return mixed
+	 */
+    public static function __callStatic($method, $parameters)
+	{
+		$request = app('url')->getRequest();
+		$return = parent::__callStatic($method, $parameters);
+		app('url')->setRequest($request);
+		return $return;
+	}
+    
+	/**
+	 * Handle dynamic method calls into the method.
+	 *
+	 * @param  string  $method
+	 * @param  array   $parameters
+	 * @return mixed
+	 */
+    public function __call($method, $parameters)
+	{
+		$request = app('url')->getRequest();
+		$return = parent::__call($method, $parameters);
+		app('url')->setRequest($request);
+		return $return;
+	}
 }
