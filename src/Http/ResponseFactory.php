@@ -64,14 +64,14 @@ class ResponseFactory
     /**
      * Bind a collection to a transformer and start building a response.
      *
-     * @param object   $collection
-     * @param object   $transformer
-     * @param array    $parameters
-     * @param \Closure $after
+     * @param object        $collection
+     * @param object|null   $transformer
+     * @param array         $parameters
+     * @param \Closure      $after
      *
      * @return \Dingo\Api\Http\ResponseBuilder
      */
-    public function collection($collection, $transformer, array $parameters = [], Closure $after = null)
+    public function collection($collection, $transformer = null, array $parameters = [], Closure $after = null)
     {
         if ($collection->isEmpty()) {
             $class = get_class($collection);
@@ -87,14 +87,14 @@ class ResponseFactory
     /**
      * Bind an item to a transformer and start building a response.
      *
-     * @param object   $item
-     * @param object   $transformer
-     * @param array    $parameters
-     * @param \Closure $after
+     * @param object        $item
+     * @param object|null   $transformer
+     * @param array         $parameters
+     * @param \Closure      $after
      *
      * @return \Dingo\Api\Http\ResponseBuilder
      */
-    public function item($item, $transformer, array $parameters = [], Closure $after = null)
+    public function item($item, $transformer = null, array $parameters = [], Closure $after = null)
     {
         $class = get_class($item);
 
