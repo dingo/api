@@ -71,7 +71,7 @@ class ResponseFactory
      *
      * @return \Dingo\Api\Http\ResponseBuilder
      */
-    public function collection($collection, $transformer, array $parameters = [], Closure $after = null)
+    public function collection($collection, $transformer = null, array $parameters = [], Closure $after = null)
     {
         if ($collection->isEmpty()) {
             $class = get_class($collection);
@@ -94,7 +94,7 @@ class ResponseFactory
      *
      * @return \Dingo\Api\Http\ResponseBuilder
      */
-    public function item($item, $transformer, array $parameters = [], Closure $after = null)
+    public function item($item, $transformer = null, array $parameters = [], Closure $after = null)
     {
         $class = get_class($item);
 
