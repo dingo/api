@@ -438,7 +438,7 @@ class Router extends IlluminateRouter
     {
         if (preg_match('#application/vnd\.'.$this->config->getVendor().'.(v[\d\.]+)\+(\w+)#', $request->header('accept'), $matches)) {
             return array_slice($matches, 1);
-        } elseif ($this->isStrict()) {
+        } elseif ($this->isStrict() && $request->method() !== 'OPTIONS') {
             throw new InvalidAcceptHeaderException('Unable to match the "Accept" header for the API request.');
         }
 
