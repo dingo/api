@@ -216,7 +216,7 @@ class Router extends IlluminateRouter
      */
     public function dispatch(Request $request, $morph = true)
     {
-        if (! $this->isApiRequest($request)) {
+        if (! $this->isApiRequest($request) OR $request->method() == 'OPTIONS') {
             return parent::dispatch($request);
         }
 
@@ -438,7 +438,7 @@ class Router extends IlluminateRouter
     {
         if (preg_match('#application/vnd\.'.$this->config->getVendor().'.(v[\d\.]+)\+(\w+)#', $request->header('accept'), $matches)) {
             return array_slice($matches, 1);
-        } elseif ($this->isStrict() && $request->method() !== 'OPTIONS') {
+        } elseif ($this->isStrict()) {
             throw new InvalidAcceptHeaderException('Unable to match the "Accept" header for the API request.');
         }
 
