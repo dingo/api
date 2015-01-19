@@ -51,6 +51,16 @@ class Route extends IlluminateRoute
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function setAction(array $action)
+    {
+        $action = static::parseAction($action);
+
+        return parent::setAction($action);
+    }
+
+    /**
      * Determine if the route is protected.
      *
      * @return bool

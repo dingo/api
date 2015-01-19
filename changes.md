@@ -5,6 +5,7 @@
 - Made the trace readable by exploding on the EOL character.
 - API filters are now applied before any other filters to ensure they are run first.
 - Request and response instances are correctly set on the formatter for exception responses.
+- Scopes set on groups are now parsed correctly.
 
 ### v0.8.2
 

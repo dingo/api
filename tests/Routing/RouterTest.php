@@ -437,4 +437,22 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->router->setStrict(true);
         $this->router->dispatch(Request::create('foo', 'GET'));
     }
+
+    public function testRouterParsesScopesFromStringsToArrays()
+    {
+        $this->router->api(['version' => 'v1'], function () {
+            $this->router->group(['scopes' => 'foo'], function () {
+                $this->router->get('foo', function () {
+                    return 'bar';
+                });
+            });
+
+            $this->router->get('bar', ['scopes' => 'bar', function () {
+                return 'baz';
+            }]);
+        });
+
+        $this->assertEquals(['foo'], $this->router->getApiGroups()->getByVersion('v1')->getRoutes()[0]->scopes());
+        $this->assertEquals(['bar'], $this->router->getApiGroups()->getByVersion('v1')->getRoutes()[1]->scopes());
+    }
 }
