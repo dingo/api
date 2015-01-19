@@ -7,6 +7,20 @@ use Illuminate\Routing\Route as IlluminateRoute;
 class Route extends IlluminateRoute
 {
     /**
+     * Name of the authentication filter.
+     *
+     * @var string
+     */
+    const API_FILTER_AUTH = 'api.auth';
+
+    /**
+     * Name of the throttling filter.
+     *
+     * @var string
+     */
+    const API_FILTER_THROTTLE = 'api.throttle';
+
+    /**
      * {@inheritDoc}
      */
     protected function parseAction($action)
@@ -19,6 +33,18 @@ class Route extends IlluminateRoute
 
         if (isset($action['scopes'])) {
             $action['scopes'] = is_array($action['scopes']) ? $action['scopes'] : explode('|', $action['scopes']);
+        }
+
+        if (! isset($action['before'])) {
+            $action['before'] = [];
+        } elseif(is_string($action['before'])) {
+            $action['before'] = [$action['before']];
+        }
+
+        foreach ([static::API_FILTER_THROTTLE, static::API_FILTER_AUTH] as $filter) {
+            if (array_search($filter, $action['before']) === false) {
+                array_unshift($action['before'], $filter);
+            }
         }
 
         return $action;

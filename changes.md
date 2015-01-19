@@ -3,6 +3,7 @@
 ##### Fixed
 
 - Made the trace readable by exploding on the EOL character.
+- API filters are now applied before any other filters to ensure they are run first.
 
 ### v0.8.2
 

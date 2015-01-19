@@ -72,20 +72,6 @@ class Router extends IlluminateRouter
     protected $strict;
 
     /**
-     * Name of the authentication filter.
-     *
-     * @var string
-     */
-    const API_FILTER_AUTH = 'api.auth';
-
-    /**
-     * Name of the throttling filter.
-     *
-     * @var string
-     */
-    const API_FILTER_THROTTLE = 'api.throttle';
-
-    /**
      * Create a new router instance.
      *
      * @param \Illuminate\Events\Dispatcher   $events
@@ -307,7 +293,7 @@ class Router extends IlluminateRouter
         $route = $this->createRoute($methods, $uri, $action);
 
         if ($this->routingToApi()) {
-            return $this->addApiRoute($this->attachApiFilters($route));
+            return $this->addApiRoute($route);
         }
 
         return $this->routes->add($route);
@@ -326,26 +312,6 @@ class Router extends IlluminateRouter
 
         foreach ($this->api->getByOptions($options) as $collection) {
             $collection->add($route);
-        }
-
-        return $route;
-    }
-
-    /**
-     * Attach the API before filters to the route.
-     *
-     * @param \Dingo\Api\Routing\Route $route
-     *
-     * @return \Dingo\Api\Routing\Route
-     */
-    protected function attachApiFilters(Route $route)
-    {
-        $filters = $route->beforeFilters();
-
-        foreach ([static::API_FILTER_AUTH, static::API_FILTER_THROTTLE] as $filter) {
-            if (! isset($filters[$filter])) {
-                $route->before($filter);
-            }
         }
 
         return $route;
