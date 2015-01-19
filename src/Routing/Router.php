@@ -216,12 +216,9 @@ class Router extends IlluminateRouter
         try {
             $response = parent::dispatch($request);
 
-            // We'll try to set the request and the response on the formatter
-            // now so that we can catch any exceptions that may be thrown
-            // due to a badly requested format.
-            $response->getFormatter($format)
-                     ->setRequest($request)
-                     ->setResponse($response);
+            // Attempt to get the formatter so that we can catch and handle
+            // any exceptions due to a poorly formatted accept header.
+            $response->getFormatter($format);
         } catch (Exception $exception) {
             $response = $this->handleException($request, $exception);
         }
@@ -234,6 +231,10 @@ class Router extends IlluminateRouter
             if (! $response->hasFormatter($format)) {
                 $format = $this->config->getFormat();
             }
+
+            $response->getFormatter($format)
+                     ->setRequest($request)
+                     ->setResponse($response);
 
             $response = $response->morph($format);
         }
