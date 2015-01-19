@@ -122,6 +122,18 @@ class LeagueOAuth2Provider extends AuthorizationProvider
             return true;
         }
 
+
+        if (is_string($scopes)) {
+
+            $scopes = explode(',', $scopes);
+
+            $scopes = array_map(function($scope) {
+
+                return trim($scope);
+
+            }, $scopes);
+        }
+
         foreach ($scopes as $scope) {
             if ($token->hasScope($scope)) {
                 return true;
