@@ -17,6 +17,10 @@ class RateLimiterTest extends PHPUnit_Framework_TestCase
         $this->container['config'] = ['cache.driver' => 'array'];
         $this->cache = new CacheManager($this->container);
         $this->limiter = new RateLimiter($this->container, $this->cache, []);
+
+        $this->limiter->setRateLimiter(function ($container, $request) {
+            return $request->getClientIp();
+        });
     }
 
     public function testSettingSpecificLimitsOnRouteUsesRouteSpecificThrottle()

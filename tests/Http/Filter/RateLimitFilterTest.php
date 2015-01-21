@@ -27,6 +27,10 @@ class RateLimitFilterTest extends PHPUnit_Framework_TestCase
         $this->cache = new CacheManager($this->container);
         $this->limiter = new RateLimiter($this->container, $this->cache, []);
         $this->filter = new RateLimitFilter($this->router, $this->limiter);
+
+        $this->limiter->setRateLimiter(function ($container, $request) {
+            return $request->getClientIp();
+        });
     }
 
     public function testFilterBypassesInternalRequests()

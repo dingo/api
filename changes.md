@@ -1,5 +1,9 @@
 ### v0.8.*@dev (master)
 
+##### Added
+
+- Can now use `RateLimiter::setRateLimiter` to change the key used to rate limit requests from the clients IP.
+
 ##### Fixed
 
 - Made the trace readable by exploding on the EOL character.
