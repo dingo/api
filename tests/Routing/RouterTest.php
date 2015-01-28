@@ -455,4 +455,21 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(['foo'], $this->router->getApiGroups()->getByVersion('v1')->getRoutes()[0]->scopes());
         $this->assertEquals(['bar'], $this->router->getApiGroups()->getByVersion('v1')->getRoutes()[1]->scopes());
     }
+
+    public function testRoutesOnlyAddedToSpecifiedCollection()
+    {
+        $this->router->api(['version' => 'v1', 'domain' => 'foo.bar'], function () {
+            $this->router->get('foo', function () {
+                return 'bar';
+            });
+        });
+
+        $this->router->api(['version' => 'v2', 'domain' => 'foo.bar'], function () {
+            $this->router->get('bar', function () {
+                return 'baz';
+            });
+        });
+
+        $this->assertCount(1, $this->router->getApiGroups()->getByVersion('v1')->getRoutes());
+    }
 }

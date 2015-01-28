@@ -23,7 +23,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $config = new Config;
+        $config = new Config('v1', null, null, 'test');
         $this->container = new Container;
         $this->container['request'] = Request::create('/', 'GET');
         $url = new UrlGenerator(new RouteCollection, $this->container['request']);

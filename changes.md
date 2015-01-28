@@ -10,6 +10,7 @@
 - API filters are now applied before any other filters to ensure they are run first.
 - Request and response instances are correctly set on the formatter for exception responses.
 - Scopes set on groups are now parsed correctly.
+- Routes are now added to the correct groups and matched correctly.
 
 ### v0.8.2
 

@@ -326,7 +326,7 @@ class Router extends IlluminateRouter
         $collection = $this->getRoutes();
 
         if ($this->isApiRequest($request)) {
-            $collection = $this->api->getByVersion($this->currentVersion);
+            $collection = $this->api->getByRequest($request) ?: $this->api->getByVersion($this->currentVersion);
         }
 
         if (! $collection) {

@@ -120,7 +120,7 @@ class GroupCollection
                 return false;
             }
 
-            return $collection->matchesDomain($domain, $version);
+            return $collection->matchesDomain($domain);
         });
     }
 
@@ -151,9 +151,13 @@ class GroupCollection
     public function getByOptions($options)
     {
         return array_where($this->groups, function ($key, $collection) use ($options) {
-            if (isset($options['domain']) && $collection->matchesDomain($options['domain'], $options['version'])) {
-                return true;
-            } elseif ($collection->matchesVersion($options['version'])) {
+            if ($collection->matchesVersion($options['version'])) {
+                // If a domain is present in the options then we'll attempt to match the domain
+                // on the group. If we can't then we'll bail out, otherwise all should be good.
+                if (isset($options['domain']) && ! $collection->matchesDomain($options['domain'])) {
+                    return false;
+                }
+
                 return true;
             }
 
