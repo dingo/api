@@ -12,6 +12,10 @@
 - Scopes set on groups are now parsed correctly.
 - Routes are now added to the correct groups and matched correctly.
 
+##### Changed
+
+- `ResponseFactory::collection` is now type-hinted to `Illuminate\Support\Collection`.
+
 ### v0.8.2
 
 ##### Deprecated
