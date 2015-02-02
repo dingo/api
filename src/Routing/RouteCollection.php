@@ -112,7 +112,7 @@ class RouteCollection extends IlluminateRouteCollection
      */
     protected function headerVersionMatches($request)
     {
-        if (preg_match('#application/vnd\.\w+.(v[\d\.]+)\+\w+#', $request->header('accept'), $matches)) {
+        if (preg_match('#application/vnd\.\w+.(v[\d\w+\.]+)\+\w+#', $request->header('accept'), $matches)) {
             list($accept, $version) = $matches;
 
             return $version == $this->version;
