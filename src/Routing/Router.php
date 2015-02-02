@@ -403,7 +403,7 @@ class Router extends IlluminateRouter
      */
     protected function parseAcceptHeader(Request $request)
     {
-        if (preg_match('#application/vnd\.'.$this->config->getVendor().'.(v[\d\.]+)\+(\w+)#', $request->header('accept'), $matches)) {
+        if (preg_match('#application/vnd\.'.$this->config->getVendor().'.(v[\d\w+\.]+)\+(\w+)#', $request->header('accept'), $matches)) {
             return array_slice($matches, 1);
         } elseif ($this->isStrict()) {
             throw new InvalidAcceptHeaderException('Unable to match the "Accept" header for the API request.');
