@@ -1,12 +1,6 @@
 # API for Laravel
 
-This is an API package for the Laravel framework. It allows you to build a flexible RESTful API that can be consumed externally and by your own application.
-
-[![Build Status](https://travis-ci.org/dingo/api.svg?branch=master)](https://travis-ci.org/dingo/api)
-
-## Manual
-
-Refer to the [Wiki](https://github.com/dingo/api/wiki) for installation instructions and how to use this package.
+The `develop` branch is for Laravel 5 development and is highly unstable and will most likely not work at this point in time.
 
 ## License
 
