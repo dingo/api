@@ -72,20 +72,6 @@ class Router extends IlluminateRouter
     protected $strict;
 
     /**
-     * Name of the authentication filter.
-     *
-     * @var string
-     */
-    const API_FILTER_AUTH = 'api.auth';
-
-    /**
-     * Name of the throttling filter.
-     *
-     * @var string
-     */
-    const API_FILTER_THROTTLE = 'api.throttle';
-
-    /**
      * Create a new router instance.
      *
      * @param \Illuminate\Events\Dispatcher   $events
@@ -230,12 +216,9 @@ class Router extends IlluminateRouter
         try {
             $response = parent::dispatch($request);
 
-            // We'll try to set the request and the response on the formatter
-            // now so that we can catch any exceptions that may be thrown
-            // due to a badly requested format.
-            $response->getFormatter($format)
-                     ->setRequest($request)
-                     ->setResponse($response);
+            // Attempt to get the formatter so that we can catch and handle
+            // any exceptions due to a poorly formatted accept header.
+            $response->getFormatter($format);
         } catch (Exception $exception) {
             $response = $this->handleException($request, $exception);
         }
@@ -248,6 +231,10 @@ class Router extends IlluminateRouter
             if (! $response->hasFormatter($format)) {
                 $format = $this->config->getFormat();
             }
+
+            $response->getFormatter($format)
+                     ->setRequest($request)
+                     ->setResponse($response);
 
             $response = $response->morph($format);
         }
@@ -307,7 +294,7 @@ class Router extends IlluminateRouter
         $route = $this->createRoute($methods, $uri, $action);
 
         if ($this->routingToApi()) {
-            return $this->addApiRoute($this->attachApiFilters($route));
+            return $this->addApiRoute($route);
         }
 
         return $this->routes->add($route);
@@ -332,26 +319,6 @@ class Router extends IlluminateRouter
     }
 
     /**
-     * Attach the API before filters to the route.
-     *
-     * @param \Dingo\Api\Routing\Route $route
-     *
-     * @return \Dingo\Api\Routing\Route
-     */
-    protected function attachApiFilters(Route $route)
-    {
-        $filters = $route->beforeFilters();
-
-        foreach ([static::API_FILTER_AUTH, static::API_FILTER_THROTTLE] as $filter) {
-            if (! isset($filters[$filter])) {
-                $route->before($filter);
-            }
-        }
-
-        return $route;
-    }
-
-    /**
      * {@inheritDoc}
      */
     protected function findRoute($request)
@@ -359,7 +326,7 @@ class Router extends IlluminateRouter
         $collection = $this->getRoutes();
 
         if ($this->isApiRequest($request)) {
-            $collection = $this->api->getByVersion($this->currentVersion);
+            $collection = $this->api->getByRequest($request) ?: $this->api->getByVersion($this->currentVersion);
         }
 
         if (! $collection) {

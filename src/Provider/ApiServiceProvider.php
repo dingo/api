@@ -129,7 +129,13 @@ class ApiServiceProvider extends ServiceProvider
         $this->app->bindShared('api.limiter', function ($app) {
             $throttles = $this->prepareConfigInstances($app['config']['api::throttling']);
 
-            return new RateLimiter($app, $app['cache'], $throttles);
+            $limiter = new RateLimiter($app, $app['cache'], $throttles);
+
+            $limiter->setRateLimiter(function ($container, $request) {
+                return $request->getClientIp();
+            });
+
+            return $limiter;
         });
     }
 

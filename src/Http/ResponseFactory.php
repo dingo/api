@@ -5,6 +5,7 @@ namespace Dingo\Api\Http;
 use Closure;
 use BadMethodCallException;
 use Illuminate\Support\Str;
+use Illuminate\Support\Collection;
 use Illuminate\Pagination\Paginator;
 use Dingo\Api\Transformer\TransformerFactory;
 
@@ -64,14 +65,14 @@ class ResponseFactory
     /**
      * Bind a collection to a transformer and start building a response.
      *
-     * @param object   $collection
-     * @param object   $transformer
-     * @param array    $parameters
-     * @param \Closure $after
+     * @param \Illuminate\Support\Collection $collection
+     * @param object                         $transformer
+     * @param array                          $parameters
+     * @param \Closure                       $after
      *
      * @return \Dingo\Api\Http\ResponseBuilder
      */
-    public function collection($collection, $transformer, array $parameters = [], Closure $after = null)
+    public function collection(Collection $collection, $transformer, array $parameters = [], Closure $after = null)
     {
         if ($collection->isEmpty()) {
             $class = get_class($collection);

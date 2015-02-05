@@ -52,6 +52,13 @@ class RateLimiter
     protected $keyPrefix;
 
     /**
+     * A callback used to define the limiter.
+     *
+     * @var callback
+     */
+    protected $limiter;
+
+    /**
      * Create a new rate limiter instance.
      *
      * @param \Illuminate\Container\Container $container
@@ -154,7 +161,7 @@ class RateLimiter
      */
     protected function key($key)
     {
-        return sprintf('dingo.api.%s.%s.%s', $this->keyPrefix, $key, $this->request->getClientIp());
+        return sprintf('dingo.api.%s.%s.%s', $this->keyPrefix, $key, $this->getRateLimiter());
     }
 
     /**
@@ -215,6 +222,28 @@ class RateLimiter
     public function requestWasRateLimited()
     {
         return ! is_null($this->throttle);
+    }
+
+    /**
+     * Get the rate limiter.
+     *
+     * @return string
+     */
+    public function getRateLimiter()
+    {
+        return call_user_func($this->limiter, $this->container, $this->request);
+    }
+
+    /**
+     * Set the rate limiter.
+     *
+     * @param callable $limiter
+     *
+     * @return void
+     */
+    public function setRateLimiter(callable $limiter)
+    {
+        $this->limiter = $limiter;
     }
 
     /**

@@ -1,8 +1,20 @@
 ### v0.8.*@dev (master)
 
+##### Added
+
+- Can now use `RateLimiter::setRateLimiter` to change the key used to rate limit requests from the clients IP.
+
 ##### Fixed
 
 - Made the trace readable by exploding on the EOL character.
+- API filters are now applied before any other filters to ensure they are run first.
+- Request and response instances are correctly set on the formatter for exception responses.
+- Scopes set on groups are now parsed correctly.
+- Routes are now added to the correct groups and matched correctly.
+
+##### Changed
+
+- `ResponseFactory::collection` is now type-hinted to `Illuminate\Support\Collection`.
 
 ### v0.8.2
 
