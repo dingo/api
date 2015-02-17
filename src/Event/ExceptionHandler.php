@@ -61,10 +61,18 @@ class ExceptionHandler
             $message = sprintf('%d %s', $exception->getStatusCode(), Response::$statusTexts[$exception->getStatusCode()]);
         }
 
-        $response = ['message' => $message, 'status_code' => $exception->getStatusCode()];
+        $response = ['message' => $message, 'statusCode' => $exception->getStatusCode()];
 
         if ($exception instanceof ResourceException && $exception->hasErrors()) {
-            $response['errors'] = $exception->getErrors();
+            $errorArray = $exception->getErrors()->toArray();
+
+            $camelCasedErrorArray = [];
+            foreach ($errorArray as $key => $value) {
+                $camelCasedErrorArray[camel_case($key)] = $value;
+            }
+
+            $response['errors'] = $camelCasedErrorArray;
+            unset($errorArray, $camelCasedErrorArray);
         }
 
         if ($code = $exception->getCode()) {
