@@ -31,7 +31,7 @@ class RoutingServiceProvider extends ServiceProvider
         $routes = $this->app['router']->getRoutes();
 
         $this->app->bindShared('router', function ($app) use ($routes) {
-            $router = new Router($app['events'], $app['api.config'], $app);
+            $router = new Router($app['events'], $app['api.properties'], $app);
 
             if ($app['env'] == 'testing') {
                 $router->disableFilters();
