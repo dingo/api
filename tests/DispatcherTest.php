@@ -3,7 +3,7 @@
 namespace Dingo\Api\Tests;
 
 use Mockery;
-use Dingo\Api\Config;
+use Dingo\Api\Properties;
 use Dingo\Api\Dispatcher;
 use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
@@ -23,7 +23,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $config = new Config('v1', null, null, 'test');
+        $config = new Properties('v1', null, null, 'test');
         $this->container = new Container;
         $this->container['request'] = Request::create('/', 'GET');
         $url = new UrlGenerator(new RouteCollection, $this->container['request']);

@@ -2,7 +2,7 @@
 
 namespace Dingo\Api\Tests\Http\Filter;
 
-use Dingo\Api\Config;
+use Dingo\Api\Properties;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
 use Dingo\Api\Http\Response;
@@ -23,7 +23,7 @@ class RateLimitFilterTest extends PHPUnit_Framework_TestCase
         $this->container = new Container;
         $this->container['config'] = ['cache.driver' => 'array'];
 
-        $this->router = new Router(new Dispatcher($this->container), new Config, $this->container);
+        $this->router = new Router(new Dispatcher($this->container), new Properties, $this->container);
         $this->cache = new CacheManager($this->container);
         $this->limiter = new RateLimiter($this->container, $this->cache, []);
         $this->filter = new RateLimitFilter($this->router, $this->limiter);

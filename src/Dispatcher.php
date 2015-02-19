@@ -56,11 +56,11 @@ class Dispatcher
     protected $auth;
 
     /**
-     * API config instance.
+     * API properties instance.
      *
-     * @var \Dingo\Api\Config
+     * @var \Dingo\Api\Properties
      */
-    protected $config;
+    protected $properties;
 
     /**
      * Internal request stack.
@@ -147,18 +147,18 @@ class Dispatcher
      * @param \Illuminate\Routing\UrlGenerator  $url
      * @param \Dingo\Api\Routing\Router         $router
      * @param \Dingo\Api\Auth\Authenticator     $auth
-     * @param \Dingo\Api\Config                 $config
+     * @param \Dingo\Api\Properties             $properties
      *
      * @return void
      */
-    public function __construct(Container $container, Filesystem $files, UrlGenerator $url, Router $router, Authenticator $auth, Config $config)
+    public function __construct(Container $container, Filesystem $files, UrlGenerator $url, Router $router, Authenticator $auth, Properties $properties)
     {
         $this->container = $container;
         $this->files = $files;
         $this->url = $url;
         $this->router = $router;
         $this->auth = $auth;
-        $this->config = $config;
+        $this->properties = $properties;
 
         $this->setupRequestStack();
     }
@@ -343,7 +343,7 @@ class Dispatcher
      */
     public function route($name, $parameters = [], $requestParameters = [])
     {
-        $version = $this->version ?: $this->config->getVersion();
+        $version = $this->version ?: $this->properties->getVersion();
 
         $route = $this->router->getApiGroups()->getByDomainOrVersion($this->domain, $version)->getByName($name);
 
@@ -361,7 +361,7 @@ class Dispatcher
      */
     public function action($action, $parameters = [], $requestParameters = [])
     {
-        $version = $this->version ?: $this->config->getVersion();
+        $version = $this->version ?: $this->properties->getVersion();
 
         $route = $this->router->getApiGroups()->getByDomainOrVersion($this->domain, $version)->getByAction($action);
 
@@ -487,7 +487,7 @@ class Dispatcher
     protected function createRequest($verb, $uri, $parameters)
     {
         if (! isset($this->version)) {
-            $this->version = $this->config->getVersion();
+            $this->version = $this->properties->getVersion();
         }
 
         $api = $this->router->getApiGroups()->getByDomainOrVersion($this->domain, $this->version);
@@ -520,7 +520,7 @@ class Dispatcher
      */
     protected function buildAcceptHeader()
     {
-        return sprintf('application/vnd.%s.%s+%s', $this->config->getVendor(), $this->version, $this->config->getFormat());
+        return sprintf('application/vnd.%s.%s+%s', $this->properties->getVendor(), $this->version, $this->properties->getFormat());
     }
 
     /**
