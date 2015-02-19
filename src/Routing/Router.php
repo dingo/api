@@ -323,17 +323,24 @@ class Router extends IlluminateRouter
      */
     protected function findRoute($request)
     {
-        $collection = $this->getRoutes();
+        $routes = $this->getRoutes();
 
-        if ($this->isApiRequest($request)) {
-            $collection = $this->api->getByRequest($request) ?: $this->api->getByVersion($this->currentVersion);
+        try {
+            $route = $routes->match($request);
+        } catch (NotFoundHttpException $exception) {
+            // If we are unable to match a route against the regular application routes then
+            // we'll attempt to match a route based on the request against the API routes.
+            // This will search the API route groups in reverse order for a match,
+            // it should be noted that OPTIONS requests will be a first in
+            // last out match.
+            if (! $routes = $this->api->getByRequest($request) ?: $this->api->getByVersion($this->currentVersion)) {
+                throw $exception;
+            }
+
+            $route = $routes->match($request);
         }
 
-        if (! $collection) {
-            throw new BadRequestHttpException('The requested API version is invalid.');
-        }
-
-        return $this->current = $this->substituteBindings($collection->match($request));
+        return $this->current = $this->substituteBindings($route);
     }
 
     /**
