@@ -35,19 +35,28 @@ class FractalTransformer implements TransformerInterface
     protected $includeSeparator;
 
     /**
+     * Indicates if eager loading is enabled.
+     *
+     * @var bool
+     */
+    protected $eagerLoading = true;
+
+    /**
      * Create a new fractal transformer instance.
      *
      * @param \League\Fractal\Manager $fractal
      * @param string                  $includeKey
      * @param string                  $includeSeparator
+     * @param bool                    $eagerLoading
      *
      * @return void
      */
-    public function __construct(Fractal $fractal, $includeKey = 'include', $includeSeparator = ',')
+    public function __construct(Fractal $fractal, $includeKey = 'include', $includeSeparator = ',', $eagerLoading = true)
     {
         $this->fractal = $fractal;
         $this->includeKey = $includeKey;
         $this->includeSeparator = $includeSeparator;
+        $this->eagerLoading = $eagerLoading;
     }
 
     /**
@@ -75,9 +84,9 @@ class FractalTransformer implements TransformerInterface
             $resource->setPaginator($paginator);
         }
 
-        if ($response instanceof EloquentCollection) {
-            $requestedIncludes = $this->fractal->getRequestedIncludes();
-            $eagerLoads = $this->getEagerLoads($transformer, $requestedIncludes);
+        if ($response instanceof EloquentCollection && $this->eagerLoading) {
+            $eagerLoads = $this->getEagerLoads($transformer, $this->fractal->getRequestedIncludes());
+
             $response->load($eagerLoads);
         }
 
@@ -152,28 +161,21 @@ class FractalTransformer implements TransformerInterface
     /**
      * Get includes as their array keys for eager loading.
      *
-     * @param string|string[] $requestedIncludes
+     * @param \League\Fractal\TransformerAbstract $transformer
+     * @param string|array                        $requestedIncludes
      *
-     * @return string[]
+     * @return array
      */
-    public function getEagerLoads($transformer, $requestedIncludes)
+    protected function mergeEagerLoads($transformer, $requestedIncludes)
     {
-        $requestedIncludes = (array) $requestedIncludes; // Ensure $requestedIncludeStrings is an array
+        $availableIncludes = array_intersect($transformer->getAvailableIncludes(), (array) $requestedIncludes);
 
-        $availableRequestedIncludes = array_intersect($transformer->getAvailableIncludes(), $requestedIncludes);
-        $defaultIncludes = $transformer->getDefaultIncludes();
-
-        $includes = array_merge($availableRequestedIncludes, $defaultIncludes);
+        $includes = array_merge($availableIncludes, $transformer->getDefaultIncludes());
 
         $eagerLoads = array();
 
-        foreach ($includes as $includeKey => $includeName) {
-            if (gettype($includeKey) === "string") {
-                unset($includes[$includeKey]);
-                array_push($eagerLoads, $includeKey);
-            } else {
-                array_push($eagerLoads, $includeName);
-            }
+        foreach ($includes as $key => $value) {
+            $eagerLoads[] = is_string($key) ? $key : $value;
         }
 
         return $eagerLoads;
