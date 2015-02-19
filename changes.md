@@ -11,10 +11,13 @@
 - Request and response instances are correctly set on the formatter for exception responses.
 - Scopes set on groups are now parsed correctly.
 - Routes are now added to the correct groups and matched correctly.
+- OPTION requests are now handled correctly for API routes so preflights will no longer fail.
+- Eager loading for Fractal transformers now checks the available includes before attempting to load.
 
 ##### Changed
 
 - `ResponseFactory::collection` is now type-hinted to `Illuminate\Support\Collection`.
+- Refined the handling of route matching.
 
 ### v0.8.2
 
