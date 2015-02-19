@@ -202,7 +202,7 @@ class Router extends IlluminateRouter
      */
     public function dispatch(Request $request, $raw = false)
     {
-        if (! $this->isApiRequest($request)) {
+        if (! $this->isApiRequest($request) || $request->method() == 'OPTIONS') {
             return parent::dispatch($request);
         }
 
