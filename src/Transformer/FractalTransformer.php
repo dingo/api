@@ -85,7 +85,7 @@ class FractalTransformer implements TransformerInterface
         }
 
         if ($response instanceof EloquentCollection && $this->eagerLoading) {
-            $eagerLoads = $this->getEagerLoads($transformer, $this->fractal->getRequestedIncludes());
+            $eagerLoads = $this->mergeEagerLoads($transformer, $this->fractal->getRequestedIncludes());
 
             $response->load($eagerLoads);
         }
