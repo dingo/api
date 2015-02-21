@@ -3,7 +3,7 @@
 namespace Dingo\Api\Routing;
 
 use Exception;
-use Dingo\Api\Config;
+use Dingo\Api\Properties;
 use BadMethodCallException;
 use Illuminate\Http\Request;
 use Illuminate\Events\Dispatcher;
@@ -23,11 +23,11 @@ use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 class Router extends IlluminateRouter
 {
     /**
-     * API config instance.
+     * API properties instance.
      *
-     * @var \Dingo\Api\Config
+     * @var \Dingo\Api\Properties
      */
-    protected $config;
+    protected $properties;
 
     /**
      * API version collection instance.
@@ -75,15 +75,15 @@ class Router extends IlluminateRouter
      * Create a new router instance.
      *
      * @param \Illuminate\Events\Dispatcher   $events
-     * @param \Dingo\Api\Routing\Config       $config
+     * @param \Dingo\Api\Properties           $properties
      * @param \Illuminate\Container\Container $container
      *
      * @return void
      */
-    public function __construct(Dispatcher $events, Config $config, Container $container = null)
+    public function __construct(Dispatcher $events, Properties $properties, Container $container = null)
     {
-        $this->config = $config;
-        $this->api = new GroupCollection($config);
+        $this->properties = $properties;
+        $this->api = new GroupCollection($properties);
 
         parent::__construct($events, $container);
     }
@@ -140,11 +140,11 @@ class Router extends IlluminateRouter
 
         $options['version'] = (array) $options['version'];
 
-        if (! isset($options['prefix']) && $prefix = $this->config->getPrefix()) {
+        if (! isset($options['prefix']) && $prefix = $this->properties->getPrefix()) {
             $options['prefix'] = $prefix;
         }
 
-        if (! isset($options['domain']) && $domain = $this->config->getDomain()) {
+        if (! isset($options['domain']) && $domain = $this->properties->getDomain()) {
             $options['domain'] = $domain;
         }
 
@@ -194,13 +194,13 @@ class Router extends IlluminateRouter
      * or an API response.
      *
      * @param \Illuminate\Http\Request $request
-     * @param bool                     $morph
+     * @param bool                     $raw
      *
      * @throws \Exception
      *
      * @return \Illuminate\Http\Response|\Dingo\Api\Http\Response
      */
-    public function dispatch(Request $request, $morph = true)
+    public function dispatch(Request $request, $raw = false)
     {
         if (! $this->isApiRequest($request)) {
             return parent::dispatch($request);
@@ -227,9 +227,9 @@ class Router extends IlluminateRouter
         // formatter exists for the requested response format. If not
         // then we'll revert to the default format because we are
         // most likely formatting an error response.
-        if ($morph) {
+        if (! $raw) {
             if (! $response->hasFormatter($format)) {
-                $format = $this->config->getFormat();
+                $format = $this->properties->getFormat();
             }
 
             $response->getFormatter($format)
@@ -323,17 +323,24 @@ class Router extends IlluminateRouter
      */
     protected function findRoute($request)
     {
-        $collection = $this->getRoutes();
+        $routes = $this->getRoutes();
 
-        if ($this->isApiRequest($request)) {
-            $collection = $this->api->getByRequest($request) ?: $this->api->getByVersion($this->currentVersion);
+        try {
+            $route = $routes->match($request);
+        } catch (NotFoundHttpException $exception) {
+            // If we are unable to match a route against the regular application routes then
+            // we'll attempt to match a route based on the request against the API routes.
+            // This will search the API route groups in reverse order for a match,
+            // it should be noted that OPTIONS requests will be a first in
+            // last out match.
+            if (! $routes = $this->api->getByRequest($request) ?: $this->api->getByVersion($this->currentVersion)) {
+                throw $exception;
+            }
+
+            $route = $routes->match($request);
         }
 
-        if (! $collection) {
-            throw new BadRequestHttpException('The requested API version is invalid.');
-        }
-
-        return $this->current = $this->substituteBindings($collection->match($request));
+        return $this->current = $this->substituteBindings($route);
     }
 
     /**
@@ -403,13 +410,13 @@ class Router extends IlluminateRouter
      */
     protected function parseAcceptHeader(Request $request)
     {
-        if (preg_match('#application/vnd\.'.$this->config->getVendor().'.(v[\d\.]+)\+(\w+)#', $request->header('accept'), $matches)) {
+        if (preg_match('#application/vnd\.'.$this->properties->getVendor().'.(v[\d\.]+)\+(\w+)#', $request->header('accept'), $matches)) {
             return array_slice($matches, 1);
         } elseif ($this->isStrict()) {
             throw new InvalidAcceptHeaderException('Unable to match the "Accept" header for the API request.');
         }
 
-        return [$this->config->getVersion(), $this->config->getFormat()];
+        return [$this->properties->getVersion(), $this->properties->getFormat()];
     }
 
     /**

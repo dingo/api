@@ -23,9 +23,7 @@ class ApiServiceProvider extends ServiceProvider
     {
         $this->setupContainerBindings();
 
-        Response::setFormatters(
-            $this->prepareConfigInstances($this->app['config']['api::formats'])
-        );
+        Response::setFormatters($this->prepareConfigInstances($this->app['config']['api::formats']));
         Response::setTransformer($this->app['api.transformer']);
     }
 
@@ -73,7 +71,7 @@ class ApiServiceProvider extends ServiceProvider
      */
     protected function registerProviders()
     {
-        $this->app->register('Dingo\Api\Provider\ConfigServiceProvider');
+        $this->app->register('Dingo\Api\Provider\PropertiesServiceProvider');
         $this->app->register('Dingo\Api\Provider\RoutingServiceProvider');
         $this->app->register('Dingo\Api\Provider\FilterServiceProvider');
         $this->app->register('Dingo\Api\Provider\EventServiceProvider');
@@ -87,7 +85,7 @@ class ApiServiceProvider extends ServiceProvider
     protected function registerDispatcher()
     {
         $this->app->bindShared('api.dispatcher', function ($app) {
-            return new Dispatcher($app, $app['files'], $app['url'], $app['router'], $app['api.auth'], $app['api.config']);
+            return new Dispatcher($app, $app['files'], $app['url'], $app['router'], $app['api.auth'], $app['api.properties']);
         });
     }
 

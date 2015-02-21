@@ -3,7 +3,7 @@
 namespace Dingo\Api\Tests\Routing;
 
 use Mockery as m;
-use Dingo\Api\Config;
+use Dingo\Api\Properties;
 use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
@@ -20,7 +20,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->events = new Dispatcher;
-        $this->config = new Config('v1', null, null, 'testing', 'json', false);
+        $this->config = new Properties('v1', null, null, 'testing', 'json', false);
 
         $this->router = new Router($this->events, $this->config);
 

@@ -35,19 +35,28 @@ class FractalTransformer implements TransformerInterface
     protected $includeSeparator;
 
     /**
+     * Indicates if eager loading is enabled.
+     *
+     * @var bool
+     */
+    protected $eagerLoading = true;
+
+    /**
      * Create a new fractal transformer instance.
      *
      * @param \League\Fractal\Manager $fractal
      * @param string                  $includeKey
      * @param string                  $includeSeparator
+     * @param bool                    $eagerLoading
      *
      * @return void
      */
-    public function __construct(Fractal $fractal, $includeKey = 'include', $includeSeparator = ',')
+    public function __construct(Fractal $fractal, $includeKey = 'include', $includeSeparator = ',', $eagerLoading = true)
     {
         $this->fractal = $fractal;
         $this->includeKey = $includeKey;
         $this->includeSeparator = $includeSeparator;
+        $this->eagerLoading = $eagerLoading;
     }
 
     /**
@@ -75,8 +84,10 @@ class FractalTransformer implements TransformerInterface
             $resource->setPaginator($paginator);
         }
 
-        if ($response instanceof EloquentCollection) {
-            $response->load($this->fractal->getRequestedIncludes());
+        if ($response instanceof EloquentCollection && $this->eagerLoading) {
+            $eagerLoads = $this->mergeEagerLoads($transformer, $this->fractal->getRequestedIncludes());
+
+            $response->load($eagerLoads);
         }
 
         foreach ($binding->getMeta() as $key => $value) {
@@ -129,7 +140,10 @@ class FractalTransformer implements TransformerInterface
      */
     public function parseFractalIncludes(Request $request)
     {
-        $includes = array_filter(explode($this->includeSeparator, $request->get($this->includeKey)));
+        $includes = $request->get($this->includeKey);
+
+        if(!is_array($includes))
+            $includes = array_filter(explode($this->includeSeparator, $includes));
 
         $this->fractal->parseIncludes($includes);
     }
@@ -142,5 +156,28 @@ class FractalTransformer implements TransformerInterface
     public function getFractal()
     {
         return $this->fractal;
+    }
+
+    /**
+     * Get includes as their array keys for eager loading.
+     *
+     * @param \League\Fractal\TransformerAbstract $transformer
+     * @param string|array                        $requestedIncludes
+     *
+     * @return array
+     */
+    protected function mergeEagerLoads($transformer, $requestedIncludes)
+    {
+        $availableIncludes = array_intersect($transformer->getAvailableIncludes(), (array) $requestedIncludes);
+
+        $includes = array_merge($availableIncludes, $transformer->getDefaultIncludes());
+
+        $eagerLoads = array();
+
+        foreach ($includes as $key => $value) {
+            $eagerLoads[] = is_string($key) ? $key : $value;
+        }
+
+        return $eagerLoads;
     }
 }

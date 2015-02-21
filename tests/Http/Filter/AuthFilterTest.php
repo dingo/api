@@ -3,7 +3,7 @@
 namespace Dingo\Api\Tests\Http\Filter;
 
 use Mockery;
-use Dingo\Api\Config;
+use Dingo\Api\Properties;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
 use Dingo\Api\Routing\Router;
@@ -19,7 +19,7 @@ class AuthFilterTest extends PHPUnit_Framework_TestCase
     {
         $this->container = new Container;
         $this->events = new Dispatcher($this->container);
-        $this->router = new Router($this->events, new Config, $this->container);
+        $this->router = new Router($this->events, new Properties, $this->container);
         $this->auth = Mockery::mock('Dingo\Api\Auth\Authenticator');
         $this->filter = new AuthFilter($this->router, $this->events, $this->auth);
     }

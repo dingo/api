@@ -2,7 +2,7 @@
 
 namespace Dingo\Api;
 
-class Config
+class Properties
 {
     /**
      * API version.
@@ -40,7 +40,7 @@ class Config
     protected $format;
 
     /**
-     * Create a new config instance.
+     * Create a new properties instance.
      *
      * @param string $version
      * @param string $prefix

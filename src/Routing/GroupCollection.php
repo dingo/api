@@ -2,17 +2,17 @@
 
 namespace Dingo\Api\Routing;
 
-use Dingo\Api\Config;
+use Dingo\Api\Properties;
 use Illuminate\Http\Request;
 
 class GroupCollection
 {
     /**
-     * API config instance.
+     * API properties instance.
      *
-     * @var \Dingo\Api\Config
+     * @var \Dingo\Api\Properties
      */
-    protected $config;
+    protected $properties;
 
     /**
      * Array of API route collections.
@@ -31,13 +31,13 @@ class GroupCollection
     /**
      * Create a new version collection instance.
      *
-     * @param \Dingo\Api\Config $config
+     * @param \Dingo\Api\Properties $properties
      *
      * @return void
      */
-    public function __construct(Config $config)
+    public function __construct(Properties $properties)
     {
-        $this->config = $config;
+        $this->properties = $properties;
     }
 
     /**
@@ -88,7 +88,7 @@ class GroupCollection
      */
     public function getDefault()
     {
-        return $this->getByVersion($this->config->getVersion());
+        return $this->getByVersion($this->properties->getVersion());
     }
 
     /**
