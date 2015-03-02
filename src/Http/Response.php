@@ -69,6 +69,22 @@ class Response extends IlluminateResponse
         } elseif ($content instanceof EloquentCollection) {
             $content = $formatter->formatEloquentCollection($content);
         } elseif (is_array($content) || $content instanceof ArrayObject || $content instanceof ArrayableInterface) {
+            
+            //check if meta key exists for pagination data
+            if(array_key_exists('meta', $content)) {
+
+                //get the meta data
+                $meta = $content['meta'];
+
+                //set a header for each pagination item in the meta data
+                foreach ($meta['pagination'] as $key => $val) {
+                    $this->headers->set(camel_case('pagination_'.$key), $val);
+                }
+
+                //remove the meta data from the array
+                unset($content['meta']);
+            }
+
             $content = $formatter->formatArray($content);
         } else {
             $this->headers->set('content-type', $defaultContentType);
