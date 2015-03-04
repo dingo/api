@@ -1,20 +1,20 @@
 <?php
 
-namespace Dingo\Api\Tests\Http\RateLimit;
+namespace Dingo\Api\tests\Http\RateLimit;
 
+use Dingo\Api\Http\RateLimit\UnauthenticatedThrottle;
+use Illuminate\Container\Container;
 use Mockery;
 use PHPUnit_Framework_TestCase;
-use Illuminate\Container\Container;
-use Dingo\Api\Http\RateLimit\UnauthenticatedThrottle;
 
 class UnauthenticatedThrottleTest extends PHPUnit_Framework_TestCase
 {
     public function testThrottleMatchesCorrectly()
     {
         $auth = Mockery::mock('Dingo\Api\Auth\Authenticator')->shouldReceive('check')->once()->andReturn(true)->getMock();
-        $container = new Container;
+        $container = new Container();
         $container['api.auth'] = $auth;
 
-        $this->assertFalse((new UnauthenticatedThrottle)->match($container));
+        $this->assertFalse((new UnauthenticatedThrottle())->match($container));
     }
 }

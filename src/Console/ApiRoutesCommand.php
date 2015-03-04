@@ -3,8 +3,8 @@
 namespace Dingo\Api\Console;
 
 use Dingo\Api\Routing\Router;
-use Illuminate\Routing\Route;
 use Illuminate\Foundation\Console\RoutesCommand;
+use Illuminate\Routing\Route;
 use Symfony\Component\Console\Input\InputOption;
 
 class ApiRoutesCommand extends RoutesCommand
@@ -136,7 +136,7 @@ class ApiRoutesCommand extends RoutesCommand
                     'S',
                     InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL,
                     'Filter the routes by scope(s)',
-                    null
+                    null,
                 ],
             ]
         );

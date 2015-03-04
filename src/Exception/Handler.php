@@ -3,8 +3,8 @@
 namespace Dingo\Api\Exception;
 
 use Exception;
-use ReflectionFunction;
 use Illuminate\Http\Response;
+use ReflectionFunction;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class Handler

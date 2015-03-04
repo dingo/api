@@ -153,6 +153,6 @@ return [
 
         'json' => 'Dingo\Api\Http\ResponseFormat\JsonResponseFormat',
 
-    ]
+    ],
 
 ];

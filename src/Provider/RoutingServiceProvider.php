@@ -2,11 +2,11 @@
 
 namespace Dingo\Api\Provider;
 
-use Dingo\Api\Routing\Router;
-use Illuminate\Support\Collection;
-use Dingo\Api\Routing\UrlGenerator;
 use Dingo\Api\Routing\ControllerDispatcher;
+use Dingo\Api\Routing\Router;
+use Dingo\Api\Routing\UrlGenerator;
 use Illuminate\Routing\RoutingServiceProvider as ServiceProvider;
+use Illuminate\Support\Collection;
 
 class RoutingServiceProvider extends ServiceProvider
 {

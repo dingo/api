@@ -1,19 +1,19 @@
 <?php
 
-namespace Dingo\Api\Tests\Http\RateLimit;
+namespace Dingo\Api\tests\Http\RateLimit;
 
-use Illuminate\Http\Request;
-use PHPUnit_Framework_TestCase;
+use Dingo\Api\Http\RateLimit\RateLimiter;
+use Dingo\Api\Tests\Stubs\ThrottleStub;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Container\Container;
-use Dingo\Api\Tests\Stubs\ThrottleStub;
-use Dingo\Api\Http\RateLimit\RateLimiter;
+use Illuminate\Http\Request;
+use PHPUnit_Framework_TestCase;
 
 class RateLimiterTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->container = new Container;
+        $this->container = new Container();
         $this->container['config'] = ['cache.driver' => 'array'];
         $this->cache = new CacheManager($this->container);
         $this->limiter = new RateLimiter($this->container, $this->cache, []);

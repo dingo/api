@@ -3,8 +3,8 @@
 namespace Dingo\Api\Transformer;
 
 use Closure;
-use RuntimeException;
 use Illuminate\Container\Container;
+use RuntimeException;
 
 class Binding
 {
@@ -32,7 +32,7 @@ class Binding
     /**
      * Callback fired during transformation.
      *
-     * @var  \Closure
+     * @var \Closure
      */
     protected $callback;
 

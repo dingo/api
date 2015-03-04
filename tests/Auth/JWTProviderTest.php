@@ -1,13 +1,13 @@
 <?php
 
-namespace Dingo\Api\Tests\Auth;
+namespace Dingo\Api\tests\Auth;
 
-use Mockery;
-use Illuminate\Http\Request;
-use Dingo\Api\Routing\Route;
 use Dingo\Api\Auth\JWTProvider;
-use Tymon\JWTAuth\Exceptions\JWTAuthException;
+use Dingo\Api\Routing\Route;
+use Illuminate\Http\Request;
+use Mockery;
 use PHPUnit_Framework_TestCase;
+use Tymon\JWTAuth\Exceptions\JWTAuthException;
 
 class JWTProviderTest extends PHPUnit_Framework_TestCase
 {

@@ -8,6 +8,6 @@ class UserContractStub extends UserStub implements TransformableInterface
 {
     public function getTransformer()
     {
-        return new UserTransformerStub;
+        return new UserTransformerStub();
     }
 }

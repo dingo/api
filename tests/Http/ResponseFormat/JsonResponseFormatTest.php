@@ -1,20 +1,20 @@
 <?php
 
-namespace Dingo\Api\Tests\Http\ResponseFormat;
+namespace Dingo\Api\tests\Http\ResponseFormat;
 
-use Mockery;
 use Dingo\Api\Http\Response;
-use PHPUnit_Framework_TestCase;
-use Illuminate\Support\MessageBag;
+use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
 use Dingo\Api\Tests\Stubs\EloquentModelStub;
 use Illuminate\Database\Eloquent\Collection;
-use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
+use Illuminate\Support\MessageBag;
+use Mockery;
+use PHPUnit_Framework_TestCase;
 
 class JsonResponseFormatTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        Response::setFormatters(['json' => new JsonResponseFormat]);
+        Response::setFormatters(['json' => new JsonResponseFormat()]);
     }
 
     public function tearDown()
@@ -28,21 +28,21 @@ class JsonResponseFormatTest extends PHPUnit_Framework_TestCase
 
     public function testMorphingEloquentModel()
     {
-        $response = (new Response(new EloquentModelStub))->morph();
+        $response = (new Response(new EloquentModelStub()))->morph();
 
         $this->assertEquals('{"app_user":{"foo":"bar"}}', $response->getContent());
     }
 
     public function testMorphingEloquentCollection()
     {
-        $response = (new Response(new Collection([new EloquentModelStub, new EloquentModelStub])))->morph();
+        $response = (new Response(new Collection([new EloquentModelStub(), new EloquentModelStub()])))->morph();
 
         $this->assertEquals('{"app_users":[{"foo":"bar"},{"foo":"bar"}]}', $response->getContent());
     }
 
     public function testMorphingEmptyEloquentCollection()
     {
-        $response = (new Response(new Collection))->morph();
+        $response = (new Response(new Collection()))->morph();
 
         $this->assertEquals('[]', $response->getContent());
     }
@@ -72,7 +72,7 @@ class JsonResponseFormatTest extends PHPUnit_Framework_TestCase
     {
         EloquentModelStub::$snakeAttributes = false;
 
-        $response = (new Response(new EloquentModelStub))->morph();
+        $response = (new Response(new EloquentModelStub()))->morph();
 
         $this->assertEquals('{"appUser":{"foo":"bar"}}', $response->getContent());
     }
@@ -81,7 +81,7 @@ class JsonResponseFormatTest extends PHPUnit_Framework_TestCase
     {
         EloquentModelStub::$snakeAttributes = false;
 
-        $response = (new Response(new Collection([new EloquentModelStub, new EloquentModelStub])))->morph();
+        $response = (new Response(new Collection([new EloquentModelStub(), new EloquentModelStub()])))->morph();
 
         $this->assertEquals('{"appUsers":[{"foo":"bar"},{"foo":"bar"}]}', $response->getContent());
     }

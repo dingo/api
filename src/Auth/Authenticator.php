@@ -3,8 +3,8 @@
 namespace Dingo\Api\Auth;
 
 use Exception;
-use Illuminate\Routing\Router;
 use Illuminate\Container\Container;
+use Illuminate\Routing\Router;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 

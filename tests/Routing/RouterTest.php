@@ -1,30 +1,30 @@
 <?php
 
-namespace Dingo\Api\Tests\Routing;
+namespace Dingo\Api\tests\Routing;
 
-use Mockery as m;
-use Dingo\Api\Properties;
-use Illuminate\Http\Request;
-use Dingo\Api\Http\Response;
-use Dingo\Api\Routing\Router;
-use PHPUnit_Framework_TestCase;
-use Illuminate\Events\Dispatcher;
-use Dingo\Api\Http\ResponseBuilder;
-use Dingo\Api\Http\InternalRequest;
 use Dingo\Api\Exception\ResourceException;
+use Dingo\Api\Http\InternalRequest;
+use Dingo\Api\Http\Response;
+use Dingo\Api\Http\ResponseBuilder;
 use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
+use Dingo\Api\Properties;
+use Dingo\Api\Routing\Router;
+use Illuminate\Events\Dispatcher;
+use Illuminate\Http\Request;
+use Mockery as m;
+use PHPUnit_Framework_TestCase;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class RouterTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->events = new Dispatcher;
+        $this->events = new Dispatcher();
         $this->config = new Properties('v1', null, null, 'testing', 'json', false);
 
         $this->router = new Router($this->events, $this->config);
 
-        Response::setFormatters(['json' => new JsonResponseFormat]);
+        Response::setFormatters(['json' => new JsonResponseFormat()]);
     }
 
     public function tearDown()
@@ -283,7 +283,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testRouterFiresExceptionEvent()
     {
-        $exception = new ResourceException;
+        $exception = new ResourceException();
 
         $this->router->api(['version' => 'v1'], function () use ($exception) {
             $this->router->get('foo', function () use ($exception) {
@@ -440,7 +440,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testRouterParsesScopesFromStringsToArrays()
     {
-        $this->router->api(['version' => 'v1'], function () {
+        $this->router->api(['version'      => 'v1'], function () {
             $this->router->group(['scopes' => 'foo'], function () {
                 $this->router->get('foo', function () {
                     return 'bar';

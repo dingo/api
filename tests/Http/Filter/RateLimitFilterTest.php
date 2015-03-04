@@ -1,29 +1,29 @@
 <?php
 
-namespace Dingo\Api\Tests\Http\Filter;
+namespace Dingo\Api\tests\Http\Filter;
 
-use Dingo\Api\Properties;
-use Illuminate\Http\Request;
-use Dingo\Api\Routing\Route;
-use Dingo\Api\Http\Response;
-use Dingo\Api\Routing\Router;
-use PHPUnit_Framework_TestCase;
-use Illuminate\Events\Dispatcher;
-use Illuminate\Cache\CacheManager;
-use Dingo\Api\Http\InternalRequest;
-use Illuminate\Container\Container;
-use Dingo\Api\Tests\Stubs\ThrottleStub;
-use Dingo\Api\Http\RateLimit\RateLimiter;
 use Dingo\Api\Http\Filter\RateLimitFilter;
+use Dingo\Api\Http\InternalRequest;
+use Dingo\Api\Http\RateLimit\RateLimiter;
+use Dingo\Api\Http\Response;
+use Dingo\Api\Properties;
+use Dingo\Api\Routing\Route;
+use Dingo\Api\Routing\Router;
+use Dingo\Api\Tests\Stubs\ThrottleStub;
+use Illuminate\Cache\CacheManager;
+use Illuminate\Container\Container;
+use Illuminate\Events\Dispatcher;
+use Illuminate\Http\Request;
+use PHPUnit_Framework_TestCase;
 
 class RateLimitFilterTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->container = new Container;
+        $this->container = new Container();
         $this->container['config'] = ['cache.driver' => 'array'];
 
-        $this->router = new Router(new Dispatcher($this->container), new Properties, $this->container);
+        $this->router = new Router(new Dispatcher($this->container), new Properties(), $this->container);
         $this->cache = new CacheManager($this->container);
         $this->limiter = new RateLimiter($this->container, $this->cache, []);
         $this->filter = new RateLimitFilter($this->router, $this->limiter);

@@ -3,9 +3,9 @@
 namespace Dingo\Api\Routing;
 
 use Illuminate\Http\Request;
-use InvalidArgumentException;
-use Illuminate\Support\Collection;
 use Illuminate\Routing\UrlGenerator as IlluminateUrlGenerator;
+use Illuminate\Support\Collection;
+use InvalidArgumentException;
 
 class UrlGenerator extends IlluminateUrlGenerator
 {

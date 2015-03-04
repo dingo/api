@@ -1,10 +1,10 @@
 <?php
 
-namespace Dingo\Api\Tests\Http;
+namespace Dingo\Api\tests\Http;
 
+use Dingo\Api\Http\ResponseBuilder;
 use Mockery;
 use PHPUnit_Framework_TestCase;
-use Dingo\Api\Http\ResponseBuilder;
 
 class ResponseBuilderTest extends PHPUnit_Framework_TestCase
 {

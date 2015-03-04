@@ -2,10 +2,10 @@
 
 namespace Dingo\Api\Event;
 
-use Exception;
-use Dingo\Api\Http\Response;
 use Dingo\Api\Exception\Handler;
 use Dingo\Api\Exception\ResourceException;
+use Dingo\Api\Http\Response;
+use Exception;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class ExceptionHandler
@@ -73,10 +73,10 @@ class ExceptionHandler
 
         if ($this->debug) {
             $response['debug'] = [
-                'line' => $exception->getLine(),
-                'file' => $exception->getFile(),
+                'line'  => $exception->getLine(),
+                'file'  => $exception->getFile(),
                 'class' => get_class($exception),
-                'trace' => explode("\n", $exception->getTraceAsString())
+                'trace' => explode("\n", $exception->getTraceAsString()),
             ];
         }
 

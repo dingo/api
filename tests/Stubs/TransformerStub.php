@@ -2,10 +2,10 @@
 
 namespace Dingo\Api\Tests\Stubs;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Dingo\Api\Transformer\Binding;
 use Dingo\Api\Transformer\TransformerInterface;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class TransformerStub implements TransformerInterface
 {

@@ -2,23 +2,22 @@
 
 namespace Dingo\Api\Routing;
 
-use Exception;
-use Dingo\Api\Properties;
 use BadMethodCallException;
-use Illuminate\Http\Request;
-use Illuminate\Events\Dispatcher;
-use Dingo\Api\Http\ResponseBuilder;
-use Dingo\Api\Http\InternalRequest;
-use Illuminate\Container\Container;
-use Dingo\Api\Http\Response as ApiResponse;
-use Illuminate\Routing\Route as IlluminateRoute;
-use Illuminate\Routing\Router as IlluminateRouter;
-use Illuminate\Http\Response as IlluminateResponse;
 use Dingo\Api\Exception\InvalidAcceptHeaderException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Dingo\Api\Http\InternalRequest;
+use Dingo\Api\Http\Response as ApiResponse;
+use Dingo\Api\Http\ResponseBuilder;
+use Dingo\Api\Properties;
+use Exception;
+use Illuminate\Container\Container;
+use Illuminate\Events\Dispatcher;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response as IlluminateResponse;
+use Illuminate\Routing\Route as IlluminateRoute;
 use Illuminate\Routing\RouteCollection as IlluminateRouteCollection;
+use Illuminate\Routing\Router as IlluminateRouter;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Router extends IlluminateRouter
 {
@@ -446,7 +445,7 @@ class Router extends IlluminateRouter
      */
     public function getInspector()
     {
-        return $this->inspector ?: $this->inspector = new ControllerInspector;
+        return $this->inspector ?: $this->inspector = new ControllerInspector();
     }
 
     /**

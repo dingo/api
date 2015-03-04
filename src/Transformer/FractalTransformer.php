@@ -2,14 +2,14 @@
 
 namespace Dingo\Api\Transformer;
 
-use Illuminate\Http\Request;
-use League\Fractal\Manager as Fractal;
-use League\Fractal\Resource\Item as FractalItem;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-use Illuminate\Support\Collection as IlluminateCollection;
-use Illuminate\Pagination\Paginator as IlluminatePaginator;
-use League\Fractal\Resource\Collection as FractalCollection;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator as IlluminatePaginator;
+use Illuminate\Support\Collection as IlluminateCollection;
+use League\Fractal\Manager as Fractal;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use League\Fractal\Resource\Collection as FractalCollection;
+use League\Fractal\Resource\Item as FractalItem;
 
 class FractalTransformer implements TransformerInterface
 {
@@ -142,8 +142,9 @@ class FractalTransformer implements TransformerInterface
     {
         $includes = $request->get($this->includeKey);
 
-        if(!is_array($includes))
+        if (!is_array($includes)) {
             $includes = array_filter(explode($this->includeSeparator, $includes));
+        }
 
         $this->fractal->parseIncludes($includes);
     }
@@ -172,7 +173,7 @@ class FractalTransformer implements TransformerInterface
 
         $includes = array_merge($availableIncludes, $transformer->getDefaultIncludes());
 
-        $eagerLoads = array();
+        $eagerLoads = [];
 
         foreach ($includes as $key => $value) {
             $eagerLoads[] = is_string($key) ? $key : $value;

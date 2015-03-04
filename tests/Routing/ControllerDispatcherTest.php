@@ -1,13 +1,13 @@
 <?php
 
-namespace Dingo\Api\Tests\Routing;
+namespace Dingo\Api\tests\Routing;
 
-use Mockery;
-use Illuminate\Http\Request;
-use Dingo\Api\Routing\Route;
-use PHPUnit_Framework_TestCase;
-use Illuminate\Container\Container;
 use Dingo\Api\Routing\ControllerDispatcher;
+use Dingo\Api\Routing\Route;
+use Illuminate\Container\Container;
+use Illuminate\Http\Request;
+use Mockery;
+use PHPUnit_Framework_TestCase;
 
 class ControllerDispatcherTest extends PHPUnit_Framework_TestCase
 {
@@ -30,7 +30,7 @@ class ControllerDispatcherTest extends PHPUnit_Framework_TestCase
         $route = new Route(['GET'], 'test', ['uses' => function () {}]);
         $route->bind($request);
 
-        $container = new Container;
+        $container = new Container();
         $container['api.dispatcher'] = Mockery::mock('Dingo\Api\Dispatcher');
         $container['api.auth'] = Mockery::mock('Dingo\Api\Auth\Authenticator');
         $container['api.response'] = Mockery::mock('Dingo\Api\Http\ResponseFactory');

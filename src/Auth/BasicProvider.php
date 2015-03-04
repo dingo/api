@@ -2,9 +2,9 @@
 
 namespace Dingo\Api\Auth;
 
-use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
 use Illuminate\Auth\AuthManager;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class BasicProvider extends AuthorizationProvider

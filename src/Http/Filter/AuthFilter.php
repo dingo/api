@@ -2,11 +2,11 @@
 
 namespace Dingo\Api\Http\Filter;
 
-use Illuminate\Http\Request;
+use Dingo\Api\Auth\Authenticator;
 use Dingo\Api\Routing\Route;
 use Dingo\Api\Routing\Router;
-use Dingo\Api\Auth\Authenticator;
 use Illuminate\Events\Dispatcher;
+use Illuminate\Http\Request;
 
 class AuthFilter extends Filter
 {

@@ -1,13 +1,13 @@
 <?php
 
-namespace Dingo\Api\Tests\Event;
+namespace Dingo\Api\tests\Event;
 
-use Mockery;
-use Exception;
-use Illuminate\Http\Response;
-use PHPUnit_Framework_TestCase;
 use Dingo\Api\Event\ExceptionHandler;
 use Dingo\Api\Exception\ResourceException;
+use Exception;
+use Illuminate\Http\Response;
+use Mockery;
+use PHPUnit_Framework_TestCase;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ExceptionHandlerTest extends PHPUnit_Framework_TestCase

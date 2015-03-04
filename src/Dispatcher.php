@@ -2,20 +2,20 @@
 
 namespace Dingo\Api;
 
-use RuntimeException;
-use Illuminate\Http\Request;
+use Dingo\Api\Auth\Authenticator;
+use Dingo\Api\Exception\InternalHttpException;
+use Dingo\Api\Http\InternalRequest;
 use Dingo\Api\Routing\Router;
 use Illuminate\Auth\GenericUser;
-use Dingo\Api\Auth\Authenticator;
 use Illuminate\Container\Container;
-use Dingo\Api\Http\InternalRequest;
-use Illuminate\Routing\UrlGenerator;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Model;
-use Symfony\Component\HttpFoundation\Cookie;
-use Dingo\Api\Exception\InternalHttpException;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Http\Request;
+use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\Request as RequestFacade;
+use RuntimeException;
+use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class Dispatcher

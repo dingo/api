@@ -2,8 +2,8 @@
 
 namespace Dingo\Api\Routing;
 
-use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
+use Illuminate\Http\Request;
 use Illuminate\Routing\RouteCollection as IlluminateRouteCollection;
 
 class RouteCollection extends IlluminateRouteCollection

@@ -1,15 +1,15 @@
 <?php
 
-namespace Dingo\Api\Tests\Auth;
+namespace Dingo\Api\tests\Auth;
 
-use Mockery;
+use Dingo\Api\Auth\Authenticator;
 use Dingo\Api\Properties;
-use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
 use Dingo\Api\Routing\Router;
-use PHPUnit_Framework_TestCase;
-use Dingo\Api\Auth\Authenticator;
 use Illuminate\Container\Container;
+use Illuminate\Http\Request;
+use Mockery;
+use PHPUnit_Framework_TestCase;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
@@ -17,8 +17,8 @@ class AuthenticatorTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->container = new Container;
-        $this->router = new Router(Mockery::mock('Illuminate\Events\Dispatcher'), new Properties, $this->container);
+        $this->container = new Container();
+        $this->router = new Router(Mockery::mock('Illuminate\Events\Dispatcher'), new Properties(), $this->container);
     }
 
     /**
@@ -30,7 +30,7 @@ class AuthenticatorTest extends PHPUnit_Framework_TestCase
         $this->router->setCurrentRequest($request = Request::create('foo', 'GET'));
 
         $provider = Mockery::mock('Dingo\Api\Auth\Provider');
-        $provider->shouldReceive('authenticate')->once()->with($request, $route)->andThrow(new BadRequestHttpException);
+        $provider->shouldReceive('authenticate')->once()->with($request, $route)->andThrow(new BadRequestHttpException());
 
         $auth = new Authenticator($this->router, $this->container, ['provider' => $provider]);
 
@@ -79,7 +79,7 @@ class AuthenticatorTest extends PHPUnit_Framework_TestCase
 
         $auth = new Authenticator($this->router, $this->container, [
             'one' => $provider,
-            'two' => Mockery::mock('Dingo\Api\Auth\Provider')
+            'two' => Mockery::mock('Dingo\Api\Auth\Provider'),
         ]);
 
         $auth->authenticate(['one']);
