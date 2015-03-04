@@ -6,7 +6,7 @@ use Mockery;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
 use Dingo\Api\Auth\JWTProvider;
-use Tymon\JWTAuth\Exceptions\JWTAuthException;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use PHPUnit_Framework_TestCase;
 
 class JWTProviderTest extends PHPUnit_Framework_TestCase
@@ -39,7 +39,8 @@ class JWTProviderTest extends PHPUnit_Framework_TestCase
         $request = Request::create('foo', 'GET');
         $request->headers->set('authorization', 'Bearer foo');
 
-        $this->auth->shouldReceive('login')->with('foo')->andThrow(new JWTAuthException('foo'));
+        $this->auth->shouldReceive('setToken')->with('foo')->andReturn(Mockery::self());
+        $this->auth->shouldReceive('authenticate')->once()->andThrow(new JWTException('foo'));
 
         $this->provider->authenticate($request, new Route('/foo', 'GET', []));
     }
@@ -49,7 +50,8 @@ class JWTProviderTest extends PHPUnit_Framework_TestCase
         $request = Request::create('foo', 'GET');
         $request->headers->set('authorization', 'Bearer foo');
 
-        $this->auth->shouldReceive('login')->with('foo')->andReturn((object) ['id' => 1]);
+        $this->auth->shouldReceive('setToken')->with('foo')->andReturn(Mockery::self());
+        $this->auth->shouldReceive('authenticate')->once()->andReturn((object) ['id' => 1]);
 
         $this->assertEquals(1, $this->provider->authenticate($request, new Route('/foo', 'GET', []))->id);
     }
@@ -58,7 +60,8 @@ class JWTProviderTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('foo', 'GET', ['token' => 'foo']);
 
-        $this->auth->shouldReceive('login')->with('foo')->andReturn((object) ['id' => 1]);
+        $this->auth->shouldReceive('setToken')->with('foo')->andReturn(Mockery::self());
+        $this->auth->shouldReceive('authenticate')->once()->andReturn((object) ['id' => 1]);
 
         $this->assertEquals(1, $this->provider->authenticate($request, new Route('/foo', 'GET', []))->id);
     }
