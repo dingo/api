@@ -1,13 +1,13 @@
 <?php
 
-namespace Dingo\Api\Tests\Auth;
+namespace Dingo\Api\tests\Auth;
 
-use Mockery;
-use Illuminate\Http\Request;
-use Dingo\Api\Routing\Route;
-use Illuminate\Http\Response;
-use PHPUnit_Framework_TestCase;
 use Dingo\Api\Auth\BasicProvider;
+use Dingo\Api\Routing\Route;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Mockery;
+use PHPUnit_Framework_TestCase;
 
 class BasicProviderTest extends PHPUnit_Framework_TestCase
 {

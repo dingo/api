@@ -1,13 +1,13 @@
 <?php
 
-namespace Dingo\Api\Tests\Http;
+namespace Dingo\Api\tests\Http;
 
-use Mockery;
-use PHPUnit_Framework_TestCase;
-use Illuminate\Support\Collection;
 use Dingo\Api\Http\ResponseFactory;
 use Dingo\Api\Tests\Stubs\UserStub;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
+use Mockery;
+use PHPUnit_Framework_TestCase;
 
 class ResponseFactoryTest extends PHPUnit_Framework_TestCase
 {
@@ -46,24 +46,24 @@ class ResponseFactoryTest extends PHPUnit_Framework_TestCase
     {
         $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], null);
 
-        $this->factory->collection(new Collection([new UserStub]), 'test');
-        $this->factory->withCollection(new Collection([new UserStub]), 'test');
+        $this->factory->collection(new Collection([new UserStub()]), 'test');
+        $this->factory->withCollection(new Collection([new UserStub()]), 'test');
     }
 
     public function testMakingItemsRegistersClassWithTransformer()
     {
         $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], null);
 
-        $this->factory->item(new UserStub, 'test');
-        $this->factory->withItem(new UserStub, 'test');
+        $this->factory->item(new UserStub(), 'test');
+        $this->factory->withItem(new UserStub(), 'test');
     }
 
     public function testMakingPaginatorRegistersUnderlyingClassWithTransformer()
     {
         $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], null);
 
-        $this->factory->paginator(new Paginator(Mockery::mock('Illuminate\Pagination\Factory'), [new UserStub], 1), 'test');
-        $this->factory->withPaginator(new Paginator(Mockery::mock('Illuminate\Pagination\Factory'), [new UserStub], 1), 'test');
+        $this->factory->paginator(new Paginator(Mockery::mock('Illuminate\Pagination\Factory'), [new UserStub()], 1), 'test');
+        $this->factory->withPaginator(new Paginator(Mockery::mock('Illuminate\Pagination\Factory'), [new UserStub()], 1), 'test');
     }
 
     public function testMakingErrorNotFoundResponse()

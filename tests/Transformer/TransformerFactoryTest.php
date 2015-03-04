@@ -1,25 +1,25 @@
 <?php
 
-namespace Dingo\Api\Tests\Transformer;
+namespace Dingo\Api\tests\Transformer;
 
-use Mockery;
-use PHPUnit_Framework_TestCase;
-use Illuminate\Support\Collection;
-use Illuminate\Container\Container;
-use Dingo\Api\Tests\Stubs\UserStub;
 use Dingo\Api\Tests\Stubs\TransformerStub;
 use Dingo\Api\Tests\Stubs\UserContractStub;
-use Dingo\Api\Transformer\TransformerFactory;
+use Dingo\Api\Tests\Stubs\UserStub;
 use Dingo\Api\Tests\Stubs\UserTransformerStub;
+use Dingo\Api\Transformer\TransformerFactory;
+use Illuminate\Container\Container;
+use Illuminate\Support\Collection;
+use Mockery;
+use PHPUnit_Framework_TestCase;
 
 class TransformerFactoryTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $container = new Container;
+        $container = new Container();
         $container['request'] = Mockery::mock('Illuminate\Http\Request');
 
-        $this->factory = new TransformerFactory($container, new TransformerStub);
+        $this->factory = new TransformerFactory($container, new TransformerStub());
     }
 
     public function tearDown()
@@ -29,11 +29,11 @@ class TransformerFactoryTest extends PHPUnit_Framework_TestCase
 
     public function testResponseIsTransformable()
     {
-        $this->assertFalse($this->factory->transformableResponse(new UserStub, new UserTransformerStub));
+        $this->assertFalse($this->factory->transformableResponse(new UserStub(), new UserTransformerStub()));
 
-        $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub);
+        $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub());
 
-        $this->assertTrue($this->factory->transformableResponse(new UserStub, new UserTransformerStub));
+        $this->assertTrue($this->factory->transformableResponse(new UserStub(), new UserTransformerStub()));
     }
 
     public function testResponseIsTransformableType()
@@ -45,25 +45,25 @@ class TransformerFactoryTest extends PHPUnit_Framework_TestCase
 
     public function testTransformingResponse()
     {
-        $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub);
+        $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub());
 
-        $response = $this->factory->transform(new UserStub);
+        $response = $this->factory->transform(new UserStub());
 
         $this->assertEquals(['name' => 'Jason'], $response);
     }
 
     public function testTransformingCollectionResponse()
     {
-        $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub);
+        $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub());
 
-        $response = $this->factory->transform(new Collection([new UserStub, new UserStub]));
+        $response = $this->factory->transform(new Collection([new UserStub(), new UserStub()]));
 
         $this->assertEquals([['name' => 'Jason'], ['name' => 'Jason']], $response);
     }
 
     public function testTransformingResponseBoundByContract()
     {
-        $response = $this->factory->transform(new UserContractStub);
+        $response = $this->factory->transform(new UserContractStub());
 
         $this->assertEquals(['name' => 'Jason'], $response);
     }
@@ -74,6 +74,6 @@ class TransformerFactoryTest extends PHPUnit_Framework_TestCase
      */
     public function testTransformingWithNoTransformerThrowsException()
     {
-        $this->factory->transform(new UserStub);
+        $this->factory->transform(new UserStub());
     }
 }

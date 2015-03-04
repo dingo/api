@@ -1,10 +1,10 @@
 <?php
 
-namespace Dingo\Api\Tests\Http;
+namespace Dingo\Api\tests\Http;
 
-use stdClass;
 use Dingo\Api\Http\Response;
 use PHPUnit_Framework_TestCase;
+use stdClass;
 
 class ResponseTest extends PHPUnit_Framework_TestCase
 {
@@ -19,7 +19,7 @@ class ResponseTest extends PHPUnit_Framework_TestCase
 
     public function testNonCastableObjectsSetAsOriginalContent()
     {
-        $object = new stdClass;
+        $object = new stdClass();
         $object->id = 'test';
 
         $response = new Response($object);

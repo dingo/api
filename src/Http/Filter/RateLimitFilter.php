@@ -2,11 +2,11 @@
 
 namespace Dingo\Api\Http\Filter;
 
-use Illuminate\Http\Request;
-use Dingo\Api\Routing\Route;
-use Illuminate\Http\Response;
-use Dingo\Api\Routing\Router;
 use Dingo\Api\Http\RateLimit\RateLimiter;
+use Dingo\Api\Routing\Route;
+use Dingo\Api\Routing\Router;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class RateLimitFilter extends Filter
@@ -69,7 +69,7 @@ class RateLimitFilter extends Filter
         $this->attachAfterFilter();
 
         if ($this->limiter->exceededRateLimit()) {
-            throw new AccessDeniedHttpException;
+            throw new AccessDeniedHttpException();
         }
     }
 

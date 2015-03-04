@@ -1,25 +1,25 @@
 <?php
 
-namespace Dingo\Api\Tests\Http\Filter;
+namespace Dingo\Api\tests\Http\Filter;
 
-use Mockery;
+use Dingo\Api\Http\Filter\AuthFilter;
 use Dingo\Api\Properties;
-use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
 use Dingo\Api\Routing\Router;
-use PHPUnit_Framework_TestCase;
-use Illuminate\Events\Dispatcher;
 use Illuminate\Container\Container;
-use Dingo\Api\Http\Filter\AuthFilter;
+use Illuminate\Events\Dispatcher;
+use Illuminate\Http\Request;
+use Mockery;
+use PHPUnit_Framework_TestCase;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class AuthFilterTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->container = new Container;
+        $this->container = new Container();
         $this->events = new Dispatcher($this->container);
-        $this->router = new Router($this->events, new Properties, $this->container);
+        $this->router = new Router($this->events, new Properties(), $this->container);
         $this->auth = Mockery::mock('Dingo\Api\Auth\Authenticator');
         $this->filter = new AuthFilter($this->router, $this->events, $this->auth);
     }

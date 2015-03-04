@@ -2,8 +2,8 @@
 
 namespace Dingo\Api\Routing;
 
-use Dingo\Api\Dispatcher;
 use Dingo\Api\Auth\Authenticator;
+use Dingo\Api\Dispatcher;
 use Dingo\Api\Http\ResponseFactory;
 
 trait ControllerTrait

@@ -1,17 +1,17 @@
 <?php
 
-namespace Dingo\Api\Tests\Exception;
+namespace Dingo\Api\tests\Exception;
 
+use Dingo\Api\Exception\Handler;
 use Illuminate\Http\Response;
 use PHPUnit_Framework_TestCase;
-use Dingo\Api\Exception\Handler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class HandlerTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->exceptionHandler = new Handler;
+        $this->exceptionHandler = new Handler();
     }
 
     public function testRegisterExceptionHandler()

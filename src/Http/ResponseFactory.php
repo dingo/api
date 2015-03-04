@@ -2,12 +2,12 @@
 
 namespace Dingo\Api\Http;
 
-use Closure;
 use BadMethodCallException;
-use Illuminate\Support\Str;
-use Illuminate\Support\Collection;
-use Illuminate\Pagination\Paginator;
+use Closure;
 use Dingo\Api\Transformer\TransformerFactory;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class ResponseFactory
 {

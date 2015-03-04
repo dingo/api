@@ -3,8 +3,8 @@
 namespace Dingo\Api\Provider;
 
 use Dingo\Api\Http\Filter\AuthFilter;
-use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Http\Filter\RateLimitFilter;
+use Illuminate\Support\ServiceProvider;
 
 class FilterServiceProvider extends ServiceProvider
 {

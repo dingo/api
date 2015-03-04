@@ -2,15 +2,15 @@
 
 namespace Dingo\Api\Provider;
 
-use Dingo\Api\Dispatcher;
-use Dingo\Api\Http\Response;
-use Dingo\Api\Exception\Handler;
 use Dingo\Api\Auth\Authenticator;
-use Dingo\Api\Http\ResponseFactory;
-use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Console\ApiRoutesCommand;
+use Dingo\Api\Dispatcher;
+use Dingo\Api\Exception\Handler;
 use Dingo\Api\Http\RateLimit\RateLimiter;
+use Dingo\Api\Http\Response;
+use Dingo\Api\Http\ResponseFactory;
 use Dingo\Api\Transformer\TransformerFactory;
+use Illuminate\Support\ServiceProvider;
 
 class ApiServiceProvider extends ServiceProvider
 {
@@ -157,7 +157,7 @@ class ApiServiceProvider extends ServiceProvider
     protected function registerExceptionHandler()
     {
         $this->app->bindShared('api.exception', function ($app) {
-            return new Handler;
+            return new Handler();
         });
     }
 

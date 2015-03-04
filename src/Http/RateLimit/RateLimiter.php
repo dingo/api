@@ -2,10 +2,10 @@
 
 namespace Dingo\Api\Http\RateLimit;
 
-use Illuminate\Http\Request;
 use Illuminate\Cache\CacheManager;
-use Illuminate\Support\Collection;
 use Illuminate\Container\Container;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class RateLimiter
 {

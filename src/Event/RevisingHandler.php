@@ -2,10 +2,10 @@
 
 namespace Dingo\Api\Event;
 
+use Dingo\Api\Routing\ControllerReviser;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
-use Dingo\Api\Routing\ControllerReviser;
 
 class RevisingHandler
 {

@@ -2,8 +2,8 @@
 
 namespace Dingo\Api\Routing;
 
-use ReflectionMethod;
 use Illuminate\Routing\ControllerInspector as IlluminateControllerInspector;
+use ReflectionMethod;
 
 class ControllerInspector extends IlluminateControllerInspector
 {

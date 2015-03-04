@@ -37,7 +37,7 @@ class Route extends IlluminateRoute
 
         if (! isset($action['before'])) {
             $action['before'] = [];
-        } elseif(is_string($action['before'])) {
+        } elseif (is_string($action['before'])) {
             $action['before'] = [$action['before']];
         }
 

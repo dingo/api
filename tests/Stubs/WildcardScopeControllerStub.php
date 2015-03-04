@@ -2,8 +2,8 @@
 
 namespace Dingo\Api\Tests\Stubs;
 
-use Illuminate\Routing\Controller;
 use Dingo\Api\Routing\ControllerTrait;
+use Illuminate\Routing\Controller;
 
 class WildcardScopeControllerStub extends Controller
 {

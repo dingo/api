@@ -1,26 +1,26 @@
 <?php
 
-namespace Dingo\Api\Tests\Routing;
+namespace Dingo\Api\tests\Routing;
 
-use Illuminate\Http\Request;
-use PHPUnit_Framework_TestCase;
-use Illuminate\Support\Collection;
-use Dingo\Api\Routing\UrlGenerator;
 use Dingo\Api\Routing\Route as ApiRoute;
-use Illuminate\Routing\Route as IlluminateRoute;
 use Dingo\Api\Routing\RouteCollection as ApiRouteCollection;
+use Dingo\Api\Routing\UrlGenerator;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Route as IlluminateRoute;
 use Illuminate\Routing\RouteCollection as IlluminateRouteCollection;
+use Illuminate\Support\Collection;
+use PHPUnit_Framework_TestCase;
 
 class UrlGeneratorTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->url = new UrlGenerator($this->routes = new Collection, $this->request = Request::create('http://www.foo.com/'));
+        $this->url = new UrlGenerator($this->routes = new Collection(), $this->request = Request::create('http://www.foo.com/'));
     }
 
     public function testGeneratorDefaultsToApplicationRoutes()
     {
-        $this->routes->push($app = new IlluminateRouteCollection);
+        $this->routes->push($app = new IlluminateRouteCollection());
         $app->add(new IlluminateRoute(['GET'], '/app', ['as' => 'foo', 'controller' => 'FooController@foo']));
 
         $this->routes->push($api = new ApiRouteCollection('v1'));

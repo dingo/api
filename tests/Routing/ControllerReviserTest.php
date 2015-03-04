@@ -1,16 +1,16 @@
 <?php
 
-namespace Dingo\Api\Tests\Routing;
+namespace Dingo\Api\tests\Routing;
 
+use Dingo\Api\Routing\ControllerReviser;
 use Dingo\Api\Routing\Route;
 use PHPUnit_Framework_TestCase;
-use Dingo\Api\Routing\ControllerReviser;
 
 class ControllerReviserTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->reviser = new ControllerReviser;
+        $this->reviser = new ControllerReviser();
     }
 
     public function testRoutingToRevisedControllerWithWildcardScopes()

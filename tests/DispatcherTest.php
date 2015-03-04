@@ -1,38 +1,38 @@
 <?php
 
-namespace Dingo\Api\Tests;
+namespace Dingo\Api\tests;
 
-use Mockery;
-use Dingo\Api\Properties;
-use Dingo\Api\Dispatcher;
-use Illuminate\Http\Request;
-use Dingo\Api\Http\Response;
-use Dingo\Api\Routing\Router;
-use PHPUnit_Framework_TestCase;
 use Dingo\Api\Auth\Authenticator;
-use Illuminate\Container\Container;
-use Illuminate\Routing\UrlGenerator;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Routing\RouteCollection;
+use Dingo\Api\Dispatcher;
 use Dingo\Api\Exception\InternalHttpException;
-use Illuminate\Events\Dispatcher as EventDispatcher;
+use Dingo\Api\Http\Response;
 use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
+use Dingo\Api\Properties;
+use Dingo\Api\Routing\Router;
+use Illuminate\Container\Container;
+use Illuminate\Events\Dispatcher as EventDispatcher;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Http\Request;
+use Illuminate\Routing\RouteCollection;
+use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\Request as RequestFacade;
+use Mockery;
+use PHPUnit_Framework_TestCase;
 
 class DispatcherTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
         $config = new Properties('v1', null, null, 'test');
-        $this->container = new Container;
+        $this->container = new Container();
         $this->container['request'] = Request::create('/', 'GET');
-        $url = new UrlGenerator(new RouteCollection, $this->container['request']);
+        $url = new UrlGenerator(new RouteCollection(), $this->container['request']);
 
-        $this->router = new Router(new EventDispatcher, $config);
+        $this->router = new Router(new EventDispatcher(), $config);
         $this->auth = new Authenticator($this->router, $this->container, []);
-        $this->dispatcher = new Dispatcher($this->container, new Filesystem, $url, $this->router, $this->auth, $config);
+        $this->dispatcher = new Dispatcher($this->container, new Filesystem(), $url, $this->router, $this->auth, $config);
 
-        Response::setFormatters(['json' => new JsonResponseFormat]);
+        Response::setFormatters(['json' => new JsonResponseFormat()]);
     }
 
     public function tearDown()

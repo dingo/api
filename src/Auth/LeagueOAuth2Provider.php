@@ -2,13 +2,13 @@
 
 namespace Dingo\Api\Auth;
 
+use Dingo\Api\Routing\Route;
 use Exception;
 use Illuminate\Http\Request;
-use Dingo\Api\Routing\Route;
-use League\OAuth2\Server\ResourceServer;
 use League\OAuth2\Server\Entity\AccessTokenEntity;
-use League\OAuth2\Server\Exception\OAuthException;
 use League\OAuth2\Server\Exception\InvalidScopeException;
+use League\OAuth2\Server\Exception\OAuthException;
+use League\OAuth2\Server\ResourceServer;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class LeagueOAuth2Provider extends AuthorizationProvider

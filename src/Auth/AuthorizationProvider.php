@@ -2,8 +2,8 @@
 
 namespace Dingo\Api\Auth;
 
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 abstract class AuthorizationProvider implements ProviderInterface
@@ -30,7 +30,7 @@ abstract class AuthorizationProvider implements ProviderInterface
             return true;
         }
 
-        throw new BadRequestHttpException;
+        throw new BadRequestHttpException();
     }
 
     /**

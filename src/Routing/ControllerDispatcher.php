@@ -2,8 +2,8 @@
 
 namespace Dingo\Api\Routing;
 
-use Dingo\Api\Dispatcher;
 use BadMethodCallException;
+use Dingo\Api\Dispatcher;
 use Illuminate\Routing\ControllerDispatcher as IlluminateControllerDispatcher;
 
 class ControllerDispatcher extends IlluminateControllerDispatcher

@@ -1,11 +1,11 @@
 <?php
 
-namespace Dingo\Api\Tests\Auth;
+namespace Dingo\Api\tests\Auth;
 
-use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
-use PHPUnit_Framework_TestCase;
 use Dingo\Api\Tests\Stubs\AuthorizationProviderStub;
+use Illuminate\Http\Request;
+use PHPUnit_Framework_TestCase;
 
 class AuthorizationProviderTest extends PHPUnit_Framework_TestCase
 {
@@ -16,6 +16,6 @@ class AuthorizationProviderTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('GET', '/');
 
-        (new AuthorizationProviderStub)->authenticate($request, new Route('GET', '/', []));
+        (new AuthorizationProviderStub())->authenticate($request, new Route('GET', '/', []));
     }
 }

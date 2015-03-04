@@ -2,10 +2,10 @@
 
 namespace Dingo\Api\Provider;
 
-use Dingo\Api\Event\RevisingHandler;
 use Dingo\Api\Event\ExceptionHandler;
-use Illuminate\Support\ServiceProvider;
+use Dingo\Api\Event\RevisingHandler;
 use Dingo\Api\Routing\ControllerReviser;
+use Illuminate\Support\ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
 {

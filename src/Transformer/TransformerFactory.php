@@ -3,10 +3,10 @@
 namespace Dingo\Api\Transformer;
 
 use Closure;
-use RuntimeException;
-use Illuminate\Support\Collection;
 use Illuminate\Container\Container;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
+use RuntimeException;
 
 class TransformerFactory
 {

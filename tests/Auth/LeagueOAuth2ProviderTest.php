@@ -1,12 +1,12 @@
 <?php
 
-namespace Dingo\Api\Tests\Auth;
+namespace Dingo\Api\tests\Auth;
 
-use Mockery;
-use Illuminate\Http\Request;
-use Dingo\Api\Routing\Route;
-use PHPUnit_Framework_TestCase;
 use Dingo\Api\Auth\LeagueOAuth2Provider;
+use Dingo\Api\Routing\Route;
+use Illuminate\Http\Request;
+use Mockery;
+use PHPUnit_Framework_TestCase;
 
 class LeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase
 {
