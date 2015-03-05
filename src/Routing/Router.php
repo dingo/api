@@ -190,85 +190,6 @@ class Router extends IlluminateRouter
     }
 
     /**
-     * Dispatch the request to the application and return either a regular response
-     * or an API response.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param bool                     $raw
-     *
-     * @throws \Exception
-     *
-     * @return \Illuminate\Http\Response|\Dingo\Api\Http\Response
-     */
-    public function dispatch(Request $request, $raw = false)
-    {
-        if (! $this->isApiRequest($request)) {
-            return parent::dispatch($request);
-        }
-
-        list($version, $format) = $this->parseAcceptHeader($request);
-
-        $this->currentVersion = $version;
-        $this->currentFormat = $format;
-
-        $this->container->instance('Illuminate\Http\Request', $request);
-
-        try {
-            $response = parent::dispatch($request);
-
-            // Attempt to get the formatter so that we can catch and handle
-            // any exceptions due to a poorly formatted accept header.
-            $response->getFormatter($format);
-        } catch (Exception $exception) {
-            $response = $this->handleException($request, $exception);
-        }
-
-        // This goes hand in hand with the above. We'll check to see if a
-        // formatter exists for the requested response format. If not
-        // then we'll revert to the default format because we are
-        // most likely formatting an error response.
-        if (! $raw) {
-            if (! $response->hasFormatter($format)) {
-                $format = $this->properties->getFormat();
-            }
-
-            $response->getFormatter($format)
-                     ->setRequest($request)
-                     ->setResponse($response);
-
-            $response = $response->morph($format);
-        }
-
-        return $response;
-    }
-
-    /**
-     * Handle a thrown routing exception.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \Exception               $exception
-     *
-     * @return \Illuminate\Http\Response
-     */
-    protected function handleException(Request $request, Exception $exception)
-    {
-        if ($request instanceof InternalRequest) {
-            throw $exception;
-        } else {
-            $response = $this->prepareResponse(
-                $request,
-                $this->events->until('router.exception', [$exception])
-            );
-
-            // When an exception is thrown it halts execution of the dispatch. We'll
-            // call the attached after filters for caught exceptions still.
-            $this->callFilter('after', $request, $response);
-        }
-
-        return $response;
-    }
-
-    /**
      * {@inheritDoc}
      */
     protected function newRoute($methods, $uri, $action)
@@ -369,36 +290,6 @@ class Router extends IlluminateRouter
         }
 
         return $response;
-    }
-
-    /**
-     * Determine if the request is an API request.
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return bool
-     */
-    public function isApiRequest($request)
-    {
-        if ($this->api->isEmpty()) {
-            return false;
-        } elseif (isset($this->apiRequests[$key = sha1($request)])) {
-            return $this->apiRequests[$key];
-        }
-
-        $collection = $this->api->getByRequest($request) ?: $this->api->getDefault();
-
-        try {
-            $collection->match($request);
-        } catch (NotFoundHttpException $exception) {
-            return $this->apiRequests[$key] = false;
-        } catch (MethodNotAllowedHttpException $exception) {
-            // If a method is not allowed then we can say that a route was matched
-            // so the request is still targetting the API. This allows developers
-            // to provide better error responses when clients send bad requests.
-        }
-
-        return $this->apiRequests[$key] = true;
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Dingo\Api\Provider;
 
 use Dingo\Api\Dispatcher;
+use Dingo\Api\Properties;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Exception\Handler;
 use Dingo\Api\Auth\Authenticator;
@@ -11,6 +12,9 @@ use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Console\ApiRoutesCommand;
 use Dingo\Api\Http\RateLimit\RateLimiter;
 use Dingo\Api\Transformer\TransformerFactory;
+
+use Dingo\Api\Http\Matcher;
+use Dingo\Api\Http\Middleware;
 
 class ApiServiceProvider extends ServiceProvider
 {
@@ -21,10 +25,13 @@ class ApiServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->setupContainerBindings();
+        $this->publishes([
+            __DIR__.'/../../config/api.php' => config_path('api.php')
+        ]);
 
-        Response::setFormatters($this->prepareConfigInstances($this->app['config']['api::formats']));
-        Response::setTransformer($this->app['api.transformer']);
+        $this->app['router']->middleware('api', 'Dingo\Api\Http\Middleware\RouteMiddleware');
+
+        $this->setupContainerBindings();
     }
 
     /**
@@ -34,16 +41,8 @@ class ApiServiceProvider extends ServiceProvider
      */
     protected function setupContainerBindings()
     {
-        $this->app->bind('Dingo\Api\Dispatcher', function ($app) {
-            return $app['api.dispatcher'];
-        });
-
-        $this->app->bind('Dingo\Api\Auth\Authenticator', function ($app) {
-            return $app['api.auth'];
-        });
-
-        $this->app->bind('Dingo\Api\Http\ResponseFactory', function ($app) {
-            return $app['api.response'];
+        $this->app->bind('Dingo\Api\Http\Middleware\RequestMiddleware', function ($app) {
+            return $app['api.middlewares.request'];
         });
     }
 
@@ -54,14 +53,32 @@ class ApiServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->registerProviders();
-        $this->registerDispatcher();
-        $this->registerTransformer();
-        $this->registerAuthenticator();
-        $this->registerRateLimiter();
-        $this->registerResponseFactory();
-        $this->registerExceptionHandler();
-        $this->registerCommands();
+        $this->mergeConfigFrom(__DIR__.'/../../config/api.php', 'api');
+
+        $this->registerProperties();
+        $this->registerMiddlewares();
+    }
+
+    protected function registerProperties()
+    {
+        $this->app->bindShared('api.properties', function ($app) {
+            $properties = $app['config']->get('api');
+
+            return new Properties(
+                $properties['version'],
+                $properties['prefix'],
+                $properties['domain'],
+                $properties['vendor'],
+                $properties['default_format']
+            );
+        });
+    }
+
+    protected function registerMiddlewares()
+    {
+        $this->app->bindShared('api.middlewares.request', function ($app) {
+            return new Middleware\RequestMiddleware(new Matcher($app['api.properties']));
+        });
     }
 
     /**
@@ -71,10 +88,6 @@ class ApiServiceProvider extends ServiceProvider
      */
     protected function registerProviders()
     {
-        $this->app->register('Dingo\Api\Provider\PropertiesServiceProvider');
-        $this->app->register('Dingo\Api\Provider\RoutingServiceProvider');
-        $this->app->register('Dingo\Api\Provider\FilterServiceProvider');
-        $this->app->register('Dingo\Api\Provider\EventServiceProvider');
     }
 
     /**
