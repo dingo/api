@@ -12,8 +12,8 @@ class UrlGenerator extends IlluminateUrlGenerator
     /**
      * Create a new URL generator instance.
      *
-     * @param \Illuminate\Support\Collection $routes
-     * @param \Illuminate\Http\Request       $request
+     * @param \Illuminate\Routing\RouteCollection   $routes
+     * @param \Illuminate\Http\Request              $request
      *
      * @return void
      */
