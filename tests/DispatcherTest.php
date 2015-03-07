@@ -11,7 +11,7 @@ use Dingo\Api\Routing\Router;
 use PHPUnit_Framework_TestCase;
 use Dingo\Api\Auth\Authenticator;
 use Illuminate\Container\Container;
-use Illuminate\Routing\UrlGenerator;
+use Dingo\Api\Routing\UrlGenerator;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Routing\RouteCollection;
 use Dingo\Api\Exception\InternalHttpException;

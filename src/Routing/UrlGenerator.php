@@ -4,7 +4,7 @@ namespace Dingo\Api\Routing;
 
 use Illuminate\Http\Request;
 use InvalidArgumentException;
-use Illuminate\Support\Collection;
+use Illuminate\Routing\RouteCollection;
 use Illuminate\Routing\UrlGenerator as IlluminateUrlGenerator;
 
 class UrlGenerator extends IlluminateUrlGenerator
@@ -12,12 +12,12 @@ class UrlGenerator extends IlluminateUrlGenerator
     /**
      * Create a new URL generator instance.
      *
-     * @param \Illuminate\Support\Collection $routes
-     * @param \Illuminate\Http\Request       $request
+     * @param \Illuminate\Routing\RouteCollection   $routes
+     * @param \Illuminate\Http\Request              $request
      *
      * @return void
      */
-    public function __construct(Collection $routes, Request $request)
+    public function __construct(RouteCollection $routes, Request $request)
     {
         $this->routes = $routes;
         $this->request = $request;
