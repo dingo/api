@@ -43,7 +43,7 @@ class JWTProvider extends AuthorizationProvider
         $token = $this->getToken($request);
 
         try {
-            return $this->auth->login($token);
+            return $this->auth->authenticate($token);
         } catch (JWTException $e) {
             throw new UnauthorizedHttpException('JWTAuth', $e->getMessage());
         }
