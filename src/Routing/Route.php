@@ -41,9 +41,8 @@ class Route extends IlluminateRoute
             $action['before'] = [$action['before']];
         }
 
-        foreach ([static::API_FILTER_THROTTLE, static::API_FILTER_AUTH] as $filter) {
-            $key = array_search($filter, $action['before']);
-            if ($key !== false) {
+        foreach ([static::API_FILTER_THROTTLE, static::API_FILTER_AUTH] as $filter) {;
+            if (($key = array_search($filter, $action['before'])) !== false) {
                 unset($action['before'][$key]);
             }
 
