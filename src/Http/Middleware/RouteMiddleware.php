@@ -4,10 +4,12 @@ namespace Dingo\Api\Http\Middleware;
 
 use Closure;
 use Exception;
+use Dingo\Api\Http\Request;
+use Dingo\Api\Http\Response;
 use Illuminate\Routing\Router;
 use Dingo\Api\Http\InternalRequest;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Events\Dispatcher as EventDispatcher;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class RouteMiddleware
 {
@@ -17,17 +19,20 @@ class RouteMiddleware
         $this->events = $events;
     }
 
+    /**
+     * Handle an incoming request.
+     *
+     * @param \Dingo\Api\Http\Request $request
+     * @param \Closure                $next
+     *
+     * @return \Dingo\Api\Http\Response
+     */
     public function handle($request, Closure $next)
     {
-        list($version, $format) = $this->parseAcceptHeader($request);
-
-        $this->currentVersion = $version;
-        $this->currentFormat = $format;
-
-        $this->container->instance('Illuminate\Http\Request', $request);
+        $format = 'json';
 
         try {
-            $response = $next($request);
+            $response = $this->prepareResponse($request, $next($request));
 
             // Attempt to get the formatter so that we can catch and handle
             // any exceptions due to a poorly formatted accept header.
@@ -40,7 +45,7 @@ class RouteMiddleware
         // formatter exists for the requested response format. If not
         // then we'll revert to the default format because we are
         // most likely formatting an error response.
-        if (! $raw) {
+        //if (! $raw) {
             if (! $response->hasFormatter($format)) {
                 $format = $this->properties->getFormat();
             }
@@ -50,7 +55,7 @@ class RouteMiddleware
                      ->setResponse($response);
 
             $response = $response->morph($format);
-        }
+        //}
 
         return $response;
     }
@@ -69,14 +74,25 @@ class RouteMiddleware
             throw $exception;
         } else {
             $response = $this->events->until('router.exception', [$exception]);
-
-            if ()
-
-            // When an exception is thrown it halts execution of the dispatch. We'll
-            // call the attached after filters for caught exceptions still.
-            $this->callFilter('after', $request, $response);
         }
 
         return $response;
+    }
+
+    /**
+     * Prepare a response instance.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param mixed                                     $response
+     *
+     * @return \Dingo\Api\Http\Response
+     */
+    protected function prepareResponse($request, $response)
+    {
+        if (! $response instanceof Response) {
+            $response = Response::makeFromExisting($response);
+        }
+
+        return $response->prepare($request);
     }
 }

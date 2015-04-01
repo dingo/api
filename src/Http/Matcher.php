@@ -6,8 +6,20 @@ use Dingo\Api\Properties;
 
 class Matcher
 {
+    /**
+     * Properties instance.
+     *
+     * @var \Dingo\Api\Properties
+     */
     protected $properties;
 
+    /**
+     * Create a new matcher instance.
+     *
+     * @param \Dingo\Api\Properties $properties
+     *
+     * @return void
+     */
     public function __construct(Properties $properties)
     {
         $this->properties = $properties;

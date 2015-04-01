@@ -7,11 +7,20 @@ use Dingo\Api\Properties;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Exception\Handler;
 use Dingo\Api\Auth\Authenticator;
+use Dingo\Api\Routing\Router;
 use Dingo\Api\Http\ResponseFactory;
 use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Console\ApiRoutesCommand;
 use Dingo\Api\Http\RateLimit\RateLimiter;
 use Dingo\Api\Transformer\TransformerFactory;
+
+use Illuminate\Routing\Matching\UriValidator;
+use Illuminate\Routing\Matching\HostValidator;
+use Dingo\Api\Routing\Matching\AcceptValidator;
+use Illuminate\Routing\Matching\SchemeValidator;
+use Illuminate\Routing\Matching\MethodValidator;
+
+use Dingo\Api\Routing\Route;
 
 use Dingo\Api\Http\Matcher;
 use Dingo\Api\Http\Middleware;
@@ -31,7 +40,30 @@ class ApiServiceProvider extends ServiceProvider
 
         $this->app['router']->middleware('api', 'Dingo\Api\Http\Middleware\RouteMiddleware');
 
+        Response::setFormatters([
+            'json' => new \Dingo\Api\Http\ResponseFormat\JsonResponseFormat
+        ]);
+
+        Route::$validators = [
+            new MethodValidator, new SchemeValidator,
+            new HostValidator, new UriValidator,
+            new AcceptValidator
+        ];
+
         $this->setupContainerBindings();
+    }
+
+    protected function replaceRouter()
+    {
+        $routes = $this->app['router']->getRoutes();
+
+        $this->app->bindShared('router', function ($app) use ($routes) {
+            $router = new Router($app['events'], $app);
+
+            $router->addExistingRoutes($routes);
+
+            return $router;
+        });
     }
 
     /**
@@ -53,6 +85,8 @@ class ApiServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->replaceRouter();
+
         $this->mergeConfigFrom(__DIR__.'/../../config/api.php', 'api');
 
         $this->registerProperties();

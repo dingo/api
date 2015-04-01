@@ -71,21 +71,11 @@ class Router extends IlluminateRouter
      */
     protected $strict;
 
-    /**
-     * Create a new router instance.
-     *
-     * @param \Illuminate\Events\Dispatcher   $events
-     * @param \Dingo\Api\Properties           $properties
-     * @param \Illuminate\Container\Container $container
-     *
-     * @return void
-     */
-    public function __construct(Dispatcher $events, Properties $properties, Container $container = null)
+    public function __construct(Dispatcher $events, Container $container = null)
     {
-        $this->properties = $properties;
-        $this->api = new GroupCollection($properties);
-
-        parent::__construct($events, $container);
+        $this->events = $events;
+        $this->routes = new RouteCollection;
+        $this->container = $container ?: new Container;
     }
 
     /**
@@ -162,7 +152,7 @@ class Router extends IlluminateRouter
      */
     protected function routingToApi()
     {
-        return ! empty($this->groupStack) && array_get(last($this->groupStack), 'api', false) === true;
+        return ! empty($this->groupStack) && array_key_exists('version', last($this->groupStack)) === true;
     }
 
     /**
@@ -195,30 +185,10 @@ class Router extends IlluminateRouter
     protected function newRoute($methods, $uri, $action)
     {
         if ($this->routingToApi()) {
-            return new Route($methods, $uri, $action);
+            return (new Route($methods, $uri, $action))->setContainer($this->container);
         }
 
         return parent::newRoute($methods, $uri, $action);
-    }
-
-    /**
-     * Add a new route to either the routers collection or an API collection.
-     *
-     * @param array|string          $methods
-     * @param string                $uri
-     * @param callable|array|string $action
-     *
-     * @return \Illuminate\Routing\Route
-     */
-    protected function addRoute($methods, $uri, $action)
-    {
-        $route = $this->createRoute($methods, $uri, $action);
-
-        if ($this->routingToApi()) {
-            return $this->addApiRoute($route);
-        }
-
-        return $this->routes->add($route);
     }
 
     /**
@@ -237,31 +207,6 @@ class Router extends IlluminateRouter
         }
 
         return $route;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function findRoute($request)
-    {
-        $routes = $this->getRoutes();
-
-        try {
-            $route = $routes->match($request);
-        } catch (NotFoundHttpException $exception) {
-            // If we are unable to match a route against the regular application routes then
-            // we'll attempt to match a route based on the request against the API routes.
-            // This will search the API route groups in reverse order for a match,
-            // it should be noted that OPTIONS requests will be a first in
-            // last out match.
-            if (! $routes = $this->api->getByRequest($request) ?: $this->api->getByVersion($this->currentVersion)) {
-                throw $exception;
-            }
-
-            $route = $routes->match($request);
-        }
-
-        return $this->current = $this->substituteBindings($route);
     }
 
     /**

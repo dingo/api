@@ -20,6 +20,11 @@ class Route extends IlluminateRoute
      */
     const API_FILTER_THROTTLE = 'api.throttle';
 
+    public function version()
+    {
+        return $this->action['version'];
+    }
+
     /**
      * {@inheritDoc}
      */

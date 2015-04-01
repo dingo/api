@@ -9,6 +9,27 @@ use Illuminate\Routing\RouteCollection as IlluminateRouteCollection;
 class RouteCollection extends IlluminateRouteCollection
 {
     /**
+     * Add the given route to the arrays of routes.
+     *
+     * @param  \Illuminate\Routing\Route  $route
+     * @return void
+     */
+    protected function addToCollections($route)
+    {
+        $key = $route->domain().$route->getUri();
+
+        if ($route instanceof Route) {
+            $key .= $route->version();
+        }
+
+        foreach ($route->methods() as $method) {
+            $this->routes[$method][$key] = $route;
+        }
+
+        $this->allRoutes[$method.$key] = $route;
+    }
+
+    /**
      * Version of this collection of routes.
      *
      * @var string
@@ -21,20 +42,6 @@ class RouteCollection extends IlluminateRouteCollection
      * @var array
      */
     protected $options;
-
-    /**
-     * Create a new API route collection instance.
-     *
-     * @param string $version
-     * @param array  $options
-     *
-     * @return void
-     */
-    public function __construct($version, array $options = [])
-    {
-        $this->version = $version;
-        $this->options = $options;
-    }
 
     /**
      * Get an option from the collection.

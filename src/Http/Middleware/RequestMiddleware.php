@@ -10,13 +10,33 @@ use Dingo\Api\Http\Request;
 
 class RequestMiddleware
 {
+    /**
+     * HTTP Matcher instance.
+     *
+     * @var \Dingo\Api\Http\Matcher
+     */
     protected $matcher;
 
+    /**
+     * Create a new request middlware instance.
+     *
+     * @param \Dingo\Api\Http\Matcher $matcher
+     *
+     * @return void
+     */
     public function __construct(Matcher $matcher)
     {
         $this->matcher = $matcher;
     }
 
+    /**
+     * Handle an incoming request.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure                 $next
+     *
+     * @return mixed
+     */
     public function handle($request, Closure $next)
     {
         if ($this->matcher->matchDomain($request) || $this->matcher->matchPrefix($request)) {
