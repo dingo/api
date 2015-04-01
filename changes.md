@@ -17,6 +17,7 @@
 - Routes are now added to the correct groups and matched correctly.
 - OPTION requests are now handled correctly for API routes so preflights will no longer fail.
 - Eager loading for Fractal transformers now checks the available includes before attempting to load.
+- Raw internal requests now have the content run through any transformers as was initially described when implemented.
 
 ##### Changed
 

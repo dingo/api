@@ -194,13 +194,12 @@ class Router extends IlluminateRouter
      * or an API response.
      *
      * @param \Illuminate\Http\Request $request
-     * @param bool                     $raw
      *
      * @throws \Exception
      *
      * @return \Illuminate\Http\Response|\Dingo\Api\Http\Response
      */
-    public function dispatch(Request $request, $raw = false)
+    public function dispatch(Request $request)
     {
         if (! $this->isApiRequest($request)) {
             return parent::dispatch($request);
@@ -227,17 +226,15 @@ class Router extends IlluminateRouter
         // formatter exists for the requested response format. If not
         // then we'll revert to the default format because we are
         // most likely formatting an error response.
-        if (! $raw) {
-            if (! $response->hasFormatter($format)) {
-                $format = $this->properties->getFormat();
-            }
-
-            $response->getFormatter($format)
-                     ->setRequest($request)
-                     ->setResponse($response);
-
-            $response = $response->morph($format);
+        if (! $response->hasFormatter($format)) {
+            $format = $this->properties->getFormat();
         }
+
+        $response->getFormatter($format)
+                 ->setRequest($request)
+                 ->setResponse($response);
+
+        $response = $response->morph($format);
 
         return $response;
     }
