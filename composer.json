@@ -16,7 +16,7 @@
     },
     "require-dev": {
         "lucadegasperi/oauth2-server-laravel": "3.0.*",
-        "tymon/jwt-auth": "0.3.*",
+        "tymon/jwt-auth": "0.4.*",
         "illuminate/routing": "4.2.*",
         "illuminate/events": "4.2.*",
         "illuminate/auth": "4.2.*",

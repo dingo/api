@@ -1,5 +1,9 @@
 ### v0.8.*@dev (master)
 
+##### General
+
+- Updated Tymon's JWTAuth to the latest version, `0.4.1`.
+
 ##### Added
 
 - Can now use `RateLimiter::setRateLimiter` to change the key used to rate limit requests from the clients IP.
