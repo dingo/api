@@ -1,5 +1,7 @@
 ### v0.8.*@dev (master)
 
+### v0.8.3
+
 ##### General
 
 - Updated Tymon's JWTAuth to the latest version, `0.4.1`.
