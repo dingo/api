@@ -2,7 +2,9 @@
 
 namespace Dingo\Api\Http\ResponseFormat;
 
-abstract class ResponseFormat
+use Dingo\Api\Http\ResponseFormat\ResponseFormatInterface;
+
+abstract class ResponseFormat implements ResponseFormatInterface
 {
     /**
      * Illuminate request instance.
