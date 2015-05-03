@@ -3,30 +3,34 @@
 namespace Dingo\Api\Http\Middleware;
 
 use Closure;
-use RuntimeException;
-use Dingo\Api\Properties;
-use Dingo\Api\Http\Matcher;
+use ReflectionClass;
 use Dingo\Api\Http\Request;
+use Dingo\Api\Http\Validator;
+use Dingo\Api\Routing\Router;
+use Illuminate\Pipeline\Pipeline;
+use Illuminate\Contracts\Foundation\Application as ApplicationContract;
 
 class RequestMiddleware
 {
     /**
-     * HTTP Matcher instance.
+     * HTTP Validator instance.
      *
-     * @var \Dingo\Api\Http\Matcher
+     * @var \Dingo\Api\Http\Validator
      */
-    protected $matcher;
+    protected $validator;
 
     /**
-     * Create a new request middlware instance.
+     * Create a new request middleware instance.
      *
-     * @param \Dingo\Api\Http\Matcher $matcher
+     * @param \Dingo\Api\Http\Validator $validator
      *
      * @return void
      */
-    public function __construct(Matcher $matcher)
+    public function __construct(ApplicationContract $app, Router $router, Validator $validator)
     {
-        $this->matcher = $matcher;
+        $this->app = $app;
+        $this->router = $router;
+        $this->validator = $validator;
     }
 
     /**
@@ -39,17 +43,37 @@ class RequestMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if ($this->matcher->matchDomain($request) || $this->matcher->matchPrefix($request)) {
+        if ($this->validator->validateRequest($request)) {
             $request = Request::createFromExisting($request);
+
+            return $this->sendRequestThroughRouter($request);
         }
 
         return $next($request);
     }
 
-    protected function throwExceptionOnInvalidInitialization()
+    protected function sendRequestThroughRouter($request)
     {
-        if (is_null($this->properties->getPrefix()) && is_null($this->properties->getDomain())) {
-            throw new RuntimeException('Invalid initialization of API package, a prefix or domain is required.');
-        }
+        $this->app->instance('request', $request);
+
+        return (new Pipeline($this->app))->send($request)->through($this->gatherAppMiddleware())->then(function ($request) {
+            return $this->router->dispatch($request);
+        });
+    }
+
+    protected function gatherAppMiddleware()
+    {
+        $reflection = new ReflectionClass($this->app);
+
+        $property = $reflection->getProperty('middleware');
+        $property->setAccessible(true);
+
+        $middleware = $property->getValue($this->app);
+
+        array_forget($middleware, array_search('Dingo\Api\Http\Middleware\RequestMiddleware', $middleware));
+
+        $property->setAccessible(false);
+
+        return $middleware;
     }
 }

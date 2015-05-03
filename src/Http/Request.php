@@ -13,7 +13,9 @@ class Request extends IlluminateRequest
             $old->cookies->all(), $old->files->all(), $old->server->all(), $old->content
         );
 
-        $new->setSession($old->getSession());
+        if ($session = $old->getSession()) {
+            $new->setSession($old->getSession());
+        }
 
         return $new;
     }
