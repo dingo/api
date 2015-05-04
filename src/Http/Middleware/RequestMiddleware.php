@@ -8,12 +8,26 @@ use Dingo\Api\Http\Request;
 use Dingo\Api\Http\Validator;
 use Dingo\Api\Routing\Router;
 use Illuminate\Pipeline\Pipeline;
-use Illuminate\Contracts\Foundation\Application as Application;
+use Illuminate\Contracts\Foundation\Application;
 
 class RequestMiddleware
 {
     /**
-     * HTTP Validator instance.
+     * Application instance.
+     *
+     * @var \Illuminate\Contracts\Foundation\Application
+     */
+    protected $app;
+
+    /**
+     * Router instance.
+     *
+     * @var \Dingo\Api\Routing\Router
+     */
+    protected $router;
+
+    /**
+     * HTTP validator instance.
      *
      * @var \Dingo\Api\Http\Validator
      */
@@ -52,7 +66,14 @@ class RequestMiddleware
         return $next($request);
     }
 
-    protected function sendRequestThroughRouter($request)
+    /**
+     * Send the request through the Dingo router.
+     *
+     * @param \Dingo\Api\Http\Request $request
+     *
+     * @return \Dingo\Api\Http\Response
+     */
+    protected function sendRequestThroughRouter(Request $request)
     {
         $this->app->instance('request', $request);
 
@@ -61,6 +82,12 @@ class RequestMiddleware
         });
     }
 
+    /**
+     * Gather the application middleware besides this one so that we can send
+     * our request through them, exactly how the developer wanted.
+     *
+     * @return array
+     */
     protected function gatherAppMiddleware()
     {
         $reflection = new ReflectionClass($this->app);
