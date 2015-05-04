@@ -5,6 +5,8 @@ namespace Dingo\Api\Routing;
 use Closure;
 use RuntimeException;
 use Dingo\Api\Http\Request;
+use Dingo\Api\Http\Response;
+use Dingo\Api\Http\ResponseBuilder;
 use Illuminate\Container\Container;
 use Dingo\Api\Http\Parser\AcceptParser;
 use Dingo\Api\Routing\Adapter\AdapterInterface;
@@ -22,6 +24,8 @@ class Router
     protected $container;
 
     protected $groupStack = [];
+
+    protected $conditionalRequest;
 
     public function __construct(AdapterInterface $adapter, AcceptParser $accept, Container $container)
     {
@@ -201,12 +205,39 @@ class Router
         $accept = $this->accept->parse($request);
 
         return $this->prepareResponse(
-            $this->adapter->dispatch($request, $accept['version'])
+            $this->adapter->dispatch($request, $accept['version']),
+            $accept['format']
         );
     }
 
-    protected function prepareResponse(IlluminateResponse $response)
+    protected function prepareResponse(IlluminateResponse $response, $format)
     {
+        if ($response instanceof ResponseBuilder) {
+            $response = $response->build();
+        } elseif (! $response instanceof Response) {
+            $response = Response::makeFromExisting($response);
+        }
 
+        $response = $response->morph($format);
+
+        if ($response->isSuccessful() && $this->requestIsConditional()) {
+            if (! $response->headers->has('ETag')) {
+                $response->setEtag(md5($response->getContent()));
+            }
+
+            $response->isNotModified($request);
+        }
+
+        return $response;
+    }
+
+    protected function requestIsConditional()
+    {
+        return $this->conditionalRequest;
+    }
+
+    public function setConditionalRequest($conditionalRequest)
+    {
+        $this->conditionalRequest = $conditionalRequest;
     }
 }

@@ -87,7 +87,7 @@ class Response extends IlluminateResponse
         // Attempt to set the content string, if we encounter an unexpected value
         // then we most likely have an object that cannot be type cast. In that
         // case we'll simply leave the content as null and set the original
-        // content value the continue.
+        // content value and continue.
         try {
             return parent::setContent($content);
         } catch (UnexpectedValueException $exception) {
