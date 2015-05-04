@@ -8,7 +8,7 @@ use Dingo\Api\Http\Request;
 use Dingo\Api\Http\Validator;
 use Dingo\Api\Routing\Router;
 use Illuminate\Pipeline\Pipeline;
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Foundation\Application as Application;
 
 class RequestMiddleware
 {
@@ -26,7 +26,7 @@ class RequestMiddleware
      *
      * @return void
      */
-    public function __construct(ApplicationContract $app, Router $router, Validator $validator)
+    public function __construct(Application $app, Router $router, Validator $validator)
     {
         $this->app = $app;
         $this->router = $router;
