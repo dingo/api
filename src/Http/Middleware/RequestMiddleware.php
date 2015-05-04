@@ -36,7 +36,9 @@ class RequestMiddleware
     /**
      * Create a new request middleware instance.
      *
-     * @param \Dingo\Api\Http\Validator $validator
+     * @param \Illuminate\Contracts\Foundation\Application $app
+     * @param \Dingo\Api\Routing\Router                    $router
+     * @param \Dingo\Api\Http\Validator                    $validator
      *
      * @return void
      */
