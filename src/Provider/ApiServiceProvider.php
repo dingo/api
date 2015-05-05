@@ -52,15 +52,15 @@ class ApiServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton('Dingo\Api\Http\Validation\DomainValidator', function ($app) {
-            return new Http\Validator\DomainValidator(null);
+            return new Http\Validation\DomainValidator(null);
         });
 
         $this->app->singleton('Dingo\Api\Http\Validation\PrefixValidator', function ($app) {
-            return new Http\Validator\PrefixValidator('api');
+            return new Http\Validation\PrefixValidator('api');
         });
 
         $this->app->singleton('Dingo\Api\Http\Validation\AcceptValidator', function ($app) {
-            return new Http\Validator\AcceptValidator(new AcceptParser('api', 'v1', 'json'));
+            return new Http\Validation\AcceptValidator(new AcceptParser('api', 'v1', 'json'));
         });
     }
 
