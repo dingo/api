@@ -1,8 +1,8 @@
 <?php
 
-namespace Dingo\Api\Http\Matching;
+namespace Dingo\Api\Http\Validator;
 
-use Dingo\Api\Http\Request;
+use Illuminate\Http\Request;
 
 class DomainValidator implements ValidatorInterface
 {
@@ -28,7 +28,7 @@ class DomainValidator implements ValidatorInterface
     /**
      * Validate that the request domain matches the configured domain.
      *
-     * @param \Dingo\Api\Http\Request $request
+     * @param \Illuminate\Http\Request $request
      *
      * @return bool
      */

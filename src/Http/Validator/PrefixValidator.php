@@ -1,8 +1,8 @@
 <?php
 
-namespace Dingo\Api\Http\Matching;
+namespace Dingo\Api\Http\Validator;
 
-use Dingo\Api\Http\Request;
+use Illuminate\Http\Request;
 
 class PrefixValidator implements ValidatorInterface
 {
@@ -29,7 +29,7 @@ class PrefixValidator implements ValidatorInterface
      * Validate the request has a prefix and if it matches the configured
      * API prefix.
      *
-     * @param \Dingo\Api\Http\Request $request
+     * @param \Illuminate\Http\Request $request
      *
      * @return bool
      */

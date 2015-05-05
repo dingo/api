@@ -46,14 +46,16 @@ class Validator
      */
     public function validateRequest(IlluminateRequest $request)
     {
+        $status = false;
+
         foreach ($this->validators as $validator) {
             $validator = $this->container->make($validator);
 
-            if (! $validator->matches($request)) {
-                return false;
+            if ($validator->validate($request)) {
+                $status = true;
             }
         }
 
-        return true;
+        return $status;
     }
 }

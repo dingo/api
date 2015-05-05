@@ -1,15 +1,15 @@
 <?php
 
-namespace Dingo\Api\Http\Matching;
+namespace Dingo\Api\Http\Validator;
 
-use Dingo\Api\Http\Request;
+use Illuminate\Http\Request;
 
 interface ValidatorInterface
 {
     /**
      * Validate a request.
      *
-     * @param \Dingo\Api\Http\Request $request
+     * @param \Illuminate\Http\Request $request
      *
      * @return bool
      */
