@@ -3,9 +3,6 @@
 namespace Dingo\Api\Provider;
 
 use ReflectionClass;
-use Dingo\Api\Routing\Router;
-use Dingo\Api\Http\Validator;
-use Dingo\Api\Http\Parser\AcceptParser;
 use Illuminate\Support\ServiceProvider;
 use FastRoute\RouteParser\Std as StdRouteParser;
 use Dingo\Api\Routing\Adapter\Lumen\LumenAdapter;
@@ -14,27 +11,28 @@ use FastRoute\DataGenerator\GroupCountBased as GcbDataGenerator;
 
 class LumenServiceProvider extends ServiceProvider
 {
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
     public function register()
     {
         $this->addRequestMiddlewareToBeginning();
 
-        $this->app->singleton('api.router', function ($app) {
-            return new Router($app['api.router.adapter'], new AcceptParser('api', 'v1', 'json'), $app);
-        });
+        $this->app->register('Dingo\Api\Provider\ApiServiceProvider');
 
         $this->app->singleton('api.router.adapter', function ($app) {
             return new LumenAdapter(new StdRouteParser, new GcbDataGenerator, 'FastRoute\Dispatcher\GroupCountBased');
         });
-
-        $this->app->singleton('api.http.validator', function ($app) {
-            return new Validator(null, 'api');
-        });
-
-        $this->app->alias('api.http.validator', 'Dingo\Api\Http\Validator');
-        $this->app->alias('api.router', 'Dingo\Api\Routing\Router');
-        $this->app->alias('api.router.adapter', 'Dingo\Api\Routing\Adapter\AdapterInterface');
     }
 
+    /**
+     * Add the request middleware to the beginning of the middleware stack on the
+     * Lumen application instance.
+     *
+     * @return void
+     */
     protected function addRequestMiddlewareToBeginning()
     {
         $reflection = new ReflectionClass($this->app);
