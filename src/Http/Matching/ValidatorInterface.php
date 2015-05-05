@@ -6,5 +6,12 @@ use Dingo\Api\Http\Request;
 
 interface ValidatorInterface
 {
-    public function matches(Request $request);
+    /**
+     * Validate a request.
+     *
+     * @param \Dingo\Api\Http\Request $request
+     *
+     * @return bool
+     */
+    public function validate(Request $request);
 }
