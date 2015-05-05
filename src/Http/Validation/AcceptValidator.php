@@ -1,6 +1,6 @@
 <?php
 
-namespace Dingo\Api\Http\Validator;
+namespace Dingo\Api\Http\Validation;
 
 use Illuminate\Http\Request;
 use Dingo\Api\Http\Parser\AcceptParser;
@@ -39,18 +39,17 @@ class AcceptValidator implements ValidatorInterface
     /**
      * Validate the accept header on the request. If this fails it will throw
      * an HTTP exception that will be caught by the middleware. This
-     * validator should always be run last.
+     * validator should always be run last and must not return
+     * a success boolean.
      *
      * @param \Illuminate\Http\Request $request
      *
      * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
      *
-     * @return bool
+     * @return void
      */
     public function validate(Request $request)
     {
         $this->accept->parse($request, $this->strict);
-
-        return true;
     }
 }

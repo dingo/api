@@ -3,6 +3,7 @@
 namespace Dingo\Api\Http;
 
 use Illuminate\Container\Container;
+use Dingo\Api\Http\Validation\ValidatorInterface;
 use Illuminate\Http\Request as IlluminateRequest;
 
 class Validator
@@ -20,9 +21,9 @@ class Validator
      * @var array
      */
     protected $validators = [
-        'Dingo\Api\Http\Matching\DomainValidator',
-        'Dingo\Api\Http\Matching\PrefixValidator',
-        'Dingo\Api\Http\Matching\AcceptValidator'
+        'Dingo\Api\Http\Validation\DomainValidator',
+        'Dingo\Api\Http\Validation\PrefixValidator',
+        'Dingo\Api\Http\Validation\AcceptValidator'
     ];
 
     /**
@@ -51,7 +52,7 @@ class Validator
         foreach ($this->validators as $validator) {
             $validator = $this->container->make($validator);
 
-            if ($validator->validate($request)) {
+            if ($validator instanceof ValidatorInterface && $validator->validate($request)) {
                 $status = true;
             }
         }

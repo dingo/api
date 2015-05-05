@@ -1,6 +1,6 @@
 <?php
 
-namespace Dingo\Api\Http\Validator;
+namespace Dingo\Api\Http\Validation;
 
 use Illuminate\Http\Request;
 
