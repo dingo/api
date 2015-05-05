@@ -2,26 +2,39 @@
 
 namespace Dingo\Api\Http;
 
+use Illuminate\Container\Container;
 use Illuminate\Http\Request as IlluminateRequest;
 
 class Validator
 {
-    protected $domain;
+    /**
+     * Container instance.
+     *
+     * @var \Illuminate\Container\Container
+     */
+    protected $container;
 
-    protected $prefix;
+    /**
+     * Array of request validators.
+     *
+     * @var array
+     */
+    protected $validators = [
+        'Dingo\Api\Http\Matching\DomainValidator',
+        'Dingo\Api\Http\Matching\PrefixValidator',
+        'Dingo\Api\Http\Matching\AcceptValidator'
+    ];
 
     /**
      * Create a new request validator instance.
      *
-     * @param string $domain
-     * @param string $prefix
+     * @param \Illuminate\Container\Container $container
      *
      * @return void
      */
-    public function __construct($domain = null, $prefix = null)
+    public function __construct(Container $container)
     {
-        $this->domain = $domain;
-        $this->prefix = $prefix;
+        $this->container = $container;
     }
 
     /**
@@ -33,46 +46,14 @@ class Validator
      */
     public function validateRequest(IlluminateRequest $request)
     {
-        return $this->validateDomain($request) || $this->validatePrefix($request);
-    }
+        foreach ($this->validators as $validator) {
+            $validator = $this->container->make($validator);
 
-    /**
-     * Validates domain in the request.
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return bool
-     */
-    public function validateDomain(IlluminateRequest $request)
-    {
-        return ! is_null($this->domain) && $request->header('host') == $this->domain;
-    }
+            if (! $validator->matches($request)) {
+                return false;
+            }
+        }
 
-    /**
-     * Validates prefix in the request.
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return bool
-     */
-    public function validatePrefix(IlluminateRequest $request)
-    {
-        $prefix = $this->filterAndExplode($this->prefix);
-
-        $path = $this->filterAndExplode($request->getPathInfo());
-
-        return ! is_null($this->prefix) && $prefix == array_slice($path, 0, count($prefix));
-    }
-
-    /**
-     * Explode array on slash and remove empty values.
-     *
-     * @param array $array
-     *
-     * @return array
-     */
-    protected function filterAndExplode($array)
-    {
-        return array_filter(explode('/', $array));
+        return true;
     }
 }
