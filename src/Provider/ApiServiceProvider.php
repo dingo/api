@@ -7,6 +7,7 @@ use Dingo\Api\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Http\Parser\AcceptParser;
 use Dingo\Api\Transformer\TransformerFactory;
+use Dingo\Api\Exception\Handler as ExceptionHandler;
 
 class ApiServiceProvider extends ServiceProvider
 {
@@ -17,6 +18,7 @@ class ApiServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->registerExceptionHandler();
         $this->registerRouter();
         $this->registerHttpValidation();
         $this->setupClassAliases();
@@ -29,6 +31,18 @@ class ApiServiceProvider extends ServiceProvider
     }
 
     /**
+     * Register the exception handler.
+     *
+     * @return void
+     */
+    protected function registerExceptionHandler()
+    {
+        $this->app->singleton('api.exception', function ($app) {
+            return new ExceptionHandler;
+        });
+    }
+
+    /**
      * Register the router.
      *
      * @return void
@@ -36,7 +50,7 @@ class ApiServiceProvider extends ServiceProvider
     protected function registerRouter()
     {
         $this->app->singleton('api.router', function ($app) {
-            return new Router($app['api.router.adapter'], new AcceptParser('api', 'v1', 'json'), $app);
+            return new Router($app['api.router.adapter'], new AcceptParser('api', 'v1', 'json'), $app['api.exception'], $app);
         });
     }
 

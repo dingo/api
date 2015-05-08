@@ -3,15 +3,20 @@
 namespace Dingo\Api\Routing;
 
 use Closure;
+use Exception;
 use RuntimeException;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Http\Response;
+use Dingo\Api\Exception\Handler;
+use Dingo\Api\Http\InternalRequest;
 use Dingo\Api\Http\ResponseBuilder;
 use Illuminate\Container\Container;
 use Dingo\Api\Http\Parser\AcceptParser;
+use Dingo\Api\Exception\InternalHttpException;
 use Dingo\Api\Routing\Adapter\AdapterInterface;
 use Laravel\Lumen\Application as LumenApplication;
 use Illuminate\Http\Response as IlluminateResponse;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Router
 {
@@ -28,6 +33,13 @@ class Router
      * @var \Dingo\Api\Http\Parser\AcceptParser
      */
     protected $accept;
+
+    /**
+     * Exception handler instance.
+     *
+     * @var \Dingo\Api\Exception\Handler
+     */
+    protected $exception;
 
     /**
      * Application container instance.
@@ -55,14 +67,16 @@ class Router
      *
      * @param \Dingo\Api\Routing\Adapter\AdapterInterface $adapter
      * @param \Dingo\Api\Http\Parser\AcceptParser         $accept
+     * @param \Dingo\Api\Exception\Handler                $exception
      * @param \Illuminate\Container\Container             $container
      *
      * @return void
      */
-    public function __construct(AdapterInterface $adapter, AcceptParser $accept, Container $container)
+    public function __construct(AdapterInterface $adapter, AcceptParser $accept, Handler $exception, Container $container)
     {
         $this->adapter = $adapter;
         $this->accept = $accept;
+        $this->exception = $exception;
         $this->container = $container;
     }
 
@@ -355,10 +369,18 @@ class Router
     {
         $accept = $this->accept->parse($request);
 
-        return $this->prepareResponse(
-            $this->adapter->dispatch($request, $accept['version']),
-            $accept['format']
-        );
+        try {
+            $response = $this->adapter->dispatch($request, $accept['version']);
+
+            if (! $response->isSuccessful()) {
+                throw new HttpException($response->getStatusCode(), $response->getContent());
+            }
+        } catch (Exception $exception) {
+            return $this->prepareResponse(
+                $this->exception->handle($exception),
+                $accept['format']
+            );
+        }
     }
 
     /**
