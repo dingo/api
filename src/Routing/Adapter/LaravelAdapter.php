@@ -1,6 +1,6 @@
 <?php
 
-namespace Dingo\Api\Routing\Adapter\Laravel;
+namespace Dingo\Api\Routing\Adapter;
 
 use Dingo\Api\Http\Request;
 use Illuminate\Routing\Route;
