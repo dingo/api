@@ -231,11 +231,17 @@ class Router
 
         $uri = $uri === '/' ? $uri : '/'.trim($uri, '/');
 
+        if (isset($action['prefix'])) {
+            $uri = trim($action['prefix'], '/').trim($uri, '/');
+
+            unset($action['prefix']);
+        }
+
         // To trick the container router into thinking the route exists we'll
         // need to register a dummy action with the router. This ensures
         // that the router processes the middleware and allows the API
         // router to be booted and used as the dispatcher.
-        $this->registerRouteWithContainerRouter($methods, $uri, null);
+        // $this->registerRouteWithContainerRouter($methods, $uri, []);
 
         return $this->adapter->addRoute((array) $methods, $action['version'], $uri, $action);
     }
@@ -353,7 +359,7 @@ class Router
 
         foreach ((array) $methods as $method) {
             if ($method != 'HEAD') {
-                $this->container->{$method}($uri, $action);
+                $router->{$method}($uri, $action);
             }
         }
     }
@@ -375,6 +381,8 @@ class Router
             if (! $response->isSuccessful()) {
                 throw new HttpException($response->getStatusCode(), $response->getContent());
             }
+
+            return $this->prepareResponse($response, $accept['format']);
         } catch (Exception $exception) {
             return $this->prepareResponse(
                 $this->exception->handle($exception),

@@ -34,19 +34,28 @@ class RequestMiddleware
     protected $validator;
 
     /**
+     * Array of middleware.
+     *
+     * @var array
+     */
+    protected $middleware;
+
+    /**
      * Create a new request middleware instance.
      *
      * @param \Illuminate\Contracts\Foundation\Application $app
      * @param \Dingo\Api\Routing\Router                    $router
      * @param \Dingo\Api\Http\Validator                    $validator
+     * @param array                                        $middleware
      *
      * @return void
      */
-    public function __construct(Application $app, Router $router, Validator $validator)
+    public function __construct(Application $app, Router $router, Validator $validator, array $middleware)
     {
         $this->app = $app;
         $this->router = $router;
         $this->validator = $validator;
+        $this->middleware = $middleware;
     }
 
     /**
@@ -79,30 +88,8 @@ class RequestMiddleware
     {
         $this->app->instance('request', $request);
 
-        return (new Pipeline($this->app))->send($request)->through($this->gatherAppMiddleware())->then(function ($request) {
+        return (new Pipeline($this->app))->send($request)->through($this->middleware)->then(function ($request) {
             return $this->router->dispatch($request);
         });
-    }
-
-    /**
-     * Gather the application middleware besides this one so that we can send
-     * our request through them, exactly how the developer wanted.
-     *
-     * @return array
-     */
-    protected function gatherAppMiddleware()
-    {
-        $reflection = new ReflectionClass($this->app);
-
-        $property = $reflection->getProperty('middleware');
-        $property->setAccessible(true);
-
-        $middleware = $property->getValue($this->app);
-
-        array_forget($middleware, array_search('Dingo\Api\Http\Middleware\RequestMiddleware', $middleware));
-
-        $property->setAccessible(false);
-
-        return $middleware;
     }
 }

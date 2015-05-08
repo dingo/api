@@ -7,6 +7,7 @@ use Dingo\Api\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Http\Parser\AcceptParser;
 use Dingo\Api\Transformer\TransformerFactory;
+use Dingo\Api\Http\Middleware\RequestMiddleware;
 use Dingo\Api\Exception\Handler as ExceptionHandler;
 
 class ApiServiceProvider extends ServiceProvider
@@ -21,6 +22,7 @@ class ApiServiceProvider extends ServiceProvider
         $this->registerExceptionHandler();
         $this->registerRouter();
         $this->registerHttpValidation();
+        $this->registerMiddleware();
         $this->setupClassAliases();
 
         Http\Response::setFormatters([
@@ -75,6 +77,18 @@ class ApiServiceProvider extends ServiceProvider
 
         $this->app->singleton('Dingo\Api\Http\Validation\AcceptValidator', function ($app) {
             return new Http\Validation\AcceptValidator(new AcceptParser('api', 'v1', 'json'));
+        });
+    }
+
+    /**
+     * Register the middleware.
+     *
+     * @return void
+     */
+    protected function registerMiddleware()
+    {
+        $this->app->singleton('Dingo\Api\Http\Middleware\RequestMiddleware', function ($app) {
+            return new RequestMiddleware($app, $app['api.router'], $app['api.http.validator'], $app['app.middleware']);
         });
     }
 
