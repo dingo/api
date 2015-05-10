@@ -4,8 +4,8 @@ namespace Dingo\Api\Provider;
 
 use ReflectionClass;
 use Illuminate\Support\ServiceProvider;
+use Dingo\Api\Routing\Adapter\LumenAdapter;
 use FastRoute\RouteParser\Std as StdRouteParser;
-use Dingo\Api\Routing\Adapter\Lumen\LumenAdapter;
 use FastRoute\Dispatcher\GroupCountBased as GcbDispatcher;
 use FastRoute\DataGenerator\GroupCountBased as GcbDataGenerator;
 
@@ -18,12 +18,16 @@ class LumenServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->addRequestMiddlewareToBeginning();
+        $reflection = new ReflectionClass($this->app);
+
+        $this->app->instance('app.middleware', $this->gatherAppMiddleware($reflection));
+
+        $this->addRequestMiddlewareToBeginning($reflection);
 
         $this->app->register('Dingo\Api\Provider\ApiServiceProvider');
 
         $this->app->singleton('api.router.adapter', function ($app) {
-            return new LumenAdapter(new StdRouteParser, new GcbDataGenerator, 'FastRoute\Dispatcher\GroupCountBased');
+            return new LumenAdapter($app, new StdRouteParser, new GcbDataGenerator, 'FastRoute\Dispatcher\GroupCountBased');
         });
     }
 
@@ -31,12 +35,12 @@ class LumenServiceProvider extends ServiceProvider
      * Add the request middleware to the beginning of the middleware stack on the
      * Lumen application instance.
      *
+     * @param \ReflectionClass $reflection
+     *
      * @return void
      */
-    protected function addRequestMiddlewareToBeginning()
+    protected function addRequestMiddlewareToBeginning(ReflectionClass $reflection)
     {
-        $reflection = new ReflectionClass($this->app);
-
         $property = $reflection->getProperty('middleware');
         $property->setAccessible(true);
 
@@ -46,5 +50,23 @@ class LumenServiceProvider extends ServiceProvider
 
         $property->setValue($this->app, $middleware);
         $property->setAccessible(false);
+    }
+
+    /**
+     * Gather the application middleware besides this one so that we can send
+     * our request through them, exactly how the developer wanted.
+     *
+     * @param \ReflectionClass $reflection
+     *
+     * @return array
+     */
+    protected function gatherAppMiddleware(ReflectionClass $reflection)
+    {
+        $property = $reflection->getProperty('middleware');
+        $property->setAccessible(true);
+
+        $middleware = $property->getValue($this->app);
+
+        return $middleware;
     }
 }
