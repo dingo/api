@@ -13,18 +13,51 @@ use Dingo\Api\Routing\Adapter\AdapterInterface;
 
 class LumenAdapter implements AdapterInterface
 {
-    protected $parser;
-
-    protected $generator;
-
+    /**
+     * Lumen application instance.
+     *
+     * @var \Laravel\Lumen\Application
+     */
     protected $app;
 
+    /**
+     * FastRoute parser instance.
+     *
+     * @var \FastRoute\RouteParser
+     */
+    protected $parser;
+
+    /**
+     * FastRoute data generator instance.
+     *
+     * @var \FastRoute\DataGenerator
+     */
+    protected $generator;
+
+    /**
+     * FastRoute dispatcher class name.
+     *
+     * @var string
+     */
     protected $dispatcher;
 
-    protected $middleware;
-
+    /**
+     * Array of registered routes.
+     *
+     * @var array
+     */
     protected $routes = [];
 
+    /**
+     * Create a new lumen adapter instance.
+     *
+     * @param \Laravel\Lumen\Application $app
+     * @param \FastRoute\RouteParser     $parser
+     * @param \FastRoute\DataGenerator   $generator
+     * @param string                     $dispatcher
+     *
+     * @return void
+     */
     public function __construct(Application $app, RouteParser $parser, DataGenerator $generator, $dispatcher)
     {
         $this->app = $app;
@@ -33,6 +66,14 @@ class LumenAdapter implements AdapterInterface
         $this->dispatcher = $dispatcher;
     }
 
+    /**
+     * Dispatch a request.
+     *
+     * @param \Dingo\Api\Http\Request $request
+     * @param string                  $version
+     *
+     * @return mixed
+     */
     public function dispatch(Request $request, $version)
     {
         $this->removeRequestMiddlewareFromApp();
@@ -46,6 +87,16 @@ class LumenAdapter implements AdapterInterface
         return $this->app->dispatch($request);
     }
 
+    /**
+     * Add a route to the appropriate route collection.
+     *
+     * @param array  $methods
+     * @param array  $versions
+     * @param string $uri
+     * @param mixed  $action
+     *
+     * @return void
+     */
     public function addRoute(array $methods, array $versions, $uri, $action)
     {
         $this->createRouteCollections($versions);
@@ -59,6 +110,13 @@ class LumenAdapter implements AdapterInterface
         }
     }
 
+    /**
+     * Create the route collections for the versions.
+     *
+     * @param array $versions
+     *
+     * @return void
+     */
     protected function createRouteCollections(array $versions)
     {
         foreach ($versions as $version) {
@@ -68,6 +126,12 @@ class LumenAdapter implements AdapterInterface
         }
     }
 
+    /**
+     * Remove the request middleware from the application instance so we don't
+     * end up in a continuous loop.
+     *
+     * @return void
+     */
     protected function removeRequestMiddlewareFromApp()
     {
         $reflection = new ReflectionClass($this->app);
