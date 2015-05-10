@@ -40,7 +40,13 @@ class ApiServiceProvider extends ServiceProvider
     protected function registerExceptionHandler()
     {
         $this->app->singleton('api.exception', function ($app) {
-            return new ExceptionHandler;
+            return new ExceptionHandler([
+                'message' => ':message',
+                'errors' => ':errors',
+                'code' => ':code',
+                'status_code' => ':status_code',
+                'debug' => ':debug'
+            ], false);
         });
     }
 
