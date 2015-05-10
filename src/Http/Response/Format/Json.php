@@ -1,10 +1,10 @@
 <?php
 
-namespace Dingo\Api\Http\ResponseFormat;
+namespace Dingo\Api\Http\Response\Format;
 
 use Illuminate\Support\Contracts\ArrayableInterface;
 
-class JsonResponseFormat extends ResponseFormat
+class Json extends Format
 {
     /**
      * Format an Eloquent model.

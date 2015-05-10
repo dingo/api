@@ -171,7 +171,7 @@ return [
 
     'formats' => [
 
-        'json' => 'Dingo\Api\Http\ResponseFormat\JsonResponseFormat',
+        'json' => 'Dingo\Api\Http\Response\Format\Json',
 
     ]
 

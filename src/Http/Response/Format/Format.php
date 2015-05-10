@@ -1,8 +1,8 @@
 <?php
 
-namespace Dingo\Api\Http\ResponseFormat;
+namespace Dingo\Api\Http\Response\Format;
 
-abstract class ResponseFormat
+abstract class Format
 {
     /**
      * Illuminate request instance.

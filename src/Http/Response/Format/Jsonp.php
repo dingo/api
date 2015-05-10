@@ -1,8 +1,8 @@
 <?php
 
-namespace Dingo\Api\Http\ResponseFormat;
+namespace Dingo\Api\Http\Response\Format;
 
-class JsonpResponseFormat extends JsonResponseFormat
+class Jsonp extends Json
 {
     /**
      * Name of JSONP callback paramater.
