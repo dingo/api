@@ -5,13 +5,23 @@ namespace Dingo\Api\Provider;
 use Dingo\Api\Http;
 use Dingo\Api\Routing\Router;
 use Illuminate\Support\ServiceProvider;
-use Dingo\Api\Http\Parser\AcceptParser;
 use Dingo\Api\Transformer\TransformerFactory;
-use Dingo\Api\Http\Middleware\RequestMiddleware;
 use Dingo\Api\Exception\Handler as ExceptionHandler;
 
 class ApiServiceProvider extends ServiceProvider
 {
+    /**
+     * Boot the service provider.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        $this->publishes([
+            __DIR__.'/../../config/api.php' => config_path('api.php'),
+        ]);
+    }
+
     /**
      * Register the service provider.
      *
@@ -19,6 +29,8 @@ class ApiServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__.'/../../config/api.php', 'api');
+
         $this->registerExceptionHandler();
         $this->registerRouter();
         $this->registerHttpValidation();
@@ -40,13 +52,9 @@ class ApiServiceProvider extends ServiceProvider
     protected function registerExceptionHandler()
     {
         $this->app->singleton('api.exception', function ($app) {
-            return new ExceptionHandler([
-                'message' => ':message',
-                'errors' => ':errors',
-                'code' => ':code',
-                'status_code' => ':status_code',
-                'debug' => ':debug'
-            ], false);
+            $config = $app['config']['api'];
+
+            return new ExceptionHandler($config['error_format'], $config['debug']);
         });
     }
 
@@ -58,7 +66,14 @@ class ApiServiceProvider extends ServiceProvider
     protected function registerRouter()
     {
         $this->app->singleton('api.router', function ($app) {
-            return new Router($app['api.router.adapter'], new AcceptParser('api', 'v1', 'json'), $app['api.exception'], $app);
+            $config = $app['config']['api'];
+
+            return new Router(
+                $app['api.router.adapter'],
+                new Http\Parser\AcceptParser($config['vendor'], $config['version'], $config['default_format']),
+                $app['api.exception'],
+                $app
+            );
         });
     }
 
@@ -74,15 +89,19 @@ class ApiServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton('Dingo\Api\Http\Validation\DomainValidator', function ($app) {
-            return new Http\Validation\DomainValidator(null);
+            return new Http\Validation\DomainValidator($app['config']['api.domain']);
         });
 
         $this->app->singleton('Dingo\Api\Http\Validation\PrefixValidator', function ($app) {
-            return new Http\Validation\PrefixValidator('api');
+            return new Http\Validation\PrefixValidator($app['config']['api.prefix']);
         });
 
         $this->app->singleton('Dingo\Api\Http\Validation\AcceptValidator', function ($app) {
-            return new Http\Validation\AcceptValidator(new AcceptParser('api', 'v1', 'json'));
+            $config = $app['config']['api'];
+
+            return new Http\Validation\AcceptValidator(
+                new Http\Parser\AcceptParser($config['vendor'], $config['version'], $config['default_format'])
+            );
         });
     }
 
@@ -94,7 +113,7 @@ class ApiServiceProvider extends ServiceProvider
     protected function registerMiddleware()
     {
         $this->app->singleton('Dingo\Api\Http\Middleware\RequestMiddleware', function ($app) {
-            return new RequestMiddleware($app, $app['api.router'], $app['api.http.validator'], $app['app.middleware']);
+            return new Http\Middleware\RequestMiddleware($app, $app['api.router'], $app['api.http.validator'], $app['app.middleware']);
         });
     }
 

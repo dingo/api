@@ -93,6 +93,26 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Generic Error Format
+    |--------------------------------------------------------------------------
+    |
+    | When some HTTP exceptions are not caught and dealt with the API will
+    | generate a generic error response in the format provided. Any
+    | keys that aren't replaced with corrosponding values will be
+    | removed from the final response.
+    |
+    */
+
+    'error_format' => [
+        'message' => ':message',
+        'errors' => ':errors',
+        'code' => ':code',
+        'status_code' => ':status_code',
+        'debug' => ':debug'
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Authentication Providers
     |--------------------------------------------------------------------------
     |
