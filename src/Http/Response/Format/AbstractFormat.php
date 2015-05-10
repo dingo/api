@@ -2,7 +2,7 @@
 
 namespace Dingo\Api\Http\Response\Format;
 
-abstract class Format
+abstract class AbstractFormat
 {
     /**
      * Illuminate request instance.

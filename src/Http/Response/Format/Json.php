@@ -4,7 +4,7 @@ namespace Dingo\Api\Http\Response\Format;
 
 use Illuminate\Support\Contracts\ArrayableInterface;
 
-class Json extends Format
+class Json extends AbstractFormat
 {
     /**
      * Format an Eloquent model.
