@@ -35,13 +35,11 @@ class ApiServiceProvider extends ServiceProvider
         $this->registerRouter();
         $this->registerHttpValidation();
         $this->registerMiddleware();
+        $this->registerTransformer();
         $this->setupClassAliases();
 
-        Http\Response::setFormatters([
-            'json' => new Http\ResponseFormat\JsonResponseFormat
-        ]);
-
-        Http\Response::setTransformer(new TransformerFactory($this->app, $this->app->make('Dingo\Api\Transformer\FractalTransformer')));
+        Http\Response::setFormatters($this->prepareConfigValues($this->app['config']['api.formats']));
+        Http\Response::setTransformer($this->app['api.transformer']);
     }
 
     /**
@@ -118,6 +116,18 @@ class ApiServiceProvider extends ServiceProvider
     }
 
     /**
+     * Register the transformation layer.
+     *
+     * @return void
+     */
+    protected function registerTransformer()
+    {
+        $this->app->singleton('api.transformer', function ($app) {
+            return new TransformerFactory($app, $this->prepareConfigValue($app['config']['api.transformer']));
+        });
+    }
+
+    /**
      * Setup the class aliases.
      *
      * @return void
@@ -127,5 +137,39 @@ class ApiServiceProvider extends ServiceProvider
         $this->app->alias('api.http.validator', 'Dingo\Api\Http\Validator');
         $this->app->alias('api.router', 'Dingo\Api\Routing\Router');
         $this->app->alias('api.router.adapter', 'Dingo\Api\Routing\Adapter\AdapterInterface');
+    }
+
+    /**
+     * Prepare an array of instantiable configuration instances.
+     *
+     * @param array $instances
+     *
+     * @return array
+     */
+    protected function prepareConfigValues(array $instances)
+    {
+        foreach ($instances as $key => $value) {
+            $instances[$key] = $this->prepareConfigValue($value);
+        }
+
+        return $instances;
+    }
+
+    /**
+     * Prepare an instantiable configuration instance.
+     *
+     * @param mixed $instance
+     *
+     * @return object
+     */
+    protected function prepareConfigValue($instance)
+    {
+        if (is_callable($instance)) {
+            return call_user_func($instance, $this->app);
+        } elseif (is_string($instance)) {
+            return $this->app->make($instance);
+        } else {
+            return $instance;
+        }
     }
 }
