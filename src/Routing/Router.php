@@ -17,6 +17,7 @@ use Dingo\Api\Routing\Adapter\AdapterInterface;
 use Laravel\Lumen\Application as LumenApplication;
 use Illuminate\Http\Response as IlluminateResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 
 class Router
 {
@@ -382,10 +383,11 @@ class Router
                 throw new HttpException($response->getStatusCode(), $response->getContent());
             }
 
-            return $this->prepareResponse($response, $accept['format']);
+            return $this->prepareResponse($response, $request, $accept['format']);
         } catch (Exception $exception) {
             return $this->prepareResponse(
                 $this->exception->handle($exception),
+                $request,
                 $accept['format']
             );
         }
@@ -395,16 +397,27 @@ class Router
      * Prepare a response by transforming and formatting it correctly.
      *
      * @param \Illuminate\Http\Response $response
+     * @param \Dingo\Api\Http\Request   $request
      * @param string                    $format
      *
      * @return \Dingo\Api\Http\Response
      */
-    protected function prepareResponse(IlluminateResponse $response, $format)
+    protected function prepareResponse(IlluminateResponse $response, Request $request, $format)
     {
         if ($response instanceof ResponseBuilder) {
             $response = $response->build();
         } elseif (! $response instanceof Response) {
             $response = Response::makeFromExisting($response);
+        }
+
+        // If we try and get a formatter that does not exist we'll let the exception
+        // handler deal with it. At worst we'll get a generic JSON response that
+        // a consumer can hopefully deal with. Ideally they won't be using
+        // an unsupported format.
+        try {
+            $response->getFormatter($format)->setResponse($response)->setRequest($request);
+        } catch (NotAcceptableHttpException $exception) {
+            return $this->exception->handle($exception);
         }
 
         $response = $response->morph($format);
