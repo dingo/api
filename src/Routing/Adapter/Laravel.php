@@ -6,9 +6,8 @@ use Dingo\Api\Http\Request;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
 use Illuminate\Routing\RouteCollection;
-use Dingo\Api\Routing\Adapter\AdapterInterface;
 
-class LaravelAdapter implements AdapterInterface
+class Laravel implements Adapter
 {
     /**
      * Laravel router instance.

@@ -4,8 +4,8 @@ namespace Dingo\Api\Provider;
 
 use ReflectionClass;
 use Illuminate\Support\ServiceProvider;
-use Dingo\Api\Routing\Adapter\LumenAdapter;
 use FastRoute\RouteParser\Std as StdRouteParser;
+use Dingo\Api\Routing\Adapter\Lumen as LumenAdapter;
 use FastRoute\Dispatcher\GroupCountBased as GcbDispatcher;
 use FastRoute\DataGenerator\GroupCountBased as GcbDataGenerator;
 

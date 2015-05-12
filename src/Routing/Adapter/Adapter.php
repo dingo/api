@@ -5,7 +5,7 @@ namespace Dingo\Api\Routing\Adapter;
 use Closure;
 use Dingo\Api\Http\Request;
 
-interface AdapterInterface
+interface Adapter
 {
     /**
      * Dispatch a request.

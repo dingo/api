@@ -5,7 +5,7 @@ namespace Dingo\Api\Provider;
 use ReflectionClass;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
-use Dingo\Api\Routing\Adapter\LaravelAdapter;
+use Dingo\Api\Routing\Adapter\Laravel as LaravelAdapter;
 
 class LaravelServiceProvider extends ServiceProvider
 {

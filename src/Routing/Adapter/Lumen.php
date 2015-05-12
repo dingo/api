@@ -9,9 +9,8 @@ use Dingo\Api\Http\Request;
 use FastRoute\DataGenerator;
 use FastRoute\RouteCollector;
 use Laravel\Lumen\Application;
-use Dingo\Api\Routing\Adapter\AdapterInterface;
 
-class LumenAdapter implements AdapterInterface
+class Lumen implements Adapter
 {
     /**
      * Lumen application instance.
