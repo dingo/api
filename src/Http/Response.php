@@ -4,10 +4,10 @@ namespace Dingo\Api\Http;
 
 use ArrayObject;
 use UnexpectedValueException;
-use Dingo\Api\Transformer\TransformerFactory;
 use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Support\Contracts\ArrayableInterface;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Dingo\Api\Transformer\Factory as TransformerFactory;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 

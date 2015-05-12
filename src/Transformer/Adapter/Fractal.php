@@ -1,9 +1,10 @@
 <?php
 
-namespace Dingo\Api\Transformer;
+namespace Dingo\Api\Transformer\Adapter;
 
-use Illuminate\Http\Request;
-use League\Fractal\Manager as Fractal;
+use Dingo\Api\Http\Request;
+use Dingo\Api\Transformer\Binding;
+use League\Fractal\Manager as FractalManager;
 use League\Fractal\Resource\Item as FractalItem;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use Illuminate\Support\Collection as IlluminateCollection;
@@ -51,7 +52,7 @@ class Fractal implements Adapter
      *
      * @return void
      */
-    public function __construct(Fractal $fractal, $includeKey = 'include', $includeSeparator = ',', $eagerLoading = true)
+    public function __construct(FractalManager $fractal, $includeKey = 'include', $includeSeparator = ',', $eagerLoading = true)
     {
         $this->fractal = $fractal;
         $this->includeKey = $includeKey;
