@@ -4,7 +4,7 @@ namespace Dingo\Api\Http\Validation;
 
 use Illuminate\Http\Request;
 
-interface ValidatorInterface
+interface Validator
 {
     /**
      * Validate a request.

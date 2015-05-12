@@ -4,7 +4,7 @@ namespace Dingo\Api\Http\Validation;
 
 use Illuminate\Http\Request;
 
-class DomainValidator implements ValidatorInterface
+class Domain implements Validator
 {
     /**
      * API domain.

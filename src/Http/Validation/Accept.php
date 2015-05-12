@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Dingo\Api\Http\Parser\AcceptParser;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class AcceptValidator implements ValidatorInterface
+class Accept implements Validator
 {
     /**
      * Accept parser instance.

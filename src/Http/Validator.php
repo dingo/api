@@ -3,8 +3,8 @@
 namespace Dingo\Api\Http;
 
 use Illuminate\Container\Container;
-use Dingo\Api\Http\Validation\ValidatorInterface;
 use Illuminate\Http\Request as IlluminateRequest;
+use Dingo\Api\Http\Validation\Validator as ValidatorInterface;
 
 class Validator
 {
@@ -21,9 +21,9 @@ class Validator
      * @var array
      */
     protected $validators = [
-        'Dingo\Api\Http\Validation\DomainValidator',
-        'Dingo\Api\Http\Validation\PrefixValidator',
-        'Dingo\Api\Http\Validation\AcceptValidator'
+        'Dingo\Api\Http\Validation\Domain',
+        'Dingo\Api\Http\Validation\Prefix',
+        'Dingo\Api\Http\Validation\Accept'
     ];
 
     /**

@@ -4,7 +4,7 @@ namespace Dingo\Api\Http\Validation;
 
 use Illuminate\Http\Request;
 
-class PrefixValidator implements ValidatorInterface
+class Prefix implements Validator
 {
     /**
      * API prefix.
