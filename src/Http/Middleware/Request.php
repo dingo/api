@@ -84,7 +84,7 @@ class Request
      *
      * @return \Dingo\Api\Http\Response
      */
-    protected function sendRequestThroughRouter(Request $request)
+    protected function sendRequestThroughRouter(HttpRequest $request)
     {
         $this->app->instance('request', $request);
 
