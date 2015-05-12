@@ -11,7 +11,7 @@ use Illuminate\Pagination\Paginator as IlluminatePaginator;
 use League\Fractal\Resource\Collection as FractalCollection;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
-class FractalTransformer implements TransformerInterface
+class Fractal implements Adapter
 {
     /**
      * Fractal manager instance.

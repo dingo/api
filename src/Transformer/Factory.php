@@ -7,8 +7,9 @@ use RuntimeException;
 use Illuminate\Support\Collection;
 use Illuminate\Container\Container;
 use Illuminate\Pagination\Paginator;
+use Dingo\Api\Transformer\Adapter\Adapter;
 
-class TransformerFactory
+class Factory
 {
     /**
      * Illuminate container instance.
@@ -34,12 +35,12 @@ class TransformerFactory
     /**
      * Create a new transformer factory instance.
      *
-     * @param \Illuminate\Container\Container             $container
-     * @param \Dingo\Api\Transformer\TransformerInterface $transformer
+     * @param \Illuminate\Container\Container        $container
+     * @param \Dingo\Api\Transformer\Adapter\Adapter $transformer
      *
      * @return void
      */
-    public function __construct(Container $container, TransformerInterface $transformer)
+    public function __construct(Container $container, Adapter $transformer)
     {
         $this->container = $container;
         $this->transformer = $transformer;
@@ -81,7 +82,7 @@ class TransformerFactory
      */
     public function transformableResponse($response)
     {
-        return $this->transformableType($response) && ($this->hasBinding($response) || $this->boundByContract($response));
+        return $this->transformableType($response) && $this->hasBinding($response);
     }
 
     /**
@@ -109,8 +110,6 @@ class TransformerFactory
     {
         if ($this->isCollection($class) && ! $class->isEmpty()) {
             return $this->getBindingFromCollection($class);
-        } elseif ($this->boundByContract($class)) {
-            return $this->createContractBinding($class);
         }
 
         $class = is_object($class) ? get_class($class) : $class;
@@ -134,18 +133,6 @@ class TransformerFactory
     protected function createBinding($resolver, array $parameters = [], Closure $callback = null)
     {
         return new Binding($this->container, $resolver, $parameters, $callback);
-    }
-
-    /**
-     * Create a new binding for an instance bound by a contract.
-     *
-     * @param object $instance
-     *
-     * @return \Dingo\Api\Transformer\Binding
-     */
-    protected function createContractBinding($instance)
-    {
-        return $this->createBinding($instance->getTransformer());
     }
 
     /**
@@ -176,22 +163,6 @@ class TransformerFactory
         $class = is_object($class) ? get_class($class) : $class;
 
         return isset($this->bindings[$class]);
-    }
-
-    /**
-     * Determine if the instance is bound by the transformable contract.
-     *
-     * @param string|object $instance
-     *
-     * @return bool
-     */
-    protected function boundByContract($instance)
-    {
-        if ($this->isCollection($instance)) {
-            $instance = $instance->first();
-        }
-
-        return is_object($instance) && $instance instanceof TransformableInterface;
     }
 
     /**

@@ -1,10 +1,10 @@
 <?php
 
-namespace Dingo\Api\Transformer;
+namespace Dingo\Api\Transformer\Adapter;
 
-use Illuminate\Http\Request;
+use Dingo\Api\Http\Request;
 
-interface TransformerInterface
+interface Adapter
 {
     /**
      * Transform a response with a transformer.
