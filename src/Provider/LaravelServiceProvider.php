@@ -10,6 +10,18 @@ use Dingo\Api\Routing\Adapter\Laravel as LaravelAdapter;
 class LaravelServiceProvider extends ServiceProvider
 {
     /**
+     * Boot the service provider.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        $this->publishes([
+            __DIR__.'/../../config/api.php' => config_path('api.php'),
+        ]);
+    }
+
+    /**
      * Register the service provider.
      *
      * @return void

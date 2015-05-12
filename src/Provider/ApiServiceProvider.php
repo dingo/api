@@ -11,18 +11,6 @@ use Dingo\Api\Transformer\Factory as TransformerFactory;
 class ApiServiceProvider extends ServiceProvider
 {
     /**
-     * Boot the service provider.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        $this->publishes([
-            __DIR__.'/../../config/api.php' => config_path('api.php'),
-        ]);
-    }
-
-    /**
      * Register the service provider.
      *
      * @return void
