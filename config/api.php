@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'vendor' => '',
+    'vendor' => env('API_VENDOR', ''),
 
     /*
     |--------------------------------------------------------------------------
@@ -25,7 +25,7 @@ return [
     |
     */
 
-    'version' => 'v1',
+    'version' => env('API_VERSION', 'v1'),
 
     /*
     |--------------------------------------------------------------------------
@@ -37,7 +37,7 @@ return [
     |
     */
 
-    'prefix' => null,
+    'prefix' => env('API_PREFIX', null),
 
     /*
     |--------------------------------------------------------------------------
@@ -49,7 +49,7 @@ return [
     |
     */
 
-    'domain' => null,
+    'domain' => env('API_DOMAIN', null),
 
     /*
     |--------------------------------------------------------------------------
@@ -63,7 +63,7 @@ return [
     |
     */
 
-    'conditional_request' => true,
+    'conditional_request' => env('API_CONDITIONAL_REQUEST', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -76,7 +76,7 @@ return [
     |
     */
 
-    'strict' => false,
+    'strict' => env('API_STRICT', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -89,7 +89,7 @@ return [
     |
     */
 
-    'debug' => false,
+    'debug' => env('API_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -154,7 +154,7 @@ return [
     |
     */
 
-    'transformer' => 'Dingo\Api\Transformer\Adapter\Fractal',
+    'transformer' => env('API_TRANSFORMER', 'Dingo\Api\Transformer\Adapter\Fractal'),
 
     /*
     |--------------------------------------------------------------------------
@@ -167,7 +167,7 @@ return [
     |
     */
 
-    'default_format' => 'json',
+    'default_format' => env('API_DEFAULT_FORMAT', 'json'),
 
     'formats' => [
 
