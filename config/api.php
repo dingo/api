@@ -154,7 +154,7 @@ return [
     |
     */
 
-    'transformer' => 'Dingo\Api\Transformer\FractalTransformer',
+    'transformer' => 'Dingo\Api\Transformer\Adapter\Fractal',
 
     /*
     |--------------------------------------------------------------------------
