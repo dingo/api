@@ -68,7 +68,7 @@ class ApiServiceProvider extends ServiceProvider
 
             return new Router(
                 $app['api.router.adapter'],
-                new Http\Parser\AcceptParser($config['vendor'], $config['version'], $config['default_format']),
+                new Http\Parser\Accept($config['vendor'], $config['version'], $config['default_format']),
                 $app['api.exception'],
                 $app
             );
@@ -98,7 +98,7 @@ class ApiServiceProvider extends ServiceProvider
             $config = $app['config']['api'];
 
             return new Http\Validation\AcceptValidator(
-                new Http\Parser\AcceptParser($config['vendor'], $config['version'], $config['default_format'])
+                new Http\Parser\Accept($config['vendor'], $config['version'], $config['default_format'])
             );
         });
     }

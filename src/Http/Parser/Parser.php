@@ -4,7 +4,7 @@ namespace Dingo\Api\Http\Parser;
 
 use Illuminate\Http\Request;
 
-interface ParserInterface
+interface Parser
 {
     /**
      * Parse an incoming request.

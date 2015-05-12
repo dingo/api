@@ -5,7 +5,7 @@ namespace Dingo\Api\Http\Parser;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class AcceptParser implements ParserInterface
+class Accept implements Parser
 {
     /**
      * API vendor.
