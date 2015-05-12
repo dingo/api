@@ -17,17 +17,39 @@ class ApiServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/../../config/api.php', 'api');
+        $this->setupConfig();
+        $this->setupClassAliases();
 
         $this->registerExceptionHandler();
         $this->registerRouter();
         $this->registerHttpValidation();
         $this->registerMiddleware();
         $this->registerTransformer();
-        $this->setupClassAliases();
 
         Http\Response::setFormatters($this->prepareConfigValues($this->app['config']['api.formats']));
         Http\Response::setTransformer($this->app['api.transformer']);
+    }
+
+    /**
+     * Setup the configuration.
+     *
+     * @return void
+     */
+    protected function setupConfig()
+    {
+        $this->mergeConfigFrom(__DIR__.'/../../config/api.php', 'api');
+    }
+
+    /**
+     * Setup the class aliases.
+     *
+     * @return void
+     */
+    protected function setupClassAliases()
+    {
+        $this->app->alias('api.http.validator', 'Dingo\Api\Http\Validator');
+        $this->app->alias('api.router', 'Dingo\Api\Routing\Router');
+        $this->app->alias('api.router.adapter', 'Dingo\Api\Routing\Adapter\AdapterInterface');
     }
 
     /**
@@ -113,18 +135,6 @@ class ApiServiceProvider extends ServiceProvider
         $this->app->singleton('api.transformer', function ($app) {
             return new TransformerFactory($app, $this->prepareConfigValue($app['config']['api.transformer']));
         });
-    }
-
-    /**
-     * Setup the class aliases.
-     *
-     * @return void
-     */
-    protected function setupClassAliases()
-    {
-        $this->app->alias('api.http.validator', 'Dingo\Api\Http\Validator');
-        $this->app->alias('api.router', 'Dingo\Api\Routing\Router');
-        $this->app->alias('api.router.adapter', 'Dingo\Api\Routing\Adapter\AdapterInterface');
     }
 
     /**
