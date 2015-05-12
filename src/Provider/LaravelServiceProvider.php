@@ -38,7 +38,7 @@ class LaravelServiceProvider extends ServiceProvider
      */
     protected function addRequestMiddlewareToBeginning(Kernel $kernel)
     {
-        $kernel->prependMiddleware('Dingo\Api\Http\Middleware\RequestMiddleware');
+        $kernel->prependMiddleware('Dingo\Api\Http\Middleware\Request');
     }
 
     /**

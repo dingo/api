@@ -139,7 +139,7 @@ class Lumen implements Adapter
 
         $middleware = $property->getValue($this->app);
 
-        if (($key = array_search('Dingo\Api\Http\Middleware\RequestMiddleware', $middleware)) !== false) {
+        if (($key = array_search('Dingo\Api\Http\Middleware\Request', $middleware)) !== false) {
             unset($middleware[$key]);
         }
 

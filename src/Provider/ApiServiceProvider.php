@@ -110,8 +110,8 @@ class ApiServiceProvider extends ServiceProvider
      */
     protected function registerMiddleware()
     {
-        $this->app->singleton('Dingo\Api\Http\Middleware\RequestMiddleware', function ($app) {
-            return new Http\Middleware\RequestMiddleware($app, $app['api.router'], $app['api.http.validator'], $app['app.middleware']);
+        $this->app->singleton('Dingo\Api\Http\Middleware\Request', function ($app) {
+            return new Http\Middleware\Request($app, $app['api.router'], $app['api.http.validator'], $app['app.middleware']);
         });
     }
 

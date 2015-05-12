@@ -46,7 +46,7 @@ class LumenServiceProvider extends ServiceProvider
 
         $middleware = $property->getValue($this->app);
 
-        array_unshift($middleware, 'Dingo\Api\Http\Middleware\RequestMiddleware');
+        array_unshift($middleware, 'Dingo\Api\Http\Middleware\Request');
 
         $property->setValue($this->app, $middleware);
         $property->setAccessible(false);

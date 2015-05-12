@@ -4,13 +4,13 @@ namespace Dingo\Api\Http\Middleware;
 
 use Closure;
 use ReflectionClass;
-use Dingo\Api\Http\Request;
 use Dingo\Api\Http\Validator;
 use Dingo\Api\Routing\Router;
 use Illuminate\Pipeline\Pipeline;
+use Dingo\Api\Http\Request as HttpRequest;
 use Illuminate\Contracts\Foundation\Application;
 
-class RequestMiddleware
+class Request
 {
     /**
      * Application instance.
@@ -69,7 +69,7 @@ class RequestMiddleware
     public function handle($request, Closure $next)
     {
         if ($this->validator->validateRequest($request)) {
-            $request = Request::createFromExisting($request);
+            $request = HttpRequest::createFromExisting($request);
 
             return $this->sendRequestThroughRouter($request);
         }
