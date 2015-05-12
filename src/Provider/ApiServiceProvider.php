@@ -5,8 +5,8 @@ namespace Dingo\Api\Provider;
 use Dingo\Api\Http;
 use Dingo\Api\Routing\Router;
 use Illuminate\Support\ServiceProvider;
-use Dingo\Api\Transformer\TransformerFactory;
 use Dingo\Api\Exception\Handler as ExceptionHandler;
+use Dingo\Api\Transformer\Factory as TransformerFactory;
 
 class ApiServiceProvider extends ServiceProvider
 {
