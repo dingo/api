@@ -11,9 +11,9 @@ use Dingo\Api\Exception\Handler;
 use Dingo\Api\Http\InternalRequest;
 use Dingo\Api\Http\ResponseBuilder;
 use Illuminate\Container\Container;
-use Dingo\Api\Http\Parser\AcceptParser;
+use Dingo\Api\Routing\Adapter\Adapter;
 use Dingo\Api\Exception\InternalHttpException;
-use Dingo\Api\Routing\Adapter\AdapterInterface;
+use Dingo\Api\Http\Parser\Accept as AcceptParser;
 use Laravel\Lumen\Application as LumenApplication;
 use Illuminate\Http\Response as IlluminateResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -66,14 +66,14 @@ class Router
     /**
      * Create a new router instance.
      *
-     * @param \Dingo\Api\Routing\Adapter\AdapterInterface $adapter
-     * @param \Dingo\Api\Http\Parser\AcceptParser         $accept
-     * @param \Dingo\Api\Exception\Handler                $exception
-     * @param \Illuminate\Container\Container             $container
+     * @param \Dingo\Api\Routing\Adapter\Adapter  $adapter
+     * @param \Dingo\Api\Http\Parser\AcceptParser $accept
+     * @param \Dingo\Api\Exception\Handler        $exception
+     * @param \Illuminate\Container\Container     $container
      *
      * @return void
      */
-    public function __construct(AdapterInterface $adapter, AcceptParser $accept, Handler $exception, Container $container)
+    public function __construct(Adapter $adapter, AcceptParser $accept, Handler $exception, Container $container)
     {
         $this->adapter = $adapter;
         $this->accept = $accept;
