@@ -14,7 +14,6 @@ use Illuminate\Container\Container;
 use Dingo\Api\Routing\Adapter\Adapter;
 use Dingo\Api\Exception\InternalHttpException;
 use Dingo\Api\Http\Parser\Accept as AcceptParser;
-use Laravel\Lumen\Application as LumenApplication;
 use Illuminate\Http\Response as IlluminateResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
@@ -238,12 +237,6 @@ class Router
             unset($action['prefix']);
         }
 
-        // To trick the container router into thinking the route exists we'll
-        // need to register a dummy action with the router. This ensures
-        // that the router processes the middleware and allows the API
-        // router to be booted and used as the dispatcher.
-        // $this->registerRouteWithContainerRouter($methods, $uri, []);
-
         return $this->adapter->addRoute((array) $methods, $action['version'], $uri, $action);
     }
 
@@ -343,26 +336,6 @@ class Router
         }
 
         return array_get($old, 'prefix');
-    }
-
-    /**
-     * Register a route with the container router.
-     *
-     * @param string|array          $methods
-     * @param string                $uri
-     * @param string|array|callable $action
-     *
-     * @return void
-     */
-    protected function registerRouteWithContainerRouter($methods, $uri, $action)
-    {
-        $router = ($this->container instanceof LumenApplication) ? $this->container : $this->container['router'];
-
-        foreach ((array) $methods as $method) {
-            if ($method != 'HEAD') {
-                $router->{$method}($uri, $action);
-            }
-        }
     }
 
     /**
