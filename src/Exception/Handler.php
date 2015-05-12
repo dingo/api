@@ -222,4 +222,16 @@ class Handler
     {
         return $this->handlers;
     }
+
+    /**
+     * Set the error format array.
+     *
+     * @param array $format
+     *
+     * @return void
+     */
+    public function setErrorFormat(array $format)
+    {
+        $this->format = $format;
+    }
 }
