@@ -26,6 +26,7 @@ class ApiServiceProvider extends ServiceProvider
         $this->registerRateLimiting();
         $this->registerRouter();
         $this->registerHttpValidation();
+        $this->registerResponseFactory();
         $this->registerMiddleware();
         $this->registerTransformer();
 
@@ -52,6 +53,7 @@ class ApiServiceProvider extends ServiceProvider
     {
         $this->app->alias('request', 'Dingo\Api\Http\Request');
         $this->app->alias('api.http.validator', 'Dingo\Api\Http\Validator');
+        $this->app->alias('api.http.response', 'Dingo\Api\Http\Response\Factory');
         $this->app->alias('api.router', 'Dingo\Api\Routing\Router');
         $this->app->alias('api.router.adapter', 'Dingo\Api\Routing\Adapter\AdapterInterface');
         $this->app->alias('api.auth', 'Dingo\Api\Auth\Auth');
@@ -149,6 +151,18 @@ class ApiServiceProvider extends ServiceProvider
             return new Http\Validation\Accept(
                 new Http\Parser\Accept($config['vendor'], $config['version'], $config['default_format'])
             );
+        });
+    }
+
+    /**
+     * Register the response factory.
+     *
+     * @return void
+     */
+    protected function registerResponseFactory()
+    {
+        $this->app->singleton('api.http.response', function ($app) {
+            return new Http\Response\Factory($app['api.transformer']);
         });
     }
 

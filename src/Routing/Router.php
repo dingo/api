@@ -9,12 +9,12 @@ use Dingo\Api\Http\Request;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Exception\Handler;
 use Dingo\Api\Http\InternalRequest;
-use Dingo\Api\Http\ResponseBuilder;
 use Illuminate\Container\Container;
 use Dingo\Api\Routing\Adapter\Adapter;
 use Dingo\Api\Exception\InternalHttpException;
 use Dingo\Api\Http\Parser\Accept as AcceptParser;
 use Illuminate\Http\Response as IlluminateResponse;
+use Dingo\Api\Http\Response\Builder as ResponseBuilder;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 
@@ -527,9 +527,7 @@ class Router
      */
     protected function prepareResponse(IlluminateResponse $response, Request $request, $format)
     {
-        if ($response instanceof ResponseBuilder) {
-            $response = $response->build();
-        } elseif (! $response instanceof Response) {
+        if (! $response instanceof Response) {
             $response = Response::makeFromExisting($response);
         }
 

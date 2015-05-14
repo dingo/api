@@ -4,6 +4,8 @@ namespace Dingo\Api\Http;
 
 use ArrayObject;
 use UnexpectedValueException;
+use Dingo\Api\Transformer\Binding;
+use Symfony\Component\HttpFoundation\Cookie;
 use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Support\Contracts\ArrayableInterface;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
@@ -13,6 +15,13 @@ use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 
 class Response extends IlluminateResponse
 {
+    /**
+     * Transformer binding instance.
+     *
+     * @var \Dingo\Api\Transformer\Binding
+     */
+    protected $binding;
+
     /**
      * Array of registered formatters.
      *
@@ -26,6 +35,23 @@ class Response extends IlluminateResponse
      * @var \Dingo\Api\Transformer\TransformerFactory
      */
     protected static $transformer;
+
+    /**
+     * Create a new response instance.
+     *
+     * @param mixed                          $content
+     * @param int                            $status
+     * @param array                          $headers
+     * @param \Dingo\Api\Transformer\Binding $binding
+     *
+     * @return void
+     */
+    public function __construct($content, $status = 200, $headers = [], Binding $binding = null)
+    {
+        parent::__construct($content, $status, $headers);
+
+        $this->binding = $binding;
+    }
 
     /**
      * Make an API response from an existing Illuminate response.
@@ -159,5 +185,85 @@ class Response extends IlluminateResponse
     public static function getTransformer()
     {
         return static::$transformer;
+    }
+
+    /**
+     * Add a meta key and value pair.
+     *
+     * @param string $key
+     * @param mixed  $value
+     *
+     * @return \Dingo\Api\Http\Response\Builder
+     */
+    public function addMeta($key, $value)
+    {
+        $this->binding->addMeta($key, $value);
+
+        return $this;
+    }
+
+    /**
+     * Add a meta key and value pair.
+     *
+     * @param string $key
+     * @param mixed  $value
+     *
+     * @return \Dingo\Api\Http\Response\Builder
+     */
+    public function meta($key, $value)
+    {
+        return $this->addMeta($key, $value);
+    }
+
+    /**
+     * Set the meta data for the response.
+     *
+     * @param array $meta
+     *
+     * @return \Dingo\Api\Http\Response\Builder
+     */
+    public function setMeta(array $meta)
+    {
+        $this->binding->setMeta($meta);
+
+        return $this;
+    }
+
+    /**
+     * Add a cookie to the response.
+     *
+     * @param \Symfony\Component\HttpFoundation\Cookie $cookie
+     *
+     * @return \Dingo\Api\Http\Response\Builder
+     */
+    public function cookie(Cookie $cookie)
+    {
+        return $this->withCookie($cookie);
+    }
+
+    /**
+     * Add a header to the response.
+     *
+     * @param string $name
+     * @param string $value
+     * @param bool   $replace
+     *
+     * @return \Dingo\Api\Http\Response\Builder
+     */
+    public function withHeader($key, $value, $replace = true)
+    {
+        return $this->header($key, $value, $replace);
+    }
+
+    /**
+     * Set the response status code.
+     *
+     * @param int $statusCode
+     *
+     * @return \Dingo\Api\Http\Response\Builder
+     */
+    public function statusCode($statusCode)
+    {
+        return $this->setStatusCode($statusCode);
     }
 }

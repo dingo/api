@@ -27,18 +27,53 @@ trait Helpers
     }
 
     /**
+     * Get the response factory instance.
+     *
+     * @return \Dingo\Api\Http\Response\Factory
+     */
+    protected function response()
+    {
+        return app('Dingo\Api\Http\Response\Factory');
+    }
+
+    /**
      * Magically handle calls to certain properties.
      *
      * @param string $key
+     *
+     * @throws \ErrorException
      *
      * @return mixed
      */
     public function __get($key)
     {
-        if (in_array($key, ['user', 'auth']) && method_exists($this, $key)) {
+        $callable = [
+            'user', 'auth', 'response'
+        ];
+
+        if (in_array($key, $callable) && method_exists($this, $key)) {
             return $this->$key();
         }
 
         throw new ErrorException('Undefined property '.get_class($this).'::'.$key);
+    }
+
+    /**
+     * Magically handle calls to certain methods on the response factory.
+     *
+     * @param string $method
+     * @param array  $parameters
+     *
+     * @throws \ErrorException
+     *
+     * @return \Dingo\Api\Http\Response\Builder
+     */
+    public function __call($method, $parameters)
+    {
+        if (method_exists($this->response(), $method) || $method == 'array') {
+            return call_user_func_array([$this->response(), $method], $parameters);
+        }
+
+        throw new ErrorException('Undefined method '.get_class($this).'::'.$method);
     }
 }

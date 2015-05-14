@@ -1,27 +1,28 @@
 <?php
 
-namespace Dingo\Api\Http;
+namespace Dingo\Api\Http\Response;
 
 use Closure;
-use BadMethodCallException;
+use ErrorException;
 use Illuminate\Support\Str;
+use Dingo\Api\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\Paginator;
-use Dingo\Api\Transformer\TransformerFactory;
+use Dingo\Api\Transformer\Factory as TransformerFactory;
 
-class ResponseFactory
+class Factory
 {
     /**
-     * API transformer factory instance.
+     * Transformer factory instance.
      *
-     * @var \Dingo\Api\Transformer\TransformerFactory
+     * @var \Dingo\Api\Transformer\Factory
      */
     protected $transformer;
 
     /**
      * Create a new response factory instance.
      *
-     * @param \Dingo\Api\Transformer\TransformerFactory $transformer
+     * @param \Dingo\Api\Transformer\Factory $transformer
      *
      * @return void
      */
@@ -35,11 +36,11 @@ class ResponseFactory
      *
      * @param null|string $location
      *
-     * @return \Dingo\Api\Http\ResponseBuilder
+     * @return \Dingo\Api\Http\Response\Builder
      */
     public function created($location = null)
     {
-        $response = new ResponseBuilder(null);
+        $response = new Response(null);
         $response->setStatusCode(201);
 
         if (! is_null($location)) {
@@ -52,14 +53,13 @@ class ResponseFactory
     /**
      * Respond with a no content response.
      *
-     * @return \Dingo\Api\Http\ResponseBuilder
+     * @return \Dingo\Api\Http\Response\Builder
      */
     public function noContent()
     {
-        $response = new ResponseBuilder(null);
-        $response->setStatusCode(204);
+        $response = new Response(null);
 
-        return $response;
+        return $response->setStatusCode(204);;
     }
 
     /**
@@ -70,7 +70,7 @@ class ResponseFactory
      * @param array                          $parameters
      * @param \Closure                       $after
      *
-     * @return \Dingo\Api\Http\ResponseBuilder
+     * @return \Dingo\Api\Http\Response\Builder
      */
     public function collection(Collection $collection, $transformer, array $parameters = [], Closure $after = null)
     {
@@ -82,7 +82,7 @@ class ResponseFactory
 
         $binding = $this->transformer->register($class, $transformer, $parameters, $after);
 
-        return new ResponseBuilder($collection, $binding);
+        return new Response($collection, 200, [], $binding);
     }
 
     /**
@@ -93,7 +93,7 @@ class ResponseFactory
      * @param array    $parameters
      * @param \Closure $after
      *
-     * @return \Dingo\Api\Http\ResponseBuilder
+     * @return \Dingo\Api\Http\Response\Builder
      */
     public function item($item, $transformer, array $parameters = [], Closure $after = null)
     {
@@ -101,7 +101,7 @@ class ResponseFactory
 
         $binding = $this->transformer->register($class, $transformer, $parameters, $after);
 
-        return new ResponseBuilder($item, $binding);
+        return new Response($item, 200, [], $binding);
     }
 
     /**
@@ -112,7 +112,7 @@ class ResponseFactory
      * @param array                            $parameters
      * @param \Closure                         $after
      *
-     * @return \Dingo\Api\Http\ResponseBuilder
+     * @return \Dingo\Api\Http\Response\Builder
      */
     public function paginator(Paginator $paginator, $transformer, array $parameters = [], Closure $after = null)
     {
@@ -124,7 +124,7 @@ class ResponseFactory
 
         $binding = $this->transformer->register($class, $transformer, $parameters, $after);
 
-        return new ResponseBuilder($paginator, $binding);
+        return new Response($paginator, 200, [], $binding);
     }
 
     /**
@@ -133,7 +133,7 @@ class ResponseFactory
      * @param string|array $error
      * @param int          $statusCode
      *
-     * @return \Illuminate\Http\Response
+     * @return \Dingo\Api\Http\Response\Builder
      */
     public function error($error, $statusCode)
     {
@@ -151,7 +151,7 @@ class ResponseFactory
      *
      * @param string|array $message
      *
-     * @return \Illuminate\Http\Response
+     * @return \Dingo\Api\Http\Response\Builder
      */
     public function errorNotFound($message = 'Not Found')
     {
@@ -163,7 +163,7 @@ class ResponseFactory
      *
      * @param string|array $message
      *
-     * @return \Illuminate\Http\Response
+     * @return \Dingo\Api\Http\Response\Builder
      */
     public function errorBadRequest($message = 'Bad Request')
     {
@@ -175,7 +175,7 @@ class ResponseFactory
      *
      * @param string|array $message
      *
-     * @return \Illuminate\Http\Response
+     * @return \Dingo\Api\Http\Response\Builder
      */
     public function errorForbidden($message = 'Forbidden')
     {
@@ -187,7 +187,7 @@ class ResponseFactory
      *
      * @param string|array $message
      *
-     * @return \Illuminate\Http\Response
+     * @return \Dingo\Api\Http\Response\Builder
      */
     public function errorInternal($message = 'Internal Error')
     {
@@ -199,7 +199,7 @@ class ResponseFactory
      *
      * @param string|array $message
      *
-     * @return \Illuminate\Http\Response
+     * @return \Dingo\Api\Http\Response\Builder
      */
     public function errorUnauthorized($message = 'Unauthorized')
     {
@@ -212,7 +212,7 @@ class ResponseFactory
      * @param string $method
      * @param array  $parameters
      *
-     * @throws \BadMethodCallException
+     * @throws \ErrorException
      *
      * @return mixed
      */
@@ -224,9 +224,9 @@ class ResponseFactory
         // Because PHP won't let us name the method "array" we'll simply watch for it
         // in here and return the new binding. Gross.
         } elseif ($method == 'array') {
-            return new ResponseBuilder($parameters[0]);
+            return new Response($parameters[0]);
         }
 
-        throw new BadMethodCallException('Method '.$method.' does not exist on class.');
+        throw new ErrorException('Undefined method '.get_class($this).'::'.$method);
     }
 }
