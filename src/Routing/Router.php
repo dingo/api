@@ -601,6 +601,6 @@ class Router
 
         $request = $this->container['request'];
 
-        return $this->currentRoute = new Route($request->route(), $request);
+        return $this->currentRoute = new Route($this->container, $request->route(), $request);
     }
 }

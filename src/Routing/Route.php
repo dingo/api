@@ -3,11 +3,19 @@
 namespace Dingo\Api\Routing;
 
 use Dingo\Api\Http\Request;
+use Illuminate\Container\Container;
 use Illuminate\Routing\Route as IlluminateRoute;
 
 
 class Route
 {
+    /**
+     * Container instance.
+     *
+     * @var \Illuminate\Container\Container
+     */
+    protected $container;
+
     /**
      * Route URI.
      *
@@ -72,16 +80,26 @@ class Route
     protected $rateExpiration;
 
     /**
+     * Controller instance.
+     *
+     * @var object
+     */
+    protected $controller;
+
+    /**
      * Create a new route instance.
      *
+     * @param \Illuminate\Container\Container $container
      * @param array|\Illuminate\Routing\Route $route
      * @param \Dingo\Api\Http\Request         $request
      *
      * @return void
      */
-    public function __construct($route, Request $request)
+    public function __construct(Container $container, $route, Request $request)
     {
-        $this->createRoute($route, $request);
+        $this->container = $container;
+
+        $this->setupRoute($route, $request);
     }
 
     /**
@@ -92,13 +110,15 @@ class Route
      *
      * @return void
      */
-    protected function createRoute($route, Request $request)
+    protected function setupRoute($route, Request $request)
     {
         if ($route instanceof IlluminateRoute) {
-            $this->createFromLaravelRoute($route, $request);
+            $this->setupFromLaravelRoute($route, $request);
         } else {
-            $this->createFromLumenRoute($route, $request);
+            $this->setupFromLumenRoute($route, $request);
         }
+
+        $this->makeController();
 
         $this->versions = array_pull($this->action, 'version');
         $this->scopes = array_pull($this->action, 'scopes', []);
@@ -110,17 +130,39 @@ class Route
         if (is_string($this->authProviders)) {
             $this->authProviders = explode('|', $this->authProviders);
         }
+
     }
 
     /**
-     * Create a new route from a Laravel route.
+     * Make a controller instance from the "uses" action key if it's
+     * in the controller format.
+     *
+     * @return void
+     */
+    protected function makeController()
+    {
+        if (! is_string($this->action['uses'])) {
+            return;
+        }
+
+        if (str_contains($this->action['uses'], '@')) {
+            list($controller, $method) = explode('@', $this->action['uses']);
+        } else {
+            $controller = $this->action['uses'];
+        }
+
+        $this->controller = $this->container->make($controller);
+    }
+
+    /**
+     * Setup a new route from a Laravel route.
      *
      * @param \Illuminate\Routing\Route $route
      * @param \Dingo\Api\Http\Request   $request
      *
      * @return void
      */
-    protected function createFromLaravelRoute(IlluminateRoute $route, Request $request)
+    protected function setupFromLaravelRoute(IlluminateRoute $route, Request $request)
     {
         $this->uri = $route->getUri();
         $this->methods = $route->getMethods();
@@ -128,14 +170,14 @@ class Route
     }
 
     /**
-     * Create a new route from a Lumen route.
+     * Setup a new route from a Lumen route.
      *
      * @param array                   $route
      * @param \Dingo\Api\Http\Request $request
      *
      * @return void
      */
-    protected function createFromLumenRoute(array $route, Request $request)
+    protected function setupFromLumenRoute(array $route, Request $request)
     {
         $this->uri = ltrim($request->getRequestUri(), '/');
         $this->methods = (array) $request->getMethod();
