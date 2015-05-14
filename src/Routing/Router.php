@@ -253,7 +253,7 @@ class Router
         $uri = $uri === '/' ? $uri : '/'.trim($uri, '/');
 
         if (isset($action['prefix'])) {
-            $uri = trim($action['prefix'], '/').'/'.trim($uri, '/');
+            $uri = '/'.trim($action['prefix'], '/').'/'.trim($uri, '/');
 
             unset($action['prefix']);
         }
