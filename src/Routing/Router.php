@@ -74,7 +74,7 @@ class Router
      *
      * @var bool
      */
-    protected $conditionalRequest;
+    protected $conditionalRequest = true;
 
     /**
      * The current route being dispatched.
@@ -138,6 +138,10 @@ class Router
      */
     public function group(array $attributes, $callback)
     {
+        if (! isset($attributes['conditional_request'])) {
+            $attributes['conditional_request'] = $this->conditionalRequest;
+        }
+
         $attributes = $this->mergeLastGroupAttributes($attributes);
 
         if (! isset($attributes['version'])) {
@@ -327,6 +331,10 @@ class Router
 
         if (isset($new['version'])) {
             unset($old['version']);
+        }
+
+        if (isset($new['conditional_request'])) {
+            unset($old['conditional_request']);
         }
 
         if (isset($new['uses'])) {
@@ -561,7 +569,7 @@ class Router
      */
     protected function requestIsConditional()
     {
-        return $this->conditionalRequest;
+        return $this->getCurrentRoute()->requestIsConditional();
     }
 
     /**

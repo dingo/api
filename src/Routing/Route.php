@@ -87,6 +87,13 @@ class Route
     protected $controller;
 
     /**
+     * Indicates if the request is conditional.
+     *
+     * @var bool
+     */
+    protected $conditonalRequest = true;
+
+    /**
      * Create a new route instance.
      *
      * @param \Illuminate\Container\Container $container
@@ -246,5 +253,15 @@ class Route
     public function getLimitExpiration()
     {
         return $this->rateExpiration;
+    }
+
+    /**
+     * Determine if the request is conditional.
+     *
+     * @return bool
+     */
+    public function requestIsConditional()
+    {
+        return $this->conditonalRequest === true;
     }
 }
