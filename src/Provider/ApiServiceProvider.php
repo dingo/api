@@ -54,6 +54,9 @@ class ApiServiceProvider extends ServiceProvider
         $this->app->alias('api.http.validator', 'Dingo\Api\Http\Validator');
         $this->app->alias('api.router', 'Dingo\Api\Routing\Router');
         $this->app->alias('api.router.adapter', 'Dingo\Api\Routing\Adapter\AdapterInterface');
+        $this->app->alias('api.auth', 'Dingo\Api\Auth\Auth');
+        $this->app->alias('api.limiting', 'Dingo\Api\Http\RateLimit\Handler');
+        $this->app->alias('api.transformer', 'Dingo\Api\Transformer\Factory');
     }
 
     /**
