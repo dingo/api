@@ -3,6 +3,7 @@
 namespace Dingo\Api\Provider;
 
 use Dingo\Api\Http;
+use Dingo\Api\Auth\Auth;
 use Dingo\Api\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Exception\Handler as ExceptionHandler;
@@ -21,6 +22,7 @@ class ApiServiceProvider extends ServiceProvider
         $this->setupClassAliases();
 
         $this->registerExceptionHandler();
+        $this->registerAuth();
         $this->registerRouter();
         $this->registerHttpValidation();
         $this->registerMiddleware();
@@ -47,6 +49,7 @@ class ApiServiceProvider extends ServiceProvider
      */
     protected function setupClassAliases()
     {
+        $this->app->alias('request', 'Dingo\Api\Http\Request');
         $this->app->alias('api.http.validator', 'Dingo\Api\Http\Validator');
         $this->app->alias('api.router', 'Dingo\Api\Routing\Router');
         $this->app->alias('api.router.adapter', 'Dingo\Api\Routing\Adapter\AdapterInterface');
@@ -63,6 +66,20 @@ class ApiServiceProvider extends ServiceProvider
             $config = $app['config']['api'];
 
             return new ExceptionHandler($config['error_format'], $config['debug']);
+        });
+    }
+
+    /**
+     * Register the auth.
+     *
+     * @return void
+     */
+    protected function registerAuth()
+    {
+        $this->app->singleton('api.auth', function ($app) {
+            $config = $app['config']['api'];
+
+            return new Auth($app['api.router'], $app, $this->prepareConfigValues($config['auth']));
         });
     }
 
@@ -122,6 +139,10 @@ class ApiServiceProvider extends ServiceProvider
     {
         $this->app->singleton('Dingo\Api\Http\Middleware\Request', function ($app) {
             return new Http\Middleware\Request($app, $app['api.router'], $app['api.http.validator'], $app['app.middleware']);
+        });
+
+        $this->app->singleton('Dingo\Api\Http\Middleware\Auth', function ($app) {
+            return new Http\Middleware\Auth($app['api.router'], $app['api.auth']);
         });
     }
 

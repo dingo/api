@@ -1,11 +1,11 @@
 <?php
 
-namespace Dingo\Api\Auth;
+namespace Dingo\Api\Auth\Provider;
 
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
 
-interface ProviderInterface
+interface Provider
 {
     /**
      * Authenticate the request and return the authenticated user instance.

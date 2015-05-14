@@ -20,6 +20,8 @@ use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 
 class Router
 {
+    const API_AUTH_MIDDLEWARE = 'api.auth';
+
     /**
      * Routing adapter instance.
      *
@@ -61,6 +63,20 @@ class Router
      * @var bool
      */
     protected $conditionalRequest;
+
+    /**
+     * The current route being dispatched.
+     *
+     * @var \Dingo\Api\Routing\Route
+     */
+    protected $currentRoute;
+
+    /**
+     * Array of protected routes.
+     *
+     * @var array
+     */
+    protected $protectedRoutes = [];
 
     /**
      * Create a new router instance.
@@ -232,12 +248,27 @@ class Router
         $uri = $uri === '/' ? $uri : '/'.trim($uri, '/');
 
         if (isset($action['prefix'])) {
-            $uri = trim($action['prefix'], '/').trim($uri, '/');
+            $uri = trim($action['prefix'], '/').'/'.trim($uri, '/');
 
             unset($action['prefix']);
         }
 
+        $action = $this->addRouteMiddlewares($action);
+
         return $this->adapter->addRoute((array) $methods, $action['version'], $uri, $action);
+    }
+
+    protected function addRouteMiddlewares(array $action)
+    {
+        foreach ([static::API_AUTH_MIDDLEWARE] as $middleware) {
+            if (($key = array_search($middleware, $action['middleware'])) !== false) {
+                unset($action['middleware'][$key]);
+            }
+
+            array_unshift($action['middleware'], $middleware);
+        }
+
+        return $action;
     }
 
     /**
@@ -250,7 +281,7 @@ class Router
     protected function mergeLastGroupAttributes(array $attributes)
     {
         if (empty($this->groupStack)) {
-            return $attributes;
+            return $this->mergeGroup($attributes, []);
         }
 
         return $this->mergeGroup($attributes, end($this->groupStack));
@@ -270,6 +301,14 @@ class Router
 
         $new['prefix'] = $this->formatPrefix($new, $old);
 
+        $new['before'] = $this->formatBefore($new, $old);
+
+        $new['after'] = $this->formatAfter($new, $old);
+
+        $new['middleware'] = $this->formatMiddleware($new, $old);
+
+        $new['scopes'] = $this->formatScopes($new, $old);
+
         if (isset($new['domain'])) {
             unset($old['domain']);
         }
@@ -284,7 +323,73 @@ class Router
 
         $new['where'] = array_merge(array_get($old, 'where', []), array_get($new, 'where', []));
 
-        return array_merge_recursive(array_except($old, array('namespace', 'prefix', 'where')), $new);
+        return array_merge_recursive(array_except($old, ['namespace', 'prefix', 'where', 'scopes', 'before', 'after']), $new);
+    }
+
+    /**
+     * Format the middleware in a route action.
+     *
+     * @param array $new
+     *
+     * @return array
+     */
+    protected function formatMiddleware(array $new)
+    {
+        $middleware = array_get($new, 'middleware', []);
+
+        return is_string($middleware) ? explode('|', $middleware) : $middleware;
+    }
+
+    /**
+     * Format the before filters in a route action.
+     *
+     * @param array $new
+     * @param array $old
+     *
+     * @return array
+     */
+    protected function formatBefore(array $new, array $old)
+    {
+        return $this->formatBeforeOrAfter('before', $new, $old);
+    }
+
+    /**
+     * Format the after filters in a route action.
+     *
+     * @param array $new
+     * @param array $old
+     *
+     * @return array
+     */
+    protected function formatAfter(array $new, array $old)
+    {
+        return $this->formatBeforeOrAfter('after', $new, $old);
+    }
+
+    /**
+     * Format the before or after filters in a route action.
+     *
+     * @param string $filter
+     * @param array  $new
+     * @param array  $old
+     *
+     * @return array
+     */
+    protected function formatBeforeOrAfter($filter, array $new, array $old)
+    {
+        $newFilters = array_get($new, $filter, []);
+
+        if (is_string($newFilters)) {
+            $newFilters = explode('|', $newFilters);
+        }
+
+        $oldFilters = array_get($old, $filter, []);
+
+        if (is_string($oldFilters)) {
+            $oldFilters = explode('|', $oldFilters);
+        }
+
+        return array_merge($oldFilters, $newFilters);
     }
 
     /**
@@ -301,6 +406,37 @@ class Router
         }
 
         return $new['uses'];
+    }
+
+    /**
+     * Format the scopes in a route action.
+     *
+     * @param array $new
+     * @param array $old
+     *
+     * @return array
+     */
+    protected function formatScopes(array $new, array $old)
+    {
+        $scopes = [];
+
+        if (isset($new['scopes']) && isset($old['scopes'])) {
+            $scopes = array_merge((array) $old['scopes'], (array) $new['scopes']);
+        } elseif (isset($new['scopes'])) {
+            $scopes = (array) $new['scopes'];
+        } elseif (isset($old['scopes'])) {
+            $scopes = (array) $old['scopes'];
+        }
+
+        foreach ($scopes as $key => $scope) {
+            if (! is_array($scope) && str_contains($scope, '|')) {
+                unset($scopes[$key]);
+
+                $scopes = array_merge($scopes, explode('|', $scope));
+            }
+        }
+
+        return $scopes;
     }
 
     /**
@@ -348,6 +484,8 @@ class Router
     public function dispatch(Request $request)
     {
         $accept = $this->accept->parse($request);
+
+        $this->container->instance('Dingo\Api\Http\Request', $request);
 
         try {
             $response = $this->adapter->dispatch($request, $accept['version']);
@@ -426,5 +564,31 @@ class Router
     public function setConditionalRequest($conditionalRequest)
     {
         $this->conditionalRequest = $conditionalRequest;
+    }
+
+    /**
+     * Get the current request instance.
+     *
+     * @return \Dingo\Api\Http\Request
+     */
+    public function getCurrentRequest()
+    {
+        return $this->container['request'];
+    }
+
+    /**
+     * Get the current route instance.
+     *
+     * @return \Dingo\Api\Routing\Route
+     */
+    public function getCurrentRoute()
+    {
+        if (isset($this->currentRoute)) {
+            return $this->currentRoute;
+        }
+
+        $request = $this->container['request'];
+
+        return $this->currentRoute = new Route($request->route(), $request);
     }
 }

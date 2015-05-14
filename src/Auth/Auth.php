@@ -3,22 +3,22 @@
 namespace Dingo\Api\Auth;
 
 use Exception;
-use Illuminate\Routing\Router;
+use Dingo\Api\Routing\Router;
 use Illuminate\Container\Container;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class Authenticator
+class Auth
 {
     /**
-     * API router instance.
+     * Router instance.
      *
      * @var \Dingo\Api\Routing\Router
      */
     protected $router;
 
     /**
-     * Illuminate application container instance.
+     * Illuminate container instance.
      *
      * @var \Illuminate\Container\Container
      */
@@ -46,7 +46,7 @@ class Authenticator
     protected $user;
 
     /**
-     * Create a new authenticator instance.
+     * Create a new auth instance.
      *
      * @param \Dingo\Api\Routing\Router       $router
      * @param \Illuminate\Container\Container $container
@@ -135,12 +135,16 @@ class Authenticator
     /**
      * Get the authenticated user.
      *
+     * @param bool $authenticate
+     *
      * @return \Illuminate\Auth\GenericUser|\Illuminate\Database\Eloquent\Model|null
      */
-    public function getUser()
+    public function getUser($authenticate = true)
     {
         if ($this->user) {
             return $this->user;
+        } elseif (! $authenticate) {
+            return;
         }
 
         try {
@@ -153,11 +157,13 @@ class Authenticator
     /**
      * Alias for getUser.
      *
+     * @param bool $authenticate
+     *
      * @return \Illuminate\Auth\GenericUser|\Illuminate\Database\Eloquent\Model
      */
-    public function user()
+    public function user($authenticate = true)
     {
-        return $this->getUser();
+        return $this->getUser($authenticate);
     }
 
     /**
@@ -177,11 +183,13 @@ class Authenticator
     /**
      * Check if a user has authenticated with the API.
      *
+     * @param bool $authenticate
+     *
      * @return bool
      */
-    public function check()
+    public function check($authenticate = true)
     {
-        return ! is_null($this->user);
+        return ! is_null($this->user($authenticate));
     }
 
     /**

@@ -17,6 +17,8 @@ class Request extends IlluminateRequest
             $new->setSession($old->getSession());
         }
 
+        $new->setRouteResolver($old->getRouteResolver());
+
         return $new;
     }
 }

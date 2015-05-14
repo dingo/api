@@ -1,12 +1,12 @@
 <?php
 
-namespace Dingo\Api\Auth;
+namespace Dingo\Api\Auth\Provider;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-abstract class AuthorizationProvider implements ProviderInterface
+abstract class Authorization implements Provider
 {
     /**
      * Array of provider specific options.

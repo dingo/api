@@ -12,6 +12,18 @@ use FastRoute\DataGenerator\GroupCountBased as GcbDataGenerator;
 class LumenServiceProvider extends ServiceProvider
 {
     /**
+     * Boot the service provider.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        $this->app->routeMiddleware([
+            'api.auth' => 'Dingo\Api\Http\Middleware\Auth'
+        ]);
+    }
+
+    /**
      * Register the service provider.
      *
      * @return void

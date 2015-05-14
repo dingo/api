@@ -1,6 +1,6 @@
 <?php
 
-namespace Dingo\Api\Auth;
+namespace Dingo\Api\Auth\Provider;
 
 use Exception;
 use Illuminate\Http\Request;
@@ -11,7 +11,7 @@ use League\OAuth2\Server\Exception\OAuthException;
 use League\OAuth2\Server\Exception\InvalidScopeException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class LeagueOAuth2Provider extends AuthorizationProvider
+class OAuth2 extends Authorization
 {
     /**
      * OAuth 2.0 resource server instance.
