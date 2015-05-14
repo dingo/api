@@ -57,8 +57,18 @@ class Route
      */
     protected $authProviders = [];
 
+    /**
+     * The rate limit for this route.
+     *
+     * @var int
+     */
     protected $rateLimit;
 
+    /**
+     * The expiration time for any rate limit set on this rate.
+     *
+     * @var int
+     */
     protected $rateExpiration;
 
     /**

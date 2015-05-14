@@ -88,6 +88,11 @@ class ApiServiceProvider extends ServiceProvider
         });
     }
 
+    /**
+     * Register the rate limiting.
+     *
+     * @return void
+     */
     protected function registerRateLimiting()
     {
         $this->app->singleton('api.limiting', function ($app) {
