@@ -2,22 +2,22 @@
 
 namespace Dingo\Api\Http\RateLimit;
 
-use Illuminate\Http\Request;
+use Dingo\Api\Http\Request;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Support\Collection;
 use Illuminate\Container\Container;
 
-class RateLimiter
+class Handler
 {
     /**
-     * Illuminate container instance.
+     * Container instance.
      *
      * @var \Illuminate\Container\Container
      */
     protected $container;
 
     /**
-     * Illuminate cache instance.
+     * Cache instance.
      *
      * @var \Illuminate\Cache\CacheManager
      */
@@ -33,14 +33,14 @@ class RateLimiter
     /**
      * Throttle used for rate limiting.
      *
-     * @var \Dingo\Api\Http\RateLimit\Throttle
+     * @var \Dingo\Api\Http\RateLimit\Throttle\Throttle
      */
     protected $throttle;
 
     /**
-     * Illuminate request instance being throttled.
+     * Request instance being throttled.
      *
-     * @var \Illuminate\Http\Request
+     * @var \Dingo\Api\Http\Request
      */
     protected $request;
 
@@ -59,7 +59,7 @@ class RateLimiter
     protected $limiter;
 
     /**
-     * Create a new rate limiter instance.
+     * Create a new rate limit handler instance.
      *
      * @param \Illuminate\Container\Container $container
      * @param \Illuminate\Cache\CacheManager  $cache
@@ -91,7 +91,7 @@ class RateLimiter
         // time on a specific route then we'll always use the route specific
         // throttle with the given values.
         if ($limit > 0 || $expires > 0) {
-            $this->throttle = new RouteSpecificThrottle(['limit' => $limit, 'expires' => $expires]);
+            $this->throttle = new Throttle\Route(['limit' => $limit, 'expires' => $expires]);
 
             $this->keyPrefix = md5($request->path());
 
@@ -231,7 +231,9 @@ class RateLimiter
      */
     public function getRateLimiter()
     {
-        return call_user_func($this->limiter, $this->container, $this->request);
+        return call_user_func($this->limiter ?: function ($container, $request) {
+            return $request->getClientIp();
+        }, $this->container, $this->request);
     }
 
     /**
@@ -249,11 +251,21 @@ class RateLimiter
     /**
      * Get the throttle used to rate limit the request.
      *
-     * @return \Dingo\Api\Http\RateLimit\Throttle
+     * @return \Dingo\Api\Http\RateLimit\Throttle\Throttle
      */
     public function getThrottle()
     {
         return $this->throttle;
+    }
+
+    /**
+     * Get the limit of the throttle used.
+     *
+     * @return int
+     */
+    public function getThrottleLimit()
+    {
+        return $this->throttle->getLimit();
     }
 
     /**

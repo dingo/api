@@ -19,7 +19,8 @@ class LumenServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->app->routeMiddleware([
-            'api.auth' => 'Dingo\Api\Http\Middleware\Auth'
+            'api.auth' => 'Dingo\Api\Http\Middleware\Auth',
+            'api.limiting' => 'Dingo\Api\Http\Middleware\RateLimit',
         ]);
     }
 

@@ -57,6 +57,10 @@ class Route
      */
     protected $authProviders = [];
 
+    protected $rateLimit;
+
+    protected $rateExpiration;
+
     /**
      * Create a new route instance.
      *
@@ -90,6 +94,8 @@ class Route
         $this->scopes = array_pull($this->action, 'scopes', []);
         $this->protected = array_pull($this->action, 'protected', false);
         $this->authProviders = array_pull($this->action, 'providers', []);
+        $this->rateLimit = array_pull($this->action, 'limit', 0);
+        $this->rateExpiration = array_pull($this->action, 'expires', 0);
 
         if (is_string($this->authProviders)) {
             $this->authProviders = explode('|', $this->authProviders);
@@ -168,5 +174,25 @@ class Route
     public function getAuthProviders()
     {
         return $this->authProviders;
+    }
+
+    /**
+     * Get the rate limit for this route.
+     *
+     * @return int
+     */
+    public function getRateLimit()
+    {
+        return $this->rateLimit;
+    }
+
+    /**
+     * Get the rate limit expiration time for this route.
+     *
+     * @return int
+     */
+    public function getLimitExpiration()
+    {
+        return $this->rateExpiration;
     }
 }

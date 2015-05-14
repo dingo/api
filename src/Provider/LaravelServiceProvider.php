@@ -21,6 +21,7 @@ class LaravelServiceProvider extends ServiceProvider
         ]);
 
         $this->app['router']->middleware('api.auth', 'Dingo\Api\Http\Middleware\Auth');
+        $this->app['router']->middleware('api.limiting', 'Dingo\Api\Http\Middleware\RateLimit');
     }
 
     /**

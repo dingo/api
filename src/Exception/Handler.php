@@ -56,6 +56,7 @@ class Handler implements ExceptionHandler
      */
     public function report(Exception $exception)
     {
+        dd($exception);
         //
     }
 
@@ -181,7 +182,7 @@ class Handler implements ExceptionHandler
 
         $response = $this->recursivelyRemoveEmptyReplacements($response);
 
-        return new Response($response, $exception->getStatusCode());
+        return new Response($response, $exception->getStatusCode(), $exception->getHeaders());
     }
 
     /**

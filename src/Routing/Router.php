@@ -22,6 +22,8 @@ class Router
 {
     const API_AUTH_MIDDLEWARE = 'api.auth';
 
+    const API_RATE_LIMIT_MIDDLEWARE = 'api.limiting';
+
     /**
      * Routing adapter instance.
      *
@@ -260,7 +262,7 @@ class Router
 
     protected function addRouteMiddlewares(array $action)
     {
-        foreach ([static::API_AUTH_MIDDLEWARE] as $middleware) {
+        foreach ([static::API_RATE_LIMIT_MIDDLEWARE, static::API_AUTH_MIDDLEWARE] as $middleware) {
             if (($key = array_search($middleware, $action['middleware'])) !== false) {
                 unset($action['middleware'][$key]);
             }
@@ -491,7 +493,7 @@ class Router
             $response = $this->adapter->dispatch($request, $accept['version']);
 
             if (! $response->isSuccessful()) {
-                throw new HttpException($response->getStatusCode(), $response->getContent());
+                throw new HttpException($response->getStatusCode(), $response->getContent(), null, $response->headers->all());
             }
 
             return $this->prepareResponse($response, $request, $accept['format']);

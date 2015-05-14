@@ -23,6 +23,7 @@ class ApiServiceProvider extends ServiceProvider
 
         $this->registerExceptionHandler();
         $this->registerAuth();
+        $this->registerRateLimiting();
         $this->registerRouter();
         $this->registerHttpValidation();
         $this->registerMiddleware();
@@ -87,6 +88,15 @@ class ApiServiceProvider extends ServiceProvider
         });
     }
 
+    protected function registerRateLimiting()
+    {
+        $this->app->singleton('api.limiting', function ($app) {
+            $config = $app['config']['api'];
+
+            return new Http\RateLimit\Handler($app, $app['cache'], $this->prepareConfigValues($config['throttling']));
+        });
+    }
+
     /**
      * Register the router.
      *
@@ -147,6 +157,10 @@ class ApiServiceProvider extends ServiceProvider
 
         $this->app->singleton('Dingo\Api\Http\Middleware\Auth', function ($app) {
             return new Http\Middleware\Auth($app['api.router'], $app['api.auth']);
+        });
+
+        $this->app->singleton('Dingo\Api\Http\Middleware\RateLimit', function ($app) {
+            return new Http\Middleware\RateLimit($app['api.router'], $app['api.limiting']);
         });
     }
 
