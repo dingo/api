@@ -7,9 +7,10 @@ use ReflectionFunction;
 use RecursiveArrayIterator;
 use Illuminate\Http\Response;
 use RecursiveIteratorIterator;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
-class Handler
+class Handler implements ExceptionHandler
 {
     /**
      * Array of exception handlers.
@@ -44,6 +45,49 @@ class Handler
     {
         $this->format = $format;
         $this->debug = $debug;
+    }
+
+    /**
+     * Report or log an exception.
+     *
+     * @param \Exception $exception
+     *
+     * @return void
+     */
+    public function report(Exception $exception)
+    {
+        //
+    }
+
+
+    /**
+     * Render an exception into an HTTP response.
+     *
+     * @param \Dingo\Api\Http\Request $request
+     * @param \Exception              $exception
+     *
+     * @throws \Exception
+     *
+     * @return void
+     */
+    public function render($request, Exception $exception)
+    {
+        throw $exception;
+    }
+
+    /**
+     * Render an exception to the console.
+     *
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @param \Exception                                        $exception
+     *
+     * @throws \Exception
+     *
+     * @return void
+     */
+    public function renderForConsole($output, Exception $exception)
+    {
+        throw $exception;
     }
 
     /**

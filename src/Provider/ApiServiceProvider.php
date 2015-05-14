@@ -67,6 +67,10 @@ class ApiServiceProvider extends ServiceProvider
 
             return new ExceptionHandler($config['error_format'], $config['debug']);
         });
+
+        $this->app->singleton('Illuminate\Contracts\Debug\ExceptionHandler', function ($app) {
+            return $app['api.exception'];
+        });
     }
 
     /**
