@@ -134,8 +134,8 @@ class Route
 
         $this->makeController();
 
-        $this->setupRouteScopes();
-        $this->setupRouteProtection();
+        $this->setupScopes();
+        $this->setupProtection();
 
         $this->versions = array_pull($this->action, 'version');
         $this->authProviders = array_pull($this->action, 'providers', []);
@@ -152,19 +152,20 @@ class Route
      *
      * @return void
      */
-    protected function setupRouteProtection()
+    protected function setupProtection()
     {
         $protected = array_pull($this->action, 'protected', false);
 
         if ($this->usesController()) {
-            foreach ($this->controller->getMethodProperties()['protected'] as $value) {
-                if ($this->applyToControllerMethod($value['options'])) {
+            $properties = $this->controller->getMethodProperties();
+            foreach ($properties['protected'] as $options) {
+                if ($this->optionsApplyToControllerMethod($options)) {
                     $protected = true;
                 }
             }
 
-            foreach ($this->controller->getMethodProperties()['unprotected'] as $value) {
-                if ($this->applyToControllerMethod($value['options'])) {
+            foreach ($properties['unprotected'] as $options) {
+                if ($this->optionsApplyToControllerMethod($options)) {
                     $protected = false;
                 }
             }
@@ -178,23 +179,43 @@ class Route
      *
      * @return void
      */
-    protected function setupRouteScopes()
+    protected function setupScopes()
     {
         $scopes = array_pull($this->action, 'scopes', []);
 
         if ($this->usesController()) {
-            $values = $this->controller->getMethodProperties()['scopes'];
+            $properties = $this->getControllerProperties();
 
-            foreach ($values as $value) {
-                if (! $this->applyToControllerMethod($value['options'])) {
-                    continue;
+            foreach ($properties['scopes'] as $scope) {
+                if ($this->optionsApplyToControllerMethod($scope['options'])) {
+                    $scopes = array_merge($scopes, $scope['scopes']);
                 }
-
-                $scopes = array_merge($scopes, $value['scopes']);
             }
         }
 
         $this->scopes = $scopes;
+    }
+
+    /**
+     * Get the controller method properties.
+     *
+     * @return array
+     */
+    protected function getControllerProperties()
+    {
+        $method = $this->getControllerPropertiesMethodName();
+
+        return array_merge(['scope' => [], 'protected' => [], 'unprotected' => []], $this->controller->$method());
+    }
+
+    /**
+     * Get the name of method to get the controller properties.
+     *
+     * @return string
+     */
+    protected function getControllerPropertiesMethodName()
+    {
+        return 'getMethodProperties';
     }
 
     /**
@@ -204,9 +225,11 @@ class Route
      *
      * @return bool
      */
-    protected function applyToControllerMethod(array $options)
+    protected function optionsApplyToControllerMethod(array $options)
     {
-        if (isset($options['only']) && in_array($this->method, $options['only'])) {
+        if(empty($options)) {
+            return true;
+        } elseif (isset($options['only']) && in_array($this->method, $options['only'])) {
             return true;
         } elseif (isset($options['except']) && in_array($this->method, $options['except'])) {
             return false;
@@ -214,7 +237,7 @@ class Route
             return true;
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -224,7 +247,7 @@ class Route
      */
     public function usesController()
     {
-        return ! is_null($this->controller) && method_exists($this->controller, 'getMethodProperties');
+        return ! is_null($this->controller) && method_exists($this->controller, $this->getControllerPropertiesMethodName());
     }
 
     /**

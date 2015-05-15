@@ -24,7 +24,7 @@ trait Helpers
      */
     protected function protect(array $options = [])
     {
-        $this->methodProperties['protected'][] = compact('options');
+        $this->methodProperties['protected'] = array_merge_recursive($this->methodProperties['protected'], compact('options'));
     }
 
     /**
