@@ -156,8 +156,8 @@ class Route
     {
         $scopes = array_pull($this->action, 'scopes', []);
 
-        if ($this->usesController() && method_exists($this->controller, 'getActionProperties')) {
-            $values = $this->controller->getActionProperties()['scopes'];
+        if ($this->usesController()) {
+            $values = $this->controller->getMethodProperties()['scopes'];
 
             foreach ($values as $value) {
                 if (! $this->applyToControllerMethod($value['options'])) {
@@ -198,7 +198,7 @@ class Route
      */
     public function usesController()
     {
-        return ! is_null($this->controller);
+        return ! is_null($this->controller) && method_exists($this->controller, 'getMethodProperties');
     }
 
     /**

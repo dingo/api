@@ -7,11 +7,11 @@ use ErrorException;
 trait Helpers
 {
     /**
-     * Array of controller action properties.
+     * Array of controller method properties.
      *
      * @var array
      */
-    protected $actionProperties = [
+    protected $methodProperties = [
         'scopes' => []
     ];
 
@@ -27,7 +27,7 @@ trait Helpers
     {
         $scopes = $this->propertyValue($scopes);
 
-        $this->actionProperties['scopes'][] = compact('scopes', 'options');
+        $this->methodProperties['scopes'][] = compact('scopes', 'options');
     }
 
     /**
@@ -43,13 +43,13 @@ trait Helpers
     }
 
     /**
-     * Get controller action properties.
+     * Get controller method properties.
      *
      * @return array
      */
-    public function getActionProperties()
+    public function getMethodProperties()
     {
-        return $this->actionProperties;
+        return $this->methodProperties;
     }
 
     /**
