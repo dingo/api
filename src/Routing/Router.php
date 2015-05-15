@@ -85,6 +85,13 @@ class Router
     protected $currentRoute;
 
     /**
+     * The number of routes dispatched.
+     *
+     * @var int
+     */
+    protected $routesDispatched = 0;
+
+    /**
      * Create a new router instance.
      *
      * @param \Dingo\Api\Routing\Adapter\Adapter  $adapter
@@ -511,10 +518,11 @@ class Router
      * Dispatch a request via the adapter.
      *
      * @param \Dingo\Api\Http\Request $request
+     * @param bool                    $raw
      *
      * @return \Dingo\Api\Http\Response
      */
-    public function dispatch(Request $request)
+    public function dispatch(Request $request, $raw = false)
     {
         $this->currentRoute = null;
 
@@ -522,17 +530,15 @@ class Router
 
         $this->container->instance('Dingo\Api\Http\Request', $request);
 
+        $this->routesDispatched++;
+
         try {
             $response = $this->adapter->dispatch($request, $accept['version']);
-
-            return $this->prepareResponse($response, $request, $accept['format']);
         } catch (Exception $exception) {
-            return $this->prepareResponse(
-                $this->exception->handle($exception),
-                $request,
-                $accept['format']
-            );
+            $response = $this->exception->handle($exception);
         }
+
+        return $this->prepareResponse($response, $request, $accept['format'], $raw);
     }
 
     /**
@@ -541,10 +547,11 @@ class Router
      * @param \Illuminate\Http\Response $response
      * @param \Dingo\Api\Http\Request   $request
      * @param string                    $format
+     * @param bool                      $raw
      *
      * @return \Dingo\Api\Http\Response
      */
-    protected function prepareResponse(IlluminateResponse $response, Request $request, $format)
+    protected function prepareResponse(IlluminateResponse $response, Request $request, $format, $raw = false)
     {
         if (! $response instanceof Response) {
             $response = Response::makeFromExisting($response);
@@ -560,7 +567,9 @@ class Router
             return $this->exception->handle($exception);
         }
 
-        $response = $response->morph($format);
+        if (! $raw) {
+            $response = $response->morph($format);
+        }
 
         if ($response->isSuccessful() && $this->requestIsConditional()) {
             if (! $response->headers->has('ETag')) {
@@ -614,6 +623,8 @@ class Router
     {
         if (isset($this->currentRoute)) {
             return $this->currentRoute;
+        } elseif (! $this->hasDispatchedRoutes()) {
+            return null;
         }
 
         $request = $this->container['request'];
@@ -621,6 +632,23 @@ class Router
         return $this->currentRoute = new Route($this->adapter, $this->container, $request, $request->route());
     }
 
+    /**
+     * Set the current route instance.
+     *
+     * @param \Dingo\Api\Routing\Route $route
+     *
+     * @return void
+     */
+    public function setCurrentRoute(Route $route)
+    {
+        $this->currentRoute = $route;
+    }
+
+    /**
+     * Determine if the router has a group stack.
+     *
+     * @return bool
+     */
     public function hasGroupStack()
     {
         return ! empty($this->groupStack);
@@ -652,5 +680,25 @@ class Router
     public function getRoutes($version = null)
     {
         return $this->adapter->getRoutes($version);
+    }
+
+    /**
+     * Get the number of routes dispatched.
+     *
+     * @return int
+     */
+    public function getRoutesDispatched()
+    {
+        return $this->routesDispatched;
+    }
+
+    /**
+     * Determine if the router has dispatched any routes.
+     *
+     * @return bool
+     */
+    public function hasDispatchedRoutes()
+    {
+        return $this->routesDispatched > 0;
     }
 }

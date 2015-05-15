@@ -363,6 +363,16 @@ class Route
     }
 
     /**
+     * Get the name of the route.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return array_get($this->action, 'as', null);
+    }
+
+    /**
      * Get the route scopes.
      *
      * @return array

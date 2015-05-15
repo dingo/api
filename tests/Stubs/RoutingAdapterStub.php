@@ -3,9 +3,10 @@
 namespace Dingo\Api\Tests\Stubs;
 
 use Closure;
-use Dingo\Api\Http\Response;
 use Dingo\Api\Http\Request;
+use Dingo\Api\Http\Response;
 use Dingo\Api\Contract\Routing\Adapter;
+use Illuminate\Http\Response as IlluminateResponse;
 
 class RoutingAdapterStub implements Adapter
 {
@@ -53,7 +54,7 @@ class RoutingAdapterStub implements Adapter
 
     protected function prepare($response)
     {
-        if (! $response instanceof Response) {
+        if (! $response instanceof Response && ! $response instanceof IlluminateResponse) {
             $response = new Response($response);
         }
 
