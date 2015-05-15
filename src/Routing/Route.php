@@ -135,9 +135,9 @@ class Route
         $this->makeController();
 
         $this->setupRouteScopes();
+        $this->setupRouteProtection();
 
         $this->versions = array_pull($this->action, 'version');
-        $this->protected = array_pull($this->action, 'protected', false);
         $this->authProviders = array_pull($this->action, 'providers', []);
         $this->rateLimit = array_pull($this->action, 'limit', 0);
         $this->rateExpiration = array_pull($this->action, 'expires', 0);
@@ -145,6 +145,32 @@ class Route
         if (is_string($this->authProviders)) {
             $this->authProviders = explode('|', $this->authProviders);
         }
+    }
+
+    /**
+     * Setup the route protection by merging the controller protection.
+     *
+     * @return void
+     */
+    protected function setupRouteProtection()
+    {
+        $protected = array_pull($this->action, 'protected', false);
+
+        if ($this->usesController()) {
+            foreach ($this->controller->getMethodProperties()['protected'] as $value) {
+                if ($this->applyToControllerMethod($value['options'])) {
+                    $protected = true;
+                }
+            }
+
+            foreach ($this->controller->getMethodProperties()['unprotected'] as $value) {
+                if ($this->applyToControllerMethod($value['options'])) {
+                    $protected = false;
+                }
+            }
+        }
+
+        $this->protected = $protected;
     }
 
     /**

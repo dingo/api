@@ -12,8 +12,30 @@ trait Helpers
      * @var array
      */
     protected $methodProperties = [
-        'scopes' => []
+        'scopes' => [],
+        'protected' => [],
+        'unprotected' => []
     ];
+
+    /**
+     * Protect controller methods.
+     *
+     * @return void
+     */
+    protected function protect(array $options = [])
+    {
+        $this->methodProperties['protected'][] = compact('options');
+    }
+
+    /**
+     * Unprotect controller methods.
+     *
+     * @return void
+     */
+    protected function unprotect(array $options = [])
+    {
+        $this->methodProperties['unprotected'][] = compact('options');
+    }
 
     /**
      * Add scopes to controller methods.
