@@ -11,6 +11,7 @@ use Dingo\Api\Exception\Handler;
 use Dingo\Api\Http\InternalRequest;
 use Illuminate\Container\Container;
 use Dingo\Api\Routing\Adapter\Adapter;
+use Illuminate\Routing\ControllerInspector;
 use Dingo\Api\Exception\InternalHttpException;
 use Dingo\Api\Http\Parser\Accept as AcceptParser;
 use Illuminate\Http\Response as IlluminateResponse;
@@ -233,6 +234,97 @@ class Router
     public function options($uri, $action)
     {
         return $this->addRoute('OPTIONS', $uri, $action);
+    }
+
+    /**
+     * Register an array of resources.
+     *
+     * @param array $resources
+     *
+     * @return void
+     */
+    public function resources(array $resources)
+    {
+        foreach ($resources as $name => $resource) {
+            $this->resource($name, $resource);
+        }
+    }
+
+    /**
+     * Register a resource controller.
+     *
+     * @param string $name
+     * @param string $controller
+     * @param array  $options
+     *
+     * @return void
+     */
+    public function resource($name, $controller, array $options = [])
+    {
+        if ($this->container->bound('Dingo\Api\Routing\ResourceRegistrar')) {
+            $registrar = $this->container->make('Dingo\Api\Routing\ResourceRegistrar');
+        } else {
+            $registrar = new ResourceRegistrar($this);
+        }
+
+        $registrar->register($name, $controller, $options);
+    }
+
+    /**
+     * Register an array of controllers.
+     *
+     * @param array $controllers
+     *
+     * @return void
+     */
+    public function controllers(array $controllers)
+    {
+        foreach ($controllers as $uri => $controller) {
+            $this->controller($uri, $controller);
+        }
+    }
+
+    /**
+     * Register a controller.
+     *
+     * @param string $uri
+     * @param string $controller
+     * @param array  $names
+     *
+     * @return void
+     */
+    public function controller($uri, $controller, $names = array())
+    {
+        $routable = (new ControllerInspector)->getRoutable($this->addGroupNamespace($controller), $uri);
+
+        foreach ($routable as $method => $routes) {
+            foreach ($routes as $route) {
+                $this->{$route['verb']}($route['uri'], [
+                    'uses' => $controller.'@'.$method,
+                    'as' => array_get($names, $method)
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Add the group namespace to a controller.
+     *
+     * @param string $controller
+     *
+     * @return string
+     */
+    protected function addGroupNamespace($controller)
+    {
+        if (! empty($this->groupStack)) {
+            $group = end($this->groupStack);
+
+            if (isset($group['namespace']) && strpos($controller, '\\') !== 0) {
+                return $group['namespace'].'\\'.$controller;
+            }
+        }
+
+        return $controller;
     }
 
     /**
@@ -491,7 +583,7 @@ class Router
             return trim(array_get($old, 'prefix'), '/').'/'.trim($new['prefix'], '/');
         }
 
-        return array_get($old, 'prefix');
+        return array_get($old, 'prefix', '');
     }
 
     /**
@@ -608,5 +700,26 @@ class Router
         $request = $this->container['request'];
 
         return $this->currentRoute = new Route($this->container, $request->route(), $request);
+    }
+
+    public function hasGroupStack()
+    {
+        return ! empty($this->groupStack);
+    }
+
+    /**
+     * Get the prefix from the last group on the stack.
+     *
+     * @return string
+     */
+    public function getLastGroupPrefix()
+    {
+        if (empty($this->groupStack)) {
+            return '';
+        }
+
+        $group = end($this->groupStack);
+
+        return $group['prefix'];
     }
 }

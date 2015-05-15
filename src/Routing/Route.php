@@ -87,6 +87,13 @@ class Route
     protected $controller;
 
     /**
+     * Controller method name.
+     *
+     * @var string
+     */
+    protected $method;
+
+    /**
      * Indicates if the request is conditional.
      *
      * @var bool
@@ -127,8 +134,9 @@ class Route
 
         $this->makeController();
 
+        $this->setupRouteScopes();
+
         $this->versions = array_pull($this->action, 'version');
-        $this->scopes = array_pull($this->action, 'scopes', []);
         $this->protected = array_pull($this->action, 'protected', false);
         $this->authProviders = array_pull($this->action, 'providers', []);
         $this->rateLimit = array_pull($this->action, 'limit', 0);
@@ -137,7 +145,60 @@ class Route
         if (is_string($this->authProviders)) {
             $this->authProviders = explode('|', $this->authProviders);
         }
+    }
 
+    /**
+     * Setup the route scopes by merging any controller scopes.
+     *
+     * @return void
+     */
+    protected function setupRouteScopes()
+    {
+        $scopes = array_pull($this->action, 'scopes', []);
+
+        if ($this->usesController() && method_exists($this->controller, 'getActionProperties')) {
+            $values = $this->controller->getActionProperties()['scopes'];
+
+            foreach ($values as $value) {
+                if (! $this->applyToControllerMethod($value['options'])) {
+                    continue;
+                }
+
+                $scopes = array_merge($scopes, $value['scopes']);
+            }
+        }
+
+        $this->scopes = $scopes;
+    }
+
+    /**
+     * Determine if a controller method is in an array of options.
+     *
+     * @param array $options
+     *
+     * @return bool
+     */
+    protected function applyToControllerMethod(array $options)
+    {
+        if (isset($options['only']) && in_array($this->method, $options['only'])) {
+            return true;
+        } elseif (isset($options['except']) && in_array($this->method, $options['except'])) {
+            return false;
+        } elseif (in_array($this->method, $options)) {
+            return true;
+        }
+
+        return true;
+    }
+
+    /**
+     * Determine if the route uses a controller.
+     *
+     * @return bool
+     */
+    public function usesController()
+    {
+        return ! is_null($this->controller);
     }
 
     /**
@@ -154,11 +215,10 @@ class Route
 
         if (str_contains($this->action['uses'], '@')) {
             list($controller, $method) = explode('@', $this->action['uses']);
-        } else {
-            $controller = $this->action['uses'];
-        }
 
-        $this->controller = $this->container->make($controller);
+            $this->controller = $this->container->make($controller);
+            $this->method = $method;
+        }
     }
 
     /**

@@ -7,6 +7,52 @@ use ErrorException;
 trait Helpers
 {
     /**
+     * Array of controller action properties.
+     *
+     * @var array
+     */
+    protected $actionProperties = [
+        'scopes' => []
+    ];
+
+    /**
+     * Add scopes to controller methods.
+     *
+     * @param string|array $scopes
+     * @param array        $options
+     *
+     * @return void
+     */
+    protected function scopes($scopes, array $options = [])
+    {
+        $scopes = $this->propertyValue($scopes);
+
+        $this->actionProperties['scopes'][] = compact('scopes', 'options');
+    }
+
+    /**
+     * Prepare a property value.
+     *
+     * @param string|array $value
+     *
+     * @return array
+     */
+    protected function propertyValue($value)
+    {
+        return is_string($value) ? explode('|', $value) : $value;
+    }
+
+    /**
+     * Get controller action properties.
+     *
+     * @return array
+     */
+    public function getActionProperties()
+    {
+        return $this->actionProperties;
+    }
+
+    /**
      * Get the authenticated user.
      *
      * @return mixed

@@ -6,6 +6,7 @@ use Dingo\Api\Http;
 use Dingo\Api\Auth\Auth;
 use Dingo\Api\Routing\Router;
 use Illuminate\Support\ServiceProvider;
+use Dingo\Api\Routing\ResourceRegistrar;
 use Dingo\Api\Exception\Handler as ExceptionHandler;
 use Dingo\Api\Transformer\Factory as TransformerFactory;
 
@@ -123,6 +124,10 @@ class ApiServiceProvider extends ServiceProvider
                 $app['api.exception'],
                 $app
             );
+        });
+
+        $this->app->singleton('Dingo\Api\Routing\ResourceRegistrar', function ($app) {
+            return new ResourceRegistrar($app['api.router']);
         });
     }
 
