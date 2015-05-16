@@ -505,6 +505,8 @@ class Router
      */
     public function dispatch(Request $request)
     {
+        $this->currentRoute = null;
+
         $accept = $this->accept->parse($request);
 
         $this->container->instance('Dingo\Api\Http\Request', $request);
