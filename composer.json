@@ -29,7 +29,7 @@
         "squizlabs/php_codesniffer": "~2.0"
     },
     "suggest": {
-        "lucadegasperi/oauth2-server-laravel": "Use the League OAuth 2.0 server to protect your API.",
+        "lucadegasperi/oauth2-server-laravel": "Protect your API with OAuth 2.0.",
         "tymon/jwt-auth": "Protect your API with JSON Web Tokens"
     },
     "autoload": {
