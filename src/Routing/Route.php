@@ -2,6 +2,7 @@
 
 namespace Dingo\Api\Routing;
 
+use Closure;
 use Dingo\Api\Http\Request;
 use Illuminate\Container\Container;
 use Illuminate\Routing\Route as IlluminateRoute;
@@ -157,21 +158,11 @@ class Route
      */
     protected function setupThrottle()
     {
-        $throttle = array_pull($this->action, 'throttle');
+        $this->throttle = array_pull($this->action, 'throttle', []);
 
-        if ($this->usesController()) {
-            $properties = $this->getControllerProperties();
-
-            foreach ($properties['throttles'] as $value) {
-                if ($this->optionsApplyToControllerMethod($value['options'])) {
-                    $throttle = $value['throttle'];
-
-                    break;
-                }
-            }
-        }
-
-        $this->throttle = $throttle;
+        $this->findControllerOptions('throttles', function ($value) {
+            $this->throttle = $value['throttle'];
+        });
     }
 
     /**
@@ -181,24 +172,13 @@ class Route
      */
     protected function setupRateLimiting()
     {
-        $rateLimit = array_pull($this->action, 'limit', 0);
-        $rateExpiration = array_pull($this->action, 'expires', 0);
+        $this->rateLimit = array_pull($this->action, 'limit', 0);
+        $this->rateExpiration = array_pull($this->action, 'expires', 0);
 
-        if ($this->usesController()) {
-            $properties = $this->getControllerProperties();
-
-            foreach ($properties['rateLimit'] as $value) {
-                if ($this->optionsApplyToControllerMethod($value['options'])) {
-                    $rateLimit = $value['limit'];
-                    $rateExpiration = $value['expires'];
-
-                    break;
-                }
-            }
-        }
-
-        $this->rateLimit = $rateLimit;
-        $this->rateExpiration = $rateExpiration;
+        $this->findControllerOptions('rateLimit', function ($value) {
+            $this->rateLimit = $value['limit'];
+            $this->rateExpiration = $value['expires'];
+        });
     }
 
     /**
@@ -208,19 +188,11 @@ class Route
      */
     protected function setupAuthProviders()
     {
-        $providers = array_pull($this->action, 'providers', []);
+        $this->authProviders = array_pull($this->action, 'scopes', []);
 
-        if ($this->usesController()) {
-            $properties = $this->getControllerProperties();
-
-            foreach ($properties['providers'] as $provider) {
-                if ($this->optionsApplyToControllerMethod($provider['options'])) {
-                    $providers = array_merge($providers, $provider['providers']);
-                }
-            }
-        }
-
-        $this->authProviders = $providers;
+        $this->findControllerOptions('providers', function ($value) {
+            $this->authProviders = array_merge($this->authProviders, $value['providers']);
+        });
     }
 
     /**
@@ -230,25 +202,15 @@ class Route
      */
     protected function setupProtection()
     {
-        $protected = array_pull($this->action, 'protected', false);
+        $this->protected = array_pull($this->action, 'protected', false);
 
-        if ($this->usesController()) {
-            $properties = $this->getControllerProperties();
+        $this->findControllerOptions('protected', function ($value) {
+            $this->protected = true;
+        });
 
-            foreach ($properties['protected'] as $options) {
-                if ($this->optionsApplyToControllerMethod($options)) {
-                    $protected = true;
-                }
-            }
-
-            foreach ($properties['unprotected'] as $options) {
-                if ($this->optionsApplyToControllerMethod($options)) {
-                    $protected = false;
-                }
-            }
-        }
-
-        $this->protected = $protected;
+        $this->findControllerOptions('unprotected', function ($value) {
+            $this->protected = false;
+        });
     }
 
     /**
@@ -258,19 +220,34 @@ class Route
      */
     protected function setupScopes()
     {
-        $scopes = array_pull($this->action, 'scopes', []);
+        $this->scopes = array_pull($this->action, 'scopes', []);
 
+        $this->findControllerOptions('scopes', function ($value) {
+            $this->scopes = array_merge($this->scopes, $value['scopes']);
+        });
+    }
+
+    /**
+     * Find the controller options and whether or not it will apply to this routes method.
+     *
+     * @param string   $option
+     * @param \Closure $callback
+     *
+     * @return void
+     */
+    protected function findControllerOptions($option, Closure $callback)
+    {
         if ($this->usesController()) {
             $properties = $this->getControllerProperties();
 
-            foreach ($properties['scopes'] as $scope) {
-                if ($this->optionsApplyToControllerMethod($scope['options'])) {
-                    $scopes = array_merge($scopes, $scope['scopes']);
+            foreach ($properties[$option] as $value) {
+                if (! $this->optionsApplyToControllerMethod($value['options'])) {
+                    continue;
                 }
+
+                $callback($value);
             }
         }
-
-        $this->scopes = $scopes;
     }
 
     /**

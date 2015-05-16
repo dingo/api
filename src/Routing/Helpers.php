@@ -54,7 +54,7 @@ trait Helpers
      */
     protected function protect(array $options = [])
     {
-        $this->methodProperties['protected'] = array_merge_recursive($this->methodProperties['protected'], compact('options'));
+        $this->methodProperties['protected'][] = compact('options');
     }
 
     /**
@@ -64,7 +64,7 @@ trait Helpers
      */
     protected function unprotect(array $options = [])
     {
-        $this->methodProperties['unprotected'] = array_merge_recursive($this->methodProperties['unprotected'], compact('options'));
+        $this->methodProperties['unprotected'][] = compact('options');
     }
 
     /**
