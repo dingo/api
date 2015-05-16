@@ -63,7 +63,7 @@ return [
     |
     */
 
-    'conditional_request' => env('API_CONDITIONAL_REQUEST', true),
+    'conditionalRequest' => env('API_CONDITIONAL_REQUEST', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -103,7 +103,7 @@ return [
     |
     */
 
-    'error_format' => [
+    'errorFormat' => [
         'message' => ':message',
         'errors' => ':errors',
         'code' => ':code',
@@ -167,7 +167,7 @@ return [
     |
     */
 
-    'default_format' => env('API_DEFAULT_FORMAT', 'json'),
+    'defaultFormat' => env('API_DEFAULT_FORMAT', 'json'),
 
     'formats' => [
 

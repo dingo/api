@@ -139,8 +139,8 @@ class Router
      */
     public function group(array $attributes, $callback)
     {
-        if (! isset($attributes['conditional_request'])) {
-            $attributes['conditional_request'] = $this->conditionalRequest;
+        if (! isset($attributes['conditionalRequest'])) {
+            $attributes['conditionalRequest'] = $this->conditionalRequest;
         }
 
         $attributes = $this->mergeLastGroupAttributes($attributes);
@@ -417,8 +417,8 @@ class Router
             unset($old['domain']);
         }
 
-        if (isset($new['conditional_request'])) {
-            unset($old['conditional_request']);
+        if (isset($new['conditionalRequest'])) {
+            unset($old['conditionalRequest']);
         }
 
         if (isset($new['uses'])) {

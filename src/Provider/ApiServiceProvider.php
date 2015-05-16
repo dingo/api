@@ -72,7 +72,7 @@ class ApiServiceProvider extends ServiceProvider
         $this->app->singleton('api.exception', function ($app) {
             $config = $app['config']['api'];
 
-            return new ExceptionHandler($config['error_format'], $config['debug']);
+            return new ExceptionHandler($config['errorFormat'], $config['debug']);
         });
 
         $this->app->singleton('Illuminate\Contracts\Debug\ExceptionHandler', function ($app) {
@@ -120,7 +120,7 @@ class ApiServiceProvider extends ServiceProvider
 
             return new Router(
                 $app['api.router.adapter'],
-                new Http\Parser\Accept($config['vendor'], $config['version'], $config['default_format']),
+                new Http\Parser\Accept($config['vendor'], $config['version'], $config['defaultFormat']),
                 $app['api.exception'],
                 $app
             );
@@ -154,7 +154,7 @@ class ApiServiceProvider extends ServiceProvider
             $config = $app['config']['api'];
 
             return new Http\Validation\Accept(
-                new Http\Parser\Accept($config['vendor'], $config['version'], $config['default_format'])
+                new Http\Parser\Accept($config['vendor'], $config['version'], $config['defaultFormat'])
             );
         });
     }

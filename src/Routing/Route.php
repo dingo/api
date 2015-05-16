@@ -155,7 +155,7 @@ class Route
         $this->setupThrottle();
 
         $this->versions = array_pull($this->action, 'version');
-        $this->conditionalRequest = array_pull($this->action, 'conditional_request', true);
+        $this->conditionalRequest = array_pull($this->action, 'conditionalRequest', true);
     }
 
     /**
