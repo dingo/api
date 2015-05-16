@@ -59,7 +59,7 @@ class Accept implements Parser
     {
         $default = 'application/vnd.'.$this->vendor.'.'.$this->version.'+'.$this->format;
 
-        $pattern = '/application\/vnd\.('.$this->vendor.')\.(v[\d]+)\+([\w]+)/';
+        $pattern = '/application\/vnd\.('.$this->vendor.')\.(v[\d\.]+)\+([\w]+)/';
 
         if (! preg_match($pattern, $request->header('accept'), $matches)) {
             if ($strict) {
