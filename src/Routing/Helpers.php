@@ -14,7 +14,8 @@ trait Helpers
     protected $methodProperties = [
         'scopes' => [],
         'protected' => [],
-        'unprotected' => []
+        'unprotected' => [],
+        'providers' => []
     ];
 
     /**
@@ -34,7 +35,7 @@ trait Helpers
      */
     protected function unprotect(array $options = [])
     {
-        $this->methodProperties['unprotected'][] = compact('options');
+        $this->methodProperties['unprotected'] = array_merge_recursive($this->methodProperties['unprotected'], compact('options'));
     }
 
     /**
@@ -50,6 +51,13 @@ trait Helpers
         $scopes = $this->propertyValue($scopes);
 
         $this->methodProperties['scopes'][] = compact('scopes', 'options');
+    }
+
+    protected function authenticateWith($providers, array $options = [])
+    {
+        $providers = $this->propertyValue($providers);
+
+        $this->methodProperties['providers'][] = compact('providers', 'options');
     }
 
     /**

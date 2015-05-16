@@ -136,15 +136,33 @@ class Route
 
         $this->setupScopes();
         $this->setupProtection();
+        $this->setupAuthProviders();
 
         $this->versions = array_pull($this->action, 'version');
-        $this->authProviders = array_pull($this->action, 'providers', []);
         $this->rateLimit = array_pull($this->action, 'limit', 0);
         $this->rateExpiration = array_pull($this->action, 'expires', 0);
+    }
 
-        if (is_string($this->authProviders)) {
-            $this->authProviders = explode('|', $this->authProviders);
+    /**
+     * Setup the route authentication providers by merging the controller providers.
+     *
+     * @return void
+     */
+    protected function setupAuthProviders()
+    {
+        $providers = array_pull($this->action, 'providers', []);
+
+        if ($this->usesController()) {
+            $properties = $this->getControllerProperties();
+
+            foreach ($properties['providers'] as $provider) {
+                if ($this->optionsApplyToControllerMethod($provider['options'])) {
+                    $providers = array_merge($providers, $provider['providers']);
+                }
+            }
         }
+
+        $this->authProviders = $providers;
     }
 
     /**
@@ -157,7 +175,8 @@ class Route
         $protected = array_pull($this->action, 'protected', false);
 
         if ($this->usesController()) {
-            $properties = $this->controller->getMethodProperties();
+            $properties = $this->getControllerProperties();
+
             foreach ($properties['protected'] as $options) {
                 if ($this->optionsApplyToControllerMethod($options)) {
                     $protected = true;
@@ -205,7 +224,7 @@ class Route
     {
         $method = $this->getControllerPropertiesMethodName();
 
-        return array_merge(['scope' => [], 'protected' => [], 'unprotected' => []], $this->controller->$method());
+        return array_merge(['scope' => [], 'protected' => [], 'unprotected' => [], 'providers' => []], $this->controller->$method());
     }
 
     /**
