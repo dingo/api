@@ -611,7 +611,7 @@ class Router
 
         $request = $this->container['request'];
 
-        return $this->currentRoute = new Route($this->adapter, $this->container, $request->route(), $request);
+        return $this->currentRoute = new Route($this->adapter, $this->container, $request, $request->route());
     }
 
     public function hasGroupStack()

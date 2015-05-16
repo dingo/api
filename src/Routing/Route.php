@@ -121,12 +121,12 @@ class Route
      *
      * @param \Dingo\Api\Routing\Adapter\Adapter $adapter
      * @param \Illuminate\Container\Container    $container
-     * @param array|\Illuminate\Routing\Route    $route
      * @param \Dingo\Api\Http\Request            $request
+     * @param array|\Illuminate\Routing\Route    $route
      *
      * @return void
      */
-    public function __construct(Adapter $adapter, Container $container, $route, Request $request)
+    public function __construct(Adapter $adapter, Container $container, Request $request, $route)
     {
         $this->adapter = $adapter;
         $this->container = $container;
