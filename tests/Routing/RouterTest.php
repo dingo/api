@@ -108,8 +108,8 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $request = $this->createRequest('baz', 'GET', ['accept' => 'application/vnd.api.v1+json']);
         $this->router->dispatch($request);
 
-        $this->router->version('v2', ['providers' => 'foo', 'throttle' => 'Bar'], function () {
-            $this->router->get('foo', 'Dingo\Api\Tests\Stubs\RoutingControllerStub@index');
+        $this->router->version('v2', ['providers' => 'foo', 'throttle' => 'Bar', 'namespace' => 'Dingo\Api\Tests'], function () {
+            $this->router->get('foo', 'Stubs\RoutingControllerStub@index');
         });
 
         $request = $this->createRequest('foo', 'GET', ['accept' => 'application/vnd.api.v2+json']);

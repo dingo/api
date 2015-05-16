@@ -422,7 +422,7 @@ class Router
         }
 
         if (isset($new['uses'])) {
-            $new['uses'] = $this->formatUses($new);
+            $new['uses'] = $this->formatUses($new, $old);
         }
 
         $new['where'] = array_merge(array_get($old, 'where', []), array_get($new, 'where', []));
@@ -449,13 +449,14 @@ class Router
      * Format the uses key in a route action.
      *
      * @param array $new
+     * @param array $old
      *
      * @return string
      */
-    protected function formatUses(array $new)
+    protected function formatUses(array $new, array $old)
     {
-        if (isset($new['namespace']) && is_string($new['uses']) && strpos($new['uses'], '\\') === false) {
-            return $new['namespace'].'\\'.$new['uses'];
+        if (isset($old['namespace']) && is_string($new['uses']) && strpos($new['uses'], '\\') !== 0) {
+            return $old['namespace'].'\\'.$new['uses'];
         }
 
         return $new['uses'];
