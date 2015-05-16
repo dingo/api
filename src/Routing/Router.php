@@ -520,8 +520,6 @@ class Router
 
             return $this->prepareResponse($response, $request, $accept['format']);
         } catch (Exception $exception) {
-            var_dump($exception);
-            exit;
             return $this->prepareResponse(
                 $this->exception->handle($exception),
                 $request,
