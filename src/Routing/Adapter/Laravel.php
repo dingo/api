@@ -53,6 +53,19 @@ class Laravel implements Adapter
     }
 
     /**
+     * Get the URI, methods, and action from the route.
+     *
+     * @param mixed                   $route
+     * @param \Dingo\Api\Http\Request $request
+     *
+     * @return array
+     */
+    public function getRouteProperties($route, Request $request)
+    {
+        return [$route->getUri(), $route->getMethods(), $route->getAction()];
+    }
+
+    /**
      * Add a route to the appropriate route collection.
      *
      * @param array  $methods
@@ -87,5 +100,21 @@ class Laravel implements Adapter
                 $this->routes[$version] = new RouteCollection;
             }
         }
+    }
+
+    /**
+     * Get all routes or only for a specific version.
+     *
+     * @param string $version
+     *
+     * @return mixed
+     */
+    public function getRoutes($version = null)
+    {
+        if (! is_null($version)) {
+            return $this->routes[$version];
+        }
+
+        return $this->routes;
     }
 }

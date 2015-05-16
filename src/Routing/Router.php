@@ -417,10 +417,6 @@ class Router
             unset($old['domain']);
         }
 
-        if (isset($new['version'])) {
-            unset($old['version']);
-        }
-
         if (isset($new['conditional_request'])) {
             unset($old['conditional_request']);
         }
@@ -522,6 +518,8 @@ class Router
 
             return $this->prepareResponse($response, $request, $accept['format']);
         } catch (Exception $exception) {
+            var_dump($exception);
+            exit;
             return $this->prepareResponse(
                 $this->exception->handle($exception),
                 $request,
@@ -613,7 +611,7 @@ class Router
 
         $request = $this->container['request'];
 
-        return $this->currentRoute = new Route($this->container, $request->route(), $request);
+        return $this->currentRoute = new Route($this->adapter, $this->container, $request->route(), $request);
     }
 
     public function hasGroupStack()
@@ -635,5 +633,17 @@ class Router
         $group = end($this->groupStack);
 
         return $group['prefix'];
+    }
+
+    /**
+     * Get all routes registered on the adapter.
+     *
+     * @param string $version
+     *
+     * @return mixed
+     */
+    public function getRoutes($version = null)
+    {
+        return $this->adapter->getRoutes($version);
     }
 }

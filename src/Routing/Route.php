@@ -5,11 +5,19 @@ namespace Dingo\Api\Routing;
 use Closure;
 use Dingo\Api\Http\Request;
 use Illuminate\Container\Container;
+use Dingo\Api\Routing\Adapter\Adapter;
 use Illuminate\Routing\Route as IlluminateRoute;
 
 
 class Route
 {
+    /**
+     * Routing adapter instance.
+     *
+     * @var \Dingo\Api\Routing\Adapter\Adapter
+     */
+    protected $adapter;
+
     /**
      * Container instance.
      *
@@ -111,14 +119,16 @@ class Route
     /**
      * Create a new route instance.
      *
-     * @param \Illuminate\Container\Container $container
-     * @param array|\Illuminate\Routing\Route $route
-     * @param \Dingo\Api\Http\Request         $request
+     * @param \Dingo\Api\Routing\Adapter\Adapter $adapter
+     * @param \Illuminate\Container\Container    $container
+     * @param array|\Illuminate\Routing\Route    $route
+     * @param \Dingo\Api\Http\Request            $request
      *
      * @return void
      */
-    public function __construct(Container $container, $route, Request $request)
+    public function __construct(Adapter $adapter, Container $container, $route, Request $request)
     {
+        $this->adapter = $adapter;
         $this->container = $container;
 
         $this->setupRoute($route, $request);
@@ -127,18 +137,14 @@ class Route
     /**
      * Create the route from the existing route and request instance.
      *
-     * @param array|\Illuminate\Routing\Route $route
-     * @param \Dingo\Api\Http\Request         $request
+     * @param mixed                   $route
+     * @param \Dingo\Api\Http\Request $request
      *
      * @return void
      */
     protected function setupRoute($route, Request $request)
     {
-        if ($route instanceof IlluminateRoute) {
-            $this->setupFromLaravelRoute($route, $request);
-        } else {
-            $this->setupFromLumenRoute($route, $request);
-        }
+        list($this->uri, $this->methods, $this->action) = $this->adapter->getRouteProperties($route, $request);
 
         $this->makeController();
 
@@ -324,40 +330,6 @@ class Route
 
             $this->controller = $this->container->make($controller);
             $this->method = $method;
-        }
-    }
-
-    /**
-     * Setup a new route from a Laravel route.
-     *
-     * @param \Illuminate\Routing\Route $route
-     * @param \Dingo\Api\Http\Request   $request
-     *
-     * @return void
-     */
-    protected function setupFromLaravelRoute(IlluminateRoute $route, Request $request)
-    {
-        $this->uri = $route->getUri();
-        $this->methods = $route->getMethods();
-        $this->action = $route->getAction();
-    }
-
-    /**
-     * Setup a new route from a Lumen route.
-     *
-     * @param array                   $route
-     * @param \Dingo\Api\Http\Request $request
-     *
-     * @return void
-     */
-    protected function setupFromLumenRoute(array $route, Request $request)
-    {
-        $this->uri = ltrim($request->getRequestUri(), '/');
-        $this->methods = (array) $request->getMethod();
-        $this->action = $route[1];
-
-        if ($request->getMethod() === 'GET') {
-            $this->methods[] = 'HEAD';
         }
     }
 
