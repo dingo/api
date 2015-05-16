@@ -4,22 +4,22 @@ namespace Dingo\Api\Tests\Transformer;
 
 use Mockery;
 use PHPUnit_Framework_TestCase;
+use Dingo\Api\Transformer\Factory;
 use Illuminate\Support\Collection;
 use Illuminate\Container\Container;
 use Dingo\Api\Tests\Stubs\UserStub;
 use Dingo\Api\Tests\Stubs\TransformerStub;
 use Dingo\Api\Tests\Stubs\UserContractStub;
-use Dingo\Api\Transformer\TransformerFactory;
 use Dingo\Api\Tests\Stubs\UserTransformerStub;
 
-class TransformerFactoryTest extends PHPUnit_Framework_TestCase
+class FactoryTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
         $container = new Container;
-        $container['request'] = Mockery::mock('Illuminate\Http\Request');
+        $container['request'] = Mockery::mock('Dingo\Api\Http\Request');
 
-        $this->factory = new TransformerFactory($container, new TransformerStub);
+        $this->factory = new Factory($container, new TransformerStub);
     }
 
     public function tearDown()
@@ -59,13 +59,6 @@ class TransformerFactoryTest extends PHPUnit_Framework_TestCase
         $response = $this->factory->transform(new Collection([new UserStub, new UserStub]));
 
         $this->assertEquals([['name' => 'Jason'], ['name' => 'Jason']], $response);
-    }
-
-    public function testTransformingResponseBoundByContract()
-    {
-        $response = $this->factory->transform(new UserContractStub);
-
-        $this->assertEquals(['name' => 'Jason'], $response);
     }
 
     /**
