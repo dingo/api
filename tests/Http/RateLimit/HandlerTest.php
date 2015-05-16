@@ -2,21 +2,22 @@
 
 namespace Dingo\Api\Tests\Http\RateLimit;
 
-use Illuminate\Http\Request;
+use Dingo\Api\Http\Request;
 use PHPUnit_Framework_TestCase;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Container\Container;
+use Dingo\Api\Http\RateLimit\Handler;
 use Dingo\Api\Tests\Stubs\ThrottleStub;
-use Dingo\Api\Http\RateLimit\RateLimiter;
 
-class RateLimiterTest extends PHPUnit_Framework_TestCase
+class HandlerTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
         $this->container = new Container;
-        $this->container['config'] = ['cache.driver' => 'array'];
+        $this->container['config'] = ['cache.default' => 'array', 'cache.stores.array' => ['driver' => 'array']];
+
         $this->cache = new CacheManager($this->container);
-        $this->limiter = new RateLimiter($this->container, $this->cache, []);
+        $this->limiter = new Handler($this->container, $this->cache, []);
 
         $this->limiter->setRateLimiter(function ($container, $request) {
             return $request->getClientIp();
@@ -29,7 +30,7 @@ class RateLimiterTest extends PHPUnit_Framework_TestCase
 
         $throttle = $this->limiter->getThrottle();
 
-        $this->assertInstanceOf('Dingo\Api\Http\RateLimit\RouteSpecificThrottle', $throttle);
+        $this->assertInstanceOf('Dingo\Api\Http\RateLimit\Throttle\Route', $throttle);
         $this->assertSame(['limit' => 100, 'expires' => 100], $throttle->getOptions());
     }
 

@@ -3,7 +3,7 @@
 namespace Dingo\Api\Tests\Stubs;
 
 use Illuminate\Container\Container;
-use Dingo\Api\Http\RateLimit\Throttle;
+use Dingo\Api\Http\RateLimit\Throttle\Throttle;
 
 class ThrottleStub extends Throttle
 {
