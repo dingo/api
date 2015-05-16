@@ -63,7 +63,7 @@ class Accept implements Parser
 
         if (! preg_match($pattern, $request->header('accept'), $matches)) {
             if ($strict) {
-                throw new BadRequestHttpException('Accept header could not be properly parsed because a strict matching process.');
+                throw new BadRequestHttpException('Accept header could not be properly parsed because of a strict matching process.');
             }
 
             preg_match($pattern, $default, $matches);
