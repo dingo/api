@@ -321,7 +321,7 @@ class Route
      */
     protected function makeController()
     {
-        if (! is_string($this->action['uses'])) {
+        if (! isset($this->action['uses']) || ! is_string($this->action['uses'])) {
             return;
         }
 
