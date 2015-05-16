@@ -114,7 +114,7 @@ class Route
      *
      * @var bool
      */
-    protected $conditonalRequest = true;
+    protected $conditionalRequest = true;
 
     /**
      * Create a new route instance.
@@ -155,6 +155,7 @@ class Route
         $this->setupThrottle();
 
         $this->versions = array_pull($this->action, 'version');
+        $this->conditionalRequest = array_pull($this->action, 'conditional_request', true);
     }
 
     /**
@@ -194,7 +195,7 @@ class Route
      */
     protected function setupAuthProviders()
     {
-        $this->authProviders = array_pull($this->action, 'scopes', []);
+        $this->authProviders = array_pull($this->action, 'providers', []);
 
         $this->findControllerOptions('providers', function ($value) {
             $this->authProviders = array_merge($this->authProviders, $value['providers']);
@@ -408,7 +409,7 @@ class Route
      *
      * @return int
      */
-    public function getLimitExpiration()
+    public function getRateExpiration()
     {
         return $this->rateExpiration;
     }
@@ -420,6 +421,6 @@ class Route
      */
     public function requestIsConditional()
     {
-        return $this->conditonalRequest === true;
+        return $this->conditionalRequest === true;
     }
 }
