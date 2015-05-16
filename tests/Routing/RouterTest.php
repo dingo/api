@@ -107,6 +107,22 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
         $request = $this->createRequest('baz', 'GET', ['accept' => 'application/vnd.api.v1+json']);
         $this->router->dispatch($request);
+
+        $this->router->version('v2', ['providers' => 'foo', 'throttle' => 'Bar'], function () {
+            $this->router->get('foo', 'Dingo\Api\Tests\Stubs\RoutingControllerStub@index');
+        });
+
+        $request = $this->createRequest('foo', 'GET', ['accept' => 'application/vnd.api.v2+json']);
+        $this->router->dispatch($request);
+
+        $route = $this->router->getCurrentRoute();
+
+        $this->assertEquals(['baz', 'bing'], $route->scopes());
+        $this->assertEquals(['foo', 'red', 'black'], $route->getAuthProviders());
+        $this->assertTrue($route->isProtected());
+        $this->assertEquals(10, $route->getRateLimit());
+        $this->assertEquals(20, $route->getRateExpiration());
+        $this->assertEquals('Zippy', $route->getThrottle());
     }
 
     /**
@@ -133,7 +149,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         });
 
         $request = $this->createRequest('foo/bar/foo', 'GET', ['accept' => 'application/vnd.api.v2+json']);
-        $this->assertEquals('bar', $this->router->dispatch($request)->getContent());
+        $this->assertEquals('bar', $this->router->dispatch($request)->getContent(), 'Router could not dispatch prefixed routes.');
     }
 
     public function testRoutesWithDomains()
@@ -151,7 +167,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         });
 
         $request = $this->createRequest('http://foo.bar/foo', 'GET', ['accept' => 'application/vnd.api.v2+json']);
-        $this->assertEquals('bar', $this->router->dispatch($request)->getContent());
+        $this->assertEquals('bar', $this->router->dispatch($request)->getContent(), 'Router could not dispatch domain routes.');
     }
 
     public function testRouterPreparesNotModifiedResponse()
@@ -259,7 +275,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
         $request = $this->createRequest('foo', 'GET', ['accept' => 'application/vnd.api.v1+json']);
 
-        $this->assertEquals('exception', $this->router->dispatch($request)->getContent());
+        $this->assertEquals('exception', $this->router->dispatch($request)->getContent(), 'Router did not delegate exception handling.');
     }
 
     public function testPointReleaseVersions()
@@ -277,10 +293,10 @@ class RouterTest extends PHPUnit_Framework_TestCase
         });
 
         $request = $this->createRequest('foo', 'GET', ['accept' => 'application/vnd.api.v1.1+json']);
-        $this->assertEquals('foo', $this->router->dispatch($request)->getContent());
+        $this->assertEquals('foo', $this->router->dispatch($request)->getContent(), 'Router does not support point release versions.');
 
         $request = $this->createRequest('bar', 'GET', ['accept' => 'application/vnd.api.v2.0.1+json']);
-        $this->assertEquals('bar', $this->router->dispatch($request)->getContent());
+        $this->assertEquals('bar', $this->router->dispatch($request)->getContent(), 'Router does not support point release versions.');
     }
 
     public function testNoAcceptHeaderUsesDefaultVersion()
@@ -291,7 +307,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
             });
         });
 
-        $this->assertEquals('foo', $this->router->dispatch($this->createRequest('foo', 'GET'))->getContent());
+        $this->assertEquals('foo', $this->router->dispatch($this->createRequest('foo', 'GET'))->getContent(), 'Router does not default to default version.');
     }
 
     public function testRoutesAddedToCorrectVersions()
@@ -308,6 +324,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
             });
         });
 
-        $this->assertCount(1, $this->router->getRoutes()['v1']);
+        $this->assertCount(1, $this->router->getRoutes()['v1'], 'Routes were not added to the correct versions.');
     }
 }

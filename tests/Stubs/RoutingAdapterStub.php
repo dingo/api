@@ -29,7 +29,17 @@ class RoutingAdapterStub implements Adapter
             return $route;
         });
 
-        return $this->prepare(call_user_func($this->findRouteClosure($route['action'])));
+        if (isset($route['action']['uses'])) {
+            list($controller, $method) = explode('@', $route['action']['uses']);
+
+            $controller = new $controller;
+
+            $response = $controller->$method();
+        } else {
+            $response = call_user_func($this->findRouteClosure($route['action']));
+        }
+
+        return $this->prepare($response);
     }
 
     protected function findRouteClosure(array $action)
