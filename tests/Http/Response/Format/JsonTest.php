@@ -1,20 +1,20 @@
 <?php
 
-namespace Dingo\Api\Tests\Http\ResponseFormat;
+namespace Dingo\Api\Tests\Http\Response\Format;
 
 use Mockery;
 use Dingo\Api\Http\Response;
 use PHPUnit_Framework_TestCase;
 use Illuminate\Support\MessageBag;
+use Dingo\Api\Http\Response\Format\Json;
 use Dingo\Api\Tests\Stubs\EloquentModelStub;
 use Illuminate\Database\Eloquent\Collection;
-use Dingo\Api\Http\ResponseFormat\JsonResponseFormat;
 
-class JsonResponseFormatTest extends PHPUnit_Framework_TestCase
+class JsonTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        Response::setFormatters(['json' => new JsonResponseFormat]);
+        Response::setFormatters(['json' => new Json]);
     }
 
     public function tearDown()
@@ -30,14 +30,14 @@ class JsonResponseFormatTest extends PHPUnit_Framework_TestCase
     {
         $response = (new Response(new EloquentModelStub))->morph();
 
-        $this->assertEquals('{"app_user":{"foo":"bar"}}', $response->getContent());
+        $this->assertEquals('{"foo_bar":{"foo":"bar"}}', $response->getContent());
     }
 
     public function testMorphingEloquentCollection()
     {
         $response = (new Response(new Collection([new EloquentModelStub, new EloquentModelStub])))->morph();
 
-        $this->assertEquals('{"app_users":[{"foo":"bar"},{"foo":"bar"}]}', $response->getContent());
+        $this->assertEquals('{"foo_bars":[{"foo":"bar"},{"foo":"bar"}]}', $response->getContent());
     }
 
     public function testMorphingEmptyEloquentCollection()
@@ -74,7 +74,7 @@ class JsonResponseFormatTest extends PHPUnit_Framework_TestCase
 
         $response = (new Response(new EloquentModelStub))->morph();
 
-        $this->assertEquals('{"appUser":{"foo":"bar"}}', $response->getContent());
+        $this->assertEquals('{"fooBar":{"foo":"bar"}}', $response->getContent());
     }
 
     public function testMorphingEloquentCollectionWithCamelCasing()
@@ -83,6 +83,6 @@ class JsonResponseFormatTest extends PHPUnit_Framework_TestCase
 
         $response = (new Response(new Collection([new EloquentModelStub, new EloquentModelStub])))->morph();
 
-        $this->assertEquals('{"appUsers":[{"foo":"bar"},{"foo":"bar"}]}', $response->getContent());
+        $this->assertEquals('{"fooBars":[{"foo":"bar"},{"foo":"bar"}]}', $response->getContent());
     }
 }
