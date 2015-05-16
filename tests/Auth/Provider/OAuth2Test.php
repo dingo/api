@@ -1,24 +1,24 @@
 <?php
 
-namespace Dingo\Api\Tests\Auth;
+namespace Dingo\Api\Tests\Auth\Provider;
 
-use Mockery;
+use Mockery as m;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
 use PHPUnit_Framework_TestCase;
-use Dingo\Api\Auth\LeagueOAuth2Provider;
+use Dingo\Api\Auth\Provider\OAuth2;
 
-class LeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase
+class OAuth2Test extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->server = Mockery::mock('League\OAuth2\Server\ResourceServer');
-        $this->provider = new LeagueOAuth2Provider($this->server, false);
+        $this->server = m::mock('League\OAuth2\Server\ResourceServer');
+        $this->provider = new OAuth2($this->server, false);
     }
 
     public function tearDown()
     {
-        Mockery::close();
+        m::close();
     }
 
     /**
@@ -30,12 +30,15 @@ class LeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase
 
         $this->server->shouldReceive('isValidRequest')->once()->andReturn(true);
 
-        $token = Mockery::mock('League\OAuth2\Server\Entity\AccessTokenEntity');
+        $token = m::mock('League\OAuth2\Server\Entity\AccessTokenEntity');
         $token->shouldReceive('hasScope')->once()->with('foo')->andReturn(false);
 
         $this->server->shouldReceive('getAccessToken')->once()->andReturn($token);
 
-        $this->provider->authenticate($request, new Route('GET', '/', ['scopes' => 'foo']));
+        $route = m::mock('Dingo\Api\Routing\Route');
+        $route->shouldReceive('scopes')->once()->andReturn(['foo']);
+
+        $this->provider->authenticate($request, $route);
     }
 
     public function testOnlyOneScopeRequiredToValidateCorrectly()
@@ -44,11 +47,11 @@ class LeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase
 
         $this->server->shouldReceive('isValidRequest')->once()->andReturn(true);
 
-        $token = Mockery::mock('League\OAuth2\Server\Entity\AccessTokenEntity');
+        $token = m::mock('League\OAuth2\Server\Entity\AccessTokenEntity');
         $token->shouldReceive('hasScope')->once()->with('foo')->andReturn(true);
         $this->server->shouldReceive('getAccessToken')->once()->andReturn($token);
 
-        $session = Mockery::mock('League\OAuth2\Server\Entity\SessionEntity');
+        $session = m::mock('League\OAuth2\Server\Entity\SessionEntity');
         $token->shouldReceive('getSession')->once()->andReturn($session);
 
         $session->shouldReceive('getOwnerType')->once()->andReturn('client');
@@ -56,7 +59,10 @@ class LeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase
 
         $this->provider->setClientResolver(function ($id) {});
 
-        $this->assertNull($this->provider->authenticate($request, new Route('GET', '/', ['scopes' => 'foo|bar'])));
+        $route = m::mock('Dingo\Api\Routing\Route');
+        $route->shouldReceive('scopes')->once()->andReturn(['foo', 'bar']);
+
+        $this->assertNull($this->provider->authenticate($request, $route));
     }
 
     public function testClientIsResolved()
@@ -65,10 +71,10 @@ class LeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase
 
         $this->server->shouldReceive('isValidRequest')->once()->andReturn(true);
 
-        $token = Mockery::mock('League\OAuth2\Server\Entity\AccessTokenEntity');
+        $token = m::mock('League\OAuth2\Server\Entity\AccessTokenEntity');
         $this->server->shouldReceive('getAccessToken')->once()->andReturn($token);
 
-        $session = Mockery::mock('League\OAuth2\Server\Entity\SessionEntity');
+        $session = m::mock('League\OAuth2\Server\Entity\SessionEntity');
         $token->shouldReceive('getSession')->once()->andReturn($session);
 
         $session->shouldReceive('getOwnerType')->once()->andReturn('client');
@@ -78,7 +84,10 @@ class LeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase
             return 'foo';
         });
 
-        $this->assertEquals('foo', $this->provider->authenticate($request, new Route('GET', '/', [])));
+        $route = m::mock('Dingo\Api\Routing\Route');
+        $route->shouldReceive('scopes')->once()->andReturn([]);
+
+        $this->assertEquals('foo', $this->provider->authenticate($request, $route));
     }
 
     public function testUserIsResolved()
@@ -87,10 +96,10 @@ class LeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase
 
         $this->server->shouldReceive('isValidRequest')->once()->andReturn(true);
 
-        $token = Mockery::mock('League\OAuth2\Server\Entity\AccessTokenEntity');
+        $token = m::mock('League\OAuth2\Server\Entity\AccessTokenEntity');
         $this->server->shouldReceive('getAccessToken')->once()->andReturn($token);
 
-        $session = Mockery::mock('League\OAuth2\Server\Entity\SessionEntity');
+        $session = m::mock('League\OAuth2\Server\Entity\SessionEntity');
         $token->shouldReceive('getSession')->once()->andReturn($session);
 
         $session->shouldReceive('getOwnerType')->once()->andReturn('user');
@@ -100,6 +109,9 @@ class LeagueOAuth2ProviderTest extends PHPUnit_Framework_TestCase
             return 'foo';
         });
 
-        $this->assertEquals('foo', $this->provider->authenticate($request, new Route('GET', '/', [])));
+        $route = m::mock('Dingo\Api\Routing\Route');
+        $route->shouldReceive('scopes')->once()->andReturn([]);
+
+        $this->assertEquals('foo', $this->provider->authenticate($request, $route));
     }
 }

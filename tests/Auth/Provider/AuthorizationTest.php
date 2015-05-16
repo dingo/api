@@ -1,14 +1,19 @@
 <?php
 
-namespace Dingo\Api\Tests\Auth;
+namespace Dingo\Api\Tests\Auth\Provider;
 
+use Mockery as m;
 use Illuminate\Http\Request;
-use Dingo\Api\Routing\Route;
 use PHPUnit_Framework_TestCase;
 use Dingo\Api\Tests\Stubs\AuthorizationProviderStub;
 
-class AuthorizationProviderTest extends PHPUnit_Framework_TestCase
+class AuthorizationTest extends PHPUnit_Framework_TestCase
 {
+    public function tearDown()
+    {
+        m::close();
+    }
+
     /**
      * @expectedException \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
      */
@@ -16,6 +21,6 @@ class AuthorizationProviderTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('GET', '/');
 
-        (new AuthorizationProviderStub)->authenticate($request, new Route('GET', '/', []));
+        (new AuthorizationProviderStub)->authenticate($request, m::mock('Dingo\Api\Routing\Route'));
     }
 }

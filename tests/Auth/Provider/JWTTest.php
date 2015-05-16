@@ -1,25 +1,24 @@
 <?php
 
-namespace Dingo\Api\Tests\Auth;
+namespace Dingo\Api\Tests\Auth\Provider;
 
-use Mockery;
+use Mockery as m;
 use Illuminate\Http\Request;
-use Dingo\Api\Routing\Route;
-use Dingo\Api\Auth\JWTProvider;
-use Tymon\JWTAuth\Exceptions\JWTAuthException;
 use PHPUnit_Framework_TestCase;
+use Dingo\Api\Auth\Provider\JWT;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
-class JWTProviderTest extends PHPUnit_Framework_TestCase
+class JWTTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->auth = Mockery::mock('Tymon\JWTAuth\JWTAuth');
-        $this->provider = new JWTProvider($this->auth);
+        $this->auth = m::mock('Tymon\JWTAuth\JWTAuth');
+        $this->provider = new JWT($this->auth);
     }
 
     public function tearDown()
     {
-        Mockery::close();
+        m::close();
     }
 
     /**
@@ -28,7 +27,7 @@ class JWTProviderTest extends PHPUnit_Framework_TestCase
     public function testValidatingAuthorizationHeaderFailsAndThrowsException()
     {
         $request = Request::create('foo', 'GET');
-        $this->provider->authenticate($request, new Route('/foo', 'GET', []));
+        $this->provider->authenticate($request, m::mock('Dingo\Api\Routing\Route'));
     }
 
     /**
@@ -39,9 +38,9 @@ class JWTProviderTest extends PHPUnit_Framework_TestCase
         $request = Request::create('foo', 'GET');
         $request->headers->set('authorization', 'Bearer foo');
 
-        $this->auth->shouldReceive('login')->with('foo')->andThrow(new JWTAuthException('foo'));
+        $this->auth->shouldReceive('login')->with('foo')->andThrow(new JWTException('foo'));
 
-        $this->provider->authenticate($request, new Route('/foo', 'GET', []));
+        $this->provider->authenticate($request, m::mock('Dingo\Api\Routing\Route'));
     }
 
     public function testAuthenticatingSucceedsAndReturnsUserObject()
@@ -51,7 +50,7 @@ class JWTProviderTest extends PHPUnit_Framework_TestCase
 
         $this->auth->shouldReceive('login')->with('foo')->andReturn((object) ['id' => 1]);
 
-        $this->assertEquals(1, $this->provider->authenticate($request, new Route('/foo', 'GET', []))->id);
+        $this->assertEquals(1, $this->provider->authenticate($request, m::mock('Dingo\Api\Routing\Route'))->id);
     }
 
     public function testAuthenticatingWithQueryStringSucceedsAndReturnsUserObject()
@@ -60,6 +59,6 @@ class JWTProviderTest extends PHPUnit_Framework_TestCase
 
         $this->auth->shouldReceive('login')->with('foo')->andReturn((object) ['id' => 1]);
 
-        $this->assertEquals(1, $this->provider->authenticate($request, new Route('/foo', 'GET', []))->id);
+        $this->assertEquals(1, $this->provider->authenticate($request, m::mock('Dingo\Api\Routing\Route'))->id);
     }
 }
