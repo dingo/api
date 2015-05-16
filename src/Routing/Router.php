@@ -409,13 +409,9 @@ class Router
 
         $new['prefix'] = $this->formatPrefix($new, $old);
 
-        $new['before'] = $this->formatBefore($new, $old);
-
-        $new['after'] = $this->formatAfter($new, $old);
-
-        $new['middleware'] = $this->formatMiddleware($new, $old);
-
-        $new['scopes'] = $this->formatScopes($new, $old);
+        foreach (['middleware', 'providers', 'scopes', 'before', 'after'] as $option) {
+            $new[$option] = $this->formatArrayBasedOption($option, $new);
+        }
 
         if (isset($new['domain'])) {
             unset($old['domain']);
@@ -435,73 +431,22 @@ class Router
 
         $new['where'] = array_merge(array_get($old, 'where', []), array_get($new, 'where', []));
 
-        return array_merge_recursive(array_except($old, ['namespace', 'prefix', 'where', 'scopes', 'before', 'after']), $new);
+        return array_merge_recursive(array_except($old, ['namespace', 'prefix', 'where']), $new);
     }
 
     /**
-     * Format the middleware in a route action.
+     * Format an array based option in a route action.
      *
-     * @param array $new
-     *
-     * @return array
-     */
-    protected function formatMiddleware(array $new)
-    {
-        $middleware = array_get($new, 'middleware', []);
-
-        return is_string($middleware) ? explode('|', $middleware) : $middleware;
-    }
-
-    /**
-     * Format the before filters in a route action.
-     *
-     * @param array $new
-     * @param array $old
-     *
-     * @return array
-     */
-    protected function formatBefore(array $new, array $old)
-    {
-        return $this->formatBeforeOrAfter('before', $new, $old);
-    }
-
-    /**
-     * Format the after filters in a route action.
-     *
-     * @param array $new
-     * @param array $old
-     *
-     * @return array
-     */
-    protected function formatAfter(array $new, array $old)
-    {
-        return $this->formatBeforeOrAfter('after', $new, $old);
-    }
-
-    /**
-     * Format the before or after filters in a route action.
-     *
-     * @param string $filter
+     * @param string $option
      * @param array  $new
-     * @param array  $old
      *
      * @return array
      */
-    protected function formatBeforeOrAfter($filter, array $new, array $old)
+    protected function formatArrayBasedOption($option, array $new)
     {
-        $newFilters = array_get($new, $filter, []);
+        $value = array_get($new, $option, []);
 
-        if (is_string($newFilters)) {
-            $newFilters = explode('|', $newFilters);
-        }
-
-        $oldFilters = array_get($old, $filter, []);
-
-        if (is_string($oldFilters)) {
-            $oldFilters = explode('|', $oldFilters);
-        }
-
-        return array_merge($oldFilters, $newFilters);
+        return is_string($value) ? explode('|', $value) : $value;
     }
 
     /**
@@ -518,37 +463,6 @@ class Router
         }
 
         return $new['uses'];
-    }
-
-    /**
-     * Format the scopes in a route action.
-     *
-     * @param array $new
-     * @param array $old
-     *
-     * @return array
-     */
-    protected function formatScopes(array $new, array $old)
-    {
-        $scopes = [];
-
-        if (isset($new['scopes']) && isset($old['scopes'])) {
-            $scopes = array_merge((array) $old['scopes'], (array) $new['scopes']);
-        } elseif (isset($new['scopes'])) {
-            $scopes = (array) $new['scopes'];
-        } elseif (isset($old['scopes'])) {
-            $scopes = (array) $old['scopes'];
-        }
-
-        foreach ($scopes as $key => $scope) {
-            if (! is_array($scope) && str_contains($scope, '|')) {
-                unset($scopes[$key]);
-
-                $scopes = array_merge($scopes, explode('|', $scope));
-            }
-        }
-
-        return $scopes;
     }
 
     /**
