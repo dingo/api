@@ -137,10 +137,36 @@ class Route
         $this->setupScopes();
         $this->setupProtection();
         $this->setupAuthProviders();
+        $this->setupRateLimiting();
 
         $this->versions = array_pull($this->action, 'version');
-        $this->rateLimit = array_pull($this->action, 'limit', 0);
-        $this->rateExpiration = array_pull($this->action, 'expires', 0);
+    }
+
+    /**
+     * Setup the route rate limiting by merging the controller rate limiting.
+     *
+     * @return void
+     */
+    protected function setupRateLimiting()
+    {
+        $rateLimit = array_pull($this->action, 'limit', 0);
+        $rateExpiration = array_pull($this->action, 'expires', 0);
+
+        if ($this->usesController()) {
+            $properties = $this->getControllerProperties();
+
+            foreach ($properties['rateLimit'] as $value) {
+                if ($this->optionsApplyToControllerMethod($value['options'])) {
+                    $rateLimit = $value['limit'];
+                    $rateExpiration = $value['expires'];
+
+                    break;
+                }
+            }
+        }
+
+        $this->rateLimit = $rateLimit;
+        $this->rateExpiration = $rateExpiration;
     }
 
     /**

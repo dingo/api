@@ -15,8 +15,23 @@ trait Helpers
         'scopes' => [],
         'protected' => [],
         'unprotected' => [],
-        'providers' => []
+        'providers' => [],
+        'rateLimit' => []
     ];
+
+    /**
+     * Rate limit controller methods.
+     *
+     * @param int   $limit
+     * @param int   $expires
+     * @param array $options
+     *
+     * @return void
+     */
+    protected function rateLimit($limit, $expires, array $options = [])
+    {
+        $this->methodProperties['rateLimit'][] = compact('limit', 'expires', 'options');
+    }
 
     /**
      * Protect controller methods.
@@ -53,6 +68,14 @@ trait Helpers
         $this->methodProperties['scopes'][] = compact('scopes', 'options');
     }
 
+    /**
+     * Authenticate with certain providers on controller methods.
+     *
+     * @param string|array $providers
+     * @param array        $options
+     *
+     * @return void
+     */
     protected function authenticateWith($providers, array $options = [])
     {
         $providers = $this->propertyValue($providers);
