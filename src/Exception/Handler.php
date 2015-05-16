@@ -120,7 +120,7 @@ class Handler implements ExceptionHandler
 
             if ($response = $handler($exception)) {
                 if (! $response instanceof Response) {
-                    $response = $this->newResponse($response, $this->getExceptionStatusCode($exception));
+                    $response = new Response($response, $this->getExceptionStatusCode($exception));
                 }
 
                 return $response;

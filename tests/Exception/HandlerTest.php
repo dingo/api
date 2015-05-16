@@ -11,24 +11,19 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->exceptionHandler = new Handler;
+        $this->exceptionHandler = new Handler([
+            'message' => ':message',
+            'errors' => ':errors',
+            'code' => ':code',
+            'status_code' => ':status_code',
+            'debug' => ':debug'
+        ], false);
     }
 
     public function testRegisterExceptionHandler()
     {
         $this->exceptionHandler->register(function (HttpException $e) {});
         $this->assertArrayHasKey('Symfony\Component\HttpKernel\Exception\HttpException', $this->exceptionHandler->getHandlers());
-    }
-
-    public function testExceptionHandlerWillHandleExceptionPasses()
-    {
-        $this->exceptionHandler->register(function (HttpException $e) {});
-        $this->assertTrue($this->exceptionHandler->willHandle(new HttpException(404)));
-    }
-
-    public function testExceptionHandlerWillHandleExceptionFails()
-    {
-        $this->assertFalse($this->exceptionHandler->willHandle(new HttpException(404)));
     }
 
     public function testExceptionHandlerHandlesException()
@@ -56,8 +51,12 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testExceptionHandlerReturnsNullWhenNoMatchingHandler()
+    public function testExceptionHandlerReturnsGenericWhenNoMatchingHandler()
     {
-        $this->assertNull($this->exceptionHandler->handle(new HttpException(404, 'bar')));
+        $response = $this->exceptionHandler->handle(new HttpException(404, 'bar'));
+
+        $this->assertInstanceOf('Illuminate\Http\Response', $response);
+        $this->assertEquals('{"message":"bar","status_code":404}', $response->getContent());
+        $this->assertEquals(404, $response->getStatusCode());
     }
 }
