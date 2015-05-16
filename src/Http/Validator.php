@@ -39,6 +39,42 @@ class Validator
     }
 
     /**
+     * Replace the validators.
+     *
+     * @param array $validators
+     *
+     * @return void
+     */
+    public function replace(array $validators)
+    {
+        $this->validators = $validators;
+    }
+
+    /**
+     * Merge an array of validators.
+     *
+     * @param array $validators
+     *
+     * @return void
+     */
+    public function merge(array $validators)
+    {
+        $this->validators = array_merge($this->validators, $validators);
+    }
+
+    /**
+     * Extend the validators.
+     *
+     * @param string|\Dingo\Api\Http\Validation\Validator
+     *
+     * @return void
+     */
+    public function extend($validator)
+    {
+        $this->validators[] = $validator;
+    }
+
+    /**
      * Validate a request.
      *
      * @param \Illuminate\Http\Request $request
