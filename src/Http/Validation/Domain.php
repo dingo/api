@@ -34,6 +34,22 @@ class Domain implements Validator
      */
     public function validate(Request $request)
     {
-        return ! is_null($this->domain) && $request->header('host') == $this->domain;
+        return ! is_null($this->domain) && $request->header('host') == $this->stripProtocol($this->domain);
+    }
+
+    /**
+     * Strip the protocol from a domain.
+     *
+     * @param string $domain
+     *
+     * @return string
+     */
+    protected function stripProtocol($domain)
+    {
+        if (str_contains($domain, '://')) {
+            $domain = substr($domain, strpos($domain, '://') + 3);
+        }
+
+        return $domain;
     }
 }
