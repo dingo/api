@@ -1,20 +1,20 @@
 <?php
 
-namespace Dingo\Api\Tests\Http;
+namespace Dingo\Api\Tests\Http\Response;
 
 use Mockery;
 use PHPUnit_Framework_TestCase;
 use Illuminate\Support\Collection;
-use Dingo\Api\Http\ResponseFactory;
 use Dingo\Api\Tests\Stubs\UserStub;
+use Dingo\Api\Http\Response\Factory;
 use Illuminate\Pagination\Paginator;
 
-class ResponseFactoryTest extends PHPUnit_Framework_TestCase
+class FactoryTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->transformer = Mockery::mock('Dingo\Api\Transformer\TransformerFactory');
-        $this->factory = new ResponseFactory($this->transformer);
+        $this->transformer = Mockery::mock('Dingo\Api\Transformer\Factory');
+        $this->factory = new Factory($this->transformer);
     }
 
     public function tearDown()
@@ -24,8 +24,8 @@ class ResponseFactoryTest extends PHPUnit_Framework_TestCase
 
     public function testMakingACreatedResponse()
     {
-        $response = $this->factory->created()->build();
-        $responseWithLocation = $this->factory->created('test')->build();
+        $response = $this->factory->created();
+        $responseWithLocation = $this->factory->created('test');
 
         $this->assertEquals($response->getStatusCode(), 201);
         $this->assertFalse($response->headers->has('Location'));
@@ -37,7 +37,7 @@ class ResponseFactoryTest extends PHPUnit_Framework_TestCase
 
     public function testMakingANoContentResponse()
     {
-        $response = $this->factory->noContent()->build();
+        $response = $this->factory->noContent();
         $this->assertEquals(204, $response->getStatusCode());
         $this->assertEquals('', $response->getContent());
     }
@@ -62,54 +62,54 @@ class ResponseFactoryTest extends PHPUnit_Framework_TestCase
     {
         $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], null);
 
-        $this->factory->paginator(new Paginator(Mockery::mock('Illuminate\Pagination\Factory'), [new UserStub], 1), 'test');
-        $this->factory->withPaginator(new Paginator(Mockery::mock('Illuminate\Pagination\Factory'), [new UserStub], 1), 'test');
+        $this->factory->paginator(new Paginator([new UserStub], 1), 'test');
+        $this->factory->withPaginator(new Paginator([new UserStub], 1), 'test');
     }
 
     public function testMakingErrorNotFoundResponse()
     {
-        $response = $this->factory->errorNotFound()->build();
+        $response = $this->factory->errorNotFound();
         $this->assertEquals($response->getStatusCode(), 404);
         $this->assertEquals($response->getContent(), '{"status_code":404,"message":"Not Found"}');
     }
 
     public function testMakingBadRequestResponse()
     {
-        $response = $this->factory->errorBadRequest()->build();
+        $response = $this->factory->errorBadRequest();
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('{"status_code":400,"message":"Bad Request"}', $response->getContent());
     }
 
     public function testMakingForbiddenResponse()
     {
-        $response = $this->factory->errorForbidden()->build();
+        $response = $this->factory->errorForbidden();
         $this->assertEquals(403, $response->getStatusCode());
         $this->assertEquals('{"status_code":403,"message":"Forbidden"}', $response->getContent());
     }
 
     public function testMakingInternalErrorResponse()
     {
-        $response = $this->factory->errorInternal()->build();
+        $response = $this->factory->errorInternal();
         $this->assertEquals(500, $response->getStatusCode());
         $this->assertEquals('{"status_code":500,"message":"Internal Error"}', $response->getContent());
     }
 
     public function testMakingUnauthorizedErrorResponse()
     {
-        $response = $this->factory->errorUnauthorized()->build();
+        $response = $this->factory->errorUnauthorized();
         $this->assertEquals(401, $response->getStatusCode());
         $this->assertEquals('{"status_code":401,"message":"Unauthorized"}', $response->getContent());
     }
 
     public function testMakingArrayResponse()
     {
-        $response = $this->factory->array(['foo' => 'bar'])->build();
+        $response = $this->factory->array(['foo' => 'bar']);
         $this->assertEquals('{"foo":"bar"}', $response->getContent());
     }
 
     public function testPrefixingWithCallsMethodsCorrectly()
     {
-        $response = $this->factory->withArray(['foo' => 'bar'])->build();
+        $response = $this->factory->withArray(['foo' => 'bar']);
         $this->assertEquals('{"foo":"bar"}', $response->getContent());
     }
 }
