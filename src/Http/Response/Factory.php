@@ -59,7 +59,7 @@ class Factory
     {
         $response = new Response(null);
 
-        return $response->setStatusCode(204);;
+        return $response->setStatusCode(204);
     }
 
     /**

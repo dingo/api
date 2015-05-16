@@ -143,8 +143,9 @@ class Fractal implements Adapter
     {
         $includes = $request->get($this->includeKey);
 
-        if(!is_array($includes))
+        if (! is_array($includes)) {
             $includes = array_filter(explode($this->includeSeparator, $includes));
+        }
 
         $this->fractal->parseIncludes($includes);
     }

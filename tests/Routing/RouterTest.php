@@ -131,7 +131,9 @@ class RouterTest extends PHPUnit_Framework_TestCase
      */
     public function testNoGroupVersionThrowsException()
     {
-        $this->router->group([], function () {});
+        $this->router->group([], function () {
+            //
+        });
     }
 
     public function testRoutesWithPrefix()

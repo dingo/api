@@ -8,7 +8,6 @@ use Illuminate\Container\Container;
 use Dingo\Api\Routing\Adapter\Adapter;
 use Illuminate\Routing\Route as IlluminateRoute;
 
-
 class Route
 {
     /**
@@ -291,7 +290,7 @@ class Route
      */
     protected function optionsApplyToControllerMethod(array $options)
     {
-        if(empty($options)) {
+        if (empty($options)) {
             return true;
         } elseif (isset($options['only']) && in_array($this->method, $options['only'])) {
             return true;

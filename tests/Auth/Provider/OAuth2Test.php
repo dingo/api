@@ -57,7 +57,9 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
         $session->shouldReceive('getOwnerType')->once()->andReturn('client');
         $session->shouldReceive('getOwnerId')->once()->andReturn(1);
 
-        $this->provider->setClientResolver(function ($id) {});
+        $this->provider->setClientResolver(function ($id) {
+            //
+        });
 
         $route = m::mock('Dingo\Api\Routing\Route');
         $route->shouldReceive('scopes')->once()->andReturn(['foo', 'bar']);
