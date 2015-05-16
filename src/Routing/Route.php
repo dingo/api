@@ -80,6 +80,13 @@ class Route
     protected $rateExpiration;
 
     /**
+     * The throttle used by the route, takes precedence over rate limits.
+     *
+     * @return string|\Dingo\Api\Http\RateLimit\Throttle\Throttle
+     */
+    protected $throttle;
+
+    /**
      * Controller instance.
      *
      * @var object
@@ -138,8 +145,33 @@ class Route
         $this->setupProtection();
         $this->setupAuthProviders();
         $this->setupRateLimiting();
+        $this->setupThrottle();
 
         $this->versions = array_pull($this->action, 'version');
+    }
+
+    /**
+     * Setup the route throttle by replacing it with the controller throttle.
+     *
+     * @return void
+     */
+    protected function setupThrottle()
+    {
+        $throttle = array_pull($this->action, 'throttle');
+
+        if ($this->usesController()) {
+            $properties = $this->getControllerProperties();
+
+            foreach ($properties['throttles'] as $value) {
+                if ($this->optionsApplyToControllerMethod($value['options'])) {
+                    $throttle = $value['throttle'];
+
+                    break;
+                }
+            }
+        }
+
+        $this->throttle = $throttle;
     }
 
     /**
@@ -250,7 +282,10 @@ class Route
     {
         $method = $this->getControllerPropertiesMethodName();
 
-        return array_merge(['scope' => [], 'protected' => [], 'unprotected' => [], 'providers' => []], $this->controller->$method());
+        return array_merge(
+            ['scope' => [], 'protected' => [], 'unprotected' => [], 'providers' => [], 'rateLimit' => [], 'throttles' => []],
+            $this->controller->$method()
+        );
     }
 
     /**
@@ -347,6 +382,26 @@ class Route
         if ($request->getMethod() === 'GET') {
             $this->methods[] = 'HEAD';
         }
+    }
+
+    /**
+     * Determine if the route has a throttle.
+     *
+     * @return bool
+     */
+    public function hasThrottle()
+    {
+        return ! is_null($this->throttle);
+    }
+
+    /**
+     * Get the route throttle.
+     *
+     * @return string|\Dingo\Api\Http\RateLimit\Throttle\Throttle
+     */
+    public function getThrottle()
+    {
+        return $this->throttle;
     }
 
     /**

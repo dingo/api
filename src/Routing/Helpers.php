@@ -16,8 +16,22 @@ trait Helpers
         'protected' => [],
         'unprotected' => [],
         'providers' => [],
-        'rateLimit' => []
+        'rateLimit' => [],
+        'throttles' => []
     ];
+
+    /**
+     * Throttles for controller methods.
+     *
+     * @param string|\Dingo\Api\Http\RateLimit\Throttle\Throttle $throttle
+     * @param array                                              $options
+     *
+     * @return void
+     */
+    protected function throttle($throttle, array $options = [])
+    {
+        $this->methodProperties['throttles'][] = array_merge($this->methodProperties['throttles'], compact('throttle', 'options'));
+    }
 
     /**
      * Rate limit controller methods.

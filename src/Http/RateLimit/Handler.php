@@ -87,10 +87,14 @@ class Handler
     {
         $this->request = $request;
 
+        // If the throttle instance is already set then we'll just carry on as
+        // per usual.
+        if ($this->throttle instanceof Throttle\Throttle) {
+
         // If the developer specified a certain amount of requests or expiration
         // time on a specific route then we'll always use the route specific
         // throttle with the given values.
-        if ($limit > 0 || $expires > 0) {
+        } elseif ($limit > 0 || $expires > 0) {
             $this->throttle = new Throttle\Route(['limit' => $limit, 'expires' => $expires]);
 
             $this->keyPrefix = md5($request->path());
@@ -246,6 +250,22 @@ class Handler
     public function setRateLimiter(callable $limiter)
     {
         $this->limiter = $limiter;
+    }
+
+    /**
+     * Set the throttle to use for rate limiting.
+     *
+     * @param string|\Dingo\Api\Http\RateLimit\Throttle\Throttle
+     *
+     * @return void
+     */
+    public function setThrottle($throttle)
+    {
+        if (is_string($throttle)) {
+            $throttle = $this->container->make($throttle);
+        }
+
+        $this->throttle = $throttle;
     }
 
     /**

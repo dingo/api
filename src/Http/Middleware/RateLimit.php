@@ -53,6 +53,10 @@ class RateLimit
     {
         $route = $this->router->getCurrentRoute();
 
+        if ($route->hasThrottle()) {
+            $this->handler->setThrottle($route->getThrottle());
+        }
+
         $this->handler->rateLimitRequest($request, $route->getRateLimit(), $route->getLimitExpiration());
 
         if ($this->handler->exceededRateLimit()) {
