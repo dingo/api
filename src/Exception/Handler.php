@@ -56,7 +56,6 @@ class Handler implements ExceptionHandler
      */
     public function report(Exception $exception)
     {
-        dd($exception);
         //
     }
 
