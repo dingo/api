@@ -38,7 +38,8 @@ class JWTTest extends PHPUnit_Framework_TestCase
         $request = Request::create('foo', 'GET');
         $request->headers->set('authorization', 'Bearer foo');
 
-        $this->auth->shouldReceive('login')->with('foo')->andThrow(new JWTException('foo'));
+        $this->auth->shouldReceive('setToken')->with('foo')->andReturn(m::self());
+        $this->auth->shouldReceive('authenticate')->once()->andThrow(new JWTException('foo'));
 
         $this->provider->authenticate($request, m::mock('Dingo\Api\Routing\Route'));
     }
@@ -48,7 +49,8 @@ class JWTTest extends PHPUnit_Framework_TestCase
         $request = Request::create('foo', 'GET');
         $request->headers->set('authorization', 'Bearer foo');
 
-        $this->auth->shouldReceive('login')->with('foo')->andReturn((object) ['id' => 1]);
+        $this->auth->shouldReceive('setToken')->with('foo')->andReturn(m::self());
+        $this->auth->shouldReceive('authenticate')->once()->andReturn((object) ['id' => 1]);
 
         $this->assertEquals(1, $this->provider->authenticate($request, m::mock('Dingo\Api\Routing\Route'))->id);
     }
@@ -57,7 +59,8 @@ class JWTTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('foo', 'GET', ['token' => 'foo']);
 
-        $this->auth->shouldReceive('login')->with('foo')->andReturn((object) ['id' => 1]);
+        $this->auth->shouldReceive('setToken')->with('foo')->andReturn(m::self());
+        $this->auth->shouldReceive('authenticate')->once()->andReturn((object) ['id' => 1]);
 
         $this->assertEquals(1, $this->provider->authenticate($request, m::mock('Dingo\Api\Routing\Route'))->id);
     }

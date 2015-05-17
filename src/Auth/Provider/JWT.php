@@ -43,7 +43,7 @@ class JWT extends Authorization
         $token = $this->getToken($request);
 
         try {
-            return $this->auth->login($token);
+            return $this->auth->setToken($token)->authenticate();
         } catch (JWTException $e) {
             throw new UnauthorizedHttpException('JWTAuth', $e->getMessage());
         }
