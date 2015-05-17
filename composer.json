@@ -1,6 +1,6 @@
 {
     "name": "dingo/api",
-    "description": "A RESTful API package for the Laravel framework.",
+    "description": "A RESTful API package for the Laravel and Lumen frameworks.",
     "keywords": ["restful", "api", "laravel", "dingo"],
     "license": "BSD-3-Clause",
     "authors": [
@@ -40,6 +40,11 @@
     "autoload-dev": {
         "psr-4": {
             "Dingo\\Api\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-develop": "0.9-dev"
         }
     }
 }
