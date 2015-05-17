@@ -141,7 +141,7 @@ class ResponseFactory
             $error = ['message' => $error];
         }
 
-        $error = array_merge(['status_code'  => $statusCode], $error);
+        $error = array_merge(['statusCode'  => $statusCode], $error);
 
         return $this->array($error)->setStatusCode($statusCode);
     }
