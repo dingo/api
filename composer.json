@@ -13,7 +13,7 @@
         "php": ">=5.4.0",
         "illuminate/routing": "5.0.*",
         "illuminate/support": "5.0.*",
-        "league/fractal": "0.11.*"
+        "league/fractal": "0.12.*"
     },
     "require-dev": {
         "lucadegasperi/oauth2-server-laravel": "4.0.*@dev",
