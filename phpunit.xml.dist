@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit backupGlobals="false"
          backupStaticAttributes="false"
+         beStrictAboutTestsThatDoNotTestAnything="true"
+         beStrictAboutOutputDuringTests="true"
          bootstrap="vendor/autoload.php"
          colors="true"
          convertErrorsToExceptions="true"
@@ -10,9 +12,8 @@
          stopOnError="false"
          stopOnFailure="false"
          syntaxCheck="true"
-         strict="false"
          verbose="true"
->
+        >
     <testsuites>
         <testsuite name="API Test Suite">
             <directory suffix="Test.php">./tests</directory>
@@ -21,9 +22,6 @@
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">./src</directory>
-            <exclude>
-                <directory>./src/config</directory>
-            </exclude>
         </whitelist>
     </filter>
 </phpunit>
