@@ -426,4 +426,17 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
         $this->router->dispatch($request);
     }
+
+    public function testGroupNamespacesAreConcatenated()
+    {
+        $this->router->version('v1', ['namespace' => 'Dingo\Api'], function () {
+            $this->router->group(['namespace' => 'Tests\Stubs'], function () {
+                $this->router->get('foo', 'RoutingControllerStub@getIndex');
+            });
+        });
+
+        $request = $this->createRequest('foo', 'GET');
+
+        $this->assertEquals('foo', $this->router->dispatch($request)->getContent(), 'Router did not concatenate controller namespace correctly.');
+    }
 }
