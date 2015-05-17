@@ -298,6 +298,10 @@ class Router
         $routable = (new ControllerInspector)->getRoutable($this->addGroupNamespace($controller), $uri);
 
         foreach ($routable as $method => $routes) {
+            if ($method == 'getMethodProperties') {
+                continue;
+            }
+
             foreach ($routes as $route) {
                 $this->{$route['verb']}($route['uri'], [
                     'uses' => $controller.'@'.$method,

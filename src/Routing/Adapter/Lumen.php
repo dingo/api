@@ -121,13 +121,42 @@ class Lumen implements Adapter
     {
         $this->createRouteCollections($versions);
 
-        // Register the route with the Lumen application so that the request is
-        // properly dispatched. If we do not add the route then the router
-        // will never fire the middlewares.
-
         foreach ($versions as $version) {
-            $this->routes[$version]->addRoute($methods, $uri, $action);
+            foreach ($this->breakUriSegments($uri) as $uri) {
+                $this->routes[$version]->addRoute($methods, $uri, $action);
+            }
         }
+    }
+
+    /**
+     * Break a URI that has optional segments into individual URIs.
+     *
+     * @param string $uri
+     *
+     * @return array
+     */
+    protected function breakUriSegments($uri)
+    {
+        if (! str_contains($uri, '?}')) {
+            return (array) $uri;
+        }
+
+        $segments = preg_split(
+            '/\/(\{.*?\})/',
+            preg_replace('/\{(.*?)\?\}/', '{$1}', $uri),
+            -1,
+            PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY
+        );
+
+        $uris = [];
+
+        while($segments) {
+            $uris[] = implode('/', $segments);
+
+            array_pop($segments);
+        }
+
+        return $uris;
     }
 
     /**
