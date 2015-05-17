@@ -5,6 +5,7 @@ namespace Dingo\Api\Exception;
 use Exception;
 use ReflectionFunction;
 use RecursiveArrayIterator;
+use Dingo\Api\Http\Request;
 use Illuminate\Http\Response;
 use RecursiveIteratorIterator;
 use Illuminate\Contracts\Debug\ExceptionHandler;
@@ -12,6 +13,13 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class Handler implements ExceptionHandler
 {
+    /**
+     * Parent exception handler instance.
+     *
+     * @var \Illuminate\Contracts\Debug\ExceptionHandler
+     */
+    protected $parent;
+
     /**
      * Array of exception handlers.
      *
@@ -36,13 +44,15 @@ class Handler implements ExceptionHandler
     /**
      * Create a new exception handler instance.
      *
-     * @param array $format
-     * @param bool  $debug
+     * @param \Illuminate\Contracts\Debug\ExceptionHandler $parent
+     * @param array                                        $format
+     * @param bool                                         $debug
      *
      * @return void
      */
-    public function __construct(array $format, $debug)
+    public function __construct(ExceptionHandler $parent, array $format, $debug)
     {
+        $this->parent = $parent;
         $this->format = $format;
         $this->debug = $debug;
     }
@@ -56,7 +66,7 @@ class Handler implements ExceptionHandler
      */
     public function report(Exception $exception)
     {
-        //
+        return $this->parent->report($exception);
     }
 
 
@@ -68,11 +78,15 @@ class Handler implements ExceptionHandler
      *
      * @throws \Exception
      *
-     * @return void
+     * @return mixed
      */
     public function render($request, Exception $exception)
     {
-        throw $exception;
+        if ($request instanceof Request) {
+            throw $exception;
+        }
+
+        return $this->parent->render($request, $exception);
     }
 
     /**
@@ -81,13 +95,11 @@ class Handler implements ExceptionHandler
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      * @param \Exception                                        $exception
      *
-     * @throws \Exception
-     *
-     * @return void
+     * @return mixed
      */
     public function renderForConsole($output, Exception $exception)
     {
-        throw $exception;
+        return $this->parent->renderForConsole($output, $exception);
     }
 
     /**
@@ -277,5 +289,17 @@ class Handler implements ExceptionHandler
     public function setErrorFormat(array $format)
     {
         $this->format = $format;
+    }
+
+    /**
+     * Set the debug mode.
+     *
+     * @param bool $debug
+     *
+     * @return void
+     */
+    public function setDebug($debug)
+    {
+        $this->debug = $debug;
     }
 }
