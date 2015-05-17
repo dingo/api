@@ -230,6 +230,16 @@ class Response extends IlluminateResponse
     }
 
     /**
+     * Get the meta data for the response.
+     *
+     * @return array
+     */
+    public function getMeta()
+    {
+        return $this->binding->getMeta();
+    }
+
+    /**
      * Add a cookie to the response.
      *
      * @param \Symfony\Component\HttpFoundation\Cookie $cookie
