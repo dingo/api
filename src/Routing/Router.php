@@ -246,7 +246,13 @@ class Router
     public function resources(array $resources)
     {
         foreach ($resources as $name => $resource) {
-            $this->resource($name, $resource);
+            $options = [];
+
+            if (is_array($resource)) {
+                list($resource, $options) = $resource;
+            }
+
+            $this->resource($name, $resource, $options);
         }
     }
 
