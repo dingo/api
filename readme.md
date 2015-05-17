@@ -1,6 +1,8 @@
 # API for Laravel
 
-The `develop` branch is for Laravel 5 development and is highly unstable and will most likely not work at this point in time.
+[![Build Status](https://travis-ci.org/dingo/api.svg?branch=develop)](https://travis-ci.org/dingo/api)
+
+This `develop` branch is for Laravel 5 and Lumen. This can be considered an alpha and as such is prone to bugs. Please report them as you find them.
 
 ## License
 
