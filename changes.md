@@ -1,4 +1,23 @@
-### v0.8.*@dev (master)
+### v0.9.*@dev (develop)
+
+##### General
+
+- Laravel 5 and Lumen support. Laravel 4.x is no longer supported.
+- Will only work with Lumen `5.0.*@dev` until some changes make it into a tagged release of Lumen.
+
+##### Changed
+
+- Routes are no longer registered with the underlying router.
+- Routes must be registered on the `app('api.router')` instance.
+- Internal requests are currently not implemented.
+- Generating URLs to named API routes is currently not implemented.
+- Authentication and Rate Limiting is now done via middlewares instead of filters.
+
+### v0.8.3
+
+##### General
+
+- Updated Tymon's JWTAuth to the latest version, `0.4.1`.
 
 ##### Added
 
@@ -13,6 +32,7 @@
 - Routes are now added to the correct groups and matched correctly.
 - OPTION requests are now handled correctly for API routes so preflights will no longer fail.
 - Eager loading for Fractal transformers now checks the available includes before attempting to load.
+- Raw internal requests now have the content run through any transformers as was initially described when implemented.
 
 ##### Changed
 
