@@ -422,4 +422,14 @@ class Route
     {
         return $this->conditionalRequest === true;
     }
+
+    /**
+     * Get the route action.
+     *
+     * @return array
+     */
+    public function getAction()
+    {
+        return $this->action;
+    }
 }
