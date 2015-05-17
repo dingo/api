@@ -46,6 +46,21 @@ class RouterTest extends PHPUnit_Framework_TestCase
             $this->router->get('foo', function () {
                 return 'foo';
             });
+            $this->router->post('foo', function () {
+                return 'posted';
+            });
+            $this->router->patch('foo', function () {
+                return 'patched';
+            });
+            $this->router->delete('foo', function () {
+                return 'deleted';
+            });
+            $this->router->put('foo', function () {
+                return 'put';
+            });
+            $this->router->options('foo', function () {
+                return 'options';
+            });
         });
 
         $this->router->group(['version' => 'v2'], function () {
@@ -66,6 +81,21 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
         $request = $this->createRequest('foo', 'GET', ['accept' => 'application/vnd.api.v3+json']);
         $this->assertEquals('bar', $this->router->dispatch($request)->getContent());
+
+        $request = $this->createRequest('foo', 'POST', ['accept' => 'application/vnd.api.v1+json']);
+        $this->assertEquals('posted', $this->router->dispatch($request)->getContent());
+
+        $request = $this->createRequest('foo', 'PATCH', ['accept' => 'application/vnd.api.v1+json']);
+        $this->assertEquals('patched', $this->router->dispatch($request)->getContent());
+
+        $request = $this->createRequest('foo', 'DELETE', ['accept' => 'application/vnd.api.v1+json']);
+        $this->assertEquals('deleted', $this->router->dispatch($request)->getContent());
+
+        $request = $this->createRequest('foo', 'PUT', ['accept' => 'application/vnd.api.v1+json']);
+        $this->assertEquals('put', $this->router->dispatch($request)->getContent());
+
+        $request = $this->createRequest('foo', 'options', ['accept' => 'application/vnd.api.v1+json']);
+        $this->assertEquals('options', $this->router->dispatch($request)->getContent());
     }
 
     public function testRouteOptionsMergeCorrectly()
@@ -331,8 +361,20 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testRoutingControllers()
     {
-        $this->router->version('v1', function () {
-            $this->router->controller('bar', 'Dingo\Api\Tests\Stubs\RoutingControllerStub');
+        $this->router->version('v1', ['namespace' => 'Dingo\Api\Tests\Stubs'], function () {
+            $this->router->controllers([
+                'bar' => 'RoutingControllerStub'
+            ]);
+        });
+
+        $request = $this->createRequest('bar/index', 'GET', ['accept' => 'application/vnd.api.v1+json']);
+
+        $this->assertEquals('foo', $this->router->dispatch($request)->getContent(), 'Router did not register controller correctly.');
+
+        $this->router->version('v2', function () {
+            $this->router->controllers([
+                'bar' => 'Dingo\Api\Tests\Stubs\RoutingControllerStub'
+            ]);
         });
 
         $request = $this->createRequest('bar/index', 'GET', ['accept' => 'application/vnd.api.v1+json']);
@@ -342,12 +384,46 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testRoutingResources()
     {
-        $this->router->version('v1', function () {
-            $this->router->resource('bar', 'Dingo\Api\Tests\Stubs\RoutingControllerStub', ['only' => ['index']]);
+        $this->router->version('v1', ['namespace' => 'Dingo\Api\Tests\Stubs'], function () {
+            $this->router->resources([
+                'bar' => ['RoutingControllerStub', ['only' => ['index']]]
+            ]);
         });
 
         $request = $this->createRequest('bar', 'GET', ['accept' => 'application/vnd.api.v1+json']);
 
         $this->assertEquals('foo', $this->router->dispatch($request)->getContent(), 'Router did not register controller correctly.');
+    }
+
+    public function testUnsuccessfulResponseThrowsHttpException()
+    {
+        $this->router->version('v1', function () {
+            $this->router->get('foo', function () {
+                return new Http\Response('Failed!', 400);
+            });
+        });
+
+        $request = $this->createRequest('foo', 'GET');
+
+        $this->exception->shouldReceive('handle')->with(m::type('Symfony\Component\HttpKernel\Exception\HttpException'))->andReturn(new Http\Response('Failed!'));
+
+        $this->assertEquals('Failed!', $this->router->dispatch($request)->getContent(), 'Router did not throw and handle a HttpException.');
+    }
+
+    public function testRouteMiddlewaresAreUnsetAndMovedIfManuallySetOnRoutes()
+    {
+        $this->router->version('v1', function () {
+            $this->router->get('foo', ['middleware' => 'foo|api.auth', function () use (&$middleware) {
+                $route = $this->router->getCurrentRoute();
+
+                $this->assertEquals(['api.auth', 'api.limiting', 'foo'], $route->getAction()['middleware']);
+
+                return 'foo';
+            }]);
+        });
+
+        $request = $this->createRequest('foo', 'GET');
+
+        $this->router->dispatch($request);
     }
 }
