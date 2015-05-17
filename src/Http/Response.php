@@ -104,7 +104,7 @@ class Response extends IlluminateResponse
      *
      * @throws \RuntimeException
      *
-     * @return \Dingo\Api\Http\Format\FormatInterface
+     * @return \Dingo\Api\Http\ResponseFormat\ResponseFormatInterface
      */
     public static function getFormatter($format)
     {
