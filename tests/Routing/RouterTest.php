@@ -328,4 +328,26 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
         $this->assertCount(1, $this->router->getRoutes()['v1'], 'Routes were not added to the correct versions.');
     }
+
+    public function testRoutingControllers()
+    {
+        $this->router->version('v1', function () {
+            $this->router->controller('bar', 'Dingo\Api\Tests\Stubs\RoutingControllerStub');
+        });
+
+        $request = $this->createRequest('bar/index', 'GET', ['accept' => 'application/vnd.api.v1+json']);
+
+        $this->assertEquals('foo', $this->router->dispatch($request)->getContent(), 'Router did not register controller correctly.');
+    }
+
+    public function testRoutingResources()
+    {
+        $this->router->version('v1', function () {
+            $this->router->resource('bar', 'Dingo\Api\Tests\Stubs\RoutingControllerStub', ['only' => ['index']]);
+        });
+
+        $request = $this->createRequest('bar', 'GET', ['accept' => 'application/vnd.api.v1+json']);
+
+        $this->assertEquals('foo', $this->router->dispatch($request)->getContent(), 'Router did not register controller correctly.');
+    }
 }

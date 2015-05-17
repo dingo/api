@@ -63,7 +63,7 @@ class RoutingAdapterStub implements Adapter
     protected function findRoute(Request $request, array $routes)
     {
         foreach ($routes[$request->getMethod()] as $route) {
-            if (trim($route['uri'], '/') == trim($request->getRequestUri(), '/')) {
+            if (trim($request->getRequestUri(), '/') === trim($route['uri'], '/')) {
                 return $route;
             }
         }
@@ -89,6 +89,10 @@ class RoutingAdapterStub implements Adapter
         foreach ($versions as $version) {
             if (! isset($this->routes[$version])) {
                 $this->routes[$version] = [];
+            }
+
+            if (str_contains($uri, '?}')) {
+                $uri = preg_replace('/\/\{(.*?)\?\}/', '', $uri);
             }
 
             foreach ($methods as $method) {

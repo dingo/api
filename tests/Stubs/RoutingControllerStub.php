@@ -27,4 +27,9 @@ class RoutingControllerStub
     {
         return 'foo';
     }
+
+    public function getIndex()
+    {
+        return 'foo';
+    }
 }
