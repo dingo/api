@@ -46,24 +46,24 @@ class FactoryTest extends PHPUnit_Framework_TestCase
     {
         $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], null);
 
-        $this->factory->collection(new Collection([new UserStub]), 'test');
-        $this->factory->withCollection(new Collection([new UserStub]), 'test');
+        $this->assertInstanceOf('Illuminate\Support\Collection', $this->factory->collection(new Collection([new UserStub]), 'test')->getOriginalContent());
+        $this->assertInstanceOf('Illuminate\Support\Collection', $this->factory->withCollection(new Collection([new UserStub]), 'test')->getOriginalContent());
     }
 
     public function testMakingItemsRegistersClassWithTransformer()
     {
         $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], null);
 
-        $this->factory->item(new UserStub, 'test');
-        $this->factory->withItem(new UserStub, 'test');
+        $this->assertInstanceOf('Dingo\Api\Tests\Stubs\UserStub', $this->factory->item(new UserStub, 'test')->getOriginalContent());
+        $this->assertInstanceOf('Dingo\Api\Tests\Stubs\UserStub', $this->factory->withItem(new UserStub, 'test')->getOriginalContent());
     }
 
     public function testMakingPaginatorRegistersUnderlyingClassWithTransformer()
     {
         $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], null);
 
-        $this->factory->paginator(new Paginator([new UserStub], 1), 'test');
-        $this->factory->withPaginator(new Paginator([new UserStub], 1), 'test');
+        $this->assertInstanceOf('Illuminate\Pagination\Paginator', $this->factory->paginator(new Paginator([new UserStub], 1), 'test')->getOriginalContent());
+        $this->assertInstanceOf('Illuminate\Pagination\Paginator', $this->factory->withPaginator(new Paginator([new UserStub], 1), 'test')->getOriginalContent());
     }
 
     public function testMakingErrorNotFoundResponse()

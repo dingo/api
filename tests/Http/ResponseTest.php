@@ -6,6 +6,7 @@ use StdClass;
 use Mockery as m;
 use Dingo\Api\Http\Response;
 use PHPUnit_Framework_TestCase;
+use Dingo\Api\Transformer\Binding;
 
 class ResponseTest extends PHPUnit_Framework_TestCase
 {
@@ -36,13 +37,13 @@ class ResponseTest extends PHPUnit_Framework_TestCase
 
     public function testAddingAndSettingMetaCallsUnderlyingTransformerBinding()
     {
-        $binding = m::mock('Dingo\Api\Transformer\Binding');
-        $binding->shouldReceive('setMeta')->once()->with(['foo' => 'bar']);
-        $binding->shouldReceive('addMeta')->once()->with('foo', 'bar');
+        $binding = new Binding(m::mock('Illuminate\Container\Container'), 'foo');
 
         $response = new Response('test', 200, [], $binding);
         $response->setMeta(['foo' => 'bar']);
-        $response->meta('foo', 'bar');
+        $response->meta('bing', 'bang');
+
+        $this->assertEquals(['foo' => 'bar', 'bing' => 'bang'], $response->getMeta());
     }
 
     public function testBuildingWithCustomStatusCodeAndHeaders()
