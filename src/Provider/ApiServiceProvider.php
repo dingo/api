@@ -13,13 +13,22 @@ use Dingo\Api\Transformer\Factory as TransformerFactory;
 class ApiServiceProvider extends ServiceProvider
 {
     /**
+     * Boot the service provider.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        $this->setupConfig();
+    }
+
+    /**
      * Register the service provider.
      *
      * @return void
      */
     public function register()
     {
-        $this->setupConfig();
         $this->setupClassAliases();
 
         $this->registerExceptionHandler();
@@ -42,7 +51,11 @@ class ApiServiceProvider extends ServiceProvider
      */
     protected function setupConfig()
     {
-        $this->mergeConfigFrom(__DIR__.'/../../config/api.php', 'api');
+        $source = realpath(__DIR__.'/../../config/api.php');
+
+        $this->publishes([$source => config_path('api.php')]);
+
+        $this->mergeConfigFrom($source, 'api');
     }
 
     /**
