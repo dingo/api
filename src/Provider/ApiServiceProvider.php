@@ -25,6 +25,9 @@ class ApiServiceProvider extends ServiceProvider
         $this->app->singleton('Illuminate\Contracts\Debug\ExceptionHandler', function ($app) {
             return $app['api.exception'];
         });
+
+        Http\Response::setFormatters($this->prepareConfigValues($this->app['config']['api.formats']));
+        Http\Response::setTransformer($this->app['api.transformer']);
     }
 
     /**
@@ -44,9 +47,6 @@ class ApiServiceProvider extends ServiceProvider
         $this->registerResponseFactory();
         $this->registerMiddleware();
         $this->registerTransformer();
-
-        Http\Response::setFormatters($this->prepareConfigValues($this->app['config']['api.formats']));
-        Http\Response::setTransformer($this->app['api.transformer']);
     }
 
     /**
