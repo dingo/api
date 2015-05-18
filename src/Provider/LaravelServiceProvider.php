@@ -17,7 +17,7 @@ class LaravelServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__.'/../../config/api.php' => config_path('api.php'),
+            realpath(__DIR__.'/../../config/api.php') => config_path('api.php'),
         ]);
 
         $this->app['router']->middleware('api.auth', 'Dingo\Api\Http\Middleware\Auth');
