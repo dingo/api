@@ -3,6 +3,7 @@
 namespace Dingo\Api\Provider;
 
 use Dingo\Api\Http;
+use RuntimeException;
 use Dingo\Api\Auth\Auth;
 use Dingo\Api\Routing\Router;
 use Illuminate\Support\ServiceProvider;
@@ -20,6 +21,10 @@ class ApiServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->setupConfig();
+
+        $this->app->singleton('Illuminate\Contracts\Debug\ExceptionHandler', function ($app) {
+            return $app['api.exception'];
+        });
     }
 
     /**
@@ -52,6 +57,10 @@ class ApiServiceProvider extends ServiceProvider
     protected function setupConfig()
     {
         $this->mergeConfigFrom(realpath(__DIR__.'/../../config/api.php'), 'api');
+
+        if (empty($this->app['config']['api.prefix']) && empty($this->app['config']['api.domain'])) {
+            throw new RuntimeException('Unable to boot ApiServiceProvider, configure an API domain or prefix.');
+        }
     }
 
     /**
@@ -84,10 +93,6 @@ class ApiServiceProvider extends ServiceProvider
             $config = $app['config']['api'];
 
             return new ExceptionHandler($exception, $config['errorFormat'], $config['debug']);
-        });
-
-        $this->app->singleton('Illuminate\Contracts\Debug\ExceptionHandler', function ($app) {
-            return $app['api.exception'];
         });
     }
 
