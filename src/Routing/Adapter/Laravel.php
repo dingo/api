@@ -6,6 +6,7 @@ use Dingo\Api\Http\Request;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
 use Illuminate\Routing\RouteCollection;
+use Dingo\Api\Exception\UnknownVersionException;
 
 class Laravel implements Adapter
 {
@@ -45,6 +46,10 @@ class Laravel implements Adapter
      */
     public function dispatch(Request $request, $version)
     {
+        if (! isset($this->routes[$version])) {
+            throw new UnknownVersionException;
+        }
+
         $routes = $this->routes[$version];
 
         $this->router->setRoutes($routes);
