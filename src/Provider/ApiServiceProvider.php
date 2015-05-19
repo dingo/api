@@ -58,7 +58,9 @@ class ApiServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(realpath(__DIR__.'/../../config/api.php'), 'api');
 
-        if (empty($this->app['config']['api.prefix']) && empty($this->app['config']['api.domain'])) {
+        $config = $this->app['config']['api'];
+
+        if (! $this->app->runningInConsole() && empty($config['prefix']) && empty($config['domain'])) {
             throw new RuntimeException('Unable to boot ApiServiceProvider, configure an API domain or prefix.');
         }
     }
