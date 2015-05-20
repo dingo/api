@@ -7,7 +7,7 @@ use ErrorException;
 use Illuminate\Support\Str;
 use Dingo\Api\Http\Response;
 use Illuminate\Support\Collection;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Dingo\Api\Transformer\Factory as TransformerFactory;
 
 class Factory
@@ -107,14 +107,14 @@ class Factory
     /**
      * Bind a paginator to a transformer and start building a response.
      *
-     * @param \Illuminate\Pagination\Paginator $paginator
-     * @param object                           $transformer
-     * @param array                            $parameters
-     * @param \Closure                         $after
+     * @param \Illuminate\Pagination\LengthAwarePaginator $paginator
+     * @param object                                      $transformer
+     * @param array                                       $parameters
+     * @param \Closure                                    $after
      *
      * @return \Dingo\Api\Http\Response\Builder
      */
-    public function paginator(Paginator $paginator, $transformer, array $parameters = [], Closure $after = null)
+    public function paginator(LengthAwarePaginator $paginator, $transformer, array $parameters = [], Closure $after = null)
     {
         if ($paginator->isEmpty()) {
             $class = get_class($paginator);
@@ -124,8 +124,9 @@ class Factory
 
         $binding = $this->transformer->register($class, $transformer, $parameters, $after);
 
-        return new Response($paginator, 200, [], $binding);
+        return new Response($paginator->getCollection(), 200, [], $binding);
     }
+
 
     /**
      * Return an error response.
