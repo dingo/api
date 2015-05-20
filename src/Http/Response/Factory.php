@@ -7,7 +7,7 @@ use ErrorException;
 use Illuminate\Support\Str;
 use Dingo\Api\Http\Response;
 use Illuminate\Support\Collection;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Dingo\Api\Transformer\Factory as TransformerFactory;
 
 class Factory
