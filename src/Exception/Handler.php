@@ -167,7 +167,9 @@ class Handler implements ExceptionHandler
             ':message' => $message,
             ':status_code' => $statusCode
         ];
-
+        if (isset($exception->replacements)) {
+            $replacements += $exception->replacements;
+        }
         if ($exception instanceof ResourceException && $exception->hasErrors()) {
             $replacements[':errors'] = $exception->getErrors();
         }
