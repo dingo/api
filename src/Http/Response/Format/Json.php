@@ -48,9 +48,9 @@ class Json extends Format
     }
 
     /**
-     * Format an array or instance implementing ArrayableInterface.
+     * Format an array or instance implementing Arrayable.
      *
-     * @param array|\Illuminate\Support\Contracts\ArrayableInterface $content
+     * @param array|\Illuminate\Contracts\Support\Arrayable $content
      *
      * @return string
      */
@@ -78,7 +78,7 @@ class Json extends Format
     /**
      * Morph a value to an array.
      *
-     * @param array|\Illuminate\Support\Contracts\ArrayableInterface $value
+     * @param array|\Illuminate\Contracts\Support\Arrayable $value
      *
      * @return array
      */

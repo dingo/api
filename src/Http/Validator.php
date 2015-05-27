@@ -65,7 +65,7 @@ class Validator
     /**
      * Extend the validators.
      *
-     * @param string|\Dingo\Api\Http\Validation\Validator
+     * @param string|\Dingo\Api\Http\Validator
      *
      * @return void
      */

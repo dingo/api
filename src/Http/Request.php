@@ -6,6 +6,11 @@ use Illuminate\Http\Request as IlluminateRequest;
 
 class Request extends IlluminateRequest
 {
+    /**
+     * @param \Illuminate\Http\Request $old
+     *
+     * @return static
+     */
     public static function createFromExisting(IlluminateRequest $old)
     {
         $new = new static(

@@ -3,7 +3,6 @@
 namespace Dingo\Api\Http\Middleware;
 
 use Closure;
-use ReflectionClass;
 use Dingo\Api\Http\Validator;
 use Dingo\Api\Routing\Router;
 use Illuminate\Pipeline\Pipeline;

@@ -7,7 +7,7 @@ use UnexpectedValueException;
 use Dingo\Api\Transformer\Binding;
 use Symfony\Component\HttpFoundation\Cookie;
 use Illuminate\Http\Response as IlluminateResponse;
-use Illuminate\Support\Contracts\ArrayableInterface;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Dingo\Api\Transformer\Factory as TransformerFactory;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -94,7 +94,7 @@ class Response extends IlluminateResponse
             $content = $formatter->formatEloquentModel($content);
         } elseif ($content instanceof EloquentCollection) {
             $content = $formatter->formatEloquentCollection($content);
-        } elseif (is_array($content) || $content instanceof ArrayObject || $content instanceof ArrayableInterface) {
+        } elseif (is_array($content) || $content instanceof ArrayObject || $content instanceof Arrayable) {
             $content = $formatter->formatArray($content);
         } else {
             $this->headers->set('content-type', $defaultContentType);
@@ -130,7 +130,7 @@ class Response extends IlluminateResponse
      *
      * @throws \RuntimeException
      *
-     * @return \Dingo\Api\Http\Format\FormatInterface
+     * @return \Dingo\Api\Http\Response\Format\Format
      */
     public static function getFormatter($format)
     {
@@ -168,7 +168,7 @@ class Response extends IlluminateResponse
     /**
      * Set the transformer factory instance.
      *
-     * @param \Dingo\Api\Transformer\TransformerFactory $transformer
+     * @param \Dingo\Api\Transformer\Factory $transformer
      *
      * @return void
      */
@@ -180,7 +180,7 @@ class Response extends IlluminateResponse
     /**
      * Get the transformer instance.
      *
-     * @return \Dingo\Api\Transformer\Transformer
+     * @return \Dingo\Api\Transformer\Factory
      */
     public static function getTransformer()
     {
@@ -193,7 +193,7 @@ class Response extends IlluminateResponse
      * @param string $key
      * @param mixed  $value
      *
-     * @return \Dingo\Api\Http\Response\Builder
+     * @return \Dingo\Api\Http\Response
      */
     public function addMeta($key, $value)
     {
@@ -208,7 +208,7 @@ class Response extends IlluminateResponse
      * @param string $key
      * @param mixed  $value
      *
-     * @return \Dingo\Api\Http\Response\Builder
+     * @return \Dingo\Api\Http\Response
      */
     public function meta($key, $value)
     {
@@ -220,7 +220,7 @@ class Response extends IlluminateResponse
      *
      * @param array $meta
      *
-     * @return \Dingo\Api\Http\Response\Builder
+     * @return \Dingo\Api\Http\Response
      */
     public function setMeta(array $meta)
     {
@@ -244,7 +244,7 @@ class Response extends IlluminateResponse
      *
      * @param \Symfony\Component\HttpFoundation\Cookie $cookie
      *
-     * @return \Dingo\Api\Http\Response\Builder
+     * @return \Dingo\Api\Http\Response
      */
     public function cookie(Cookie $cookie)
     {
@@ -254,11 +254,11 @@ class Response extends IlluminateResponse
     /**
      * Add a header to the response.
      *
-     * @param string $name
+     * @param string $key
      * @param string $value
      * @param bool   $replace
      *
-     * @return \Dingo\Api\Http\Response\Builder
+     * @return \Dingo\Api\Http\Response
      */
     public function withHeader($key, $value, $replace = true)
     {
@@ -270,7 +270,7 @@ class Response extends IlluminateResponse
      *
      * @param int $statusCode
      *
-     * @return \Dingo\Api\Http\Response\Builder
+     * @return \Dingo\Api\Http\Response
      */
     public function statusCode($statusCode)
     {

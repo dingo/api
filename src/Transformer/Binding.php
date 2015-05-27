@@ -62,7 +62,7 @@ class Binding
     }
 
     /**
-     * Resolve a transfomer binding instance.
+     * Resolve a transformer binding instance.
      *
      * @throws \RuntimeException
      *

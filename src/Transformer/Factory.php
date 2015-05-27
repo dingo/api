@@ -51,6 +51,8 @@ class Factory
      *
      * @param string                 $class
      * @param string|callable|object $resolver
+     * @param array                  $parameters
+     * @param \Closure               $after
      *
      * @return \Dingo\Api\Transformer\Binding
      */
@@ -86,7 +88,7 @@ class Factory
     }
 
     /**
-     * Deteremine if a value is of a transformable type.
+     * Determine if a value is of a transformable type.
      *
      * @param mixed $value
      *

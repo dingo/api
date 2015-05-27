@@ -6,7 +6,6 @@ use Closure;
 use Dingo\Api\Http\Request;
 use Illuminate\Container\Container;
 use Dingo\Api\Routing\Adapter\Adapter;
-use Illuminate\Routing\Route as IlluminateRoute;
 
 class Route
 {
@@ -210,11 +209,11 @@ class Route
     {
         $this->protected = array_pull($this->action, 'protected', false);
 
-        $this->findControllerOptions('protected', function ($value) {
+        $this->findControllerOptions('protected', function () {
             $this->protected = true;
         });
 
-        $this->findControllerOptions('unprotected', function ($value) {
+        $this->findControllerOptions('unprotected', function () {
             $this->protected = false;
         });
     }

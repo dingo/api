@@ -54,6 +54,8 @@ class JWT extends Authorization
      *
      * @param \Illuminate\Http\Request $request
      *
+     * @throws \Exception
+     *
      * @return string
      */
     protected function getToken(Request $request)

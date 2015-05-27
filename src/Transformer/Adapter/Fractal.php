@@ -66,7 +66,7 @@ class Fractal implements Adapter
      * @param mixed                          $response
      * @param object                         $transformer
      * @param \Dingo\Api\Transformer\Binding $binding
-     * @param \Illuminate\Http\Request       $request
+     * @param \Dingo\Api\Http\Request        $request
      *
      * @return array
      */
@@ -135,7 +135,7 @@ class Fractal implements Adapter
     /**
      * Parse the includes.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param \Dingo\Api\Http\Request $request
      *
      * @return void
      */

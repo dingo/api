@@ -37,7 +37,7 @@ class Factory
      *
      * @param null|string $location
      *
-     * @return \Dingo\Api\Http\Response\Builder
+     * @return \Dingo\Api\Http\Response
      */
     public function created($location = null)
     {
@@ -54,7 +54,7 @@ class Factory
     /**
      * Respond with a no content response.
      *
-     * @return \Dingo\Api\Http\Response\Builder
+     * @return \Dingo\Api\Http\Response
      */
     public function noContent()
     {
@@ -71,7 +71,7 @@ class Factory
      * @param array                          $parameters
      * @param \Closure                       $after
      *
-     * @return \Dingo\Api\Http\Response\Builder
+     * @return \Dingo\Api\Http\Response
      */
     public function collection(Collection $collection, $transformer, array $parameters = [], Closure $after = null)
     {
@@ -94,7 +94,7 @@ class Factory
      * @param array    $parameters
      * @param \Closure $after
      *
-     * @return \Dingo\Api\Http\Response\Builder
+     * @return \Dingo\Api\Http\Response
      */
     public function item($item, $transformer, array $parameters = [], Closure $after = null)
     {
@@ -113,7 +113,7 @@ class Factory
      * @param array                            $parameters
      * @param \Closure                         $after
      *
-     * @return \Dingo\Api\Http\Response\Builder
+     * @return \Dingo\Api\Http\Response
      */
     public function paginator(Paginator $paginator, $transformer, array $parameters = [], Closure $after = null)
     {
@@ -134,9 +134,9 @@ class Factory
      * @param string $message
      * @param int    $statusCode
      *
-     * @return void
-     *
      * @throws \Symfony\Component\HttpKernel\Exception\HttpException
+     *
+     * @return void
      */
     public function error($message, $statusCode)
     {
@@ -148,9 +148,9 @@ class Factory
      *
      * @param string $message
      *
-     * @return void
-     *
      * @throws \Symfony\Component\HttpKernel\Exception\HttpException
+     *
+     * @return void
      */
     public function errorNotFound($message = 'Not Found')
     {
@@ -162,9 +162,10 @@ class Factory
      *
      * @param string $message
      *
+     * @throws \Symfony\Component\HttpKernel\Exception\HttpException
+     *
      * @return void
      *
-     * @throws \Symfony\Component\HttpKernel\Exception\HttpException
      */
     public function errorBadRequest($message = 'Bad Request')
     {
@@ -176,9 +177,9 @@ class Factory
      *
      * @param string $message
      *
-     * @return void
-     *
      * @throws \Symfony\Component\HttpKernel\Exception\HttpException
+     *
+     * @return void
      */
     public function errorForbidden($message = 'Forbidden')
     {
@@ -190,9 +191,9 @@ class Factory
      *
      * @param string $message
      *
-     * @return void
-     *
      * @throws \Symfony\Component\HttpKernel\Exception\HttpException
+     *
+     * @return void
      */
     public function errorInternal($message = 'Internal Error')
     {
@@ -204,9 +205,9 @@ class Factory
      *
      * @param string $message
      *
-     * @return void
-     *
      * @throws \Symfony\Component\HttpKernel\Exception\HttpException
+     *
+     * @return void
      */
     public function errorUnauthorized($message = 'Unauthorized')
     {
