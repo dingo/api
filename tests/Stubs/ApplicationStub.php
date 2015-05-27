@@ -12,6 +12,11 @@ class ApplicationStub extends Container implements Application
         return 'v1';
     }
 
+    public function basePath()
+    {
+        //
+    }
+
     public function environment()
     {
         return 'testing';
