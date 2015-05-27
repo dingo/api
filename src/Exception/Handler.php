@@ -153,17 +153,21 @@ class Handler implements ExceptionHandler
      */
     protected function genericResponse(Exception $exception)
     {
-        if (! $exception instanceof HttpExceptionInterface) {
-            throw $exception;
-        }
-
         if (! $message = $exception->getMessage()) {
             $message = sprintf('%d %s', $exception->getStatusCode(), Response::$statusTexts[$exception->getStatusCode()]);
         }
 
+        if ($exception instanceof HttpExceptionInterface) {
+            $statusCode = $exception->getStatusCode();
+            $headers = $exception->getHeaders();
+        } else {
+            $statusCode = 500;
+            $headers = [];
+        }
+
         $replacements = [
             ':message' => $message,
-            ':status_code' => $exception->getStatusCode()
+            ':status_code' => $statusCode
         ];
 
         if ($exception instanceof ResourceException && $exception->hasErrors()) {
@@ -193,7 +197,7 @@ class Handler implements ExceptionHandler
 
         $response = $this->recursivelyRemoveEmptyReplacements($response);
 
-        return new Response($response, $exception->getStatusCode(), $exception->getHeaders());
+        return new Response($response, $statusCode, $headers);
     }
 
     /**

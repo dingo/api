@@ -93,13 +93,12 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedMessage Could not be handled by handler.
-     */
-    public function testExceptionsThatCannotBeHandledAndAreNotHttpExceptionsAreRethrown()
+    public function testRegularExceptionsAreHandledByGenericHandler()
     {
-        $this->exceptionHandler->handle(new RuntimeException('Could not be handled by handler'));
+        $response = $this->exceptionHandler->handle(new RuntimeException('Uh oh'));
+
+        $this->assertEquals('{"message":"Uh oh","status_code":500}', $response->getContent());
+        $this->assertEquals(500, $response->getStatusCode());
     }
 
     public function testResourceExceptionErrorsAreIncludedInResponse()
