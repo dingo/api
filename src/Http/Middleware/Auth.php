@@ -9,16 +9,22 @@ use Dingo\Api\Auth\Auth as Authentication;
 class Auth
 {
     /**
+     * Router instance.
+     *
      * @var \Dingo\Api\Routing\Router
      */
     protected $router;
 
     /**
+     * Authenticator instance.
+     *
      * @var \Dingo\Api\Auth\Auth
      */
     protected $auth;
 
     /**
+     * Create a new auth middleware instance.
+     *
      * @param \Dingo\Api\Routing\Router $router
      * @param \Dingo\Api\Auth\Auth $auth
      */
@@ -29,6 +35,8 @@ class Auth
     }
 
     /**
+     * Perform authentication before a request is executed.
+     *
      * @param \Illuminate\Http\Request $request
      * @param \Closure $next
      *
