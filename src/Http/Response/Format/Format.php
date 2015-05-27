@@ -23,7 +23,7 @@ abstract class Format
      *
      * @param \Illuminate\Http\Request $request
      *
-     * @return \Dingo\Api\Http\ResponseFormat\ResponseFormat
+     * @return \Dingo\Api\Http\Response\Format\Format
      */
     public function setRequest($request)
     {
@@ -37,7 +37,7 @@ abstract class Format
      *
      * @param \Illuminate\Http\Response $response
      *
-     * @return \Dingo\Api\Http\ResponseFormat\ResponseFormat
+     * @return \Dingo\Api\Http\Response\Format\Format
      */
     public function setResponse($response)
     {
@@ -65,9 +65,9 @@ abstract class Format
     abstract public function formatEloquentCollection($collection);
 
     /**
-     * Format an array or instance implementing ArrayableInterface.
+     * Format an array or instance implementing Arrayable.
      *
-     * @param array|\Illuminate\Support\Contracts\ArrayableInterface $content
+     * @param array|\Illuminate\Contracts\Support\Arrayable $content
      *
      * @return string
      */

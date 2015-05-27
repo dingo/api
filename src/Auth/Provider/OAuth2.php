@@ -59,9 +59,10 @@ class OAuth2 extends Authorization
      * Authenticate request with the OAuth 2.0 resource server.
      *
      * @param \Illuminate\Http\Request  $request
-     * @param \Illuminate\Routing\Route $route
+     * @param \Dingo\Api\Routing\Route $route
      *
      * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
+     * @throws \Exception
      *
      * @return mixed
      */

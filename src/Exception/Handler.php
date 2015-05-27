@@ -4,10 +4,8 @@ namespace Dingo\Api\Exception;
 
 use Exception;
 use ReflectionFunction;
-use RecursiveArrayIterator;
 use Dingo\Api\Http\Request;
 use Illuminate\Http\Response;
-use RecursiveIteratorIterator;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 

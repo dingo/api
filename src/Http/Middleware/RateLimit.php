@@ -3,11 +3,9 @@
 namespace Dingo\Api\Http\Middleware;
 
 use Closure;
-use Dingo\Api\Routing\Route;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
 use Dingo\Api\Http\RateLimit\Handler;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class RateLimit
 {

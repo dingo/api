@@ -50,6 +50,8 @@ trait Helpers
     /**
      * Protect controller methods.
      *
+     * @param array $options
+     *
      * @return void
      */
     protected function protect(array $options = [])
@@ -59,6 +61,8 @@ trait Helpers
 
     /**
      * Unprotect controller methods.
+     *
+     * @param array $options
      *
      * @return void
      */
@@ -179,7 +183,7 @@ trait Helpers
      *
      * @throws \ErrorException
      *
-     * @return \Dingo\Api\Http\Response\Builder
+     * @return \Dingo\Api\Http\Response
      */
     public function __call($method, $parameters)
     {

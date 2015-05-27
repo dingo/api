@@ -2,7 +2,6 @@
 
 namespace Dingo\Api\Routing\Adapter;
 
-use Closure;
 use Dingo\Api\Http\Request;
 
 interface Adapter
