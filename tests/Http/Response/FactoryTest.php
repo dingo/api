@@ -66,39 +66,44 @@ class FactoryTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Illuminate\Pagination\Paginator', $this->factory->withPaginator(new Paginator([new UserStub], 1), 'test')->getOriginalContent());
     }
 
-    public function testMakingErrorNotFoundResponse()
+    /**
+     * @expectedException \Symfony\Component\HttpKernel\Exception\HttpException
+     */
+    public function testNotFoundThrowsHttpException()
     {
-        $response = $this->factory->errorNotFound();
-        $this->assertEquals($response->getStatusCode(), 404);
-        $this->assertEquals($response->getContent(), '{"status_code":404,"message":"Not Found"}');
+        $this->factory->errorNotFound();
     }
 
-    public function testMakingBadRequestResponse()
+    /**
+     * @expectedException \Symfony\Component\HttpKernel\Exception\HttpException
+     */
+    public function testBadRequestThrowsHttpException()
     {
-        $response = $this->factory->errorBadRequest();
-        $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEquals('{"status_code":400,"message":"Bad Request"}', $response->getContent());
+        $this->factory->errorBadRequest();
     }
 
-    public function testMakingForbiddenResponse()
+    /**
+     * @expectedException \Symfony\Component\HttpKernel\Exception\HttpException
+     */
+    public function testForbiddenThrowsHttpException()
     {
-        $response = $this->factory->errorForbidden();
-        $this->assertEquals(403, $response->getStatusCode());
-        $this->assertEquals('{"status_code":403,"message":"Forbidden"}', $response->getContent());
+        $this->factory->errorForbidden();
     }
 
-    public function testMakingInternalErrorResponse()
+    /**
+     * @expectedException \Symfony\Component\HttpKernel\Exception\HttpException
+     */
+    public function testInternalThrowsHttpException()
     {
-        $response = $this->factory->errorInternal();
-        $this->assertEquals(500, $response->getStatusCode());
-        $this->assertEquals('{"status_code":500,"message":"Internal Error"}', $response->getContent());
+        $this->factory->errorInternal();
     }
 
-    public function testMakingUnauthorizedErrorResponse()
+    /**
+     * @expectedException \Symfony\Component\HttpKernel\Exception\HttpException
+     */
+    public function testUnauthorizedThrowsHttpException()
     {
-        $response = $this->factory->errorUnauthorized();
-        $this->assertEquals(401, $response->getStatusCode());
-        $this->assertEquals('{"status_code":401,"message":"Unauthorized"}', $response->getContent());
+        $this->factory->errorUnauthorized();
     }
 
     public function testMakingArrayResponse()

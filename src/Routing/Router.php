@@ -525,10 +525,6 @@ class Router
         try {
             $response = $this->adapter->dispatch($request, $accept['version']);
 
-            if (! $response->isSuccessful()) {
-                throw new HttpException($response->getStatusCode(), $response->getContent(), null, $response->headers->all());
-            }
-
             return $this->prepareResponse($response, $request, $accept['format']);
         } catch (Exception $exception) {
             return $this->prepareResponse(

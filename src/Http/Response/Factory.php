@@ -9,6 +9,7 @@ use Dingo\Api\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\Paginator;
 use Dingo\Api\Transformer\Factory as TransformerFactory;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Factory
 {
@@ -130,80 +131,86 @@ class Factory
     /**
      * Return an error response.
      *
-     * @param string|array $error
-     * @param int          $statusCode
+     * @param string $message
+     * @param int    $statusCode
      *
-     * @return \Dingo\Api\Http\Response\Builder
+     * @return void
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\HttpException
      */
-    public function error($error, $statusCode)
+    public function error($message, $statusCode)
     {
-        if (! is_array($error)) {
-            $error = ['message' => $error];
-        }
-
-        $error = array_merge(['status_code'  => $statusCode], $error);
-
-        return $this->array($error)->setStatusCode($statusCode);
+        throw new HttpException($statusCode, $message);
     }
 
     /**
      * Return a 404 not found error.
      *
-     * @param string|array $message
+     * @param string $message
      *
-     * @return \Dingo\Api\Http\Response\Builder
+     * @return void
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\HttpException
      */
     public function errorNotFound($message = 'Not Found')
     {
-        return $this->error($message, 404);
+        $this->error($message, 404);
     }
 
     /**
      * Return a 400 bad request error.
      *
-     * @param string|array $message
+     * @param string $message
      *
-     * @return \Dingo\Api\Http\Response\Builder
+     * @return void
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\HttpException
      */
     public function errorBadRequest($message = 'Bad Request')
     {
-        return $this->error($message, 400);
+        $this->error($message, 400);
     }
 
     /**
      * Return a 403 forbidden error.
      *
-     * @param string|array $message
+     * @param string $message
      *
-     * @return \Dingo\Api\Http\Response\Builder
+     * @return void
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\HttpException
      */
     public function errorForbidden($message = 'Forbidden')
     {
-        return $this->error($message, 403);
+        $this->error($message, 403);
     }
 
     /**
      * Return a 500 internal server error.
      *
-     * @param string|array $message
+     * @param string $message
      *
-     * @return \Dingo\Api\Http\Response\Builder
+     * @return void
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\HttpException
      */
     public function errorInternal($message = 'Internal Error')
     {
-        return $this->error($message, 500);
+        $this->error($message, 500);
     }
 
     /**
      * Return a 401 unauthorized error.
      *
-     * @param string|array $message
+     * @param string $message
      *
-     * @return \Dingo\Api\Http\Response\Builder
+     * @return void
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\HttpException
      */
     public function errorUnauthorized($message = 'Unauthorized')
     {
-        return $this->error($message, 401);
+        $this->error($message, 401);
     }
 
     /**
