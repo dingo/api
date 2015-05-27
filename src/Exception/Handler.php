@@ -153,16 +153,16 @@ class Handler implements ExceptionHandler
      */
     protected function genericResponse(Exception $exception)
     {
-        if (! $message = $exception->getMessage()) {
-            $message = sprintf('%d %s', $exception->getStatusCode(), Response::$statusTexts[$exception->getStatusCode()]);
-        }
-
         if ($exception instanceof HttpExceptionInterface) {
             $statusCode = $exception->getStatusCode();
             $headers = $exception->getHeaders();
         } else {
             $statusCode = 500;
             $headers = [];
+        }
+
+        if (! $message = $exception->getMessage()) {
+            $message = sprintf('%d %s', $statusCode, Response::$statusTexts[$statusCode]);
         }
 
         $replacements = [
