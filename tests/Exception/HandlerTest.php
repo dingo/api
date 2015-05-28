@@ -150,4 +150,14 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 
         $this->exceptionHandler->render($request, $exception);
     }
+
+    public function testSettingUserDefinedReplacements()
+    {
+        $this->exceptionHandler->setReplacements([':foo' => 'bar']);
+        $this->exceptionHandler->setErrorFormat(['bing' => ':foo']);
+
+        $response = $this->exceptionHandler->handle(new HttpException(404));
+
+        $this->assertEquals('{"bing":"bar"}', $response->getContent());
+    }
 }

@@ -40,6 +40,13 @@ class Handler implements ExceptionHandler
     protected $debug = false;
 
     /**
+     * User defined replacements to merge with defaults.
+     *
+     * @var array
+     */
+    protected $replacements = [];
+
+    /**
      * Create a new exception handler instance.
      *
      * @param \Illuminate\Contracts\Debug\ExceptionHandler $parent
@@ -151,13 +158,55 @@ class Handler implements ExceptionHandler
      */
     protected function genericResponse(Exception $exception)
     {
-        if ($exception instanceof HttpExceptionInterface) {
-            $statusCode = $exception->getStatusCode();
-            $headers = $exception->getHeaders();
-        } else {
-            $statusCode = 500;
-            $headers = [];
-        }
+        $replacements = $this->prepareReplacements($exception);
+
+        $response = $this->newResponseArray();
+
+        array_walk_recursive($response, function (&$value, $key) use ($exception, $replacements) {
+            if (starts_with($value, ':') && isset($replacements[$value])) {
+                $value = $replacements[$value];
+            }
+        });
+
+        $response = $this->recursivelyRemoveEmptyReplacements($response);
+
+        return new Response($response, $this->getStatusCode($exception), $this->getHeaders($exception));
+    }
+
+    /**
+     * Get the status code from the exception.
+     *
+     * @param \Exception $exception
+     *
+     * @return int
+     */
+    protected function getStatusCode(Exception $exception)
+    {
+        return $exception instanceof HttpExceptionInterface ? $exception->getStatusCode() : 500;
+    }
+
+    /**
+     * Get the headers from the exception.
+     *
+     * @param \Exception $exception
+     *
+     * @return array
+     */
+    protected function getHeaders(Exception $exception)
+    {
+        return $exception instanceof HttpExceptionInterface ? $exception->getHeaders() : [];
+    }
+
+    /**
+     * Prepare the replacements array by gathering the keys and values.
+     *
+     * @param \Exception $exception
+     *
+     * @return array
+     */
+    protected function prepareReplacements(Exception $exception)
+    {
+        $statusCode = $this->getStatusCode($exception);
 
         if (! $message = $exception->getMessage()) {
             $message = sprintf('%d %s', $statusCode, Response::$statusTexts[$statusCode]);
@@ -185,17 +234,19 @@ class Handler implements ExceptionHandler
             ];
         }
 
-        $response = $this->newResponseArray();
+        return array_merge($replacements, $this->replacements);
+    }
 
-        array_walk_recursive($response, function (&$value, $key) use ($exception, $replacements) {
-            if (starts_with($value, ':') && isset($replacements[$value])) {
-                $value = $replacements[$value];
-            }
-        });
-
-        $response = $this->recursivelyRemoveEmptyReplacements($response);
-
-        return new Response($response, $statusCode, $headers);
+    /**
+     * Set user defined replacements.
+     *
+     * @param array $replacements
+     *
+     * @return void
+     */
+    public function setReplacements(array $replacements)
+    {
+        $this->replacements = $replacements;
     }
 
     /**
