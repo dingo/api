@@ -11,6 +11,7 @@ use Illuminate\Container\Container;
 use Dingo\Api\Http\RateLimit\Handler;
 use Dingo\Api\Tests\Stubs\ThrottleStub;
 use Dingo\Api\Http\Middleware\RateLimit;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class RateLimitTest extends PHPUnit_Framework_TestCase
 {
@@ -80,7 +81,7 @@ class RateLimitTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('x-ratelimit-reset', $response->headers->all());
     }
 
-    public function testRateLimitingFailsAndErrorResponseIsReturned()
+    public function testRateLimitingFailsAndHeadersAreSetOnException()
     {
         $request = Request::create('test', 'GET');
 
@@ -93,15 +94,17 @@ class RateLimitTest extends PHPUnit_Framework_TestCase
 
         $this->handler->extend(new ThrottleStub(['limit' => 0]));
 
-        $response = $this->middleware->handle($request, function ($request) {
-            return new Response('foo');
-        });
-
-        $this->assertEquals(403, $response->getStatusCode());
-        $this->assertEquals('You have exceeded your rate limit.', $response->getContent());
-        $this->assertArrayHasKey('x-ratelimit-limit', $response->headers->all());
-        $this->assertArrayHasKey('x-ratelimit-remaining', $response->headers->all());
-        $this->assertArrayHasKey('x-ratelimit-reset', $response->headers->all());
+        try {
+            $this->middleware->handle($request, function ($request) {
+                return new Response('foo');
+            });
+        } catch (HttpException $exception) {
+            $this->assertEquals(403, $exception->getStatusCode());
+            $this->assertEquals('You have exceeded your rate limit.', $exception->getMessage());
+            $this->assertArrayHasKey('X-RateLimit-Limit', $exception->getHeaders());
+            $this->assertArrayHasKey('X-RateLimit-Remaining', $exception->getHeaders());
+            $this->assertArrayHasKey('X-RateLimit-Reset', $exception->getHeaders());
+        }
     }
 
     public function testRateLimitingWithLimitsSetOnRoute()

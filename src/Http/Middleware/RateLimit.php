@@ -6,6 +6,7 @@ use Closure;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
 use Dingo\Api\Http\RateLimit\Handler;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class RateLimit
 {
@@ -43,7 +44,7 @@ class RateLimit
      * @param \Dingo\Api\Http\Request $request
      * @param \Closure                $next
      *
-     * @throws \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException
+     * @throws \Symfony\Component\HttpKernel\Exception\HttpException
      *
      * @return mixed
      */
@@ -58,9 +59,7 @@ class RateLimit
         $this->handler->rateLimitRequest($request, $route->getRateLimit(), $route->getRateExpiration());
 
         if ($this->handler->exceededRateLimit()) {
-            return $this->responseWithHeaders(
-                new Response('You have exceeded your rate limit.', 403)
-            );
+            throw new HttpException(403, 'You have exceeded your rate limit.', null, $this->getHeaders());
         }
 
         $response = $next($request);
@@ -81,10 +80,24 @@ class RateLimit
      */
     protected function responseWithHeaders($response)
     {
-        $response->headers->set('X-RateLimit-Limit', $this->handler->getThrottleLimit());
-        $response->headers->set('X-RateLimit-Remaining', $this->handler->getRemainingLimit());
-        $response->headers->set('X-RateLimit-Reset', $this->handler->getRateLimitReset());
+        foreach ($this->getHeaders() as $key => $value) {
+            $response->headers->set($key, $value);
+        }
 
         return $response;
+    }
+
+    /**
+     * Get the headers for the response.
+     *
+     * @return array
+     */
+    protected function getHeaders()
+    {
+        return [
+            'X-RateLimit-Limit' => $this->handler->getThrottleLimit(),
+            'X-RateLimit-Remaining' => $this->handler->getRemainingLimit(),
+            'X-RateLimit-Reset' => $this->handler->getRateLimitReset()
+        ];
     }
 }
