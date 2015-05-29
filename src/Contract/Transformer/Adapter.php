@@ -1,6 +1,6 @@
 <?php
 
-namespace Dingo\Api\Transformer\Adapter;
+namespace Dingo\Api\Contract\Transformer;
 
 use Dingo\Api\Http\Request;
 use Dingo\Api\Transformer\Binding;

@@ -10,7 +10,7 @@ use Dingo\Api\Http\Response;
 use Dingo\Api\Exception\Handler;
 use Dingo\Api\Http\InternalRequest;
 use Illuminate\Container\Container;
-use Dingo\Api\Routing\Adapter\Adapter;
+use Dingo\Api\Contract\Routing\Adapter;
 use Illuminate\Routing\ControllerInspector;
 use Dingo\Api\Exception\InternalHttpException;
 use Dingo\Api\Http\Parser\Accept as AcceptParser;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Dingo\Api\Routing\Adapter;
+namespace Dingo\Api\Contract\Routing;
 
 use Dingo\Api\Http\Request;
 

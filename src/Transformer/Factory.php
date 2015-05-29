@@ -7,7 +7,7 @@ use RuntimeException;
 use Illuminate\Support\Collection;
 use Illuminate\Container\Container;
 use Illuminate\Pagination\Paginator;
-use Dingo\Api\Transformer\Adapter\Adapter;
+use Dingo\Api\Contract\Transformer\Adapter;
 
 class Factory
 {
@@ -28,15 +28,15 @@ class Factory
     /**
      * Transformation layer being used to transform responses.
      *
-     * @var \Dingo\Api\Transformer\TransformerInterface
+     * @var \Dingo\Api\Contract\Transformer\Adapter
      */
     protected $transformer;
 
     /**
      * Create a new transformer factory instance.
      *
-     * @param \Illuminate\Container\Container        $container
-     * @param \Dingo\Api\Transformer\Adapter\Adapter $transformer
+     * @param \Illuminate\Container\Container         $container
+     * @param \Dingo\Api\Contract\Transformer\Adapter $transformer
      *
      * @return void
      */

@@ -2,9 +2,9 @@
 
 namespace Dingo\Api\Http\RateLimit\Throttle;
 
-use Illuminate\Container\Container;
+use Dingo\Api\Contract\Http\RateLimit\Throttle as RateLimitThrottle;
 
-abstract class Throttle
+abstract class Throttle implements RateLimitThrottle
 {
     /**
      * Array of throttle options.
@@ -23,25 +23,6 @@ abstract class Throttle
     public function __construct(array $options = [])
     {
         $this->options = array_merge($this->options, $options);
-    }
-
-    /**
-     * Attempt to match the throttle against a given condition.
-     *
-     * @param \Illuminate\Container\Container $container
-     *
-     * @return bool
-     */
-    abstract public function match(Container $container);
-
-    /**
-     * Get the throttles options.
-     *
-     * @return array
-     */
-    public function getOptions()
-    {
-        return $this->options;
     }
 
     /**

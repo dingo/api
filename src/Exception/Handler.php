@@ -6,10 +6,11 @@ use Exception;
 use ReflectionFunction;
 use Dingo\Api\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Contracts\Debug\ExceptionHandler;
+use Dingo\Api\Contract\Exception\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Illuminate\Contracts\Debug\ExceptionHandler as IlluminateExceptionHandler;
 
-class Handler implements ExceptionHandler
+class Handler implements ExceptionHandler, IlluminateExceptionHandler
 {
     /**
      * Parent exception handler instance.
@@ -55,7 +56,7 @@ class Handler implements ExceptionHandler
      *
      * @return void
      */
-    public function __construct(ExceptionHandler $parent, array $format, $debug)
+    public function __construct(IlluminateExceptionHandler $parent, array $format, $debug)
     {
         $this->parent = $parent;
         $this->format = $format;

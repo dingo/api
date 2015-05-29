@@ -31,7 +31,8 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $throttle = $this->limiter->getThrottle();
 
         $this->assertInstanceOf('Dingo\Api\Http\RateLimit\Throttle\Route', $throttle);
-        $this->assertSame(['limit' => 100, 'expires' => 100], $throttle->getOptions());
+        $this->assertSame(100, $throttle->getLimit());
+        $this->assertSame(100, $throttle->getExpires());
     }
 
     public function testThrottleWithHighestAmountOfRequestsIsUsedWhenMoreThanOneMatchingThrottle()

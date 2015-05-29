@@ -5,7 +5,7 @@ namespace Dingo\Api\Routing;
 use Closure;
 use Dingo\Api\Http\Request;
 use Illuminate\Container\Container;
-use Dingo\Api\Routing\Adapter\Adapter;
+use Dingo\Api\Contract\Routing\Adapter;
 
 class Route
 {

@@ -5,7 +5,7 @@ namespace Dingo\Api\Tests\Stubs;
 use Dingo\Api\Http\Request;
 use Illuminate\Support\Collection;
 use Dingo\Api\Transformer\Binding;
-use Dingo\Api\Transformer\Adapter\Adapter;
+use Dingo\Api\Contract\Transformer\Adapter;
 
 class TransformerStub implements Adapter
 {

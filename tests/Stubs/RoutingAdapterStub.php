@@ -5,7 +5,7 @@ namespace Dingo\Api\Tests\Stubs;
 use Closure;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Http\Request;
-use Dingo\Api\Routing\Adapter\Adapter;
+use Dingo\Api\Contract\Routing\Adapter;
 
 class RoutingAdapterStub implements Adapter
 {

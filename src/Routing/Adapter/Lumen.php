@@ -9,6 +9,7 @@ use Dingo\Api\Http\Request;
 use FastRoute\DataGenerator;
 use FastRoute\RouteCollector;
 use Laravel\Lumen\Application;
+use Dingo\Api\Contract\Routing\Adapter;
 use Dingo\Api\Exception\UnknownVersionException;
 
 class Lumen implements Adapter
