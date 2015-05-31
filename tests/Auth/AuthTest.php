@@ -25,7 +25,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
+     * @expectedException \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
      */
     public function testExceptionThrownWhenAuthorizationHeaderNotSet()
     {
@@ -41,7 +41,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
+     * @expectedException \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
      */
     public function testExceptionThrownWhenProviderFailsToAuthenticate()
     {
