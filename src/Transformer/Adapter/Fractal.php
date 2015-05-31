@@ -174,7 +174,7 @@ class Fractal implements Adapter
 
         $includes = array_merge($availableIncludes, $transformer->getDefaultIncludes());
 
-        $eagerLoads = array();
+        $eagerLoads = [];
 
         foreach ($includes as $key => $value) {
             $eagerLoads[] = is_string($key) ? $key : $value;

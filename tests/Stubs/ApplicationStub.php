@@ -32,7 +32,7 @@ class ApplicationStub extends Container implements Application
         //
     }
 
-    public function register($provider, $options = array(), $force = false)
+    public function register($provider, $options = [], $force = false)
     {
         //
     }
