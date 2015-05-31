@@ -155,7 +155,7 @@ class Lumen implements Adapter
 
         $uris = [];
 
-        while($segments) {
+        while ($segments) {
             $uris[] = implode('/', $segments);
 
             array_pop($segments);

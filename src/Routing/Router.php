@@ -299,7 +299,7 @@ class Router
      *
      * @return void
      */
-    public function controller($uri, $controller, $names = array())
+    public function controller($uri, $controller, $names = [])
     {
         $routable = (new ControllerInspector)->getRoutable($this->addGroupNamespace($controller), $uri);
 
