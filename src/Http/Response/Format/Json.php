@@ -2,7 +2,7 @@
 
 namespace Dingo\Api\Http\Response\Format;
 
-use Illuminate\Support\Contracts\ArrayableInterface;
+use Illuminate\Contracts\Support\Arrayable;
 
 class Json extends Format
 {
@@ -84,7 +84,7 @@ class Json extends Format
      */
     protected function morphToArray($value)
     {
-        return $value instanceof ArrayableInterface ? $value->toArray() : $value;
+        return $value instanceof Arrayable ? $value->toArray() : $value;
     }
 
     /**
