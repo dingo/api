@@ -26,7 +26,8 @@
         "illuminate/filesystem": "5.0.*",
         "phpunit/phpunit": "~4.0",
         "mockery/mockery": "~0.9",
-        "squizlabs/php_codesniffer": "~2.0"
+        "squizlabs/php_codesniffer": "~2.0",
+        "fabpot/php-cs-fixer": "1.9.*@dev"
     },
     "suggest": {
         "lucadegasperi/oauth2-server-laravel": "Protect your API with OAuth 2.0.",
