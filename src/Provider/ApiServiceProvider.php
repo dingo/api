@@ -20,8 +20,6 @@ class ApiServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->setupConfig();
-
         $this->app->singleton('Illuminate\Contracts\Debug\ExceptionHandler', function ($app) {
             return $app['api.exception'];
         });
@@ -37,6 +35,7 @@ class ApiServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->setupConfig();
         $this->setupClassAliases();
 
         $this->registerExceptionHandler();
