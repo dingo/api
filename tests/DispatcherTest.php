@@ -6,21 +6,14 @@ use Mockery as m;
 use Dingo\Api\Http;
 use Dingo\Api\Auth\Auth;
 use Dingo\Api\Dispatcher;
+use Illuminate\Http\Request;
+use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
 use PHPUnit_Framework_TestCase;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
-use Dingo\Api\Tests\Stubs\RoutingAdapterStub;
-
-use Dingo\Api\Routing\Adapter\Laravel;
-
-use Illuminate\Routing\Router as IlluminateRouter;
-use Illuminate\Events\Dispatcher as EventDispatcher;
-
 use Dingo\Api\Tests\Stubs\MiddlewareStub;
-
-use Illuminate\Http\Request;
-use Dingo\Api\Http\Response;
+use Dingo\Api\Tests\Stubs\RoutingAdapterStub;
 use Dingo\Api\Exception\InternalHttpException;
 use Illuminate\Support\Facades\Request as RequestFacade;
 
