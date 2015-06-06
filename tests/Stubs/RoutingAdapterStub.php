@@ -63,8 +63,8 @@ class RoutingAdapterStub implements Adapter
 
     protected function findRoute(Request $request, array $routes)
     {
-        foreach ($routes[$request->getMethod()] as $route) {
-            if (trim($request->getRequestUri(), '/') === trim($route['uri'], '/')) {
+        foreach ($routes[$request->getMethod()][$request->getHost()] as $route) {
+            if (trim($request->getPathInfo(), '/') === trim($route['uri'], '/')) {
                 return $route;
             }
         }
@@ -92,6 +92,10 @@ class RoutingAdapterStub implements Adapter
                 $this->routes[$version] = [];
             }
 
+            if (! isset($action['domain'])) {
+                $action['domain'] = 'localhost';
+            }
+
             if (str_contains($uri, '?}')) {
                 $uri = preg_replace('/\/\{(.*?)\?\}/', '', $uri);
             }
@@ -105,7 +109,7 @@ class RoutingAdapterStub implements Adapter
                     $this->routes[$version][$method] = [];
                 }
 
-                $this->routes[$version][$method][] = compact('uri', 'action');
+                $this->routes[$version][$method][$action['domain']][] = compact('uri', 'action');
             }
         }
     }

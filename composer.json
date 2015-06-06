@@ -20,6 +20,7 @@
         "tymon/jwt-auth": "0.5.*",
         "illuminate/auth": "5.1.*",
         "illuminate/cache": "5.1.*",
+        "illuminate/events": "5.1.*",
         "illuminate/database": "5.1.*",
         "illuminate/pagination": "5.1.*",
         "illuminate/console": "5.1.*",

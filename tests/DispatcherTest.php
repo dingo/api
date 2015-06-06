@@ -33,7 +33,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->container['api.auth'] = new MiddlewareStub;
         $this->container['api.limiting'] = new MiddlewareStub;
 
-        $this->adapter = new Laravel(new IlluminateRouter(new EventDispatcher, $this->container));
+        $this->adapter = new RoutingAdapterStub;
         $this->exception = m::mock('Dingo\Api\Exception\Handler');
         $this->router = new Router($this->adapter, new Http\Parser\Accept('api', 'v1', 'json'), $this->exception, $this->container);
 
