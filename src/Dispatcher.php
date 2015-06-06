@@ -9,8 +9,6 @@ use Dingo\Api\Routing\Router;
 use Illuminate\Container\Container;
 use Dingo\Api\Http\InternalRequest;
 use Illuminate\Filesystem\Filesystem;
-
-
 use Illuminate\Auth\GenericUser;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\Cookie;
