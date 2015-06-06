@@ -7,8 +7,8 @@ use ErrorException;
 use Illuminate\Support\Str;
 use Dingo\Api\Http\Response;
 use Illuminate\Support\Collection;
-use Illuminate\Pagination\Paginator;
 use Dingo\Api\Transformer\Factory as TransformerFactory;
+use Illuminate\Contracts\Pagination\Paginator;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Factory
@@ -108,10 +108,10 @@ class Factory
     /**
      * Bind a paginator to a transformer and start building a response.
      *
-     * @param \Illuminate\Pagination\Paginator $paginator
-     * @param object                           $transformer
-     * @param array                            $parameters
-     * @param \Closure                         $after
+     * @param \Illuminate\Contracts\Pagination\Paginator $paginator
+     * @param object                                     $transformer
+     * @param array                                      $parameters
+     * @param \Closure                                   $after
      *
      * @return \Dingo\Api\Http\Response
      */

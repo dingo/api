@@ -9,9 +9,9 @@ use League\Fractal\Manager as FractalManager;
 use League\Fractal\Resource\Item as FractalItem;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use Illuminate\Support\Collection as IlluminateCollection;
-use Illuminate\Pagination\Paginator as IlluminatePaginator;
 use League\Fractal\Resource\Collection as FractalCollection;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Contracts\Pagination\Paginator as IlluminatePaginator;
 
 class Fractal implements Adapter
 {
@@ -104,7 +104,7 @@ class Fractal implements Adapter
     /**
      * Create the Fractal paginator adapter.
      *
-     * @param \Illuminate\Pagination\Paginator $paginator
+     * @param \Illuminate\Contracts\Pagination\Paginator $paginator
      *
      * @return \League\Fractal\Pagination\IlluminatePaginatorAdapter
      */
