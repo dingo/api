@@ -2,12 +2,12 @@
 
 namespace Dingo\Api\Tests\Stubs;
 
-use Illuminate\Http\Request;
+use Dingo\Api\Http\Request;
 use Illuminate\Support\Collection;
 use Dingo\Api\Transformer\Binding;
-use Dingo\Api\Transformer\TransformerInterface;
+use Dingo\Api\Contract\Transformer\Adapter;
 
-class TransformerStub implements TransformerInterface
+class TransformerStub implements Adapter
 {
     public function transform($response, $transformer, Binding $binding, Request $request)
     {

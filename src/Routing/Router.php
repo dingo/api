@@ -2,496 +2,598 @@
 
 namespace Dingo\Api\Routing;
 
+use Closure;
 use Exception;
-use Dingo\Api\Properties;
-use BadMethodCallException;
-use Illuminate\Http\Request;
-use Illuminate\Events\Dispatcher;
-use Dingo\Api\Http\ResponseBuilder;
+use RuntimeException;
+use Dingo\Api\Http\Request;
+use Dingo\Api\Http\Response;
+use Dingo\Api\Exception\Handler;
 use Dingo\Api\Http\InternalRequest;
 use Illuminate\Container\Container;
-use Dingo\Api\Http\Response as ApiResponse;
-use Illuminate\Routing\Route as IlluminateRoute;
-use Illuminate\Routing\Router as IlluminateRouter;
+use Dingo\Api\Contract\Routing\Adapter;
+use Illuminate\Routing\ControllerInspector;
+use Dingo\Api\Exception\InternalHttpException;
+use Dingo\Api\Http\Parser\Accept as AcceptParser;
 use Illuminate\Http\Response as IlluminateResponse;
-use Dingo\Api\Exception\InvalidAcceptHeaderException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Illuminate\Routing\RouteCollection as IlluminateRouteCollection;
-use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Dingo\Api\Http\Response\Builder as ResponseBuilder;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 
-class Router extends IlluminateRouter
+class Router
 {
     /**
-     * API properties instance.
-     *
-     * @var \Dingo\Api\Properties
-     */
-    protected $properties;
-
-    /**
-     * API version collection instance.
-     *
-     * @var array
-     */
-    protected $api;
-
-    /**
-     * Current API version.
+     * Auth middleware identifier.
      *
      * @var string
      */
-    protected $currentVersion;
+    const API_AUTH_MIDDLEWARE = 'api.auth';
 
     /**
-     * Current API format.
+     * Rate limit middleware identifier.
      *
      * @var string
      */
-    protected $currentFormat;
+    const API_RATE_LIMIT_MIDDLEWARE = 'api.limiting';
 
     /**
-     * Array of requests targetting the API.
+     * Routing adapter instance.
+     *
+     * @var \Dingo\Api\Routing\Adapter\AdapterInterface
+     */
+    protected $adapter;
+
+    /**
+     * Accept parser instance.
+     *
+     * @var \Dingo\Api\Http\Parser\AcceptParser
+     */
+    protected $accept;
+
+    /**
+     * Exception handler instance.
+     *
+     * @var \Dingo\Api\Exception\Handler
+     */
+    protected $exception;
+
+    /**
+     * Application container instance.
+     *
+     * @var \Illuminate\Container\Container
+     */
+    protected $container;
+
+    /**
+     * Group stack array.
      *
      * @var array
      */
-    protected $apiRequests = [];
+    protected $groupStack = [];
 
     /**
-     * Indicates if the request is a conditional request.
+     * Indicates if the request is conditional.
      *
      * @var bool
      */
-    protected $conditionalRequest;
+    protected $conditionalRequest = true;
 
     /**
-     * Indicates if the request is in strict mode.
+     * The current route being dispatched.
      *
-     * @var bool
+     * @var \Dingo\Api\Routing\Route
      */
-    protected $strict;
+    protected $currentRoute;
+
+    /**
+     * The number of routes dispatched.
+     *
+     * @var int
+     */
+    protected $routesDispatched = 0;
 
     /**
      * Create a new router instance.
      *
-     * @param \Illuminate\Events\Dispatcher   $events
-     * @param \Dingo\Api\Properties           $properties
-     * @param \Illuminate\Container\Container $container
+     * @param \Dingo\Api\Routing\Adapter\Adapter  $adapter
+     * @param \Dingo\Api\Http\Parser\AcceptParser $accept
+     * @param \Dingo\Api\Exception\Handler        $exception
+     * @param \Illuminate\Container\Container     $container
      *
      * @return void
      */
-    public function __construct(Dispatcher $events, Properties $properties, Container $container = null)
+    public function __construct(Adapter $adapter, AcceptParser $accept, Handler $exception, Container $container)
     {
-        $this->properties = $properties;
-        $this->api = new GroupCollection($properties);
-
-        parent::__construct($events, $container);
+        $this->adapter = $adapter;
+        $this->accept = $accept;
+        $this->exception = $exception;
+        $this->container = $container;
     }
 
     /**
-     * Register an API group.
+     * An alias for calling the group method, allows a more fluent API
+     * for registering a new API version group with optional
+     * attributes and a required callback.
      *
-     * @param array|string $options
-     * @param callable     $callback
+     * This method can be called without the third parameter, however,
+     * the callback should always be the last paramter.
      *
-     * @throws \BadMethodCallException
+     * @param string         $version
+     * @param array|callable $second
+     * @param callable       $third
      *
      * @return void
      */
-    public function api($options, callable $callback)
+    public function version($version, $second, $third = null)
     {
-        $options = $this->setupGroupOptions($options);
-
-        $this->createRouteCollections($options);
-
-        $this->group($options, $callback);
-    }
-
-    /**
-     * Create the route collections with the given options.
-     *
-     * @param array $options
-     *
-     * @return void
-     */
-    protected function createRouteCollections(array $options)
-    {
-        foreach ($options['version'] as $version) {
-            $this->api->add($version, $options);
-        }
-    }
-
-    /**
-     * Setup the API group options.
-     *
-     * @param array|string $options
-     *
-     * @return array
-     */
-    protected function setupGroupOptions($options)
-    {
-        if (is_string($options)) {
-            $options = ['version' => $options];
-        } elseif (! isset($options['version'])) {
-            throw new BadMethodCallException('Unable to register API route group without a version.');
-        }
-
-        $options['api'] = true;
-
-        $options['version'] = (array) $options['version'];
-
-        if (! isset($options['prefix']) && $prefix = $this->properties->getPrefix()) {
-            $options['prefix'] = $prefix;
-        }
-
-        if (! isset($options['domain']) && $domain = $this->properties->getDomain()) {
-            $options['domain'] = $domain;
-        }
-
-        if (isset($options['conditional_request'])) {
-            $this->conditionalRequest = $options['conditional_request'];
-        }
-
-        return $options;
-    }
-
-    /**
-     * Determine if the router is currently routing to the API.
-     *
-     * @return bool
-     */
-    protected function routingToApi()
-    {
-        return ! empty($this->groupStack) && array_get(last($this->groupStack), 'api', false) === true;
-    }
-
-    /**
-     * Add an existing collection of routes.
-     *
-     * @param \Illuminate\Routing\RouteCollection $routes
-     *
-     * @return void
-     */
-    public function addExistingRoutes(IlluminateRouteCollection $routes)
-    {
-        foreach ($routes as $route) {
-            $action = array_except($route->getAction(), 'uses');
-
-            $uri = $route->getUri();
-
-            if ($prefix = $route->getPrefix()) {
-                $uri = substr_replace($uri, '', 0, strlen($prefix)).'/';
-            }
-
-            $action['uses'] = array_pull($action, 'controller');
-
-            $this->addRoute($route->getMethods(), $uri, $action);
-        }
-    }
-
-    /**
-     * Dispatch the request to the application and return either a regular response
-     * or an API response.
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @throws \Exception
-     *
-     * @return \Illuminate\Http\Response|\Dingo\Api\Http\Response
-     */
-    public function dispatch(Request $request)
-    {
-        if (! $this->isApiRequest($request)) {
-            return parent::dispatch($request);
-        }
-
-        list($version, $format) = $this->parseAcceptHeader($request);
-
-        $this->currentVersion = $version;
-        $this->currentFormat = $format;
-
-        $this->container->instance('Illuminate\Http\Request', $request);
-
-        try {
-            $response = parent::dispatch($request);
-
-            // Attempt to get the formatter so that we can catch and handle
-            // any exceptions due to a poorly formatted accept header.
-            $response->getFormatter($format);
-        } catch (Exception $exception) {
-            $response = $this->handleException($request, $exception);
-        }
-
-        // This goes hand in hand with the above. We'll check to see if a
-        // formatter exists for the requested response format. If not
-        // then we'll revert to the default format because we are
-        // most likely formatting an error response.
-        if (! $response->hasFormatter($format)) {
-            $format = $this->properties->getFormat();
-        }
-
-        $response->getFormatter($format)
-                 ->setRequest($request)
-                 ->setResponse($response);
-
-        $response = $response->morph($format);
-
-        return $response;
-    }
-
-    /**
-     * Handle a thrown routing exception.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \Exception               $exception
-     *
-     * @return \Illuminate\Http\Response
-     */
-    protected function handleException(Request $request, Exception $exception)
-    {
-        if ($request instanceof InternalRequest) {
-            throw $exception;
+        if (func_num_args() == 2) {
+            list($version, $callback, $attributes) = array_merge(func_get_args(), [[]]);
         } else {
-            $response = $this->prepareResponse(
-                $request,
-                $this->events->until('router.exception', [$exception])
-            );
-
-            // When an exception is thrown it halts execution of the dispatch. We'll
-            // call the attached after filters for caught exceptions still.
-            $this->callFilter('after', $request, $response);
+            list($version, $attributes, $callback) = func_get_args();
         }
 
-        return $response;
+        $attributes = array_merge($attributes, ['version' => $version]);
+
+        $this->group($attributes, $callback);
     }
 
     /**
-     * {@inheritDoc}
-     */
-    protected function newRoute($methods, $uri, $action)
-    {
-        if ($this->routingToApi()) {
-            return new Route($methods, $uri, $action);
-        }
-
-        return parent::newRoute($methods, $uri, $action);
-    }
-
-    /**
-     * Add a new route to either the routers collection or an API collection.
+     * Create a new route group.
      *
-     * @param array|string          $methods
+     * @param array    $attributes
+     * @param callable $callback
+     *
+     * @return void
+     */
+    public function group(array $attributes, $callback)
+    {
+        if (! isset($attributes['conditionalRequest'])) {
+            $attributes['conditionalRequest'] = $this->conditionalRequest;
+        }
+
+        $attributes = $this->mergeLastGroupAttributes($attributes);
+
+        if (! isset($attributes['version'])) {
+            throw new RuntimeException('A version is required for an API group definition.');
+        } else {
+            $attributes['version'] = (array) $attributes['version'];
+        }
+
+        $this->groupStack[] = $attributes;
+
+        call_user_func($callback, $this);
+
+        array_pop($this->groupStack);
+    }
+
+    /**
+     * Create a new GET route.
+     *
      * @param string                $uri
-     * @param callable|array|string $action
+     * @param array|string|callable $action
      *
-     * @return \Illuminate\Routing\Route
+     * @return mixed
      */
-    protected function addRoute($methods, $uri, $action)
+    public function get($uri, $action)
     {
-        $route = $this->createRoute($methods, $uri, $action);
-
-        if ($this->routingToApi()) {
-            return $this->addApiRoute($route);
-        }
-
-        return $this->routes->add($route);
+        return $this->addRoute(['GET', 'HEAD'], $uri, $action);
     }
 
     /**
-     * Add a new route to an API collection.
+     * Create a new POST route.
      *
-     * @param \Illuminate\Routing\Route $route
+     * @param string                $uri
+     * @param array|string|callable $action
      *
-     * @return \Illuminate\Routing\Route
+     * @return mixed
      */
-    protected function addApiRoute($route)
+    public function post($uri, $action)
     {
-        $options = last($this->groupStack);
-
-        foreach ($this->api->getByOptions($options) as $collection) {
-            $collection->add($route);
-        }
-
-        return $route;
+        return $this->addRoute('POST', $uri, $action);
     }
 
     /**
-     * {@inheritDoc}
+     * Create a new PUT route.
+     *
+     * @param string                $uri
+     * @param array|string|callable $action
+     *
+     * @return mixed
      */
-    protected function findRoute($request)
+    public function put($uri, $action)
     {
-        $routes = $this->getRoutes();
+        return $this->addRoute('PUT', $uri, $action);
+    }
 
-        try {
-            $route = $routes->match($request);
-        } catch (NotFoundHttpException $exception) {
-            // If we are unable to match a route against the regular application routes then
-            // we'll attempt to match a route based on the request against the API routes.
-            // This will search the API route groups in reverse order for a match,
-            // it should be noted that OPTIONS requests will be a first in
-            // last out match.
-            if (! $routes = $this->api->getByRequest($request) ?: $this->api->getByVersion($this->currentVersion)) {
-                throw $exception;
+    /**
+     * Create a new PATCH route.
+     *
+     * @param string                $uri
+     * @param array|string|callable $action
+     *
+     * @return mixed
+     */
+    public function patch($uri, $action)
+    {
+        return $this->addRoute('PATCH', $uri, $action);
+    }
+
+    /**
+     * Create a new DELETE route.
+     *
+     * @param string                $uri
+     * @param array|string|callable $action
+     *
+     * @return mixed
+     */
+    public function delete($uri, $action)
+    {
+        return $this->addRoute('DELETE', $uri, $action);
+    }
+
+    /**
+     * Create a new OPTIONS route.
+     *
+     * @param string                $uri
+     * @param array|string|callable $action
+     *
+     * @return mixed
+     */
+    public function options($uri, $action)
+    {
+        return $this->addRoute('OPTIONS', $uri, $action);
+    }
+
+    /**
+     * Register an array of resources.
+     *
+     * @param array $resources
+     *
+     * @return void
+     */
+    public function resources(array $resources)
+    {
+        foreach ($resources as $name => $resource) {
+            $options = [];
+
+            if (is_array($resource)) {
+                list($resource, $options) = $resource;
             }
 
-            $route = $routes->match($request);
+            $this->resource($name, $resource, $options);
         }
-
-        return $this->current = $this->substituteBindings($route);
     }
 
     /**
-     * {@inheritDoc}
+     * Register a resource controller.
+     *
+     * @param string $name
+     * @param string $controller
+     * @param array  $options
+     *
+     * @return void
      */
-    protected function prepareResponse($request, $response)
+    public function resource($name, $controller, array $options = [])
     {
-        if ($response instanceof ResponseBuilder) {
-            $response = $response->build();
+        if ($this->container->bound('Dingo\Api\Routing\ResourceRegistrar')) {
+            $registrar = $this->container->make('Dingo\Api\Routing\ResourceRegistrar');
+        } else {
+            $registrar = new ResourceRegistrar($this);
         }
 
-        $response = parent::prepareResponse($request, $response);
+        $registrar->register($name, $controller, $options);
+    }
 
-        if ($this->isApiRequest($request)) {
-            if ($response instanceof IlluminateResponse) {
-                $response = ApiResponse::makeFromExisting($response);
+    /**
+     * Register an array of controllers.
+     *
+     * @param array $controllers
+     *
+     * @return void
+     */
+    public function controllers(array $controllers)
+    {
+        foreach ($controllers as $uri => $controller) {
+            $this->controller($uri, $controller);
+        }
+    }
+
+    /**
+     * Register a controller.
+     *
+     * @param string $uri
+     * @param string $controller
+     * @param array  $names
+     *
+     * @return void
+     */
+    public function controller($uri, $controller, $names = [])
+    {
+        $routable = (new ControllerInspector)->getRoutable($this->addGroupNamespace($controller), $uri);
+
+        foreach ($routable as $method => $routes) {
+            if ($method == 'getMethodProperties') {
+                continue;
             }
 
-            if ($response->isSuccessful() && $this->requestsAreConditional()) {
-                if (! $response->headers->has('ETag')) {
-                    $response->setEtag(md5($response->getContent()));
-                }
+            foreach ($routes as $route) {
+                $this->{$route['verb']}($route['uri'], [
+                    'uses' => $controller.'@'.$method,
+                    'as' => array_get($names, $method)
+                ]);
+            }
+        }
+    }
 
-                $response->isNotModified($request);
+    /**
+     * Add the group namespace to a controller.
+     *
+     * @param string $controller
+     *
+     * @return string
+     */
+    protected function addGroupNamespace($controller)
+    {
+        if (! empty($this->groupStack)) {
+            $group = end($this->groupStack);
+
+            if (isset($group['namespace']) && strpos($controller, '\\') !== 0) {
+                return $group['namespace'].'\\'.$controller;
             }
         }
 
-        return $response;
+        return $controller;
     }
 
     /**
-     * Determine if the request is an API request.
+     * Add a route to the routing adapter.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param string|array          $methods
+     * @param string                $uri
+     * @param string|array|callable $action
      *
-     * @return bool
+     * @return mixed
      */
-    public function isApiRequest($request)
+    public function addRoute($methods, $uri, $action)
     {
-        if ($this->api->isEmpty()) {
-            return false;
-        } elseif (isset($this->apiRequests[$key = sha1($request)])) {
-            return $this->apiRequests[$key];
+        if (is_string($action)) {
+            $action = ['uses' => $action];
+        } elseif ($action instanceof Closure) {
+            $action = [$action];
         }
 
-        $collection = $this->api->getByRequest($request) ?: $this->api->getDefault();
+        $action = $this->mergeLastGroupAttributes($action);
 
-        try {
-            $collection->match($request);
-        } catch (NotFoundHttpException $exception) {
-            return $this->apiRequests[$key] = false;
-        } catch (MethodNotAllowedHttpException $exception) {
-            // If a method is not allowed then we can say that a route was matched
-            // so the request is still targetting the API. This allows developers
-            // to provide better error responses when clients send bad requests.
+        $uri = $uri === '/' ? $uri : '/'.trim($uri, '/');
+
+        if (! empty($action['prefix'])) {
+            $uri = rtrim('/'.trim($action['prefix'], '/').'/'.trim($uri, '/'), '/');
+
+            unset($action['prefix']);
         }
 
-        return $this->apiRequests[$key] = true;
+        $action = $this->addRouteMiddlewares($action);
+
+        return $this->adapter->addRoute((array) $methods, $action['version'], $uri, $action);
     }
 
     /**
-     * Parse a requests accept header.
+     * Add the route middlewares to the action array.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param array $action
      *
      * @return array
      */
-    protected function parseAcceptHeader(Request $request)
+    protected function addRouteMiddlewares(array $action)
     {
-        if (preg_match('#application/vnd\.'.$this->properties->getVendor().'.(v[\d\.]+)\+(\w+)#', $request->header('accept'), $matches)) {
-            return array_slice($matches, 1);
-        } elseif ($this->isStrict()) {
-            throw new InvalidAcceptHeaderException('Unable to match the "Accept" header for the API request.');
+        foreach ([static::API_RATE_LIMIT_MIDDLEWARE, static::API_AUTH_MIDDLEWARE] as $middleware) {
+            if (($key = array_search($middleware, $action['middleware'])) !== false) {
+                unset($action['middleware'][$key]);
+            }
+
+            array_unshift($action['middleware'], $middleware);
         }
 
-        return [$this->properties->getVersion(), $this->properties->getFormat()];
+        return $action;
     }
 
     /**
-     * Get the current API format.
+     * Merge the last groups attributes.
+     *
+     * @param array $attributes
+     *
+     * @return array
+     */
+    protected function mergeLastGroupAttributes(array $attributes)
+    {
+        if (empty($this->groupStack)) {
+            return $this->mergeGroup($attributes, []);
+        }
+
+        return $this->mergeGroup($attributes, end($this->groupStack));
+    }
+
+    /**
+     * Merge the given group attributes.
+     *
+     * @param array $new
+     * @param array $old
+     *
+     * @return array
+     */
+    protected function mergeGroup(array $new, array $old)
+    {
+        $new['namespace'] = $this->formatNamespace($new, $old);
+
+        $new['prefix'] = $this->formatPrefix($new, $old);
+
+        foreach (['middleware', 'providers', 'scopes', 'before', 'after'] as $option) {
+            $new[$option] = $this->formatArrayBasedOption($option, $new);
+        }
+
+        if (isset($new['domain'])) {
+            unset($old['domain']);
+        }
+
+        if (isset($new['conditionalRequest'])) {
+            unset($old['conditionalRequest']);
+        }
+
+        if (isset($new['uses'])) {
+            $new['uses'] = $this->formatUses($new, $old);
+        }
+
+        $new['where'] = array_merge(array_get($old, 'where', []), array_get($new, 'where', []));
+
+        return array_merge_recursive(array_except($old, ['namespace', 'prefix', 'where']), $new);
+    }
+
+    /**
+     * Format an array based option in a route action.
+     *
+     * @param string $option
+     * @param array  $new
+     *
+     * @return array
+     */
+    protected function formatArrayBasedOption($option, array $new)
+    {
+        $value = array_get($new, $option, []);
+
+        return is_string($value) ? explode('|', $value) : $value;
+    }
+
+    /**
+     * Format the uses key in a route action.
+     *
+     * @param array $new
+     * @param array $old
      *
      * @return string
      */
-    public function getCurrentFormat()
+    protected function formatUses(array $new, array $old)
     {
-        return $this->currentFormat;
+        if (isset($old['namespace']) && is_string($new['uses']) && strpos($new['uses'], '\\') !== 0) {
+            return $old['namespace'].'\\'.$new['uses'];
+        }
+
+        return $new['uses'];
     }
 
     /**
-     * Get the current API version.
+     * Format the namespace for the new group attributes.
+     *
+     * @param array $new
+     * @param array $old
      *
      * @return string
      */
-    public function getCurrentVersion()
+    protected function formatNamespace(array $new, array $old)
     {
-        return $this->currentVersion;
+        if (isset($new['namespace']) && isset($old['namespace'])) {
+            return trim($old['namespace'], '\\').'\\'.trim($new['namespace'], '\\');
+        } elseif (isset($new['namespace'])) {
+            return trim($new['namespace'], '\\');
+        }
+
+        return array_get($old, 'namespace');
     }
 
     /**
-     * Get a controller inspector instance.
+     * Format the prefix for the new group attributes.
      *
-     * @return \Dingo\Api\Routing\ControllerInspector
-     */
-    public function getInspector()
-    {
-        return $this->inspector ?: $this->inspector = new ControllerInspector;
-    }
-
-    /**
-     * Set the current request.
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return void
-     */
-    public function setCurrentRequest(Request $request)
-    {
-        $this->currentRequest = $request;
-    }
-
-    /**
-     * Set the current route.
-     *
-     * @param \Illuminate\Routing\Route $route
-     *
-     * @return void
-     */
-    public function setCurrentRoute(IlluminateRoute $route)
-    {
-        $this->current = $route;
-    }
-
-    /**
-     * Get the API groups collection containing the API routes.
-     *
-     * @return \Dingo\Api\Routing\GroupCollection
-     */
-    public function getApiGroups()
-    {
-        return $this->api;
-    }
-
-    /**
-     * Determine if conditional requests are enabled.
-     *
+     * @param  array  $new
+     * @param  array  $old
      * @return string
      */
-    public function requestsAreConditional()
+    protected function formatPrefix($new, $old)
     {
-        return $this->conditionalRequest;
+        if (isset($new['prefix'])) {
+            return trim(array_get($old, 'prefix'), '/').'/'.trim($new['prefix'], '/');
+        }
+
+        return array_get($old, 'prefix', '');
     }
 
     /**
-     * Enable or disable conditional requests.
+     * Dispatch a request via the adapter.
+     *
+     * @param \Dingo\Api\Http\Request $request
+     * @param bool                    $raw
+     *
+     * @return \Dingo\Api\Http\Response
+     */
+    public function dispatch(Request $request, $raw = false)
+    {
+        $this->currentRoute = null;
+
+        $accept = $this->accept->parse($request);
+
+        $this->container->instance('Dingo\Api\Http\Request', $request);
+
+        $this->routesDispatched++;
+
+        try {
+            $response = $this->adapter->dispatch($request, $accept['version']);
+        } catch (Exception $exception) {
+            $response = $this->exception->handle($exception);
+        }
+
+        return $this->prepareResponse($response, $request, $accept['format'], $raw);
+    }
+
+    /**
+     * Prepare a response by transforming and formatting it correctly.
+     *
+     * @param \Illuminate\Http\Response $response
+     * @param \Dingo\Api\Http\Request   $request
+     * @param string                    $format
+     * @param bool                      $raw
+     *
+     * @return \Dingo\Api\Http\Response
+     */
+    protected function prepareResponse(IlluminateResponse $response, Request $request, $format, $raw = false)
+    {
+        if (! $response instanceof Response) {
+            $response = Response::makeFromExisting($response);
+        }
+
+        // If we try and get a formatter that does not exist we'll let the exception
+        // handler deal with it. At worst we'll get a generic JSON response that
+        // a consumer can hopefully deal with. Ideally they won't be using
+        // an unsupported format.
+        try {
+            $response->getFormatter($format)->setResponse($response)->setRequest($request);
+        } catch (NotAcceptableHttpException $exception) {
+            return $this->exception->handle($exception);
+        }
+
+        if (! $raw) {
+            $response = $response->morph($format);
+        }
+
+        if ($response->isSuccessful() && $this->requestIsConditional()) {
+            if (! $response->headers->has('ETag')) {
+                $response->setEtag(md5($response->getContent()));
+            }
+
+            $response->isNotModified($request);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Determine if the request is conditional.
+     *
+     * @return bool
+     */
+    protected function requestIsConditional()
+    {
+        return $this->getCurrentRoute()->requestIsConditional();
+    }
+
+    /**
+     * Set the conditional request.
      *
      * @param bool $conditionalRequest
      *
@@ -503,24 +605,100 @@ class Router extends IlluminateRouter
     }
 
     /**
-     * Determine if the request should be treated as strict.
+     * Get the current request instance.
      *
-     * @return bool
+     * @return \Dingo\Api\Http\Request
      */
-    public function isStrict()
+    public function getCurrentRequest()
     {
-        return $this->strict;
+        return $this->container['request'];
     }
 
     /**
-     * Enable or disable strict mode.
+     * Get the current route instance.
      *
-     * @param bool $strict
+     * @return \Dingo\Api\Routing\Route
+     */
+    public function getCurrentRoute()
+    {
+        if (isset($this->currentRoute)) {
+            return $this->currentRoute;
+        } elseif (! $this->hasDispatchedRoutes()) {
+            return null;
+        }
+
+        $request = $this->container['request'];
+
+        return $this->currentRoute = new Route($this->adapter, $this->container, $request, $request->route());
+    }
+
+    /**
+     * Set the current route instance.
+     *
+     * @param \Dingo\Api\Routing\Route $route
      *
      * @return void
      */
-    public function setStrict($strict)
+    public function setCurrentRoute(Route $route)
     {
-        $this->strict = $strict;
+        $this->currentRoute = $route;
+    }
+
+    /**
+     * Determine if the router has a group stack.
+     *
+     * @return bool
+     */
+    public function hasGroupStack()
+    {
+        return ! empty($this->groupStack);
+    }
+
+    /**
+     * Get the prefix from the last group on the stack.
+     *
+     * @return string
+     */
+    public function getLastGroupPrefix()
+    {
+        if (empty($this->groupStack)) {
+            return '';
+        }
+
+        $group = end($this->groupStack);
+
+        return $group['prefix'];
+    }
+
+    /**
+     * Get all routes registered on the adapter.
+     *
+     * @param string $version
+     *
+     * @return mixed
+     */
+    public function getRoutes($version = null)
+    {
+        return $this->adapter->getRoutes($version);
+    }
+
+    /**
+     * Get the number of routes dispatched.
+     *
+     * @return int
+     */
+    public function getRoutesDispatched()
+    {
+        return $this->routesDispatched;
+    }
+
+    /**
+     * Determine if the router has dispatched any routes.
+     *
+     * @return bool
+     */
+    public function hasDispatchedRoutes()
+    {
+        return $this->routesDispatched > 0;
     }
 }

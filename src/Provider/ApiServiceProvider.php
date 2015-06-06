@@ -2,15 +2,14 @@
 
 namespace Dingo\Api\Provider;
 
-use Dingo\Api\Dispatcher;
-use Dingo\Api\Http\Response;
-use Dingo\Api\Exception\Handler;
-use Dingo\Api\Auth\Authenticator;
-use Dingo\Api\Http\ResponseFactory;
+use Dingo\Api\Http;
+use RuntimeException;
+use Dingo\Api\Auth\Auth;
+use Dingo\Api\Routing\Router;
 use Illuminate\Support\ServiceProvider;
-use Dingo\Api\Console\ApiRoutesCommand;
-use Dingo\Api\Http\RateLimit\RateLimiter;
-use Dingo\Api\Transformer\TransformerFactory;
+use Dingo\Api\Routing\ResourceRegistrar;
+use Dingo\Api\Exception\Handler as ExceptionHandler;
+use Dingo\Api\Transformer\Factory as TransformerFactory;
 
 class ApiServiceProvider extends ServiceProvider
 {
@@ -21,158 +20,205 @@ class ApiServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->setupContainerBindings();
+        $this->setupConfig();
 
-        Response::setFormatters($this->prepareConfigInstances($this->app['config']['api::formats']));
-        Response::setTransformer($this->app['api.transformer']);
+        $this->app->singleton('Illuminate\Contracts\Debug\ExceptionHandler', function ($app) {
+            return $app['api.exception'];
+        });
+
+        Http\Response::setFormatters($this->prepareConfigValues($this->app['config']['api.formats']));
+        Http\Response::setTransformer($this->app['api.transformer']);
     }
 
     /**
-     * Prepare the container bindings.
-     *
-     * @return void
-     */
-    protected function setupContainerBindings()
-    {
-        $this->app->bind('Dingo\Api\Dispatcher', function ($app) {
-            return $app['api.dispatcher'];
-        });
-
-        $this->app->bind('Dingo\Api\Auth\Authenticator', function ($app) {
-            return $app['api.auth'];
-        });
-
-        $this->app->bind('Dingo\Api\Http\ResponseFactory', function ($app) {
-            return $app['api.response'];
-        });
-    }
-
-    /**
-     * Register bindings for the service provider.
+     * Register the service provider.
      *
      * @return void
      */
     public function register()
     {
-        $this->registerProviders();
-        $this->registerDispatcher();
-        $this->registerTransformer();
-        $this->registerAuthenticator();
-        $this->registerRateLimiter();
-        $this->registerResponseFactory();
+        $this->setupClassAliases();
+
         $this->registerExceptionHandler();
-        $this->registerCommands();
+        $this->registerAuth();
+        $this->registerRateLimiting();
+        $this->registerRouter();
+        $this->registerHttpValidation();
+        $this->registerResponseFactory();
+        $this->registerMiddleware();
+        $this->registerTransformer();
     }
 
     /**
-     * Register the remaining service providers.
+     * Setup the configuration.
      *
      * @return void
      */
-    protected function registerProviders()
+    protected function setupConfig()
     {
-        $this->app->register('Dingo\Api\Provider\PropertiesServiceProvider');
-        $this->app->register('Dingo\Api\Provider\RoutingServiceProvider');
-        $this->app->register('Dingo\Api\Provider\FilterServiceProvider');
-        $this->app->register('Dingo\Api\Provider\EventServiceProvider');
+        $this->mergeConfigFrom(realpath(__DIR__.'/../../config/api.php'), 'api');
+
+        $config = $this->app['config']['api'];
+
+        if (! $this->app->runningInConsole() && empty($config['prefix']) && empty($config['domain'])) {
+            throw new RuntimeException('Unable to boot ApiServiceProvider, configure an API domain or prefix.');
+        }
     }
 
     /**
-     * Register the API dispatcher.
+     * Setup the class aliases.
      *
      * @return void
      */
-    protected function registerDispatcher()
+    protected function setupClassAliases()
     {
-        $this->app->bindShared('api.dispatcher', function ($app) {
-            return new Dispatcher($app, $app['files'], $app['url'], $app['router'], $app['api.auth'], $app['api.properties']);
-        });
+        $this->app->alias('request', 'Dingo\Api\Http\Request');
+        $this->app->alias('api.http.validator', 'Dingo\Api\Http\Validator');
+        $this->app->alias('api.http.response', 'Dingo\Api\Http\Response\Factory');
+        $this->app->alias('api.router', 'Dingo\Api\Routing\Router');
+        $this->app->alias('api.router.adapter', 'Dingo\Api\Routing\Adapter\AdapterInterface');
+        $this->app->alias('api.auth', 'Dingo\Api\Auth\Auth');
+        $this->app->alias('api.limiting', 'Dingo\Api\Http\RateLimit\Handler');
+        $this->app->alias('api.transformer', 'Dingo\Api\Transformer\Factory');
     }
 
     /**
-     * Register the API transformer.
-     *
-     * @return void
-     */
-    protected function registerTransformer()
-    {
-        $this->app->bindShared('api.transformer', function ($app) {
-            $transformer = $this->prepareConfigInstance($app['config']['api::transformer']);
-
-            return new TransformerFactory($app, $transformer);
-        });
-    }
-
-    /**
-     * Register the API authenticator.
-     *
-     * @return void
-     */
-    protected function registerAuthenticator()
-    {
-        $this->app->bindShared('api.auth', function ($app) {
-            $providers = $this->prepareConfigInstances($app['config']['api::auth']);
-
-            return new Authenticator($app['router'], $app, $providers);
-        });
-    }
-
-    /**
-     * Register the API rate limiter.
-     *
-     * @return void
-     */
-    protected function registerRateLimiter()
-    {
-        $this->app->bindShared('api.limiter', function ($app) {
-            $throttles = $this->prepareConfigInstances($app['config']['api::throttling']);
-
-            $limiter = new RateLimiter($app, $app['cache'], $throttles);
-
-            $limiter->setRateLimiter(function ($container, $request) {
-                return $request->getClientIp();
-            });
-
-            return $limiter;
-        });
-    }
-
-    /**
-     * Register the API response factory.
-     *
-     * @return void
-     */
-    protected function registerResponseFactory()
-    {
-        $this->app->bindShared('api.response', function ($app) {
-            return new ResponseFactory($app['api.transformer']);
-        });
-    }
-
-    /**
-     * Register the API exception handler.
+     * Register the exception handler.
      *
      * @return void
      */
     protected function registerExceptionHandler()
     {
-        $this->app->bindShared('api.exception', function ($app) {
-            return new Handler;
+        $exception = $this->app['Illuminate\Contracts\Debug\ExceptionHandler'];
+
+        $this->app->singleton('api.exception', function ($app) use ($exception) {
+            $config = $app['config']['api'];
+
+            return new ExceptionHandler($exception, $config['errorFormat'], $config['debug']);
         });
     }
 
     /**
-     * Register the commands.
+     * Register the auth.
      *
      * @return void
      */
-    protected function registerCommands()
+    protected function registerAuth()
     {
-        $this->app->bindShared('api.command.routes', function ($app) {
-            return new ApiRoutesCommand($app['router']);
+        $this->app->singleton('api.auth', function ($app) {
+            $config = $app['config']['api'];
+
+            return new Auth($app['api.router'], $app, $this->prepareConfigValues($config['auth']));
+        });
+    }
+
+    /**
+     * Register the rate limiting.
+     *
+     * @return void
+     */
+    protected function registerRateLimiting()
+    {
+        $this->app->singleton('api.limiting', function ($app) {
+            $config = $app['config']['api'];
+
+            return new Http\RateLimit\Handler($app, $app['cache'], $this->prepareConfigValues($config['throttling']));
+        });
+    }
+
+    /**
+     * Register the router.
+     *
+     * @return void
+     */
+    protected function registerRouter()
+    {
+        $this->app->singleton('api.router', function ($app) {
+            $config = $app['config']['api'];
+
+            return new Router(
+                $app['api.router.adapter'],
+                new Http\Parser\Accept($config['vendor'], $config['version'], $config['defaultFormat']),
+                $app['api.exception'],
+                $app
+            );
         });
 
-        $this->commands('api.command.routes');
+        $this->app->singleton('Dingo\Api\Routing\ResourceRegistrar', function ($app) {
+            return new ResourceRegistrar($app['api.router']);
+        });
+    }
+
+    /**
+     * Register the HTTP validation.
+     *
+     * @return void
+     */
+    protected function registerHttpValidation()
+    {
+        $this->app->singleton('api.http.validator', function ($app) {
+            return new Http\Validator($app);
+        });
+
+        $this->app->singleton('Dingo\Api\Http\Validation\Domain', function ($app) {
+            return new Http\Validation\Domain($app['config']['api.domain']);
+        });
+
+        $this->app->singleton('Dingo\Api\Http\Validation\Prefix', function ($app) {
+            return new Http\Validation\Prefix($app['config']['api.prefix']);
+        });
+
+        $this->app->singleton('Dingo\Api\Http\Validation\Accept', function ($app) {
+            $config = $app['config']['api'];
+
+            return new Http\Validation\Accept(
+                new Http\Parser\Accept($config['vendor'], $config['version'], $config['defaultFormat'])
+            );
+        });
+    }
+
+    /**
+     * Register the response factory.
+     *
+     * @return void
+     */
+    protected function registerResponseFactory()
+    {
+        $this->app->singleton('api.http.response', function ($app) {
+            return new Http\Response\Factory($app['api.transformer']);
+        });
+    }
+
+    /**
+     * Register the middleware.
+     *
+     * @return void
+     */
+    protected function registerMiddleware()
+    {
+        $this->app->singleton('Dingo\Api\Http\Middleware\Request', function ($app) {
+            return new Http\Middleware\Request($app, $app['api.router'], $app['api.http.validator'], $app['app.middleware']);
+        });
+
+        $this->app->singleton('Dingo\Api\Http\Middleware\Auth', function ($app) {
+            return new Http\Middleware\Auth($app['api.router'], $app['api.auth']);
+        });
+
+        $this->app->singleton('Dingo\Api\Http\Middleware\RateLimit', function ($app) {
+            return new Http\Middleware\RateLimit($app['api.router'], $app['api.limiting']);
+        });
+    }
+
+    /**
+     * Register the transformation layer.
+     *
+     * @return void
+     */
+    protected function registerTransformer()
+    {
+        $this->app->singleton('api.transformer', function ($app) {
+            return new TransformerFactory($app, $this->prepareConfigValue($app['config']['api.transformer']));
+        });
     }
 
     /**
@@ -182,10 +228,10 @@ class ApiServiceProvider extends ServiceProvider
      *
      * @return array
      */
-    protected function prepareConfigInstances(array $instances)
+    protected function prepareConfigValues(array $instances)
     {
         foreach ($instances as $key => $value) {
-            $instances[$key] = $this->prepareConfigInstance($value);
+            $instances[$key] = $this->prepareConfigValue($value);
         }
 
         return $instances;
@@ -198,7 +244,7 @@ class ApiServiceProvider extends ServiceProvider
      *
      * @return object
      */
-    protected function prepareConfigInstance($instance)
+    protected function prepareConfigValue($instance)
     {
         if (is_callable($instance)) {
             return call_user_func($instance, $this->app);
