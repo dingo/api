@@ -5,7 +5,13 @@
 ![Development Version](https://img.shields.io/packagist/vpre/dingo/api.svg?style=flat-square)
 ![Monthly Installs](https://img.shields.io/packagist/dm/dingo/api.svg?style=flat-square)
 
-This can be considered an alpha and as such is prone to bugs. Please report them as you find them.
+> **NOTE:** This package should be considered an alpha and as such is prone to bugs. Please report them as you find them.
+
+The Dingo API package is meant to provide you, the developer, with a set of tools to help you easily and quickly build your own API. While the goal of this package is to remain as flexible as possible it still won't cover all situations and solve all problems.
+
+## Documentation
+
+Please refer to our extensive [Wiki documentation](https://github.com/dingo/api/wiki) for more information.
 
 ## License
 
