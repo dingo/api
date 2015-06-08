@@ -5,6 +5,7 @@ namespace Dingo\Api\Provider;
 use Dingo\Api\Http;
 use RuntimeException;
 use Dingo\Api\Auth\Auth;
+use Dingo\Api\Dispatcher;
 use Dingo\Api\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Routing\ResourceRegistrar;
@@ -40,6 +41,7 @@ class ApiServiceProvider extends ServiceProvider
         $this->setupClassAliases();
 
         $this->registerExceptionHandler();
+        $this->registerDispatcher();
         $this->registerAuth();
         $this->registerRateLimiting();
         $this->registerRouter();
@@ -73,6 +75,7 @@ class ApiServiceProvider extends ServiceProvider
     protected function setupClassAliases()
     {
         $this->app->alias('request', 'Dingo\Api\Http\Request');
+        $this->app->alias('api.dispatcher', 'Dingo\Api\Dispatcher');
         $this->app->alias('api.http.validator', 'Dingo\Api\Http\Validator');
         $this->app->alias('api.http.response', 'Dingo\Api\Http\Response\Factory');
         $this->app->alias('api.router', 'Dingo\Api\Routing\Router');
@@ -95,6 +98,18 @@ class ApiServiceProvider extends ServiceProvider
             $config = $app['config']['api'];
 
             return new ExceptionHandler($exception, $config['errorFormat'], $config['debug']);
+        });
+    }
+
+    /**
+     * Register the internal dispatcher.
+     *
+     * @return void
+     */
+    public function registerDispatcher()
+    {
+        $this->app->singleton('api.dispatcher', function ($app) {
+            return new Dispatcher($app, $app['files'], $app['api.router'], $app['api.auth']);
         });
     }
 
