@@ -13,7 +13,7 @@
          stopOnFailure="false"
          syntaxCheck="true"
          verbose="true"
-        >
+    >
     <testsuites>
         <testsuite name="API Test Suite">
             <directory suffix="Test.php">./tests</directory>
