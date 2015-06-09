@@ -6,8 +6,8 @@ use Closure;
 use RuntimeException;
 use Illuminate\Support\Collection;
 use Illuminate\Container\Container;
-use Illuminate\Pagination\Paginator;
 use Dingo\Api\Contract\Transformer\Adapter;
+use Illuminate\Contracts\Pagination\Paginator;
 
 class Factory
 {
