@@ -42,6 +42,16 @@ class ApplicationStub extends Container implements Application
         //
     }
 
+    public function getCachedCompilePath()
+    {
+        //
+    }
+
+    public function getCachedServicesPath()
+    {
+        //
+    }
+
     public function boot()
     {
         //
