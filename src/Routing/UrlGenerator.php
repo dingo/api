@@ -7,6 +7,11 @@ use Illuminate\Routing\UrlGenerator as IlluminateUrlGenerator;
 
 class UrlGenerator extends IlluminateUrlGenerator
 {
+    /**
+     * Array of route collections.
+     *
+     * @var array
+     */
     protected $collections;
 
     /**
