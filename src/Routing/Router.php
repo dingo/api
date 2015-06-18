@@ -691,7 +691,25 @@ class Router
      */
     public function getRoutes($version = null)
     {
-        return $this->adapter->getRoutes($version);
+        $routes = $this->adapter->getRoutes($version);
+
+        if (! is_null($version)) {
+            $routes = [$version => $routes];
+        }
+
+        $collections = [];
+
+        foreach ($routes as $key => $value) {
+            $collections[$key] = new RouteCollection($this->container['request']);
+
+            foreach ($value as $route) {
+                $route = $this->createRoute($route);
+
+                $collections[$key]->add($route);
+            }
+        }
+
+        return is_null($version) ? $collections : $collections[$version];
     }
 
     /**

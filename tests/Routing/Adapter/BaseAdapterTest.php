@@ -76,6 +76,8 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
             }]);
         });
 
+        $this->createRequest('/', 'GET');
+
         $this->assertArrayHasKey('v1', $this->router->getRoutes(), 'No routes were registered for version 1.');
         $this->assertArrayHasKey('v2', $this->router->getRoutes(), 'No routes were registered for version 2.');
         $this->assertArrayHasKey('v3', $this->router->getRoutes(), 'No routes were registered for version 3.');

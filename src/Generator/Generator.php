@@ -381,8 +381,6 @@ class Generator
 
         foreach ($this->router->getRoutes() as $collections) {
             foreach ($collections as $route) {
-                $route = $this->router->createRoute($route);
-
                 if ($controller = $route->getController()) {
                     $controllers[] = $controller;
                 }

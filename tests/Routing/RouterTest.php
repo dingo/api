@@ -219,6 +219,8 @@ class RouterTest extends Adapter\BaseAdapterTest
             });
         });
 
+        $this->createRequest('/', 'GET');
+
         $this->assertCount(1, $this->router->getRoutes()['v1'], 'Routes were not added to the correct versions.');
     }
 
