@@ -2,7 +2,7 @@
 
 namespace Dingo\Api\Routing\Adapter;
 
-use Dingo\Api\Http\Request;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
 use Illuminate\Routing\RouteCollection;
@@ -47,8 +47,8 @@ class Laravel implements Adapter
     /**
      * Dispatch a request.
      *
-     * @param \Dingo\Api\Http\Request $request
-     * @param string                  $version
+     * @param \Illuminate\Http\Request $request
+     * @param string                   $version
      *
      * @return mixed
      */
@@ -88,8 +88,8 @@ class Laravel implements Adapter
     /**
      * Get the URI, methods, and action from the route.
      *
-     * @param mixed                   $route
-     * @param \Dingo\Api\Http\Request $request
+     * @param mixed                    $route
+     * @param \Illuminate\Http\Request $request
      *
      * @return array
      */

@@ -5,7 +5,7 @@ namespace Dingo\Api\Routing\Adapter;
 use ReflectionClass;
 use FastRoute\Dispatcher;
 use FastRoute\RouteParser;
-use Dingo\Api\Http\Request;
+use Illuminate\Http\Request;
 use FastRoute\DataGenerator;
 use FastRoute\RouteCollector;
 use Laravel\Lumen\Application;
@@ -70,8 +70,8 @@ class Lumen implements Adapter
     /**
      * Dispatch a request.
      *
-     * @param \Dingo\Api\Http\Request $request
-     * @param string                  $version
+     * @param \Illuminate\Http\Request $request
+     * @param string                   $version
      *
      * @return mixed
      */
@@ -95,8 +95,8 @@ class Lumen implements Adapter
     /**
      * Get the URI, methods, and action from the route.
      *
-     * @param mixed                   $route
-     * @param \Dingo\Api\Http\Request $request
+     * @param mixed                    $route
+     * @param \Illuminate\Http\Request $request
      *
      * @return array
      */

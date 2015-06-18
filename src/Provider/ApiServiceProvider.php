@@ -7,12 +7,13 @@ use RuntimeException;
 use Dingo\Api\Auth\Auth;
 use Dingo\Api\Dispatcher;
 use Dingo\Api\Routing\Router;
+use Dingo\Api\Routing\UrlGenerator;
 use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Routing\ResourceRegistrar;
 use Dingo\Api\Exception\Handler as ExceptionHandler;
 use Dingo\Api\Transformer\Factory as TransformerFactory;
 
-class ApiServiceProvider extends ServiceProvider
+abstract class ApiServiceProvider extends ServiceProvider
 {
     /**
      * Boot the service provider.
@@ -29,6 +30,10 @@ class ApiServiceProvider extends ServiceProvider
 
         Http\Response::setFormatters($this->prepareConfigValues($this->app['config']['api.formats']));
         Http\Response::setTransformer($this->app['api.transformer']);
+
+        $this->app->booted(function ($app) {
+            $app['api.url']->setRouteCollections($app['api.router']->getRoutes());
+        });
     }
 
     /**
@@ -45,6 +50,7 @@ class ApiServiceProvider extends ServiceProvider
         $this->registerAuth();
         $this->registerRateLimiting();
         $this->registerRouter();
+        $this->registerUrlGenerator();
         $this->registerHttpValidation();
         $this->registerResponseFactory();
         $this->registerMiddleware();
@@ -87,6 +93,7 @@ class ApiServiceProvider extends ServiceProvider
         $this->app->alias('api.auth', 'Dingo\Api\Auth\Auth');
         $this->app->alias('api.limiting', 'Dingo\Api\Http\RateLimit\Handler');
         $this->app->alias('api.transformer', 'Dingo\Api\Transformer\Factory');
+        $this->app->alias('api.url', 'Dingo\Api\Routing\UrlGenerator');
     }
 
     /**
@@ -165,6 +172,18 @@ class ApiServiceProvider extends ServiceProvider
 
         $this->app->singleton('Dingo\Api\Routing\ResourceRegistrar', function ($app) {
             return new ResourceRegistrar($app['api.router']);
+        });
+    }
+
+    /**
+     * Register the URL generator.
+     *
+     * @return void
+     */
+    protected function registerUrlGenerator()
+    {
+        $this->app->singleton('api.url', function ($app) {
+            return new UrlGenerator($app['request']);
         });
     }
 

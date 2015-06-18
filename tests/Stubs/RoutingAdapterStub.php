@@ -3,7 +3,7 @@
 namespace Dingo\Api\Tests\Stubs;
 
 use Closure;
-use Dingo\Api\Http\Request;
+use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Contract\Routing\Adapter;
 use Illuminate\Http\Response as IlluminateResponse;
@@ -12,14 +12,6 @@ class RoutingAdapterStub implements Adapter
 {
     protected $routes = [];
 
-    /**
-     * Dispatch a request.
-     *
-     * @param \Dingo\Api\Http\Request $request
-     * @param string                  $version
-     *
-     * @return mixed
-     */
     public function dispatch(Request $request, $version)
     {
         $routes = $this->routes[$version];

@@ -4,10 +4,9 @@ namespace Dingo\Api\Provider;
 
 use ReflectionClass;
 use Illuminate\Contracts\Http\Kernel;
-use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Routing\Adapter\Laravel as LaravelAdapter;
 
-class LaravelServiceProvider extends ServiceProvider
+class LaravelServiceProvider extends ApiServiceProvider
 {
     /**
      * Boot the service provider.
@@ -16,6 +15,8 @@ class LaravelServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        parent::boot();
+
         $this->publishes([
             realpath(__DIR__.'/../../config/api.php') => config_path('api.php'),
         ]);
@@ -31,13 +32,13 @@ class LaravelServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        parent::register();
+
         $kernel = $this->app->make('Illuminate\Contracts\Http\Kernel');
 
         $this->app->instance('app.middleware', $this->gatherAppMiddleware($kernel));
 
         $this->addRequestMiddlewareToBeginning($kernel);
-
-        $this->app->register('Dingo\Api\Provider\ApiServiceProvider');
 
         $this->app->singleton('api.router.adapter', function ($app) {
             return new LaravelAdapter($app['router']);

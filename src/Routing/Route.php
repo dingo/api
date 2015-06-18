@@ -3,7 +3,7 @@
 namespace Dingo\Api\Routing;
 
 use Closure;
-use Dingo\Api\Http\Request;
+use Illuminate\Http\Request;
 use Illuminate\Container\Container;
 use Dingo\Api\Contract\Routing\Adapter;
 
@@ -119,7 +119,7 @@ class Route
      *
      * @param \Dingo\Api\Routing\Adapter\Adapter $adapter
      * @param \Illuminate\Container\Container    $container
-     * @param \Dingo\Api\Http\Request            $request
+     * @param \Illuminate\Http\Request           $request
      * @param array|\Illuminate\Routing\Route    $route
      *
      * @return void
@@ -135,8 +135,8 @@ class Route
     /**
      * Create the route from the existing route and request instance.
      *
-     * @param mixed                   $route
-     * @param \Dingo\Api\Http\Request $request
+     * @param mixed                    $route
+     * @param \Illuminate\Http\Request $request
      *
      * @return void
      */
@@ -450,5 +450,85 @@ class Route
     public function getAction()
     {
         return $this->action;
+    }
+
+    /**
+     * Get the URI associated with the route.
+     *
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->uri();
+    }
+
+    /**
+     * Get the URI associated with the route.
+     *
+     * @return string
+     */
+    public function uri()
+    {
+        return $this->uri;
+    }
+
+    /**
+     * Get the HTTP verbs the route responds to.
+     *
+     * @return array
+     */
+    public function getMethods()
+    {
+        return $this->methods();
+    }
+
+    /**
+     * Get the HTTP verbs the route responds to.
+     *
+     * @return array
+     */
+    public function methods()
+    {
+        return $this->methods;
+    }
+
+    /**
+     * Determine if the route only responds to HTTP requests.
+     *
+     * @return bool
+     */
+    public function httpOnly()
+    {
+        return in_array('http', $this->action, true);
+    }
+
+    /**
+     * Determine if the route only responds to HTTPS requests.
+     *
+     * @return bool
+     */
+    public function httpsOnly()
+    {
+        return $this->secure();
+    }
+
+    /**
+     * Determine if the route only responds to HTTPS requests.
+     *
+     * @return bool
+     */
+    public function secure()
+    {
+        return in_array('https', $this->action, true);
+    }
+
+    /**
+     * Get the domain defined for the route.
+     *
+     * @return string|null
+     */
+    public function domain()
+    {
+        return isset($this->action['domain']) ? $this->action['domain'] : null;
     }
 }
