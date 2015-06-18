@@ -56,7 +56,7 @@ class RoutingAdapterStub implements Adapter
     protected function findRoute(Request $request, array $routes)
     {
         foreach ($routes as $key => $route) {
-            list ($method, $domain, $uri) = explode(' ', $key);
+            list($method, $domain, $uri) = explode(' ', $key);
 
             if ($request->getMethod() == $method && $request->getHost() == $domain && trim($request->getPathInfo(), '/') === trim($route['uri'], '/')) {
                 return $route;
