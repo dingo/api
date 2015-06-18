@@ -49,6 +49,10 @@ class ApiServiceProvider extends ServiceProvider
         $this->registerResponseFactory();
         $this->registerMiddleware();
         $this->registerTransformer();
+
+        $this->commands([
+            'Dingo\Api\Console\DocsCommand'
+        ]);
     }
 
     /**

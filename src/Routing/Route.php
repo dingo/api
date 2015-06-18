@@ -313,6 +313,16 @@ class Route
     }
 
     /**
+     * Get the routes controller instance.
+     *
+     * @return mixed
+     */
+    public function getController()
+    {
+        return $this->controller;
+    }
+
+    /**
      * Make a controller instance from the "uses" action key if it's
      * in the controller format.
      *

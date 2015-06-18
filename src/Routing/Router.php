@@ -629,7 +629,19 @@ class Router
 
         $request = $this->container['request'];
 
-        return $this->currentRoute = new Route($this->adapter, $this->container, $request, $request->route());
+        return $this->currentRoute = $this->createRoute($request->route());
+    }
+
+    /**
+     * Create a new route instance from an adapter route.
+     *
+     * @param array|\Illuminate\Routing\Route $route
+     *
+     * @return \Dingi\Api\Routing\Route
+     */
+    public function createRoute($route)
+    {
+        return new Route($this->adapter, $this->container, $this->container['request'], $route);
     }
 
     /**
