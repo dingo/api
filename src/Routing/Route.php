@@ -334,6 +334,8 @@ class Route
             return;
         }
 
+        $this->action['controller'] = $this->action['uses'];
+
         if (str_contains($this->action['uses'], '@')) {
             list($controller, $method) = explode('@', $this->action['uses']);
 

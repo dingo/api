@@ -52,12 +52,14 @@ class RouteCollection implements Countable, IteratorAggregate
      */
     protected function addLookups(Route $route)
     {
-        if ($name = $route->getName()) {
-            $this->names[$name] = $route;
+        $action = $route->getAction();
+
+        if (isset($action['as'])) {
+            $this->names[$action['as']] = $route;
         }
 
-        if ($controller = $route->getController()) {
-            $this->actions[get_class($controller)] = $route;
+        if (isset($action['controller'])) {
+            $this->actions[$action['controller']] = $route;
         }
     }
 
