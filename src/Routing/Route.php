@@ -24,6 +24,13 @@ class Route
     protected $container;
 
     /**
+     * Request instance.
+     *
+     * @var \Illuminate\Http\Request
+     */
+    protected $request;
+
+    /**
      * Route URI.
      *
      * @var string

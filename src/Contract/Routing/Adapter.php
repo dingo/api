@@ -46,4 +46,22 @@ interface Adapter
      * @return mixed
      */
     public function getRoutes($version = null);
+
+    /**
+     * Set the routes on the adapter.
+     *
+     * @param array $routes
+     *
+     * @return void
+     */
+    public function setRoutes(array $routes);
+
+    /**
+     * Prepare a route for serialization.
+     *
+     * @param mixed $route
+     *
+     * @return mixed
+     */
+    public function prepareRouteForSerialization($route);
 }

@@ -713,6 +713,28 @@ class Router
     }
 
     /**
+     * Get the raw adapter routes.
+     *
+     * @return array
+     */
+    public function getAdapterRoutes()
+    {
+        return $this->adapter->getRoutes();
+    }
+
+    /**
+     * Set the raw adapter routes.
+     *
+     * @param array $routes
+     *
+     * @return void
+     */
+    public function setAdapterRoutes(array $routes)
+    {
+        $this->adapter->setRoutes($routes);
+    }
+
+    /**
      * Get the number of routes dispatched.
      *
      * @return int

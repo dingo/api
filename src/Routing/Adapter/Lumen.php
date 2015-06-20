@@ -218,4 +218,28 @@ class Lumen implements Adapter
 
         return $this->routes;
     }
+
+    /**
+     * Set the routes on the adapter.
+     *
+     * @param array $routes
+     *
+     * @return void
+     */
+    public function setRoutes(array $routes)
+    {
+        // Route caching is not implemented for Lumen.
+    }
+
+    /**
+     * Prepare a route for serialization.
+     *
+     * @param mixed $route
+     *
+     * @return mixed
+     */
+    public function prepareRouteForSerialization($route)
+    {
+        // Route caching is not implemented for Lumen.
+    }
 }

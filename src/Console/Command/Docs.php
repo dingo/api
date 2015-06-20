@@ -17,6 +17,7 @@ class Docs extends Command
      */
 
     protected $router;
+
     /**
      * Blueprint instance.
      *

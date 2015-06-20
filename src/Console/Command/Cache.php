@@ -1,0 +1,80 @@
+<?php
+
+namespace Dingo\Api\Console\Command;
+
+use Dingo\Api\Routing\Router;
+use Illuminate\Console\Command;
+use Illuminate\Filesystem\Filesystem;
+use Symfony\Component\Console\Input\InputOption;
+
+class Cache extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    public $signature = 'api:cache';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    public $description = 'Create a route cache file for faster route registration';
+
+    /**
+     * Create a new cache command instance.
+     *
+     * @param \Illuminate\Filesystem\Filesystem $files
+     *
+     * @return void
+     */
+    public function __construct(Filesystem $files)
+    {
+        parent::__construct($files);
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function handle()
+    {
+        $this->callSilent('route:clear');
+
+        $app = $this->getFreshApplication();
+
+        $this->call('route:cache');
+
+        $routes = $app['api.router']->getAdapterRoutes();
+
+        foreach ($routes as $collection) {
+            foreach ($collection as $route) {
+                $app['api.router.adapter']->prepareRouteForSerialization($route);
+            }
+        }
+
+        $stub = "app('api.router')->setAdapterRoutes(unserialize(base64_decode('{{routes}}')));";
+
+        $this->files->append(
+            $this->laravel->getCachedRoutesPath(),
+            str_replace('{{routes}}', base64_encode(serialize($routes)), $stub)
+        );
+    }
+
+    /**
+     * Get a fresh application instance.
+     *
+     * @return \Illuminate\Foundation\Application
+     */
+    protected function getFreshApplication()
+    {
+        $app = require $this->laravel->basePath().'/bootstrap/app.php';
+
+        $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
+
+        return $app;
+    }
+}

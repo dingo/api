@@ -57,9 +57,15 @@ abstract class ApiServiceProvider extends ServiceProvider
         $this->registerTransformer();
 
         $this->commands([
-            'Dingo\Api\Console\Command\Docs',
-            'Dingo\Api\Console\Command\Routes'
+            'Dingo\Api\Console\Command\Docs'
         ]);
+
+        if (class_exists('Illuminate\Foundation\Application', false)) {
+            $this->commands([
+                'Dingo\Api\Console\Command\Cache',
+                'Dingo\Api\Console\Command\Routes'
+            ]);
+        }
     }
 
     /**
