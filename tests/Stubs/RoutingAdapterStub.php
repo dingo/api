@@ -69,16 +69,6 @@ class RoutingAdapterStub implements Adapter
         return [$route['uri'], (array) $request->getMethod(), $route['action']];
     }
 
-    /**
-     * Add a route to the appropriate route collection.
-     *
-     * @param array  $methods
-     * @param array  $versions
-     * @param string $uri
-     * @param mixed  $action
-     *
-     * @return void
-     */
     public function addRoute(array $methods, array $versions, $uri, $action)
     {
         foreach ($versions as $version) {
@@ -108,13 +98,6 @@ class RoutingAdapterStub implements Adapter
         }
     }
 
-    /**
-     * Get all routes or only for a specific version.
-     *
-     * @param string $version
-     *
-     * @return mixed
-     */
     public function getRoutes($version = null)
     {
         if (! is_null($version)) {
@@ -122,5 +105,15 @@ class RoutingAdapterStub implements Adapter
         }
 
         return $this->routes;
+    }
+
+    public function setRoutes(array $routes)
+    {
+        //
+    }
+
+    public function prepareRouteForSerialization($route)
+    {
+        //
     }
 }
