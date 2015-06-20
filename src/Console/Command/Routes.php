@@ -69,7 +69,7 @@ class Routes extends RouteListCommand
                     'uri'       => implode('|', $route->methods()).' '.$route->uri(),
                     'name'      => $route->getName(),
                     'action'    => $route->getActionName(),
-                    'version'   => implode(', ', $route->versions()),
+                    'versions'  => implode(', ', $route->versions()),
                     'protected' => $route->isProtected() ? 'Yes' : 'No',
                     'scopes'    => implode(', ', $route->scopes())
                 ]);
@@ -109,28 +109,62 @@ class Routes extends RouteListCommand
         return array_merge(
             parent::getOptions(),
             [
-                ['versions', null, InputOption::VALUE_OPTIONAL, 'Filter the routes by version'],
-                ['scopes', 'S', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Filter the routes by scopes', null],
+                ['versions', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Filter the routes by version'],
+                ['scopes', 'S', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Filter the routes by scopes'],
             ]
         );
     }
 
+    /**
+     * Filter the route by its path.
+     *
+     * @param array $route
+     *
+     * @return bool
+     */
     protected function filterByPath(array $route)
     {
         return str_contains($route['uri'], $this->option('path'));
     }
 
+    /**
+     * Filter the route by its versions.
+     *
+     * @param array $route
+     *
+     * @return bool
+     */
     protected function filterByVersions(array $route)
     {
-        return str_contains($route['version'], $this->option('versions'));
+        foreach ($this->option('versions') as $version) {
+            if (str_contains($route['versions'], $version)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
+    /**
+     * Filter the route by its name.
+     *
+     * @param array $route
+     *
+     * @return bool
+     */
     protected function filterByName(array $route)
     {
         return str_contains($route['name'], $this->option('name'));
     }
 
-    protected function filterByScope(array $route)
+    /**
+     * Filter the route by its scopes.
+     *
+     * @param array $route
+     *
+     * @return bool
+     */
+    protected function filterByScopes(array $route)
     {
         foreach ($this->option('scopes') as $scope) {
             if (str_contains($route['scopes'], $scope)) {
