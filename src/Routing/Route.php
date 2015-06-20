@@ -455,6 +455,36 @@ class Route
     }
 
     /**
+     * Get the action name for the route.
+     *
+     * @return string
+     */
+    public function getActionName()
+    {
+        return array_get($this->action, 'controller', 'Closure');
+    }
+
+    /**
+     * Get the versions for the route.
+     *
+     * @return array
+     */
+    public function getVersions()
+    {
+        return $this->versions;
+    }
+
+    /**
+     * Get the versions for the route.
+     *
+     * @return array
+     */
+    public function versions()
+    {
+        return $this->getVersions();
+    }
+
+    /**
      * Get the URI associated with the route.
      *
      * @return string
@@ -531,6 +561,6 @@ class Route
      */
     public function domain()
     {
-        return isset($this->action['domain']) ? $this->action['domain'] : null;
+        return array_get($this->action, 'domain');
     }
 }
