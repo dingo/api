@@ -166,6 +166,18 @@ class Response extends IlluminateResponse
     }
 
     /**
+     * Add a response formatter.
+     *
+     * @param \Dingo\Api\Http\Response\Format\Format $formatter
+     *
+     * @return void
+     */
+    public static function addFormatter($formatter)
+    {
+        static::$formatters[] = $formatter;
+    }
+
+    /**
      * Set the transformer factory instance.
      *
      * @param \Dingo\Api\Transformer\Factory $transformer
