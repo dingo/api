@@ -92,21 +92,39 @@ class Router
     protected $routesDispatched = 0;
 
     /**
+     * The API domain.
+     *
+     * @var string
+     */
+    protected $domain;
+
+    /**
+     * The API prefix.
+     *
+     * @var string
+     */
+    protected $prefix;
+
+    /**
      * Create a new router instance.
      *
      * @param \Dingo\Api\Routing\Adapter\Adapter  $adapter
      * @param \Dingo\Api\Http\Parser\AcceptParser $accept
      * @param \Dingo\Api\Exception\Handler        $exception
      * @param \Illuminate\Container\Container     $container
+     * @param string                              $domain
+     * @param string                              $prefix
      *
      * @return void
      */
-    public function __construct(Adapter $adapter, AcceptParser $accept, Handler $exception, Container $container)
+    public function __construct(Adapter $adapter, AcceptParser $accept, Handler $exception, Container $container, $domain, $prefix)
     {
         $this->adapter = $adapter;
         $this->accept = $accept;
         $this->exception = $exception;
         $this->container = $container;
+        $this->domain = $domain;
+        $this->prefix = $prefix;
     }
 
     /**
@@ -156,6 +174,14 @@ class Router
             throw new RuntimeException('A version is required for an API group definition.');
         } else {
             $attributes['version'] = (array) $attributes['version'];
+        }
+
+        if ((! isset($attributes['prefix']) || empty($attributes['prefix'])) && isset($this->prefix)) {
+            $attributes['prefix'] = $this->prefix;
+        }
+
+        if ((! isset($attributes['domain']) || empty($attributes['domain'])) && isset($this->domain)) {
+            $attributes['domain'] = $this->domain;
         }
 
         $this->groupStack[] = $attributes;

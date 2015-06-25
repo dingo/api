@@ -174,7 +174,9 @@ abstract class ApiServiceProvider extends ServiceProvider
                 $app['api.router.adapter'],
                 new Http\Parser\Accept($config['vendor'], $config['version'], $config['defaultFormat']),
                 $app['api.exception'],
-                $app
+                $app,
+                $config['domain'],
+                $config['prefix']
             );
         });
 

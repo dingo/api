@@ -24,7 +24,7 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
 
         $this->adapter = new $class(new IlluminateRouter(new Dispatcher($this->container), $this->container));
         $this->exception = m::mock('Dingo\Api\Exception\Handler');
-        $this->router = new Router($this->adapter, new Http\Parser\Accept('api', 'v1', 'json'), $this->exception, $this->container);
+        $this->router = new Router($this->adapter, new Http\Parser\Accept('api', 'v1', 'json'), $this->exception, $this->container, null, null);
 
         Http\Response::setFormatters(['json' => new Http\Response\Format\Json]);
     }
