@@ -188,4 +188,16 @@ class Factory
     {
         return $this->bindings;
     }
+
+    /**
+     * Set the transformation layer at runtime.
+     *
+     * @param \Dingo\Api\Contract\Transformer\Adapter $transformer
+     *
+     * @return void
+     */
+    public function setTransformer(Adapter $transformer)
+    {
+        $this->transformer = $transformer;
+    }
 }
