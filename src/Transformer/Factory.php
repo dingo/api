@@ -192,12 +192,16 @@ class Factory
     /**
      * Set the transformation layer at runtime.
      *
-     * @param \Dingo\Api\Contract\Transformer\Adapter $transformer
+     * @param \Closure|\Dingo\Api\Contract\Transformer\Adapter $transformer
      *
      * @return void
      */
-    public function setTransformer(Adapter $transformer)
+    public function setTransformer($transformer)
     {
+        if (is_callable($transformer)) {
+            $transformer = call_user_func($transformer, $this->container);
+        }
+
         $this->transformer = $transformer;
     }
 }
