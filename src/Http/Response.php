@@ -168,13 +168,14 @@ class Response extends IlluminateResponse
     /**
      * Add a response formatter.
      *
+     * @param string                                 $key
      * @param \Dingo\Api\Http\Response\Format\Format $formatter
      *
      * @return void
      */
-    public static function addFormatter($formatter)
+    public static function addFormatter($key, $formatter)
     {
-        static::$formatters[] = $formatter;
+        static::$formatters[$key] = $formatter;
     }
 
     /**
