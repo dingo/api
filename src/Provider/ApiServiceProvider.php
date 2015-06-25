@@ -101,6 +101,7 @@ abstract class ApiServiceProvider extends ServiceProvider
         $this->app->alias('api.limiting', 'Dingo\Api\Http\RateLimit\Handler');
         $this->app->alias('api.transformer', 'Dingo\Api\Transformer\Factory');
         $this->app->alias('api.url', 'Dingo\Api\Routing\UrlGenerator');
+        $this->app->alias('api.exception', 'Dingo\Api\Exception\Handler');
     }
 
     /**
