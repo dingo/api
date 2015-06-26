@@ -26,24 +26,24 @@ class Factory
     protected $bindings = [];
 
     /**
-     * Transformation layer being used to transform responses.
+     * Transformation layer adapter being used to transform responses.
      *
      * @var \Dingo\Api\Contract\Transformer\Adapter
      */
-    protected $transformer;
+    protected $adapter;
 
     /**
      * Create a new transformer factory instance.
      *
      * @param \Illuminate\Container\Container         $container
-     * @param \Dingo\Api\Contract\Transformer\Adapter $transformer
+     * @param \Dingo\Api\Contract\Transformer\Adapter $adapter
      *
      * @return void
      */
-    public function __construct(Container $container, Adapter $transformer)
+    public function __construct(Container $container, Adapter $adapter)
     {
         $this->container = $container;
-        $this->transformer = $transformer;
+        $this->adapter = $adapter;
     }
 
     /**
@@ -72,7 +72,7 @@ class Factory
     {
         $binding = $this->getBinding($response);
 
-        return $this->transformer->transform($response, $binding->resolveTransformer(), $binding, $this->container['request']);
+        return $this->adapter->transform($response, $binding->resolveTransformer(), $binding, $this->container['request']);
     }
 
     /**
@@ -192,16 +192,26 @@ class Factory
     /**
      * Set the transformation layer at runtime.
      *
-     * @param \Closure|\Dingo\Api\Contract\Transformer\Adapter $transformer
+     * @param \Closure|\Dingo\Api\Contract\Transformer\Adapter $adapter
      *
      * @return void
      */
-    public function setTransformer($transformer)
+    public function setAdapter($adapter)
     {
-        if (is_callable($transformer)) {
-            $transformer = call_user_func($transformer, $this->container);
+        if (is_callable($adapter)) {
+            $adapter = call_user_func($adapter, $this->container);
         }
 
-        $this->transformer = $transformer;
+        $this->adapter = $adapter;
+    }
+
+    /**
+     * Get the transformation layer adapter.
+     *
+     * @return \Dingo\Api\Contract\Transformer\Adapter
+     */
+    public function getAdapter()
+    {
+        return $this->adapter;
     }
 }
