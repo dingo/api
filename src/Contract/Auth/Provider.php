@@ -1,6 +1,6 @@
 <?php
 
-namespace Dingo\Api\Auth\Provider;
+namespace Dingo\Api\Contract\Auth;
 
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;

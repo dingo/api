@@ -6,7 +6,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-abstract class Authorization implements Provider
+abstract class Authorization implements \Dingo\Api\Contract\Auth\Provider
 {
     /**
      * Array of provider specific options.

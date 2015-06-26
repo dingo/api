@@ -34,7 +34,7 @@ class Auth
     /**
      * The provider used for authentication.
      *
-     * @var \Dingo\Api\Auth\ProviderInterface
+     * @var \Dingo\Api\Contract\Auth\Provider
      */
     protected $providerUsed;
 
@@ -195,7 +195,7 @@ class Auth
     /**
      * Get the provider used for authentication.
      *
-     * @return \Dingo\Api\Auth\ProviderInterface
+     * @return \Dingo\Api\Contract\Auth\Provider
      */
     public function getProviderUsed()
     {
