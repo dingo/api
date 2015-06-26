@@ -96,7 +96,7 @@ class Fractal implements Adapter
             $resource->setMetaValue($key, $value);
         }
 
-        $binding->fireCallback($resource);
+        $binding->fireCallback($resource, $this->fractal);
 
         return $this->fractal->createData($resource)->toArray();
     }
