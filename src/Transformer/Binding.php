@@ -88,7 +88,7 @@ class Binding
      *
      * @return void
      */
-    public function fireCallback($parameters)
+    public function fireCallback($parameters = null)
     {
         if (is_callable($this->callback)) {
             call_user_func_array($this->callback, func_get_args());
