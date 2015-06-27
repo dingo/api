@@ -31,8 +31,8 @@ abstract class ApiServiceProvider extends ServiceProvider
         Http\Response::setFormatters($this->prepareConfigValues($this->app['config']['api.formats']));
         Http\Response::setTransformer($this->app['api.transformer']);
 
-        $this->app->booted(function ($app) {
-            $app['api.url']->setRouteCollections($app['api.router']->getRoutes());
+        $this->app->rebinding('api.routes', function ($app, $routes) {
+            $app['api.url']->setRouteCollections($routes);
         });
     }
 
@@ -203,7 +203,11 @@ abstract class ApiServiceProvider extends ServiceProvider
     protected function registerUrlGenerator()
     {
         $this->app->singleton('api.url', function ($app) {
-            return new UrlGenerator($app['request']);
+            $url = new UrlGenerator($app['request']);
+
+            $url->setRouteCollections($app['api.router']->getAdapterRoutes());
+
+            return $url;
         });
     }
 

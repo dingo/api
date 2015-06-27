@@ -761,6 +761,8 @@ class Router
      */
     public function setAdapterRoutes(array $routes)
     {
+        $this->container->instance('api.routes', $routes);
+
         $this->adapter->setRoutes($routes);
     }
 
