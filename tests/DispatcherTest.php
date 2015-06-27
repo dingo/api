@@ -145,6 +145,25 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         }
     }
 
+    public function testThrowingHttpExceptionFallsThroughRouter()
+    {
+        $this->router->version('v1', function () {
+            $this->router->get('test', function () {
+                throw new \Symfony\Component\HttpKernel\Exception\GoneHttpException;
+            });
+        });
+
+        $passed = false;
+
+        try {
+            $this->dispatcher->get('test');
+        } catch (\Symfony\Component\HttpKernel\Exception\GoneHttpException $exception) {
+            $passed = true;
+        }
+
+        $this->assertTrue($passed);
+    }
+
     public function testPretendingToBeUserForSingleRequest()
     {
         $user = m::mock('Illuminate\Database\Eloquent\Model');

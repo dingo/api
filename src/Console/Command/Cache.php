@@ -24,6 +24,13 @@ class Cache extends Command
     public $description = 'Create a route cache file for faster route registration';
 
     /**
+     * Filesystem instance.
+     *
+     * @var \Illuminate\Filesystem\Filesystem
+     */
+    protected $files;
+
+    /**
      * Create a new cache command instance.
      *
      * @param \Illuminate\Filesystem\Filesystem $files
@@ -32,7 +39,9 @@ class Cache extends Command
      */
     public function __construct(Filesystem $files)
     {
-        parent::__construct($files);
+        $this->files = $files;
+
+        parent::__construct();
     }
 
     /**

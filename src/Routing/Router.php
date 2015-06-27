@@ -561,6 +561,10 @@ class Router
         try {
             $response = $this->adapter->dispatch($request, $accept['version']);
         } catch (Exception $exception) {
+            if ($request instanceof InternalRequest) {
+                throw $exception;
+            }
+
             $response = $this->exception->handle($exception);
         }
 
