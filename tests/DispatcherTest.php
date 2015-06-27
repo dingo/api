@@ -94,6 +94,10 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         });
 
         $this->assertEquals('test', $this->dispatcher->get('baz/test'));
+
+        $this->dispatcher->setPrefix('baz');
+
+        $this->assertEquals('test', $this->dispatcher->get('test'));
     }
 
     public function testInternalRequestWithDomain()
@@ -105,6 +109,10 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         });
 
         $this->assertEquals('test', $this->dispatcher->get('http://foo.bar/test'));
+
+        $this->dispatcher->setDefaultDomain('foo.bar');
+
+        $this->assertEquals('test', $this->dispatcher->get('test'));
     }
 
     /**

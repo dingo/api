@@ -128,7 +128,17 @@ abstract class ApiServiceProvider extends ServiceProvider
     public function registerDispatcher()
     {
         $this->app->singleton('api.dispatcher', function ($app) {
-            return new Dispatcher($app, $app['files'], $app['api.router'], $app['api.auth']);
+            $dispatcher = new Dispatcher($app, $app['files'], $app['api.router'], $app['api.auth']);
+
+            $config = $app['config']['api'];
+
+            $dispatcher->setVendor($config['vendor']);
+            $dispatcher->setPrefix($config['prefix']);
+            $dispatcher->setDefaultVersion($config['version']);
+            $dispatcher->setDefaultDomain($config['domain']);
+            $dispatcher->setDefaultFormat($config['defaultFormat']);
+
+            return $dispatcher;
         });
     }
 

@@ -132,6 +132,13 @@ class Dispatcher
     protected $vendor;
 
     /**
+     * API prefix.
+     *
+     * @var string
+     */
+    protected $prefix;
+
+    /**
      * Default version.
      *
      * @var string
@@ -438,6 +445,8 @@ class Dispatcher
     {
         $parameters = array_merge($this->parameters, (array) $parameters);
 
+        $uri = $this->addPrefixToUri($uri);
+
         $request = InternalRequest::create($uri, $verb, $parameters, $this->cookies, $this->uploads, [], $this->content);
 
         $request->headers->set('host', $this->getDomain());
@@ -449,6 +458,28 @@ class Dispatcher
         $request->headers->set('accept', $this->getAcceptHeader());
 
         return $request;
+    }
+
+    /**
+     * Add the prefix to the URI.
+     *
+     * @param string $uri
+     *
+     * @return string
+     */
+    protected function addPrefixToUri($uri)
+    {
+        if (! isset($this->prefix)) {
+            return $uri;
+        }
+
+        $uri = trim($uri, '/');
+
+        if (starts_with($uri, $this->prefix)) {
+            return $uri;
+        }
+
+        return '/'.trim($this->prefix, '/').'/'.$uri;
     }
 
     /**
@@ -604,6 +635,18 @@ class Dispatcher
     public function setVendor($vendor)
     {
         $this->vendor = $vendor;
+    }
+
+    /**
+     * Set the prefix.
+     *
+     * @param string $prefix
+     *
+     * @return void
+     */
+    public function setPrefix($prefix)
+    {
+        $this->prefix = $prefix;
     }
 
     /**
