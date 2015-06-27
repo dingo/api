@@ -298,15 +298,27 @@ class Route
     {
         if (empty($options)) {
             return true;
-        } elseif (isset($options['only']) && in_array($this->method, $options['only'])) {
+        } elseif (isset($options['only']) && in_array($this->method, $this->explodeOnPipes($options['only']))) {
             return true;
-        } elseif (isset($options['except']) && in_array($this->method, $options['except'])) {
+        } elseif (isset($options['except']) && in_array($this->method, $this->explodeOnPipes($options['except']))) {
             return false;
-        } elseif (in_array($this->method, $options)) {
+        } elseif (in_array($this->method, $this->explodeOnPipes($options))) {
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * Explode a value on a pipe delimiter.
+     *
+     * @param string|array $value
+     *
+     * @return array
+     */
+    protected function explodeOnPipes($value)
+    {
+        return is_string($value) ? explode('|', $value) : $value;
     }
 
     /**
