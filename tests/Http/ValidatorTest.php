@@ -6,12 +6,15 @@ use Illuminate\Http\Request;
 use Dingo\Api\Http\Validator;
 use PHPUnit_Framework_TestCase;
 use Illuminate\Container\Container;
+use Dingo\Api\Http\Parser\Accept as AcceptParser;
 
 class ValidatorTest extends PHPUnit_Framework_TestCase
 {
-    public function __construct()
+    public function setUp()
     {
-        $this->validator = new Validator(new Container);
+        $this->container = new Container;
+        $this->container->instance('Dingo\Api\Http\Parser\Accept', new AcceptParser('test', 'v1', 'json'));
+        $this->validator = new Validator($this->container);
     }
 
     public function testValidationFailsWithNoValidators()
