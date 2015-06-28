@@ -234,7 +234,8 @@ abstract class ApiServiceProvider extends ServiceProvider
             $config = $app['config']['api'];
 
             return new Http\Validation\Accept(
-                new Http\Parser\Accept($config['vendor'], $config['version'], $config['defaultFormat'])
+                new Http\Parser\Accept($config['vendor'], $config['version'], $config['defaultFormat']),
+                $config['strict']
             );
         });
     }
