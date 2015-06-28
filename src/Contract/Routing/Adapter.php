@@ -48,6 +48,16 @@ interface Adapter
     public function getRoutes($version = null);
 
     /**
+     * Get a normalized iterable set of routes. Top level key must be a version with each
+     * version containing iterable routes that can be consumed by the adapter.
+     *
+     * @param string $version
+     *
+     * @return mixed
+     */
+    public function getIterableRoutes($version = null);
+
+    /**
      * Set the routes on the adapter.
      *
      * @param array $routes

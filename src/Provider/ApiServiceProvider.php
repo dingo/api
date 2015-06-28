@@ -205,7 +205,7 @@ abstract class ApiServiceProvider extends ServiceProvider
         $this->app->singleton('api.url', function ($app) {
             $url = new UrlGenerator($app['request']);
 
-            $url->setRouteCollections($app['api.router']->getAdapterRoutes());
+            $url->setRouteCollections($app['api.router']->getRoutes());
 
             return $url;
         });

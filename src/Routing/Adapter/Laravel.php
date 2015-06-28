@@ -151,6 +151,11 @@ class Laravel implements Adapter
         return $this->routes;
     }
 
+    public function getIterableRoutes($version = null)
+    {
+        return $this->getRoutes($version);
+    }
+
     /**
      * Set the routes on the adapter.
      *

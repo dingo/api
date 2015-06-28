@@ -3,6 +3,7 @@
 namespace Dingo\Api\Tests\Stubs;
 
 use Closure;
+use ArrayIterator;
 use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Contract\Routing\Adapter;
@@ -105,6 +106,11 @@ class RoutingAdapterStub implements Adapter
         }
 
         return $this->routes;
+    }
+
+    public function getIterableRoutes($version = null)
+    {
+        return new ArrayIterator($this->getRoutes($version));
     }
 
     public function setRoutes(array $routes)

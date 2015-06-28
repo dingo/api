@@ -721,7 +721,7 @@ class Router
      */
     public function getRoutes($version = null)
     {
-        $routes = $this->adapter->getRoutes($version);
+        $routes = $this->adapter->getIterableRoutes($version);
 
         if (! is_null($version)) {
             $routes = [$version => $routes];
@@ -761,9 +761,9 @@ class Router
      */
     public function setAdapterRoutes(array $routes)
     {
-        $this->container->instance('api.routes', $routes);
-
         $this->adapter->setRoutes($routes);
+
+        $this->container->instance('api.routes', $this->getRoutes());
     }
 
     /**

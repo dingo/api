@@ -2,6 +2,7 @@
 
 namespace Dingo\Api\Routing\Adapter;
 
+use ArrayIterator;
 use ReflectionClass;
 use FastRoute\Dispatcher;
 use FastRoute\RouteParser;
@@ -102,11 +103,11 @@ class Lumen implements Adapter
      */
     public function getRouteProperties($route, Request $request)
     {
-        $uri = ltrim($request->getRequestUri(), '/');
-        $methods = (array) $request->getMethod();
-        $action = $route[1];
+        $uri = ltrim(isset($route['uri']) ? $route['uri'] : $request->getRequestUri(), '/');
+        $methods = isset($route['methods']) ? $route['methods'] : (array) $request->getMethod();
+        $action = (isset($route[1]) && is_array($route[1])) ? $route[1] : $route;
 
-        if ($request->getMethod() === 'GET') {
+        if ($request->getMethod() === 'GET' && ! in_array('HEAD', $methods)) {
             $methods[] = 'HEAD';
         }
 
@@ -217,6 +218,29 @@ class Lumen implements Adapter
         }
 
         return $this->routes;
+    }
+
+    /**
+     * Get routes in an iterable form.
+     *
+     * @param string $version
+     *
+     * @return \ArrayIterator
+     */
+    public function getIterableRoutes($version = null)
+    {
+        $itrerable = [];
+
+        foreach ($this->getRoutes($version) as $version => $routes) {
+            foreach ($routes->getData()[0] as $uri => $route) {
+                $methods = array_keys($route);
+                $route = array_shift($route);
+
+                $iterable[$version][$uri] = array_merge($route, compact('uri', 'methods'));
+            }
+        }
+
+        return new ArrayIterator($iterable);
     }
 
     /**
