@@ -479,7 +479,7 @@ class Dispatcher
             return $uri;
         }
 
-        return '/'.trim($this->prefix, '/').'/'.$uri;
+        return rtrim('/'.trim($this->prefix, '/').'/'.$uri, '/');
     }
 
     /**
