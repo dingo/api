@@ -10,11 +10,15 @@ use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
 use PHPUnit_Framework_TestCase;
+use Dingo\Api\Tests\Stubs\UserStub;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
 use Dingo\Api\Tests\Stubs\MiddlewareStub;
+use Dingo\Api\Tests\Stubs\TransformerStub;
 use Dingo\Api\Tests\Stubs\RoutingAdapterStub;
+use Dingo\Api\Tests\Stubs\UserTransformerStub;
 use Dingo\Api\Exception\InternalHttpException;
+use Dingo\Api\Transformer\Factory as TransformerFactory;
 use Illuminate\Support\Facades\Request as RequestFacade;
 
 class DispatcherTest extends PHPUnit_Framework_TestCase
@@ -25,6 +29,8 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->container['request'] = Request::create('/', 'GET');
         $this->container['api.auth'] = new MiddlewareStub;
         $this->container['api.limiting'] = new MiddlewareStub;
+
+        $this->transformerFactory = new TransformerFactory($this->container, new TransformerStub);
 
         $this->adapter = new RoutingAdapterStub;
         $this->exception = m::mock('Dingo\Api\Exception\Handler');
@@ -38,6 +44,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->dispatcher->setDefaultFormat('json');
 
         Http\Response::setFormatters(['json' => new Http\Response\Format\Json]);
+        Http\Response::setTransformer($this->transformerFactory);
     }
 
     public function tearDown()
@@ -319,6 +326,25 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Dingo\Api\Http\Response', $response);
         $this->assertEquals('{"foo":"bar"}', $response->getContent());
         $this->assertEquals(['foo' => 'bar'], $response->getOriginalContent());
+    }
+
+    public function testRequestingRawResponseWithTransformers()
+    {
+        $instance = null;
+
+        $this->router->version('v1', function () use (&$instance) {
+            $this->router->get('foo', function () use (&$instance) {
+                return $instance = new UserStub('Jason');
+            });
+        });
+
+        $this->transformerFactory->register(UserStub::class, UserTransformerStub::class);
+
+        $response = $this->dispatcher->raw()->get('foo');
+
+        $this->assertInstanceOf('Dingo\Api\Http\Response', $response);
+        $this->assertEquals('{"name":"Jason"}', $response->getContent());
+        $this->assertEquals($instance, $response->getOriginalContent());
     }
 
     public function testUsingRequestFacadeDoesNotCacheRequestInstance()

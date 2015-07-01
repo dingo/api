@@ -29,11 +29,11 @@ class FactoryTest extends PHPUnit_Framework_TestCase
 
     public function testResponseIsTransformable()
     {
-        $this->assertFalse($this->factory->transformableResponse(new UserStub, new UserTransformerStub));
+        $this->assertFalse($this->factory->transformableResponse(new UserStub('Jason'), new UserTransformerStub));
 
         $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub);
 
-        $this->assertTrue($this->factory->transformableResponse(new UserStub, new UserTransformerStub));
+        $this->assertTrue($this->factory->transformableResponse(new UserStub('Jason'), new UserTransformerStub));
     }
 
     public function testRegisterParameterOrder()
@@ -70,7 +70,7 @@ class FactoryTest extends PHPUnit_Framework_TestCase
     {
         $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub);
 
-        $response = $this->factory->transform(new UserStub);
+        $response = $this->factory->transform(new UserStub('Jason'));
 
         $this->assertEquals(['name' => 'Jason'], $response);
     }
@@ -79,9 +79,9 @@ class FactoryTest extends PHPUnit_Framework_TestCase
     {
         $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub);
 
-        $response = $this->factory->transform(new Collection([new UserStub, new UserStub]));
+        $response = $this->factory->transform(new Collection([new UserStub('Jason'), new UserStub('Bob')]));
 
-        $this->assertEquals([['name' => 'Jason'], ['name' => 'Jason']], $response);
+        $this->assertEquals([['name' => 'Jason'], ['name' => 'Bob']], $response);
     }
 
     /**
@@ -90,6 +90,6 @@ class FactoryTest extends PHPUnit_Framework_TestCase
      */
     public function testTransformingWithNoTransformerThrowsException()
     {
-        $this->factory->transform(new UserStub);
+        $this->factory->transform(new UserStub('Jason'));
     }
 }

@@ -510,7 +510,7 @@ class Dispatcher
         try {
             $this->container['request'] = $request;
 
-            $response = $this->router->dispatch($request, $this->raw);
+            $response = $this->router->dispatch($request);
 
             if (! $response->isSuccessful()) {
                 throw new InternalHttpException($response);

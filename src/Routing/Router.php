@@ -544,11 +544,10 @@ class Router
      * Dispatch a request via the adapter.
      *
      * @param \Dingo\Api\Http\Request $request
-     * @param bool                    $raw
      *
      * @return \Dingo\Api\Http\Response
      */
-    public function dispatch(Request $request, $raw = false)
+    public function dispatch(Request $request)
     {
         $this->currentRoute = null;
 
@@ -568,7 +567,7 @@ class Router
             $response = $this->exception->handle($exception);
         }
 
-        return $this->prepareResponse($response, $request, $accept['format'], $raw);
+        return $this->prepareResponse($response, $request, $accept['format']);
     }
 
     /**
@@ -581,7 +580,7 @@ class Router
      *
      * @return \Dingo\Api\Http\Response
      */
-    protected function prepareResponse(IlluminateResponse $response, Request $request, $format, $raw = false)
+    protected function prepareResponse(IlluminateResponse $response, Request $request, $format)
     {
         if (! $response instanceof Response) {
             $response = Response::makeFromExisting($response);
@@ -597,9 +596,7 @@ class Router
             return $this->exception->handle($exception);
         }
 
-        if (! $raw) {
-            $response = $response->morph($format);
-        }
+        $response = $response->morph($format);
 
         if ($response->isSuccessful() && $this->requestIsConditional()) {
             if (! $response->headers->has('ETag')) {

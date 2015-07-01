@@ -7,7 +7,7 @@ class UserTransformerStub
     public function transform(UserStub $user)
     {
         return [
-            'name' => 'Jason'
+            'name' => $user->name
         ];
     }
 }
