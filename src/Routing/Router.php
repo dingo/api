@@ -397,6 +397,8 @@ class Router
             unset($action['prefix']);
         }
 
+        $action['uri'] = $uri;
+
         $action = $this->addRouteMiddlewares($action);
 
         return $this->adapter->addRoute((array) $methods, $action['version'], $uri, $action);

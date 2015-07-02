@@ -229,14 +229,27 @@ class Lumen implements Adapter
      */
     public function getIterableRoutes($version = null)
     {
-        $itrerable = [];
+        $iterable = [];
 
-        foreach ($this->getRoutes($version) as $version => $routes) {
-            foreach ($routes->getData()[0] as $uri => $route) {
-                $methods = array_keys($route);
-                $route = array_shift($route);
+        foreach ($this->getRoutes($version) as $version => $collector) {
+            $routeData = $collector->getData();
 
-                $iterable[$version][$uri] = array_merge($route, compact('uri', 'methods'));
+            // The first element in the array are the static routes that do not have any parameters.
+            foreach ($routeData[0] as $uri => $route) {
+                $iterable[$version][] = array_shift($route);
+            }
+
+            // The second element is the more complicated regex routes that have parameters.
+            foreach ($routeData[1] as $method => $routes) {
+                if ($method === 'HEAD') {
+                    continue;
+                }
+
+                foreach ($routes as $data) {
+                    foreach ($data['routeMap'] as list($route, $parameters)) {
+                        $iterable[$version][] = $route;
+                    }
+                }
             }
         }
 
