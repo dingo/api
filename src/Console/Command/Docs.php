@@ -96,7 +96,9 @@ class Docs extends Command
         foreach ($this->router->getRoutes() as $collections) {
             foreach ($collections as $route) {
                 if ($controller = $route->getController()) {
-                    $controllers[] = $controller;
+                    if(!$controllers->contains($controller)) {
+                        $controllers->push($controller);
+                    }
                 }
             }
         }
