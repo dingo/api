@@ -78,34 +78,34 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('v2', $this->router->getRoutes(), 'No routes were registered for version 2.');
         $this->assertArrayHasKey('v3', $this->router->getRoutes(), 'No routes were registered for version 3.');
 
-        $request = $this->createRequest('foo', 'GET', ['accept' => 'application/vnd.api.v1+json']);
+        $request = $this->createRequest('/foo', 'GET', ['accept' => 'application/vnd.api.v1+json']);
         $this->assertEquals('foo', $this->router->dispatch($request)->getContent());
 
-        $request = $this->createRequest('foo', 'GET', ['accept' => 'application/vnd.api.v2+json']);
+        $request = $this->createRequest('/foo', 'GET', ['accept' => 'application/vnd.api.v2+json']);
         $this->assertEquals('bar', $this->router->dispatch($request)->getContent());
 
-        $request = $this->createRequest('foo', 'GET', ['accept' => 'application/vnd.api.v3+json']);
+        $request = $this->createRequest('/foo', 'GET', ['accept' => 'application/vnd.api.v3+json']);
         $this->assertEquals('bar', $this->router->dispatch($request)->getContent());
 
-        $request = $this->createRequest('foo', 'POST', ['accept' => 'application/vnd.api.v1+json']);
+        $request = $this->createRequest('/foo', 'POST', ['accept' => 'application/vnd.api.v1+json']);
         $this->assertEquals('posted', $this->router->dispatch($request)->getContent());
 
-        $request = $this->createRequest('foo', 'PATCH', ['accept' => 'application/vnd.api.v1+json']);
+        $request = $this->createRequest('/foo', 'PATCH', ['accept' => 'application/vnd.api.v1+json']);
         $this->assertEquals('patched', $this->router->dispatch($request)->getContent());
 
-        $request = $this->createRequest('foo', 'DELETE', ['accept' => 'application/vnd.api.v1+json']);
+        $request = $this->createRequest('/foo', 'DELETE', ['accept' => 'application/vnd.api.v1+json']);
         $this->assertEquals('deleted', $this->router->dispatch($request)->getContent());
 
-        $request = $this->createRequest('foo', 'PUT', ['accept' => 'application/vnd.api.v1+json']);
+        $request = $this->createRequest('/foo', 'PUT', ['accept' => 'application/vnd.api.v1+json']);
         $this->assertEquals('put', $this->router->dispatch($request)->getContent());
 
-        $request = $this->createRequest('foo', 'options', ['accept' => 'application/vnd.api.v1+json']);
+        $request = $this->createRequest('/foo', 'options', ['accept' => 'application/vnd.api.v1+json']);
         $this->assertEquals('options', $this->router->dispatch($request)->getContent());
     }
 
     public function testAdapterDispatchesRequestsThroughRouter()
     {
-        $this->container['request'] = Http\Request::create('foo', 'GET');
+        $this->container['request'] = Http\Request::create('/foo', 'GET');
 
         $this->router->version('v1', function () {
             $this->router->get('foo', function () {
@@ -132,7 +132,7 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
             });
         });
 
-        $request = $this->createRequest('foo/bar/foo', 'GET', ['accept' => 'application/vnd.api.v2+json']);
+        $request = $this->createRequest('/foo/bar/foo', 'GET', ['accept' => 'application/vnd.api.v2+json']);
         $this->assertEquals('bar', $this->router->dispatch($request)->getContent(), 'Router could not dispatch prefixed routes.');
     }
 
@@ -168,10 +168,10 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
             });
         });
 
-        $request = $this->createRequest('foo', 'GET', ['accept' => 'application/vnd.api.v1.1+json']);
+        $request = $this->createRequest('/foo', 'GET', ['accept' => 'application/vnd.api.v1.1+json']);
         $this->assertEquals('foo', $this->router->dispatch($request)->getContent(), 'Router does not support point release versions.');
 
-        $request = $this->createRequest('bar', 'GET', ['accept' => 'application/vnd.api.v2.0.1+json']);
+        $request = $this->createRequest('/bar', 'GET', ['accept' => 'application/vnd.api.v2.0.1+json']);
         $this->assertEquals('bar', $this->router->dispatch($request)->getContent(), 'Router does not support point release versions.');
     }
 
@@ -183,7 +183,7 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
             ]);
         });
 
-        $request = $this->createRequest('bar/index', 'GET', ['accept' => 'application/vnd.api.v1+json']);
+        $request = $this->createRequest('/bar/index', 'GET', ['accept' => 'application/vnd.api.v1+json']);
 
         $this->assertEquals('foo', $this->router->dispatch($request)->getContent(), 'Router did not register controller correctly.');
 
@@ -193,7 +193,7 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
             ]);
         });
 
-        $request = $this->createRequest('bar/index', 'GET', ['accept' => 'application/vnd.api.v1+json']);
+        $request = $this->createRequest('/bar/index', 'GET', ['accept' => 'application/vnd.api.v1+json']);
 
         $this->assertEquals('foo', $this->router->dispatch($request)->getContent(), 'Router did not register controller correctly.');
     }
@@ -206,7 +206,7 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
             ]);
         });
 
-        $request = $this->createRequest('bar', 'GET', ['accept' => 'application/vnd.api.v1+json']);
+        $request = $this->createRequest('/bar', 'GET', ['accept' => 'application/vnd.api.v1+json']);
 
         $this->assertEquals('foo', $this->router->dispatch($request)->getContent(), 'Router did not register controller correctly.');
     }
