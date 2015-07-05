@@ -6,23 +6,19 @@ use Mockery as m;
 use Dingo\Api\Http;
 use Dingo\Api\Routing\Router;
 use PHPUnit_Framework_TestCase;
-use Illuminate\Events\Dispatcher;
 use Illuminate\Container\Container;
-use Dingo\Api\Routing\Adapter\Laravel;
 use Dingo\Api\Tests\Stubs\MiddlewareStub;
-use Illuminate\Routing\Router as IlluminateRouter;
 
 abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
         $this->container = new Container;
+        $this->container['Illuminate\Container\Container'] = $this->container;
         $this->container['api.auth'] = new MiddlewareStub;
         $this->container['api.limiting'] = new MiddlewareStub;
 
-        $class = $this->getAdapterClassName();
-
-        $this->adapter = new $class(new IlluminateRouter(new Dispatcher($this->container), $this->container));
+        $this->adapter = $this->getAdapterInstance();
         $this->exception = m::mock('Dingo\Api\Exception\Handler');
         $this->router = new Router($this->adapter, new Http\Parser\Accept('api', 'v1', 'json'), $this->exception, $this->container, null, null);
 
@@ -34,7 +30,7 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    abstract public function getAdapterClassName();
+    abstract public function getAdapterInstance();
 
     protected function createRequest($uri, $method, array $headers = [])
     {

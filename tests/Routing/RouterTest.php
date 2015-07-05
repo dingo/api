@@ -13,9 +13,9 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class RouterTest extends Adapter\BaseAdapterTest
 {
-    public function getAdapterClassName()
+    public function getAdapterInstance()
     {
-        return 'Dingo\Api\Tests\Stubs\RoutingAdapterStub';
+        return $this->container->make('Dingo\Api\Tests\Stubs\RoutingAdapterStub');
     }
 
     public function testRouteOptionsMergeCorrectly()

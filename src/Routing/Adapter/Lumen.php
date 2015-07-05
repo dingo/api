@@ -177,7 +177,7 @@ class Lumen implements Adapter
     {
         foreach ($versions as $version) {
             if (! isset($this->routes[$version])) {
-                $this->routes[$version] = new RouteCollector($this->parser, $this->generator);
+                $this->routes[$version] = new RouteCollector($this->parser, clone $this->generator);
             }
         }
     }
