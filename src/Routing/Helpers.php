@@ -124,6 +124,16 @@ trait Helpers
     }
 
     /**
+     * Get the internal dispatcher instance.
+     *
+     * @return \Dingo\Api\Dispatcher
+     */
+    public function api()
+    {
+        return app('Dingo\Api\Dispatcher');
+    }
+
+    /**
      * Get the authenticated user.
      *
      * @return mixed
@@ -165,7 +175,7 @@ trait Helpers
     public function __get($key)
     {
         $callable = [
-            'user', 'auth', 'response'
+            'api', 'user', 'auth', 'response'
         ];
 
         if (in_array($key, $callable) && method_exists($this, $key)) {
