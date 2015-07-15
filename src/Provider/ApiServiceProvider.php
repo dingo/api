@@ -75,7 +75,12 @@ abstract class ApiServiceProvider extends ServiceProvider
      */
     protected function setupConfig()
     {
-        $this->mergeConfigFrom(realpath(__DIR__.'/../../config/api.php'), 'api');
+        if(realpath(base_path().('/config/api.php')))
+        {
+            $this->mergeConfigFrom(realpath(base_path().'/config/api.php'), 'api');
+        }else{
+            $this->mergeConfigFrom(realpath(__DIR__.'/../../config/api.php'), 'api');
+        }
 
         $config = $this->app['config']['api'];
 
