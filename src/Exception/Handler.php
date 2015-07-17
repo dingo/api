@@ -89,7 +89,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
     public function render($request, Exception $exception)
     {
         if ($request instanceof Request) {
-            throw $exception;
+            return $this->handle($exception);
         }
 
         return $this->parent->render($request, $exception);
