@@ -3,15 +3,18 @@
 namespace Dingo\Api\Http;
 
 use Illuminate\Http\Request as IlluminateRequest;
+use Dingo\Api\Contract\Http\Request as RequestInterface;
 
-class Request extends IlluminateRequest
+class Request extends IlluminateRequest implements RequestInterface
 {
     /**
+     * Create a new Dingo request instance from an Illuminate request instance.
+     *
      * @param \Illuminate\Http\Request $old
      *
-     * @return static
+     * @return \Dingo\Api\Http\Request
      */
-    public static function createFromExisting(IlluminateRequest $old)
+    public function createFromIlluminate(IlluminateRequest $old)
     {
         $new = new static(
             $old->query->all(), $old->request->all(), $old->attributes->all(),

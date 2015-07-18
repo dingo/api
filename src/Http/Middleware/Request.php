@@ -68,7 +68,7 @@ class Request
     public function handle($request, Closure $next)
     {
         if ($this->validator->validateRequest($request)) {
-            $request = HttpRequest::createFromExisting($request);
+            $request = $this->app->make('Dingo\Api\Contract\Http\Request')->createFromIlluminate($request);
 
             return $this->sendRequestThroughRouter($request);
         }

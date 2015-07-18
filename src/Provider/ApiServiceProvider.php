@@ -91,17 +91,24 @@ abstract class ApiServiceProvider extends ServiceProvider
      */
     protected function setupClassAliases()
     {
-        $this->app->alias('request', 'Dingo\Api\Http\Request');
-        $this->app->alias('api.dispatcher', 'Dingo\Api\Dispatcher');
-        $this->app->alias('api.http.validator', 'Dingo\Api\Http\RequestValidator');
-        $this->app->alias('api.http.response', 'Dingo\Api\Http\Response\Factory');
-        $this->app->alias('api.router', 'Dingo\Api\Routing\Router');
-        $this->app->alias('api.router.adapter', 'Dingo\Api\Routing\Adapter\AdapterInterface');
-        $this->app->alias('api.auth', 'Dingo\Api\Auth\Auth');
-        $this->app->alias('api.limiting', 'Dingo\Api\Http\RateLimit\Handler');
-        $this->app->alias('api.transformer', 'Dingo\Api\Transformer\Factory');
-        $this->app->alias('api.url', 'Dingo\Api\Routing\UrlGenerator');
-        $this->app->alias('api.exception', 'Dingo\Api\Exception\Handler');
+        $this->app->alias('Dingo\Api\Http\Request', 'Dingo\Api\Contract\Http\Request');
+
+        $aliases = [
+            'api.dispatcher'     => 'Dingo\Api\Dispatcher',
+            'api.http.validator' => 'Dingo\Api\Http\RequestValidator',
+            'api.http.response'  => 'Dingo\Api\Http\Response\Factory',
+            'api.router'         => 'Dingo\Api\Routing\Router',
+            'api.router.adapter' => 'Dingo\Api\Contract\Routing\Adapter',
+            'api.auth'           => 'Dingo\Api\Auth\Auth',
+            'api.limiting'       => 'Dingo\Api\Contract\Http\RateLimit\Adapter',
+            'api.transformer'    => 'Dingo\Api\Transformer\Factory',
+            'api.url'            => 'Dingo\Api\Routing\UrlGenerator',
+            'api.exception'      => 'Dingo\Api\Exception\Handler'
+        ];
+
+        foreach ($aliases as $key => $alias) {
+            $this->app->alias($key, $alias);
+        }
     }
 
     /**
