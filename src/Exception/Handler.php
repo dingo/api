@@ -6,7 +6,7 @@ use Exception;
 use ReflectionFunction;
 use Dingo\Api\Http\Request;
 use Illuminate\Http\Response;
-use Dingo\Api\Contract\Exception\Handler as ExceptionHandler;
+use Dingo\Api\Contract\Debug\ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Illuminate\Contracts\Debug\ExceptionHandler as IlluminateExceptionHandler;
 

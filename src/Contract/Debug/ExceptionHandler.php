@@ -1,10 +1,10 @@
 <?php
 
-namespace Dingo\Api\Contract\Exception;
+namespace Dingo\Api\Contract\Debug;
 
 use Exception;
 
-interface Handler
+interface ExceptionHandler
 {
     /**
      * Handle an exception.
