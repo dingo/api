@@ -20,12 +20,8 @@ class RouterTest extends Adapter\BaseAdapterTest
 
     public function testRouteOptionsMergeCorrectly()
     {
-        $this->router->version('v1', ['protected' => true, 'scopes' => 'foo|bar'], function () {
+        $this->router->version('v1', ['scopes' => 'foo|bar'], function () {
             $this->router->get('foo', ['scopes' => ['baz'], function () {
-                $this->assertTrue(
-                    $this->router->getCurrentRoute()->isProtected(),
-                    'Route was not protected but should be.'
-                );
                 $this->assertEquals(
                     ['foo', 'bar', 'baz'],
                     $this->router->getCurrentRoute()->getScopes(),
@@ -33,26 +29,16 @@ class RouterTest extends Adapter\BaseAdapterTest
                 );
             }]);
 
-            $this->router->get('bar', ['protected' => false, function () {
-                $this->assertFalse(
-                    $this->router->getCurrentRoute()->isProtected(),
-                    'Route was protected but should not be.'
-                );
-            }]);
-
-            $this->router->get('baz', ['protected' => false, function () {
+            $this->router->get('baz', function () {
                 $this->assertEquals(
                     ['foo', 'bar'],
                     $this->router->getCurrentRoute()->getScopes(),
                     'Router did not merge string based group scopes with route.'
                 );
-            }]);
+            });
         });
 
         $request = $this->createRequest('foo', 'GET', ['accept' => 'application/vnd.api.v1+json']);
-        $this->router->dispatch($request);
-
-        $request = $this->createRequest('bar', 'GET', ['accept' => 'application/vnd.api.v1+json']);
         $this->router->dispatch($request);
 
         $request = $this->createRequest('baz', 'GET', ['accept' => 'application/vnd.api.v1+json']);
@@ -69,7 +55,6 @@ class RouterTest extends Adapter\BaseAdapterTest
 
         $this->assertEquals(['baz', 'bing'], $route->scopes());
         $this->assertEquals(['foo', 'red', 'black'], $route->getAuthProviders());
-        $this->assertTrue($route->isProtected());
         $this->assertEquals(10, $route->getRateLimit());
         $this->assertEquals(20, $route->getRateExpiration());
         $this->assertEquals('Zippy', $route->getThrottle());
@@ -237,23 +222,6 @@ class RouterTest extends Adapter\BaseAdapterTest
         $this->exception->shouldReceive('handle')->with(m::type('Symfony\Component\HttpKernel\Exception\HttpException'))->andReturn(new Http\Response('Failed!'));
 
         $this->assertEquals('Failed!', $this->router->dispatch($request)->getContent(), 'Router did not throw and handle a HttpException.');
-    }
-
-    public function testRouteMiddlewaresAreUnsetAndMovedIfManuallySetOnRoutes()
-    {
-        $this->router->version('v1', function () {
-            $this->router->get('foo', ['middleware' => 'foo|api.auth', function () use (&$middleware) {
-                $route = $this->router->getCurrentRoute();
-
-                $this->assertEquals(['api.auth', 'api.limiting', 'foo'], $route->getAction()['middleware']);
-
-                return 'foo';
-            }]);
-        });
-
-        $request = $this->createRequest('foo', 'GET');
-
-        $this->router->dispatch($request);
     }
 
     public function testGroupNamespacesAreConcatenated()

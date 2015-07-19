@@ -66,13 +66,6 @@ class Route
     protected $scopes = [];
 
     /**
-     * Indicates if the route is protected.
-     *
-     * @var bool
-     */
-    protected $protected = false;
-
-    /**
      * Array of authentication providers.
      *
      * @var array
@@ -154,7 +147,6 @@ class Route
         $this->makeController();
 
         $this->setupScopes();
-        $this->setupProtection();
         $this->setupAuthProviders();
         $this->setupRateLimiting();
         $this->setupThrottle();
@@ -208,24 +200,6 @@ class Route
     }
 
     /**
-     * Setup the route protection by merging the controller protection.
-     *
-     * @return void
-     */
-    protected function setupProtection()
-    {
-        $this->protected = array_pull($this->action, 'protected', false);
-
-        $this->findControllerOptions('protected', function () {
-            $this->protected = true;
-        });
-
-        $this->findControllerOptions('unprotected', function () {
-            $this->protected = false;
-        });
-    }
-
-    /**
      * Setup the route scopes by merging any controller scopes.
      *
      * @return void
@@ -272,7 +246,7 @@ class Route
         $method = $this->getControllerPropertiesMethodName();
 
         return array_merge(
-            ['scope' => [], 'protected' => [], 'unprotected' => [], 'providers' => [], 'rateLimit' => [], 'throttles' => []],
+            ['scope' => [], 'providers' => [], 'rateLimit' => [], 'throttles' => []],
             $this->controller->$method()
         );
     }
@@ -381,16 +355,6 @@ class Route
     public function getThrottle()
     {
         return $this->throttle;
-    }
-
-    /**
-     * Determine if the route is protected.
-     *
-     * @return bool
-     */
-    public function isProtected()
-    {
-        return $this->protected === true;
     }
 
     /**

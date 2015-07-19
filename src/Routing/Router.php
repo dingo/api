@@ -22,20 +22,6 @@ use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 class Router
 {
     /**
-     * Auth middleware identifier.
-     *
-     * @var string
-     */
-    const API_AUTH_MIDDLEWARE = 'api.auth';
-
-    /**
-     * Rate limit middleware identifier.
-     *
-     * @var string
-     */
-    const API_RATE_LIMIT_MIDDLEWARE = 'api.limiting';
-
-    /**
      * Routing adapter instance.
      *
      * @var \Dingo\Api\Routing\Adapter\AdapterInterface
@@ -399,29 +385,7 @@ class Router
 
         $action['uri'] = $uri;
 
-        $action = $this->addRouteMiddlewares($action);
-
         return $this->adapter->addRoute((array) $methods, $action['version'], $uri, $action);
-    }
-
-    /**
-     * Add the route middlewares to the action array.
-     *
-     * @param array $action
-     *
-     * @return array
-     */
-    protected function addRouteMiddlewares(array $action)
-    {
-        foreach ([static::API_RATE_LIMIT_MIDDLEWARE, static::API_AUTH_MIDDLEWARE] as $middleware) {
-            if (($key = array_search($middleware, $action['middleware'])) !== false) {
-                unset($action['middleware'][$key]);
-            }
-
-            array_unshift($action['middleware'], $middleware);
-        }
-
-        return $action;
     }
 
     /**

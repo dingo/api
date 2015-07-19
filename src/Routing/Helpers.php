@@ -13,8 +13,6 @@ trait Helpers
      */
     protected $methodProperties = [
         'scopes' => [],
-        'protected' => [],
-        'unprotected' => [],
         'providers' => [],
         'rateLimit' => [],
         'throttles' => []

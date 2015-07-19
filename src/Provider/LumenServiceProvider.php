@@ -21,7 +21,7 @@ class LumenServiceProvider extends ApiServiceProvider
 
         $this->app->routeMiddleware([
             'api.auth' => 'Dingo\Api\Http\Middleware\Auth',
-            'api.limiting' => 'Dingo\Api\Http\Middleware\RateLimit',
+            'api.throttle' => 'Dingo\Api\Http\Middleware\RateLimit',
         ]);
     }
 
