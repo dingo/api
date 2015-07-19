@@ -18,7 +18,6 @@ class ResourceException extends HttpException
     /**
      * Create a new resource exception instance.
      *
-     * @param int                                  $statusCode
      * @param string                               $message
      * @param \Illuminate\Support\MessageBag|array $errors
      * @param \Exception                           $previous
