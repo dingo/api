@@ -75,7 +75,6 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
         return $this->parent->report($exception);
     }
 
-
     /**
      * Render an exception into an HTTP response.
      *
