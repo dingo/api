@@ -3,6 +3,7 @@
 namespace Dingo\Api\Http\Validation;
 
 use Illuminate\Http\Request;
+use Dingo\Api\Contract\Http\Validation\Validator;
 use Dingo\Api\Http\Parser\Accept as AcceptParser;
 
 class Accept implements Validator

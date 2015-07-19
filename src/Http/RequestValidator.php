@@ -4,9 +4,9 @@ namespace Dingo\Api\Http;
 
 use Illuminate\Container\Container;
 use Illuminate\Http\Request as IlluminateRequest;
-use Dingo\Api\Http\Validation\Validator as ValidatorInterface;
+use Dingo\Api\Contract\Http\Validation\Validator as ValidatorInterface;
 
-class Validator
+class RequestValidator
 {
     /**
      * Container instance.

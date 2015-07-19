@@ -3,6 +3,7 @@
 namespace Dingo\Api\Http\Validation;
 
 use Illuminate\Http\Request;
+use Dingo\Api\Contract\Http\Validation\Validator;
 
 class Domain implements Validator
 {

@@ -93,7 +93,7 @@ abstract class ApiServiceProvider extends ServiceProvider
     {
         $this->app->alias('request', 'Dingo\Api\Http\Request');
         $this->app->alias('api.dispatcher', 'Dingo\Api\Dispatcher');
-        $this->app->alias('api.http.validator', 'Dingo\Api\Http\Validator');
+        $this->app->alias('api.http.validator', 'Dingo\Api\Http\RequestValidator');
         $this->app->alias('api.http.response', 'Dingo\Api\Http\Response\Factory');
         $this->app->alias('api.router', 'Dingo\Api\Routing\Router');
         $this->app->alias('api.router.adapter', 'Dingo\Api\Routing\Adapter\AdapterInterface');
@@ -219,7 +219,7 @@ abstract class ApiServiceProvider extends ServiceProvider
     protected function registerHttpValidation()
     {
         $this->app->singleton('api.http.validator', function ($app) {
-            return new Http\Validator($app);
+            return new Http\RequestValidator($app);
         });
 
         $this->app->singleton('Dingo\Api\Http\Validation\Domain', function ($app) {

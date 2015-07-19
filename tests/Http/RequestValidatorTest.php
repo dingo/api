@@ -3,18 +3,18 @@
 namespace Dingo\Api\Tests\Http;
 
 use Illuminate\Http\Request;
-use Dingo\Api\Http\Validator;
 use PHPUnit_Framework_TestCase;
 use Illuminate\Container\Container;
+use Dingo\Api\Http\RequestValidator;
 use Dingo\Api\Http\Parser\Accept as AcceptParser;
 
-class ValidatorTest extends PHPUnit_Framework_TestCase
+class RequestValidatorTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
         $this->container = new Container;
         $this->container->instance('Dingo\Api\Http\Parser\Accept', new AcceptParser('test', 'v1', 'json'));
-        $this->validator = new Validator($this->container);
+        $this->validator = new RequestValidator($this->container);
     }
 
     public function testValidationFailsWithNoValidators()

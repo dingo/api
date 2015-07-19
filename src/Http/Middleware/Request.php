@@ -3,9 +3,9 @@
 namespace Dingo\Api\Http\Middleware;
 
 use Closure;
-use Dingo\Api\Http\Validator;
 use Dingo\Api\Routing\Router;
 use Illuminate\Pipeline\Pipeline;
+use Dingo\Api\Http\RequestValidator;
 use Dingo\Api\Http\Request as HttpRequest;
 use Illuminate\Contracts\Foundation\Application;
 
@@ -44,12 +44,12 @@ class Request
      *
      * @param \Illuminate\Contracts\Foundation\Application $app
      * @param \Dingo\Api\Routing\Router                    $router
-     * @param \Dingo\Api\Http\Validator                    $validator
+     * @param \Dingo\Api\Http\RequestValidator             $validator
      * @param array                                        $middleware
      *
      * @return void
      */
-    public function __construct(Application $app, Router $router, Validator $validator, array $middleware)
+    public function __construct(Application $app, Router $router, RequestValidator $validator, array $middleware)
     {
         $this->app = $app;
         $this->router = $router;

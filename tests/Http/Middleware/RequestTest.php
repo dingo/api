@@ -4,9 +4,9 @@ namespace Dingo\Api\Tests\Http\Middleware;
 
 use Mockery as m;
 use Illuminate\Http\Request;
-use Dingo\Api\Http\Validator;
 use Dingo\Api\Http\Validation;
 use PHPUnit_Framework_TestCase;
+use Dingo\Api\Http\RequestValidator;
 use Dingo\Api\Tests\Stubs\ApplicationStub;
 use Dingo\Api\Http\Parser\Accept as AcceptParser;
 use Dingo\Api\Http\Middleware\Request as RequestMiddleware;
@@ -17,7 +17,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
     {
         $this->app = new ApplicationStub;
         $this->router = m::mock('Dingo\Api\Routing\Router');
-        $this->validator = new Validator($this->app);
+        $this->validator = new RequestValidator($this->app);
 
         $this->middleware = new RequestMiddleware($this->app, $this->router, $this->validator, []);
     }
