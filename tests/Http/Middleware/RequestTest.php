@@ -19,6 +19,8 @@ class RequestTest extends PHPUnit_Framework_TestCase
         $this->router = m::mock('Dingo\Api\Routing\Router');
         $this->validator = new RequestValidator($this->app);
 
+        $this->app->alias('Dingo\Api\Http\Request', 'Dingo\Api\Contract\Http\Request');
+
         $this->middleware = new RequestMiddleware($this->app, $this->router, $this->validator, []);
     }
 
