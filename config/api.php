@@ -1,5 +1,7 @@
 <?php
 
+$serializer = new SuperClosure\Serializer;
+
 return [
 
     /*
@@ -122,9 +124,9 @@ return [
     */
 
     'auth' => [
-        'basic' => function ($app) {
+        'basic' => $serializer->serialize(function ($app) {
             return new Dingo\Api\Auth\Provider\Basic($app['auth']);
-        },
+        }),
     ],
 
     /*
