@@ -26,6 +26,18 @@ class LumenServiceProvider extends ApiServiceProvider
     }
 
     /**
+     * Setup the configuration.
+     *
+     * @return void
+     */
+    protected function setupConfig()
+    {
+        $this->app->configure('api');
+
+        parent::setupConfig();
+    }
+
+    /**
      * Register the service provider.
      *
      * @return void
