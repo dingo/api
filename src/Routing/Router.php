@@ -539,30 +539,32 @@ class Router
     /**
      * Prepare a response by transforming and formatting it correctly.
      *
-     * @param \Illuminate\Http\Response $response
+     * @param mixed                     $response
      * @param \Dingo\Api\Http\Request   $request
      * @param string                    $format
      * @param bool                      $raw
      *
      * @return \Dingo\Api\Http\Response
      */
-    protected function prepareResponse(IlluminateResponse $response, Request $request, $format)
+    protected function prepareResponse($response, Request $request, $format)
     {
-        if (! $response instanceof Response) {
+        if ($response instanceof IlluminateResponse) {
             $response = Response::makeFromExisting($response);
         }
 
-        // If we try and get a formatter that does not exist we'll let the exception
-        // handler deal with it. At worst we'll get a generic JSON response that
-        // a consumer can hopefully deal with. Ideally they won't be using
-        // an unsupported format.
-        try {
-            $response->getFormatter($format)->setResponse($response)->setRequest($request);
-        } catch (NotAcceptableHttpException $exception) {
-            return $this->exception->handle($exception);
-        }
+        if ($response instanceof Response) {
+            // If we try and get a formatter that does not exist we'll let the exception
+            // handler deal with it. At worst we'll get a generic JSON response that
+            // a consumer can hopefully deal with. Ideally they won't be using
+            // an unsupported format.
+            try {
+                $response->getFormatter($format)->setResponse($response)->setRequest($request);
+            } catch (NotAcceptableHttpException $exception) {
+                return $this->exception->handle($exception);
+            }
 
-        $response = $response->morph($format);
+            $response = $response->morph($format);
+        }
 
         if ($response->isSuccessful() && $this->requestIsConditional()) {
             if (! $response->headers->has('ETag')) {
