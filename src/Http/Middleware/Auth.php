@@ -46,7 +46,7 @@ class Auth
     {
         $route = $this->router->getCurrentRoute();
 
-        if ($route->isProtected() && ! $this->auth->check(false)) {
+        if (! $this->auth->check(false)) {
             $this->auth->authenticate($route->getAuthProviders());
         }
 
