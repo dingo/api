@@ -35,7 +35,7 @@ class Routes extends RouteListCommand
      *
      * @var array
      */
-    protected $headers = ['Domain', 'URI', 'Name', 'Action', 'Version(s)', 'Protected', 'Scope(s)'];
+    protected $headers = ['Domain', 'URI', 'Name', 'Action', 'Version(s)', 'Scope(s)'];
 
     /**
      * Create a new routes command instance.
@@ -70,7 +70,6 @@ class Routes extends RouteListCommand
                     'name'      => $route->getName(),
                     'action'    => $route->getActionName(),
                     'versions'  => implode(', ', $route->versions()),
-                    'protected' => $route->isProtected() ? 'Yes' : 'No',
                     'scopes'    => implode(', ', $route->scopes())
                 ]);
             }
