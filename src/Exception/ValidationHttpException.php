@@ -16,6 +16,6 @@ class ValidationHttpException extends ResourceException
      */
     public function __construct($errors = null, Exception $previous = null, $headers = [], $code = 0)
     {
-        parent::__construct(null, $errors, $exception, $headers, $code);
+        parent::__construct(null, $errors, $previous, $headers, $code);
     }
 }
