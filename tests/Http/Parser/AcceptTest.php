@@ -41,6 +41,17 @@ class AcceptTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('xml', $accept['format']);
     }
 
+    public function testApiVersionWithoutVSuffix()
+    {
+        $parser = new Accept('api', '1.0', 'json');
+
+        $accept = $parser->parse($this->createRequest('foo', 'GET', ['accept' => 'application/vnd.api.1.0+xml']));
+
+        $this->assertEquals('api', $accept['vendor']);
+        $this->assertEquals('1.0', $accept['version']);
+        $this->assertEquals('xml', $accept['format']);
+    }
+
     protected function createRequest($uri, $method, array $headers = [])
     {
         $request = Request::create($uri, $method);
