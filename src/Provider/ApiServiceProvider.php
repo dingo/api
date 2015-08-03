@@ -102,7 +102,7 @@ abstract class ApiServiceProvider extends ServiceProvider
             'api.router'         => 'Dingo\Api\Routing\Router',
             'api.router.adapter' => 'Dingo\Api\Contract\Routing\Adapter',
             'api.auth'           => 'Dingo\Api\Auth\Auth',
-            'api.limiting'       => 'Dingo\Api\Contract\Http\RateLimit\Adapter',
+            'api.limiting'       => 'Dingo\Api\Http\RateLimit\Handler',
             'api.transformer'    => 'Dingo\Api\Transformer\Factory',
             'api.url'            => 'Dingo\Api\Routing\UrlGenerator',
             'api.exception'      => 'Dingo\Api\Exception\Handler'
