@@ -187,7 +187,7 @@ class Auth
      *
      * @return bool
      */
-    public function check($authenticate = true)
+    public function check($authenticate = false)
     {
         return ! is_null($this->user($authenticate));
     }
