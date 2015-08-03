@@ -86,7 +86,7 @@ class Fractal implements Adapter
             $resource->setPaginator($paginator);
         }
 
-        if ($response instanceof EloquentCollection && $this->eagerLoading) {
+        if (($response instanceof EloquentCollection || $response instanceof IlluminatePaginator) && $this->eagerLoading) {
             $eagerLoads = $this->mergeEagerLoads($transformer, $this->fractal->getRequestedIncludes());
 
             $response->load($eagerLoads);
