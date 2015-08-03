@@ -21,7 +21,9 @@ return [
     |--------------------------------------------------------------------------
     |
     | When a request is made to the API and no version is specified then it
-    | will default to the version specified here.
+    | will default to the version specified here. This version is also
+    | used as a default when no version is supplied when generating
+    | documentation using the Artisan command.
     |
     */
 
@@ -50,6 +52,19 @@ return [
     */
 
     'domain' => env('API_DOMAIN', null),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Name
+    |--------------------------------------------------------------------------
+    |
+    | When documenting your API using the API Blueprint syntax you can
+    | configure a default name to avoid having to manually specify
+    | one when using the command.
+    |
+    */
+
+    'name' => env('API_NAME', null),
 
     /*
     |--------------------------------------------------------------------------

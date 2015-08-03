@@ -7,6 +7,7 @@ use RuntimeException;
 use Dingo\Api\Auth\Auth;
 use Dingo\Api\Dispatcher;
 use Dingo\Api\Routing\Router;
+use Dingo\Api\Console\Command;
 use Dingo\Api\Routing\UrlGenerator;
 use Illuminate\Support\ServiceProvider;
 use Dingo\Api\Routing\ResourceRegistrar;
@@ -55,6 +56,7 @@ abstract class ApiServiceProvider extends ServiceProvider
         $this->registerResponseFactory();
         $this->registerMiddleware();
         $this->registerTransformer();
+        $this->registerDocsCommand();
 
         $this->commands([
             'Dingo\Api\Console\Command\Docs'
@@ -288,6 +290,26 @@ abstract class ApiServiceProvider extends ServiceProvider
     {
         $this->app->singleton('api.transformer', function ($app) {
             return new TransformerFactory($app, $this->prepareConfigValue($app['config']['api.transformer']));
+        });
+    }
+
+    /**
+     * Register the documentation command.
+     *
+     * @return void
+     */
+    protected function registerDocsCommand()
+    {
+        $this->app->singleton('Dingo\Api\Console\Command\Docs', function ($app) {
+            $config = $app['config']['api'];
+
+            return new Command\Docs(
+                $app['api.router'],
+                $app['Dingo\Blueprint\Blueprint'],
+                $app['Dingo\Blueprint\Writer'],
+                $config['name'],
+                $config['version']
+            );
         });
     }
 
