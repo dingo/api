@@ -40,7 +40,10 @@
     "autoload": {
         "psr-4": {
             "Dingo\\Api\\": "src"
-        }
+        },
+        "files": [
+            "src/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
