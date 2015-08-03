@@ -5,6 +5,7 @@ namespace Dingo\Api\Routing;
 use Closure;
 use Exception;
 use RuntimeException;
+use Illuminate\Support\Str;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Exception\Handler;
@@ -628,6 +629,16 @@ class Router
     }
 
     /**
+     * Get the currently dispatched route instance.
+     *
+     * @return \Illuminate\Routing\Route
+     */
+    public function current()
+    {
+        return $this->getCurrentRoute();
+    }
+
+    /**
      * Create a new route instance from an adapter route.
      *
      * @param array|\Illuminate\Routing\Route $route
@@ -749,5 +760,89 @@ class Router
     public function hasDispatchedRoutes()
     {
         return $this->routesDispatched > 0;
+    }
+
+    /**
+     * Get the current route name.
+     *
+     * @return string|null
+     */
+    public function currentRouteName()
+    {
+        return $this->current() ? $this->current()->getName() : null;
+    }
+
+    /**
+     * Alias for the "currentRouteNamed" method.
+     *
+     * @param mixed string
+     *
+     * @return bool
+     */
+    public function is()
+    {
+        foreach (func_get_args() as $pattern) {
+            if (Str::is($pattern, $this->currentRouteName())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Determine if the current route matches a given name.
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function currentRouteNamed($name)
+    {
+        return $this->current() ? $this->current()->getName() == $name : false;
+    }
+
+    /**
+     * Get the current route action.
+     *
+     * @return string|null
+     */
+    public function currentRouteAction()
+    {
+        if (! $route = $this->current()) {
+            return;
+        }
+
+        $action = $route->getAction();
+
+        return isset($action['controller']) ? $action['controller'] : null;
+    }
+
+    /**
+     * Alias for the "currentRouteUses" method.
+     *
+     * @param  mixed  string
+     * @return bool
+     */
+    public function uses()
+    {
+        foreach (func_get_args() as $pattern) {
+            if (Str::is($pattern, $this->currentRouteAction())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Determine if the current route action matches a given action.
+     *
+     * @param  string  $action
+     * @return bool
+     */
+    public function currentRouteUses($action)
+    {
+        return $this->currentRouteAction() == $action;
     }
 }

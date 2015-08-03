@@ -236,4 +236,40 @@ class RouterTest extends Adapter\BaseAdapterTest
 
         $this->assertEquals('foo', $this->router->dispatch($request)->getContent(), 'Router did not concatenate controller namespace correctly.');
     }
+
+    public function testCurrentRouteName()
+    {
+        $this->router->version('v1', function () {
+            $this->router->get('foo', ['as' => 'foo', function () {
+                return 'foo';
+            }]);
+        });
+
+        $request = $this->createRequest('foo', 'GET');
+
+        $this->router->dispatch($request);
+
+        $this->assertFalse($this->router->currentRouteNamed('bar'));
+        $this->assertTrue($this->router->currentRouteNamed('foo'));
+        $this->assertTrue($this->router->is('*'));
+        $this->assertFalse($this->router->is('b*'));
+        $this->assertTrue($this->router->is('b*', 'f*'));
+    }
+
+    public function testCurrentRouteAction()
+    {
+        $this->router->version('v1', ['namespace' => 'Dingo\Api\Tests\Stubs'], function () {
+            $this->router->get('foo', 'RoutingControllerStub@getIndex');
+        });
+
+        $request = $this->createRequest('foo', 'GET');
+
+        $this->router->dispatch($request);
+
+        $this->assertFalse($this->router->currentRouteUses('foo'));
+        $this->assertTrue($this->router->currentRouteUses('Dingo\Api\Tests\Stubs\RoutingControllerStub@getIndex'));
+        $this->assertFalse($this->router->uses('foo*'));
+        $this->assertTrue($this->router->uses('*'));
+        $this->assertTrue($this->router->uses('Dingo\Api\Tests\Stubs\RoutingControllerStub@*'));
+    }
 }
