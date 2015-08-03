@@ -35,7 +35,7 @@ class Routes extends RouteListCommand
      *
      * @var array
      */
-    protected $headers = ['Domain', 'URI', 'Name', 'Action', 'Version(s)', 'Scope(s)'];
+    protected $headers = ['Host', 'URI', 'Name', 'Action', 'Protected', 'Version(s)', 'Scope(s)'];
 
     /**
      * Create a new routes command instance.
@@ -69,13 +69,36 @@ class Routes extends RouteListCommand
                     'uri'       => implode('|', $route->methods()).' '.$route->uri(),
                     'name'      => $route->getName(),
                     'action'    => $route->getActionName(),
+                    'protected' => $this->routeHasAuthMiddleware($route) ? 'Yes' : 'No',
                     'versions'  => implode(', ', $route->versions()),
                     'scopes'    => implode(', ', $route->scopes())
                 ]);
             }
         }
 
+        if ($sort = $this->option('sort')) {
+            $routes = array_sort($routes, function ($value) use ($sort) {
+                return $value[$sort];
+            });
+        }
+
+        if ($this->option('reverse')) {
+            $routes = array_reverse($routes);
+        }
+
         return array_filter(array_unique($routes, SORT_REGULAR));
+    }
+
+    /**
+     * Determine if the route has the authentication middleware.
+     *
+     * @return string
+     */
+    protected function routeHasAuthMiddleware($route)
+    {
+        $middleware = $route->getAction()['middleware'];
+
+        return array_search('api.auth', $middleware) !== false;
     }
 
     /**
@@ -87,7 +110,7 @@ class Routes extends RouteListCommand
      */
     protected function filterRoute(array $route)
     {
-        $filters = ['name', 'path', 'versions', 'scopes'];
+        $filters = ['name', 'path', 'protected', 'unprotected', 'versions', 'scopes'];
 
         foreach ($filters as $filter) {
             if ($this->option($filter) && ! $this->{'filterBy'.ucfirst($filter)}($route)) {
@@ -105,11 +128,22 @@ class Routes extends RouteListCommand
      */
     protected function getOptions()
     {
+        $options = parent::getOptions();
+
+        foreach ($options as $key => $option) {
+            if ($option[0] == 'sort') {
+                unset($options[$key]);
+            }
+        }
+
         return array_merge(
-            parent::getOptions(),
+            $options,
             [
+                ['sort', null, InputOption::VALUE_OPTIONAL, 'The column (domain, method, uri, name, action) to sort by'],
                 ['versions', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Filter the routes by version'],
                 ['scopes', 'S', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Filter the routes by scopes'],
+                ['protected', null, InputOption::VALUE_NONE, 'Filter the protected routes'],
+                ['unprotected', null, InputOption::VALUE_NONE, 'Filter the unprotected routes']
             ]
         );
     }
@@ -124,6 +158,30 @@ class Routes extends RouteListCommand
     protected function filterByPath(array $route)
     {
         return str_contains($route['uri'], $this->option('path'));
+    }
+
+    /**
+     * Filter the route by whether or not it is protected.
+     *
+     * @param array $route
+     *
+     * @return bool
+     */
+    protected function filterByProtected(array $route)
+    {
+        return $this->option('protected') && $route['protected'] == 'Yes';
+    }
+
+    /**
+     * Filter the route by whether or not it is unprotected.
+     *
+     * @param array $route
+     *
+     * @return bool
+     */
+    protected function filterByUnprotected(array $route)
+    {
+        return $this->option('unprotected') && $route['protected'] == 'No';
     }
 
     /**
