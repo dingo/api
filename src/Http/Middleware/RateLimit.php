@@ -97,7 +97,7 @@ class RateLimit
         return [
             'X-RateLimit-Limit' => $this->handler->getThrottleLimit(),
             'X-RateLimit-Remaining' => $this->handler->getRemainingLimit(),
-            'X-RateLimit-Reset' => $this->handler->getRateLimitReset()
+            'X-RateLimit-Reset' => $this->handler->getRateLimitReset(),
         ];
     }
 }

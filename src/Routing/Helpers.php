@@ -15,7 +15,7 @@ trait Helpers
         'scopes' => [],
         'providers' => [],
         'rateLimit' => [],
-        'throttles' => []
+        'throttles' => [],
     ];
 
     /**
@@ -173,7 +173,7 @@ trait Helpers
     public function __get($key)
     {
         $callable = [
-            'api', 'user', 'auth', 'response'
+            'api', 'user', 'auth', 'response',
         ];
 
         if (in_array($key, $callable) && method_exists($this, $key)) {

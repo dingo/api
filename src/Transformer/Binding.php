@@ -32,7 +32,7 @@ class Binding
     /**
      * Callback fired during transformation.
      *
-     * @var  \Closure
+     * @var \Closure
      */
     protected $callback;
 

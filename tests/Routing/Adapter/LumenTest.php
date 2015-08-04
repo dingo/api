@@ -16,7 +16,7 @@ class LumenTest extends BaseAdapterTest
 
         $app->routeMiddleware([
             'api.auth' => get_class($this->container['api.auth']),
-            'api.limiting' => get_class($this->container['api.limiting'])
+            'api.limiting' => get_class($this->container['api.limiting']),
         ]);
 
         return new Lumen($app, new StdRouteParser, new GcbDataGenerator, GcbDispatcher::class);

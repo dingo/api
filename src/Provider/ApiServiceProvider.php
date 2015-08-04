@@ -59,13 +59,13 @@ abstract class ApiServiceProvider extends ServiceProvider
         $this->registerDocsCommand();
 
         $this->commands([
-            'Dingo\Api\Console\Command\Docs'
+            'Dingo\Api\Console\Command\Docs',
         ]);
 
         if (class_exists('Illuminate\Foundation\Application', false)) {
             $this->commands([
                 'Dingo\Api\Console\Command\Cache',
-                'Dingo\Api\Console\Command\Routes'
+                'Dingo\Api\Console\Command\Routes',
             ]);
         }
     }
@@ -105,7 +105,7 @@ abstract class ApiServiceProvider extends ServiceProvider
             'api.limiting'       => 'Dingo\Api\Http\RateLimit\Handler',
             'api.transformer'    => 'Dingo\Api\Transformer\Factory',
             'api.url'            => 'Dingo\Api\Routing\UrlGenerator',
-            'api.exception'      => 'Dingo\Api\Exception\Handler'
+            'api.exception'      => 'Dingo\Api\Exception\Handler',
         ];
 
         foreach ($aliases as $key => $alias) {

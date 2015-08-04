@@ -26,7 +26,7 @@ class Auth
      * Create a new auth middleware instance.
      *
      * @param \Dingo\Api\Routing\Router $router
-     * @param \Dingo\Api\Auth\Auth $auth
+     * @param \Dingo\Api\Auth\Auth      $auth
      */
     public function __construct(Router $router, Authentication $auth)
     {
@@ -38,7 +38,7 @@ class Auth
      * Perform authentication before a request is executed.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Closure $next
+     * @param \Closure                 $next
      *
      * @return mixed
      */

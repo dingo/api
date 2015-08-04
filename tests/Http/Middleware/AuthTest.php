@@ -29,8 +29,8 @@ class AuthTest extends PHPUnit_Framework_TestCase
         $route = new Route($this->adapter, $this->container, $request, [
             'uri' => '/test',
             'action' => [
-                'providers' => []
-            ]
+                'providers' => [],
+            ],
         ]);
 
         $this->auth->shouldReceive('check')->once()->with(false)->andReturn(false);
@@ -50,8 +50,8 @@ class AuthTest extends PHPUnit_Framework_TestCase
         $route = new Route($this->adapter, $this->container, $request, [
             'uri' => '/test',
             'action' => [
-                'providers' => []
-            ]
+                'providers' => [],
+            ],
         ]);
 
         $this->auth->shouldReceive('check')->once()->with(false)->andReturn(true);
@@ -75,8 +75,8 @@ class AuthTest extends PHPUnit_Framework_TestCase
         $route = new Route($this->adapter, $this->container, $request, [
             'uri' => '/test',
             'action' => [
-                'providers' => []
-            ]
+                'providers' => [],
+            ],
         ]);
 
         $this->auth->shouldReceive('check')->once()->with(false)->andReturn(false);

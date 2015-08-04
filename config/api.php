@@ -123,7 +123,7 @@ return [
         'errors' => ':errors',
         'code' => ':code',
         'status_code' => ':status_code',
-        'debug' => ':debug'
+        'debug' => ':debug',
     ],
 
     /*
@@ -188,6 +188,6 @@ return [
 
         'json' => 'Dingo\Api\Http\Response\Format\Json',
 
-    ]
+    ],
 
 ];

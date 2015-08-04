@@ -214,7 +214,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
 
         $replacements = [
             ':message' => $message,
-            ':status_code' => $statusCode
+            ':status_code' => $statusCode,
         ];
 
         if ($exception instanceof ResourceException && $exception->hasErrors()) {
@@ -230,7 +230,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
                 'line' => $exception->getLine(),
                 'file' => $exception->getFile(),
                 'class' => get_class($exception),
-                'trace' => explode("\n", $exception->getTraceAsString())
+                'trace' => explode("\n", $exception->getTraceAsString()),
             ];
         }
 

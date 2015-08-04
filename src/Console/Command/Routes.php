@@ -40,7 +40,7 @@ class Routes extends RouteListCommand
     /**
      * Create a new routes command instance.
      *
-     * @param \Dingo\Api\Routing\Router  $router
+     * @param \Dingo\Api\Routing\Router $router
      *
      * @return void
      */
@@ -71,7 +71,7 @@ class Routes extends RouteListCommand
                     'action'    => $route->getActionName(),
                     'protected' => $this->routeHasAuthMiddleware($route) ? 'Yes' : 'No',
                     'versions'  => implode(', ', $route->versions()),
-                    'scopes'    => implode(', ', $route->scopes())
+                    'scopes'    => implode(', ', $route->scopes()),
                 ]);
             }
         }
@@ -143,7 +143,7 @@ class Routes extends RouteListCommand
                 ['versions', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Filter the routes by version'],
                 ['scopes', 'S', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Filter the routes by scopes'],
                 ['protected', null, InputOption::VALUE_NONE, 'Filter the protected routes'],
-                ['unprotected', null, InputOption::VALUE_NONE, 'Filter the unprotected routes']
+                ['unprotected', null, InputOption::VALUE_NONE, 'Filter the unprotected routes'],
             ]
         );
     }

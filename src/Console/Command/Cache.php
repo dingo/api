@@ -5,7 +5,6 @@ namespace Dingo\Api\Console\Command;
 use Dingo\Api\Routing\Router;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use Symfony\Component\Console\Input\InputOption;
 
 class Cache extends Command
 {
