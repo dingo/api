@@ -106,7 +106,7 @@ class Response extends IlluminateResponse
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setContent($content)
     {

@@ -179,7 +179,7 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
     {
         $this->router->version('v1', ['namespace' => 'Dingo\Api\Tests\Stubs'], function () {
             $this->router->controllers([
-                'bar' => 'RoutingControllerStub'
+                'bar' => 'RoutingControllerStub',
             ]);
         });
 
@@ -189,7 +189,7 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
 
         $this->router->version('v2', function () {
             $this->router->controllers([
-                'bar' => 'Dingo\Api\Tests\Stubs\RoutingControllerStub'
+                'bar' => 'Dingo\Api\Tests\Stubs\RoutingControllerStub',
             ]);
         });
 
@@ -202,7 +202,7 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
     {
         $this->router->version('v1', ['namespace' => 'Dingo\Api\Tests\Stubs'], function () {
             $this->router->resources([
-                'bar' => ['RoutingControllerStub', ['only' => ['index']]]
+                'bar' => ['RoutingControllerStub', ['only' => ['index']]],
             ]);
         });
 

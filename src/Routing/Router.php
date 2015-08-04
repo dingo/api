@@ -13,11 +13,8 @@ use Dingo\Api\Http\InternalRequest;
 use Illuminate\Container\Container;
 use Dingo\Api\Contract\Routing\Adapter;
 use Illuminate\Routing\ControllerInspector;
-use Dingo\Api\Exception\InternalHttpException;
 use Dingo\Api\Http\Parser\Accept as AcceptParser;
 use Illuminate\Http\Response as IlluminateResponse;
-use Dingo\Api\Http\Response\Builder as ResponseBuilder;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 
 class Router
@@ -331,7 +328,7 @@ class Router
             foreach ($routes as $route) {
                 $this->{$route['verb']}($route['uri'], [
                     'uses' => $controller.'@'.$method,
-                    'as' => array_get($names, $method)
+                    'as' => array_get($names, $method),
                 ]);
             }
         }
@@ -494,8 +491,9 @@ class Router
     /**
      * Format the prefix for the new group attributes.
      *
-     * @param  array  $new
-     * @param  array  $old
+     * @param array $new
+     * @param array $old
+     *
      * @return string
      */
     protected function formatPrefix($new, $old)
@@ -540,10 +538,10 @@ class Router
     /**
      * Prepare a response by transforming and formatting it correctly.
      *
-     * @param mixed                     $response
-     * @param \Dingo\Api\Http\Request   $request
-     * @param string                    $format
-     * @param bool                      $raw
+     * @param mixed                   $response
+     * @param \Dingo\Api\Http\Request $request
+     * @param string                  $format
+     * @param bool                    $raw
      *
      * @return \Dingo\Api\Http\Response
      */
@@ -620,7 +618,7 @@ class Router
         if (isset($this->currentRoute)) {
             return $this->currentRoute;
         } elseif (! $this->hasDispatchedRoutes()) {
-            return null;
+            return;
         }
 
         $request = $this->container['request'];
@@ -822,6 +820,7 @@ class Router
      * Alias for the "currentRouteUses" method.
      *
      * @param  mixed  string
+     *
      * @return bool
      */
     public function uses()
@@ -838,7 +837,8 @@ class Router
     /**
      * Determine if the current route action matches a given action.
      *
-     * @param  string  $action
+     * @param string $action
+     *
      * @return bool
      */
     public function currentRouteUses($action)

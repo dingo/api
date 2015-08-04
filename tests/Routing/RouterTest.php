@@ -5,10 +5,7 @@ namespace Dingo\Api\Tests\Routing;
 use Mockery as m;
 use Dingo\Api\Http;
 use Dingo\Api\Routing\Router;
-use PHPUnit_Framework_TestCase;
 use Illuminate\Container\Container;
-use Dingo\Api\Http\InternalRequest;
-use Dingo\Api\Exception\ResourceException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class RouterTest extends Adapter\BaseAdapterTest
@@ -98,7 +95,7 @@ class RouterTest extends Adapter\BaseAdapterTest
 
         $request = $this->createRequest('foo', 'GET', [
             'if-none-match' => '"'.md5('bar').'"',
-            'accept' => 'application/vnd.api.v1+json'
+            'accept' => 'application/vnd.api.v1+json',
         ]);
 
         $response = $this->router->dispatch($request);
@@ -109,7 +106,7 @@ class RouterTest extends Adapter\BaseAdapterTest
 
         $request = $this->createRequest('foo', 'GET', [
             'if-none-match' => '123456789',
-            'accept' => 'application/vnd.api.v1+json'
+            'accept' => 'application/vnd.api.v1+json',
         ]);
 
         $response = $this->router->dispatch($request);
@@ -153,7 +150,7 @@ class RouterTest extends Adapter\BaseAdapterTest
         $response = $this->router->dispatch(
             $this->createRequest('foo', 'GET', [
                 'if-none-match' => '"custom-etag"',
-                'accept' => 'application/vnd.api.v1+json'
+                'accept' => 'application/vnd.api.v1+json',
             ])
         );
 

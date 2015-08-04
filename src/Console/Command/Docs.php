@@ -15,7 +15,6 @@ class Docs extends Command
      *
      * @var \Dingo\Api\Routing\Router
      */
-
     protected $router;
 
     /**
@@ -150,7 +149,7 @@ class Docs extends Command
         foreach ($this->router->getRoutes() as $collections) {
             foreach ($collections as $route) {
                 if ($controller = $route->getController()) {
-                    if (!$controllers->contains($controller)) {
+                    if (! $controllers->contains($controller)) {
                         $controllers->push($controller);
                     }
                 }

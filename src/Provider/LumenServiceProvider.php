@@ -5,7 +5,6 @@ namespace Dingo\Api\Provider;
 use ReflectionClass;
 use FastRoute\RouteParser\Std as StdRouteParser;
 use Dingo\Api\Routing\Adapter\Lumen as LumenAdapter;
-use FastRoute\Dispatcher\GroupCountBased as GcbDispatcher;
 use FastRoute\DataGenerator\GroupCountBased as GcbDataGenerator;
 
 class LumenServiceProvider extends ApiServiceProvider

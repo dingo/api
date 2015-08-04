@@ -22,7 +22,7 @@ class RequestValidator
      */
     protected $validators = [
         'Dingo\Api\Http\Validation\Domain',
-        'Dingo\Api\Http\Validation\Prefix'
+        'Dingo\Api\Http\Validation\Prefix',
     ];
 
     /**

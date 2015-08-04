@@ -36,8 +36,8 @@ class RouteTest extends PHPUnit_Framework_TestCase
                 'expires' => 10,
                 'throttle' => 'Foo',
                 'version' => ['v1'],
-                'conditionalRequest' => false
-            ]
+                'conditionalRequest' => false,
+            ],
         ]);
 
         $this->assertEquals(['foo', 'bar'], $route->scopes(), 'Route did not setup scopes correctly.');
@@ -64,8 +64,8 @@ class RouteTest extends PHPUnit_Framework_TestCase
                 'throttle' => 'Foo',
                 'version' => ['v1'],
                 'conditionalRequest' => false,
-                'uses' => 'Dingo\Api\Tests\Stubs\RoutingControllerStub@index'
-            ]
+                'uses' => 'Dingo\Api\Tests\Stubs\RoutingControllerStub@index',
+            ],
         ]);
 
         $this->assertEquals(['foo', 'bar', 'baz', 'bing'], $route->scopes(), 'Route did not setup scopes correctly.');

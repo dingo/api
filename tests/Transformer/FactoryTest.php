@@ -9,7 +9,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Container\Container;
 use Dingo\Api\Tests\Stubs\UserStub;
 use Dingo\Api\Tests\Stubs\TransformerStub;
-use Dingo\Api\Tests\Stubs\UserContractStub;
 use Dingo\Api\Tests\Stubs\UserTransformerStub;
 
 class FactoryTest extends PHPUnit_Framework_TestCase

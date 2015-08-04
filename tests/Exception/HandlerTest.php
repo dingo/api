@@ -23,7 +23,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
             'errors' => ':errors',
             'code' => ':code',
             'status_code' => ':status_code',
-            'debug' => ':debug'
+            'debug' => ':debug',
         ], false);
     }
 
@@ -82,8 +82,8 @@ class HandlerTest extends PHPUnit_Framework_TestCase
                 'errors' => ':errors',
                 'code' => ':code',
                 'status_code' => ':status_code',
-                'debug' => ':debug'
-            ]
+                'debug' => ':debug',
+            ],
         ]);
 
         $response = $this->exceptionHandler->handle(new HttpException(404, 'bar'));

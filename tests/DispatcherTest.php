@@ -7,7 +7,6 @@ use Dingo\Api\Http;
 use Dingo\Api\Auth\Auth;
 use Dingo\Api\Dispatcher;
 use Illuminate\Http\Request;
-use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
 use PHPUnit_Framework_TestCase;
 use Dingo\Api\Tests\Stubs\UserStub;

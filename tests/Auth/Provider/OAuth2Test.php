@@ -4,7 +4,6 @@ namespace Dingo\Api\Tests\Auth\Provider;
 
 use Mockery as m;
 use Illuminate\Http\Request;
-use Dingo\Api\Routing\Route;
 use PHPUnit_Framework_TestCase;
 use Dingo\Api\Auth\Provider\OAuth2;
 

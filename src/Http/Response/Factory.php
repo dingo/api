@@ -165,7 +165,6 @@ class Factory
      * @throws \Symfony\Component\HttpKernel\Exception\HttpException
      *
      * @return void
-     *
      */
     public function errorBadRequest($message = 'Bad Request')
     {
