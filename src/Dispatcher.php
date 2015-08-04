@@ -508,7 +508,7 @@ class Dispatcher
         $this->clearCachedFacadeInstance();
 
         try {
-            $this->container['request'] = $request;
+            $this->container->instance('request', $request);
 
             $response = $this->router->dispatch($request);
 
