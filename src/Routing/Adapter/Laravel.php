@@ -106,7 +106,7 @@ class Laravel implements Adapter
      * @param string $uri
      * @param mixed  $action
      *
-     * @return void
+     * @return \Illuminate\Routing\Route
      */
     public function addRoute(array $methods, array $versions, $uri, $action)
     {
@@ -117,6 +117,8 @@ class Laravel implements Adapter
         foreach ($versions as $version) {
             $this->routes[$version]->add($route);
         }
+
+        return $route;
     }
 
     /**
