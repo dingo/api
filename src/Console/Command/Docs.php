@@ -93,7 +93,7 @@ class Docs extends Command
     {
         $contents = $this->blueprint->generate($this->getControllers(), $this->getDocName(), $this->getVersion());
 
-        if ($file = $this->option('file')) {
+        if ($file = $this->option('output-file')) {
             $this->writer->write($contents, $file);
 
             return $this->info('Documentation was generated successfully.');
