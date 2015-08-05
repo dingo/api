@@ -4,15 +4,29 @@ namespace Dingo\Api\Tests\Http;
 
 use StdClass;
 use Mockery as m;
+use ReflectionClass;
 use Dingo\Api\Http\Response;
 use PHPUnit_Framework_TestCase;
 use Dingo\Api\Transformer\Binding;
+use Dingo\Api\Http\Response\Format\Json;
 
 class ResponseTest extends PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {
         m::close();
+
+        $reflection = new ReflectionClass('Dingo\Api\Http\Response');
+
+        $property = $reflection->getProperty('morphedCallbacks');
+
+        $property->setAccessible(true);
+        $property->setValue([]);
+
+        $property = $reflection->getProperty('morphingCallbacks');
+
+        $property->setAccessible(true);
+        $property->setValue([]);
     }
 
     /**
@@ -54,5 +68,33 @@ class ResponseTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('Bar', $response->headers->get('Foo'));
         $this->assertEquals(302, $response->getStatusCode());
+    }
+
+    public function testChangingContentWithCallbacks()
+    {
+        Response::morphed(function ($content, Response $response) {
+            $content['foo'] = 'bam!';
+
+            return $content;
+        });
+
+        Response::addFormatter('json', new Json);
+
+        $response = new Response(['foo' => 'bar']);
+
+        $this->assertEquals('{"foo":"bam!"}', $response->morph('json')->getContent());
+    }
+
+    public function testChangingResponseHeadersWithCallbacks()
+    {
+        Response::morphing(function ($content, Response $response) {
+            $response->headers->set('x-foo', 'bar');
+        });
+
+        Response::addFormatter('json', new Json);
+
+        $response = new Response(['foo' => 'bar']);
+
+        $this->assertEquals('bar', $response->morph('json')->headers->get('x-foo'));
     }
 }

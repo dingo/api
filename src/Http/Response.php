@@ -2,6 +2,7 @@
 
 namespace Dingo\Api\Http;
 
+use Closure;
 use ArrayObject;
 use UnexpectedValueException;
 use Dingo\Api\Transformer\Binding;
@@ -35,6 +36,20 @@ class Response extends IlluminateResponse
      * @var \Dingo\Api\Transformer\TransformerFactory
      */
     protected static $transformer;
+
+    /**
+     * Array of user-defined morphing callbacks.
+     *
+     * @var array
+     */
+    protected static $morphingCallbacks = [];
+
+    /**
+     * Array of user-defined morphed callbacks.
+     *
+     * @var array
+     */
+    protected static $morphedCallbacks = [];
 
     /**
      * Create a new response instance.
@@ -78,10 +93,12 @@ class Response extends IlluminateResponse
      */
     public function morph($format = 'json')
     {
-        $content = $this->getOriginalContent();
+        $this->content = $this->getOriginalContent();
 
-        if (isset(static::$transformer) && static::$transformer->transformableResponse($content)) {
-            $content = static::$transformer->transform($content);
+        $this->fireMorphingCallbacks();
+
+        if (isset(static::$transformer) && static::$transformer->transformableResponse($this->content)) {
+            $this->content = static::$transformer->transform($this->content);
         }
 
         $formatter = static::getFormatter($format);
@@ -90,19 +107,55 @@ class Response extends IlluminateResponse
 
         $this->headers->set('content-type', $formatter->getContentType());
 
-        if ($content instanceof EloquentModel) {
-            $content = $formatter->formatEloquentModel($content);
-        } elseif ($content instanceof EloquentCollection) {
-            $content = $formatter->formatEloquentCollection($content);
-        } elseif (is_array($content) || $content instanceof ArrayObject || $content instanceof Arrayable) {
-            $content = $formatter->formatArray($content);
+        $this->fireMorphedCallbacks();
+
+        if ($this->content instanceof EloquentModel) {
+            $this->content = $formatter->formatEloquentModel($this->content);
+        } elseif ($this->content instanceof EloquentCollection) {
+            $this->content = $formatter->formatEloquentCollection($this->content);
+        } elseif (is_array($this->content) || $this->content instanceof ArrayObject || $this->content instanceof Arrayable) {
+            $this->content = $formatter->formatArray($this->content);
         } else {
             $this->headers->set('content-type', $defaultContentType);
         }
 
-        $this->content = $content;
-
         return $this;
+    }
+
+    /**
+     * Fire the morphed callbacks.
+     *
+     * @return void
+     */
+    protected function fireMorphedCallbacks()
+    {
+        $this->fireCallbacks(static::$morphedCallbacks);
+    }
+
+    /**
+     * Fire the morphing callbacks.
+     *
+     * @return void
+     */
+    protected function fireMorphingCallbacks()
+    {
+        $this->fireCallbacks(static::$morphingCallbacks);
+    }
+
+    /**
+     * Fire the callbacks with the content and response instance as parameters.
+     *
+     * @param array $callbacks
+     *
+     * @return void
+     */
+    protected function fireCallbacks(array $callbacks)
+    {
+        foreach ($callbacks as $callback) {
+            if ($response = call_user_func($callback, $this->content, $this)) {
+                $this->content = $response;
+            }
+        }
     }
 
     /**
@@ -121,6 +174,30 @@ class Response extends IlluminateResponse
 
             return $this;
         }
+    }
+
+    /**
+     * Add a callback for when the response is about to be morphed.
+     *
+     * @param \Closure $callback
+     *
+     * @return void
+     */
+    public static function morphing(Closure $callback)
+    {
+        static::$morphingCallbacks[] = $callback;
+    }
+
+    /**
+     * Add a callback for when the response has been morphed.
+     *
+     * @param \Closure $callback
+     *
+     * @return void
+     */
+    public static function morphed(Closure $callback)
+    {
+        static::$morphedCallbacks[] = $callback;
     }
 
     /**
