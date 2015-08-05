@@ -9,24 +9,18 @@ use Dingo\Api\Http\Response;
 use PHPUnit_Framework_TestCase;
 use Dingo\Api\Transformer\Binding;
 use Dingo\Api\Http\Response\Format\Json;
+use Illuminate\Events\Dispatcher as EventDispatcher;
 
 class ResponseTest extends PHPUnit_Framework_TestCase
 {
+    public function setUp()
+    {
+        Response::setEventDispatcher($this->events = new EventDispatcher);
+    }
+
     public function tearDown()
     {
         m::close();
-
-        $reflection = new ReflectionClass('Dingo\Api\Http\Response');
-
-        $property = $reflection->getProperty('morphedCallbacks');
-
-        $property->setAccessible(true);
-        $property->setValue([]);
-
-        $property = $reflection->getProperty('morphingCallbacks');
-
-        $property->setAccessible(true);
-        $property->setValue([]);
     }
 
     /**
@@ -70,12 +64,10 @@ class ResponseTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(302, $response->getStatusCode());
     }
 
-    public function testChangingContentWithCallbacks()
+    public function testChangingContentWithEvents()
     {
-        Response::morphed(function ($content, Response $response) {
-            $content['foo'] = 'bam!';
-
-            return $content;
+        $this->events->listen('Dingo\Api\Event\ResponseWasMorphed', function ($event) {
+            $event->content['foo'] = 'bam!';
         });
 
         Response::addFormatter('json', new Json);
@@ -83,12 +75,14 @@ class ResponseTest extends PHPUnit_Framework_TestCase
         $response = new Response(['foo' => 'bar']);
 
         $this->assertEquals('{"foo":"bam!"}', $response->morph('json')->getContent());
+
+        $this->events->forget('Dingo\Api\Event\ResponseWasMorphed');
     }
 
-    public function testChangingResponseHeadersWithCallbacks()
+    public function testChangingResponseHeadersWithEvents()
     {
-        Response::morphing(function ($content, Response $response) {
-            $response->headers->set('x-foo', 'bar');
+        $this->events->listen('Dingo\Api\Event\ResponseIsMorphing', function ($event) {
+            $event->response->headers->set('x-foo', 'bar');
         });
 
         Response::addFormatter('json', new Json);
@@ -96,5 +90,7 @@ class ResponseTest extends PHPUnit_Framework_TestCase
         $response = new Response(['foo' => 'bar']);
 
         $this->assertEquals('bar', $response->morph('json')->headers->get('x-foo'));
+
+        $this->events->forget('Dingo\Api\Event\ResponseIsMorphing');
     }
 }

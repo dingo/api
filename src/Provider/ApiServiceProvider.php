@@ -31,6 +31,7 @@ abstract class ApiServiceProvider extends ServiceProvider
 
         Http\Response::setFormatters($this->prepareConfigValues($this->app['config']['api.formats']));
         Http\Response::setTransformer($this->app['api.transformer']);
+        Http\Response::setEventDispatcher($this->app['events']);
 
         $this->app->rebinding('api.routes', function ($app, $routes) {
             $app['api.url']->setRouteCollections($routes);

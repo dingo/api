@@ -2,13 +2,14 @@
 
 namespace Dingo\Api\Http;
 
-use Closure;
 use ArrayObject;
+use Dingo\Api\Event;
 use UnexpectedValueException;
 use Dingo\Api\Transformer\Binding;
 use Illuminate\Contracts\Support\Arrayable;
 use Symfony\Component\HttpFoundation\Cookie;
 use Illuminate\Http\Response as IlluminateResponse;
+use Illuminate\Events\Dispatcher as EventDispatcher;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Dingo\Api\Transformer\Factory as TransformerFactory;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -38,18 +39,11 @@ class Response extends IlluminateResponse
     protected static $transformer;
 
     /**
-     * Array of user-defined morphing callbacks.
+     * Event dispatcher instance.
      *
-     * @var array
+     * @var \Illuminate\Events\Dispatcher
      */
-    protected static $morphingCallbacks = [];
-
-    /**
-     * Array of user-defined morphed callbacks.
-     *
-     * @var array
-     */
-    protected static $morphedCallbacks = [];
+    protected static $events;
 
     /**
      * Create a new response instance.
@@ -95,7 +89,7 @@ class Response extends IlluminateResponse
     {
         $this->content = $this->getOriginalContent();
 
-        $this->fireMorphingCallbacks();
+        $this->fireMorphingEvent();
 
         if (isset(static::$transformer) && static::$transformer->transformableResponse($this->content)) {
             $this->content = static::$transformer->transform($this->content);
@@ -107,7 +101,7 @@ class Response extends IlluminateResponse
 
         $this->headers->set('content-type', $formatter->getContentType());
 
-        $this->fireMorphedCallbacks();
+        $this->fireMorphedEvent();
 
         if ($this->content instanceof EloquentModel) {
             $this->content = $formatter->formatEloquentModel($this->content);
@@ -123,39 +117,31 @@ class Response extends IlluminateResponse
     }
 
     /**
-     * Fire the morphed callbacks.
+     * Fire the morphed event.
      *
      * @return void
      */
-    protected function fireMorphedCallbacks()
+    protected function fireMorphedEvent()
     {
-        $this->fireCallbacks(static::$morphedCallbacks);
-    }
-
-    /**
-     * Fire the morphing callbacks.
-     *
-     * @return void
-     */
-    protected function fireMorphingCallbacks()
-    {
-        $this->fireCallbacks(static::$morphingCallbacks);
-    }
-
-    /**
-     * Fire the callbacks with the content and response instance as parameters.
-     *
-     * @param array $callbacks
-     *
-     * @return void
-     */
-    protected function fireCallbacks(array $callbacks)
-    {
-        foreach ($callbacks as $callback) {
-            if ($response = call_user_func($callback, $this->content, $this)) {
-                $this->content = $response;
-            }
+        if (! static::$events) {
+            return;
         }
+
+        static::$events->fire(new Event\ResponseWasMorphed($this, $this->content));
+    }
+
+    /**
+     * Fire the morphing event.
+     *
+     * @return void
+     */
+    protected function fireMorphingEvent()
+    {
+        if (! static::$events) {
+            return;
+        }
+
+        static::$events->fire(new Event\ResponseIsMorphing($this, $this->content));
     }
 
     /**
@@ -177,27 +163,15 @@ class Response extends IlluminateResponse
     }
 
     /**
-     * Add a callback for when the response is about to be morphed.
+     * Set the event dispatcher instance.
      *
-     * @param \Closure $callback
-     *
-     * @return void
-     */
-    public static function morphing(Closure $callback)
-    {
-        static::$morphingCallbacks[] = $callback;
-    }
-
-    /**
-     * Add a callback for when the response has been morphed.
-     *
-     * @param \Closure $callback
+     * @param \Illuminate\Events\Dispatcher $events
      *
      * @return void
      */
-    public static function morphed(Closure $callback)
+    public static function setEventDispatcher(EventDispatcher $events)
     {
-        static::$morphedCallbacks[] = $callback;
+        static::$events = $events;
     }
 
     /**
