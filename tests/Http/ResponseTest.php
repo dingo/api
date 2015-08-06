@@ -4,7 +4,6 @@ namespace Dingo\Api\Tests\Http;
 
 use StdClass;
 use Mockery as m;
-use ReflectionClass;
 use Dingo\Api\Http\Response;
 use PHPUnit_Framework_TestCase;
 use Dingo\Api\Transformer\Binding;
