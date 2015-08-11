@@ -25,10 +25,6 @@ abstract class ApiServiceProvider extends ServiceProvider
     {
         $this->setupConfig();
 
-        $this->app->singleton('Illuminate\Contracts\Debug\ExceptionHandler', function ($app) {
-            return $app['api.exception'];
-        });
-
         Http\Response::setFormatters($this->prepareConfigValues($this->app['config']['api.formats']));
         Http\Response::setTransformer($this->app['api.transformer']);
         Http\Response::setEventDispatcher($this->app['events']);
@@ -121,12 +117,10 @@ abstract class ApiServiceProvider extends ServiceProvider
      */
     protected function registerExceptionHandler()
     {
-        $exception = $this->app['Illuminate\Contracts\Debug\ExceptionHandler'];
-
-        $this->app->singleton('api.exception', function ($app) use ($exception) {
+        $this->app->singleton('api.exception', function ($app) {
             $config = $app['config']['api'];
 
-            return new ExceptionHandler($exception, $config['errorFormat'], $config['debug']);
+            return new ExceptionHandler($config['errorFormat'], $config['debug']);
         });
     }
 

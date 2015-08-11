@@ -16,9 +16,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->parentHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler');
-
-        $this->exceptionHandler = new Handler($this->parentHandler, [
+        $this->exceptionHandler = new Handler([
             'message' => ':message',
             'errors' => ':errors',
             'code' => ':code',
@@ -128,16 +126,6 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Illuminate\Http\Response', $response);
         $this->assertEquals('{"message":"404 Not Found","status_code":404}', $response->getContent());
         $this->assertEquals(404, $response->getStatusCode());
-    }
-
-    public function testIlluminateRequestsAreHandledByParentHandler()
-    {
-        $request = IlluminateRequest::create('foo', 'GET');
-        $exception = new HttpException(404);
-
-        $this->parentHandler->shouldReceive('render')->with($request, $exception)->andReturn('foo');
-
-        $this->assertEquals('foo', $this->exceptionHandler->render($request, $exception));
     }
 
     public function testExceptionsHandledByRenderAreReroutedThroughHandler()

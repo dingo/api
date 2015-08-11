@@ -80,6 +80,10 @@ class Request
     {
         try {
             if ($this->validator->validateRequest($request)) {
+                $this->app->singleton('Illuminate\Contracts\Debug\ExceptionHandler', function ($app) {
+                    return $app['Dingo\Api\Exception\Handler'];
+                });
+
                 $request = $this->app->make('Dingo\Api\Contract\Http\Request')->createFromIlluminate($request);
 
                 return $this->sendRequestThroughRouter($request);

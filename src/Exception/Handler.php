@@ -13,13 +13,6 @@ use Illuminate\Contracts\Debug\ExceptionHandler as IlluminateExceptionHandler;
 class Handler implements ExceptionHandler, IlluminateExceptionHandler
 {
     /**
-     * Parent exception handler instance.
-     *
-     * @var \Illuminate\Contracts\Debug\ExceptionHandler
-     */
-    protected $parent;
-
-    /**
      * Array of exception handlers.
      *
      * @var array
@@ -50,15 +43,13 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
     /**
      * Create a new exception handler instance.
      *
-     * @param \Illuminate\Contracts\Debug\ExceptionHandler $parent
-     * @param array                                        $format
-     * @param bool                                         $debug
+     * @param array $format
+     * @param bool  $debug
      *
      * @return void
      */
-    public function __construct(IlluminateExceptionHandler $parent, array $format, $debug)
+    public function __construct(array $format, $debug)
     {
-        $this->parent = $parent;
         $this->format = $format;
         $this->debug = $debug;
     }
@@ -72,7 +63,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
      */
     public function report(Exception $exception)
     {
-        return $this->parent->report($exception);
+        //
     }
 
     /**
@@ -87,11 +78,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        if ($request instanceof Request) {
-            return $this->handle($exception);
-        }
-
-        return $this->parent->render($request, $exception);
+        return $this->handle($exception);
     }
 
     /**
@@ -104,7 +91,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
      */
     public function renderForConsole($output, Exception $exception)
     {
-        return $this->parent->renderForConsole($output, $exception);
+        //
     }
 
     /**
