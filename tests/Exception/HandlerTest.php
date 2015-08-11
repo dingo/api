@@ -9,7 +9,6 @@ use PHPUnit_Framework_TestCase;
 use Dingo\Api\Exception\Handler;
 use Dingo\Api\Http\Request as ApiRequest;
 use Dingo\Api\Exception\ResourceException;
-use Illuminate\Http\Request as IlluminateRequest;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class HandlerTest extends PHPUnit_Framework_TestCase

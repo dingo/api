@@ -4,7 +4,6 @@ namespace Dingo\Api\Exception;
 
 use Exception;
 use ReflectionFunction;
-use Dingo\Api\Http\Request;
 use Illuminate\Http\Response;
 use Dingo\Api\Contract\Debug\ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
