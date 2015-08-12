@@ -1,8 +1,8 @@
 <?php
 
-namespace Dingo\Api\Contract\Http\Validation;
+namespace Dingo\Api\Contract\Http;
 
-use Illuminate\Http\Request;
+use Illuminate\Http\Request as IlluminateRequest;
 
 interface Validator
 {
@@ -13,5 +13,5 @@ interface Validator
      *
      * @return bool
      */
-    public function validate(Request $request);
+    public function validate(IlluminateRequest $request);
 }

@@ -3,7 +3,7 @@
 namespace Dingo\Api\Http\Validation;
 
 use Illuminate\Http\Request;
-use Dingo\Api\Contract\Http\Validation\Validator;
+use Dingo\Api\Contract\Http\Validator;
 use Dingo\Api\Http\Parser\Accept as AcceptParser;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 

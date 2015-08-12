@@ -1,8 +1,8 @@
 <?php
 
-namespace Dingo\Api\Http\Parser;
+namespace Dingo\Api\Contract\Http;
 
-use Illuminate\Http\Request;
+use Illuminate\Http\Request as IlluminateRequest;
 
 interface Parser
 {
@@ -13,5 +13,5 @@ interface Parser
      *
      * @return mixed
      */
-    public function parse(Request $request);
+    public function parse(IlluminateRequest $request);
 }

@@ -3,6 +3,7 @@
 namespace Dingo\Api\Http\Parser;
 
 use Illuminate\Http\Request;
+use Dingo\Api\Contract\Http\Parser;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class Accept implements Parser

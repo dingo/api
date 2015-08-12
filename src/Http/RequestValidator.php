@@ -3,8 +3,8 @@
 namespace Dingo\Api\Http;
 
 use Illuminate\Container\Container;
+use Dingo\Api\Contract\Http\Validator;
 use Illuminate\Http\Request as IlluminateRequest;
-use Dingo\Api\Contract\Http\Validation\Validator as ValidatorInterface;
 
 class RequestValidator
 {
@@ -87,7 +87,7 @@ class RequestValidator
         foreach ($this->validators as $validator) {
             $validator = $this->container->make($validator);
 
-            if ($validator instanceof ValidatorInterface && $validator->validate($request)) {
+            if ($validator instanceof Validator && $validator->validate($request)) {
                 $passed = true;
             }
         }
