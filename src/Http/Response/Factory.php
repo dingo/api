@@ -52,6 +52,26 @@ class Factory
     }
 
     /**
+     * Respond with an accepted response and associate a location and/or content if provided.
+     *
+     * @param null|string $location
+     * @param mixed       $content
+     *
+     * @return \Dingo\Api\Http\Response
+     */
+    public function accepted($location = null, $content = null)
+    {
+        $response = new Response($content);
+        $response->setStatusCode(202);
+
+        if (! is_null($location)) {
+            $response->header('Location', $location);
+        }
+
+        return $response;
+    }
+
+    /**
      * Respond with a no content response.
      *
      * @return \Dingo\Api\Http\Response

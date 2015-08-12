@@ -35,6 +35,32 @@ class FactoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($responseWithLocation->headers->get('Location'), 'test');
     }
 
+    public function testMakingAnAcceptedResponse()
+    {
+        $response = $this->factory->accepted();
+        $responseWithLocation = $this->factory->accepted('testHeader');
+        $responseWithContent = $this->factory->accepted(null, 'testContent');
+        $responseWithBoth = $this->factory->accepted('testHeader', 'testContent');
+
+        $this->assertEquals($response->getStatusCode(), 202);
+        $this->assertFalse($response->headers->has('Location'));
+        $this->assertEquals('', $response->getContent());
+
+        $this->assertEquals($responseWithLocation->getStatusCode(), 202);
+        $this->assertTrue($responseWithLocation->headers->has('Location'));
+        $this->assertEquals($responseWithLocation->headers->get('Location'), 'testHeader');
+        $this->assertEquals('', $responseWithLocation->getContent());
+
+        $this->assertEquals($responseWithContent->getStatusCode(), 202);
+        $this->assertFalse($responseWithContent->headers->has('Location'));
+        $this->assertEquals('testContent', $responseWithContent->getContent());
+
+        $this->assertEquals($responseWithBoth->getStatusCode(), 202);
+        $this->assertTrue($responseWithBoth->headers->has('Location'));
+        $this->assertEquals($responseWithBoth->headers->get('Location'), 'testHeader');
+        $this->assertEquals('testContent', $responseWithBoth->getContent());
+    }
+
     public function testMakingANoContentResponse()
     {
         $response = $this->factory->noContent();
