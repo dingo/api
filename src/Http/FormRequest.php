@@ -36,6 +36,6 @@ class FormRequest extends IlluminateFormRequest
             throw new HttpException(403);
         }
 
-        parent::failedAuthorization($validator);
+        parent::failedAuthorization();
     }
 }
