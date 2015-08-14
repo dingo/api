@@ -17,7 +17,7 @@ class RoutingControllerStub
 
         $this->rateLimit(10, 20);
 
-        $this->throttle('Zippy');
+        $this->throttle('Dingo\Api\Tests\Stubs\BasicThrottleStub');
     }
 
     public function index()

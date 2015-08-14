@@ -6,6 +6,7 @@ use Mockery as m;
 use Dingo\Api\Http;
 use Dingo\Api\Routing\Router;
 use Illuminate\Container\Container;
+use Dingo\Api\Tests\Stubs\ThrottleStub;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class RouterTest extends Adapter\BaseAdapterTest
@@ -41,7 +42,7 @@ class RouterTest extends Adapter\BaseAdapterTest
         $request = $this->createRequest('baz', 'GET', ['accept' => 'application/vnd.api.v1+json']);
         $this->router->dispatch($request);
 
-        $this->router->version('v2', ['providers' => 'foo', 'throttle' => 'Bar', 'namespace' => 'Dingo\Api\Tests'], function () {
+        $this->router->version('v2', ['providers' => 'foo', 'throttle' => new ThrottleStub(['limit' => 10, 'expires' => 15]), 'namespace' => 'Dingo\Api\Tests'], function () {
             $this->router->get('foo', 'Stubs\RoutingControllerStub@index');
         });
 
@@ -54,7 +55,7 @@ class RouterTest extends Adapter\BaseAdapterTest
         $this->assertEquals(['foo', 'red', 'black'], $route->getAuthProviders());
         $this->assertEquals(10, $route->getRateLimit());
         $this->assertEquals(20, $route->getRateExpiration());
-        $this->assertEquals('Zippy', $route->getThrottle());
+        $this->assertInstanceOf('Dingo\Api\Tests\Stubs\BasicThrottleStub', $route->getThrottle());
     }
 
     /**

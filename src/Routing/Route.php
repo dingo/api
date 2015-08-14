@@ -167,6 +167,10 @@ class Route
         $this->findControllerOptions('throttles', function ($value) {
             $this->throttle = $value['throttle'];
         });
+
+        if (is_string($this->throttle)) {
+            $this->throttle = $this->container->make($this->throttle);
+        }
     }
 
     /**
