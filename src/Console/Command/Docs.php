@@ -149,8 +149,8 @@ class Docs extends Command
         foreach ($this->router->getRoutes() as $collections) {
             foreach ($collections as $route) {
                 if ($controller = $route->getController()) {
-                    if (! $controllers->contains($controller)) {
-                        $controllers->push($controller);
+                    if (! $controllers->contains(get_class($controller))) {
+                        $controllers->put(get_class($controller), $controller);
                     }
                 }
             }
