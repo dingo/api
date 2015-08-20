@@ -86,7 +86,7 @@ class Fractal implements Adapter
             $resource->setPaginator($paginator);
         }
 
-        if (($response instanceof EloquentCollection || $response instanceof IlluminatePaginator) && $this->eagerLoading) {
+        if ($this->shouldEagerLoad($response)) {
             $eagerLoads = $this->mergeEagerLoads($transformer, $this->fractal->getRequestedIncludes());
 
             $response->load($eagerLoads);
@@ -99,6 +99,23 @@ class Fractal implements Adapter
         $binding->fireCallback($resource, $this->fractal);
 
         return $this->fractal->createData($resource)->toArray();
+    }
+
+    /**
+     * Eager loading is only performed when the response is or contains an
+     * Eloquent collection and eager loading is enabled.
+     *
+     * @param mixed $response
+     *
+     * @return bool
+     */
+    protected function shouldEagerLoad($response)
+    {
+        if ($response instanceof IlluminatePaginator) {
+            $response = $response->getCollection();
+        }
+
+        return $response instanceof EloquentCollection && $this->eagerLoading;
     }
 
     /**
