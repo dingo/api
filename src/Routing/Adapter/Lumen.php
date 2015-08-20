@@ -90,7 +90,25 @@ class Lumen implements Adapter
             new $this->dispatcher($routes->getData())
         );
 
+        $this->normalizeRequestUri($request);
+
         return $this->app->dispatch($request);
+    }
+
+    /**
+     * Normalize the request URI so that Lumen can properly dispatch it.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return void
+     */
+    protected function normalizeRequestUri(Request $request)
+    {
+        $query = $request->server->get('QUERY_STRING');
+
+        $uri = '/'.trim(str_replace('?'.$query, '', $request->server->get('REQUEST_URI')), '/').'?'.$query;
+
+        $request->server->set('REQUEST_URI', $uri);
     }
 
     /**

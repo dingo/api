@@ -81,6 +81,9 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
         $request = $this->createRequest('/foo', 'GET', ['accept' => 'application/vnd.api.v1+json']);
         $this->assertEquals('foo', $this->router->dispatch($request)->getContent());
 
+        $request = $this->createRequest('/foo/', 'GET', ['accept' => 'application/vnd.api.v1+json']);
+        $this->assertEquals('foo', $this->router->dispatch($request)->getContent(), 'Could not dispatch request with trailing slash.');
+
         $request = $this->createRequest('/foo', 'GET', ['accept' => 'application/vnd.api.v2+json']);
         $this->assertEquals('bar', $this->router->dispatch($request)->getContent());
 
