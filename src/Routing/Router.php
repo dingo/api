@@ -813,7 +813,7 @@ class Router
 
         $action = $route->getAction();
 
-        return isset($action['controller']) ? $action['controller'] : null;
+        return is_string($action['uses']) ? $action['uses'] : null;
     }
 
     /**
