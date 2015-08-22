@@ -13,7 +13,7 @@ class RequestValidatorTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->container = new Container;
-        $this->container->instance('Dingo\Api\Http\Parser\Accept', new AcceptParser('test', 'v1', 'json'));
+        $this->container->instance('Dingo\Api\Http\Parser\Accept', new AcceptParser('vnd', 'test', 'v1', 'json'));
         $this->validator = new RequestValidator($this->container);
     }
 

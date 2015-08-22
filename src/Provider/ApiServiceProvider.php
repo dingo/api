@@ -136,7 +136,7 @@ abstract class ApiServiceProvider extends ServiceProvider
 
             $config = $app['config']['api'];
 
-            $dispatcher->setVendor($config['vendor']);
+            $dispatcher->setSubtype($config['subtype']);
             $dispatcher->setPrefix($config['prefix']);
             $dispatcher->setDefaultVersion($config['version']);
             $dispatcher->setDefaultDomain($config['domain']);
@@ -186,7 +186,7 @@ abstract class ApiServiceProvider extends ServiceProvider
 
             return new Router(
                 $app['api.router.adapter'],
-                new Http\Parser\Accept($config['vendor'], $config['version'], $config['defaultFormat']),
+                new Http\Parser\Accept($config['standardsTree'], $config['subtype'], $config['version'], $config['defaultFormat']),
                 $app['api.exception'],
                 $app,
                 $config['domain'],
@@ -238,7 +238,7 @@ abstract class ApiServiceProvider extends ServiceProvider
             $config = $app['config']['api'];
 
             return new Http\Validation\Accept(
-                new Http\Parser\Accept($config['vendor'], $config['version'], $config['defaultFormat']),
+                new Http\Parser\Accept($config['standardsTree'], $config['subtype'], $config['version'], $config['defaultFormat']),
                 $config['strict']
             );
         });

@@ -33,7 +33,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
 
         $this->adapter = new RoutingAdapterStub;
         $this->exception = m::mock('Dingo\Api\Exception\Handler');
-        $this->router = new Router($this->adapter, new Http\Parser\Accept('api', 'v1', 'json'), $this->exception, $this->container, null, null);
+        $this->router = new Router($this->adapter, new Http\Parser\Accept('vnd', 'api', 'v1', 'json'), $this->exception, $this->container, null, null);
 
         $this->auth = new Auth($this->router, $this->container, []);
         $this->dispatcher = new Dispatcher($this->container, new Filesystem, $this->router, $this->auth);

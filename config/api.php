@@ -4,26 +4,44 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | API Vendor
+    | Standards Tree
     |--------------------------------------------------------------------------
     |
-    | Your vendor is used in the "Accept" request header and will be used by
-    | the consumers of your API. Typically this will be the name of your
-    | application or website.
+    | Versioning an API with Dingo revolves around content negotiation and
+    | custom MIME types. A custom type will belong to one of three
+    | standards trees, the Vendor tree (vnd), the Personal tree
+    | (prs), and the Unregistered tree (x).
+    |
+    | By default the Unregistered tree (x) is used, however, should you wish
+    | to you can regsiter your type with the IANA. For more details:
+    | https://tools.ietf.org/html/rfc6838
     |
     */
 
-    'vendor' => env('API_VENDOR', ''),
+    'standardsTree' => env('API_STANDARDS_TREE', 'x'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | API Subtype
+    |--------------------------------------------------------------------------
+    |
+    | Your subtype will follow the standards tree you use when used in the
+    | "Accept" header to negotiate the content type and version.
+    |
+    | For example: Accept: application/x.SUBTYPE.v1+json
+    |
+    */
+
+    'subtype' => env('API_SUBTYPE', ''),
 
     /*
     |--------------------------------------------------------------------------
     | Default API Version
     |--------------------------------------------------------------------------
     |
-    | When a request is made to the API and no version is specified then it
-    | will default to the version specified here. This version is also
-    | used as a default when no version is supplied when generating
-    | documentation using the Artisan command.
+    | This is the default version when strict mode is disabled and your API
+    | is accessed via a web browser. It's also used as the default version
+    | when generating your APIs documentation.
     |
     */
 

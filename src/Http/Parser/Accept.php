@@ -9,11 +9,11 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class Accept implements Parser
 {
     /**
-     * API vendor.
+     * API subtype.
      *
      * @var string
      */
-    protected $vendor;
+    protected $subtype;
 
     /**
      * Default version.
@@ -32,15 +32,17 @@ class Accept implements Parser
     /**
      * Create a new accept parser instance.
      *
-     * @param string $vendor
+     * @param string $standardsTree
+     * @param string $subtype
      * @param string $version
      * @param string $format
      *
      * @return void
      */
-    public function __construct($vendor, $version, $format)
+    public function __construct($standardsTree, $subtype, $version, $format)
     {
-        $this->vendor = $vendor;
+        $this->standardsTree = $standardsTree;
+        $this->subtype = $subtype;
         $this->version = $version;
         $this->format = $format;
     }
@@ -58,9 +60,9 @@ class Accept implements Parser
      */
     public function parse(Request $request, $strict = false)
     {
-        $default = 'application/vnd.'.$this->vendor.'.'.$this->version.'+'.$this->format;
+        $default = 'application/'.$this->standardsTree.'.'.$this->subtype.'.'.$this->version.'+'.$this->format;
 
-        $pattern = '/application\/vnd\.('.$this->vendor.')\.(v?[\d\.]+)\+([\w]+)/';
+        $pattern = '/application\/'.$this->standardsTree.'\.('.$this->subtype.')\.(v?[\d\.]+)\+([\w]+)/';
 
         if (! preg_match($pattern, $request->header('accept'), $matches)) {
             if ($strict) {
@@ -70,6 +72,6 @@ class Accept implements Parser
             preg_match($pattern, $default, $matches);
         }
 
-        return array_combine(['vendor', 'version', 'format'], array_slice($matches, 1));
+        return array_combine(['subtype', 'version', 'format'], array_slice($matches, 1));
     }
 }
