@@ -2,6 +2,7 @@
 
 namespace Dingo\Api\Console\Command;
 
+use ReflectionClass;
 use Dingo\Blueprint\Writer;
 use Dingo\Api\Routing\Router;
 use Dingo\Blueprint\Blueprint;
@@ -149,13 +150,42 @@ class Docs extends Command
         foreach ($this->router->getRoutes() as $collections) {
             foreach ($collections as $route) {
                 if ($controller = $route->getController()) {
-                    if (! $controllers->has(get_class($controller))) {
-                        $controllers->put(get_class($controller), $controller);
-                    }
+                    $this->addControllerIfNotExists($controllers, $controller);
                 }
             }
         }
 
         return $controllers;
+    }
+
+    /**
+     * Add a controller to the collection if it does not exist. If the
+     * controller implements an interface suffixed with "Docs" it
+     * will be used instead of the controller.
+     *
+     * @param \Illuminate\Support\Collection $controllers
+     * @param object                         $controller
+     *
+     * @return void
+     */
+    protected function addControllerIfNotExists(Collection $controllers, $controller)
+    {
+        $class = get_class($controller);
+
+        if ($controllers->has($class)) {
+            return;
+        }
+
+        $reflection = new ReflectionClass($controller);
+
+        $interface = array_first($reflection->getInterfaces(), function ($key, $value) {
+            return ends_with($key, 'Docs');
+        });
+
+        if ($interface) {
+            $controller = $interface;
+        }
+
+        $controllers->put($class, $controller);
     }
 }
