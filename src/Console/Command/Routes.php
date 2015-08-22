@@ -96,9 +96,9 @@ class Routes extends RouteListCommand
      */
     protected function routeHasAuthMiddleware($route)
     {
-        $middleware = $route->getAction()['middleware'];
+        $middleware = $route->getMiddleware();
 
-        return array_search('api.auth', $middleware) !== false;
+        return isset($middleware['api.auth']);
     }
 
     /**

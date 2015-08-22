@@ -115,6 +115,13 @@ class Route
     protected $conditionalRequest = true;
 
     /**
+     * Middleware applied to route.
+     *
+     * @var array
+     */
+    protected $middleware;
+
+    /**
      * Create a new route instance.
      *
      * @param \Dingo\Api\Routing\Adapter\Adapter $adapter
@@ -238,15 +245,41 @@ class Route
     {
         if (! isset($this->action['uses']) || ! is_string($this->action['uses'])) {
             return;
+        } elseif (isset($this->controller)) {
+            return $this->controller;
         }
 
         if (str_contains($this->action['uses'], '@')) {
             list($controller, $this->method) = explode('@', $this->action['uses']);
 
-            $this->controller = $this->container->make($controller);
+            return $this->controller = $this->container->make($controller);
+        }
+    }
+
+    /**
+     * Get the middleware applied to the route.
+     *
+     * @return array
+     */
+    public function getMiddleware()
+    {
+        if (! is_null($this->middleware)) {
+            return $this->middleware;
         }
 
-        return $this->controller;
+        $this->middleware = [];
+
+        foreach ($this->action['middleware'] as $middleware) {
+            list ($middleware, $options) = array_merge(explode(':', $middleware), [[]]);
+
+            $this->middleware[$middleware] = $options;
+        }
+
+        if ($controller = $this->getController()) {
+            $this->middleware = array_merge($this->middleware, $controller->getMiddleware());
+        }
+
+        return $this->middleware;
     }
 
     /**
