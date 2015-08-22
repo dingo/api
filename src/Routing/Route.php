@@ -270,7 +270,7 @@ class Route
         $this->middleware = [];
 
         foreach ($this->action['middleware'] as $middleware) {
-            list ($middleware, $options) = array_merge(explode(':', $middleware), [[]]);
+            list($middleware, $options) = array_merge(explode(':', $middleware), [[]]);
 
             $this->middleware[$middleware] = $options;
         }
