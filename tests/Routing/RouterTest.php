@@ -58,6 +58,19 @@ class RouterTest extends Adapter\BaseAdapterTest
         $this->assertInstanceOf('Dingo\Api\Tests\Stubs\BasicThrottleStub', $route->getThrottle());
     }
 
+    public function testGroupAsPrefixesRouteAs()
+    {
+        $this->router->version('v1', ['as' => 'api'], function ($api) {
+            $api->get('users', ['as' => 'users', function () {
+                return 'foo';
+            }]);
+        });
+
+        $routes = $this->router->getRoutes('v1');
+
+        $this->assertInstanceOf('Dingo\Api\Routing\Route', $routes->getByName('apiusers'));
+    }
+
     /**
      * @expectedException RuntimeException
      * @expectedMessage A version is required for an API group definition.

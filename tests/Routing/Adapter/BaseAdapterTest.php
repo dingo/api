@@ -17,6 +17,7 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
         $this->container['Illuminate\Container\Container'] = $this->container;
         $this->container['api.auth'] = new MiddlewareStub;
         $this->container['api.limiting'] = new MiddlewareStub;
+        $this->container['request'] = new Http\Request;
 
         $this->adapter = $this->getAdapterInstance();
         $this->exception = m::mock('Dingo\Api\Exception\Handler');
