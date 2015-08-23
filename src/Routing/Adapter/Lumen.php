@@ -51,6 +51,13 @@ class Lumen implements Adapter
     protected $routes = [];
 
     /**
+     * Indicates if the middleware has been removed from the application instance.
+     *
+     * @var bool
+     */
+    protected $middlewareRemoved = false;
+
+    /**
      * Create a new lumen adapter instance.
      *
      * @param \Laravel\Lumen\Application $app
@@ -82,7 +89,7 @@ class Lumen implements Adapter
             throw new UnknownVersionException;
         }
 
-        $this->removeRequestMiddlewareFromApp();
+        $this->removeMiddlewareFromApp();
 
         $routes = $this->routes[$version];
 
@@ -201,24 +208,26 @@ class Lumen implements Adapter
     }
 
     /**
-     * Remove the request middleware from the application instance so we don't
-     * end up in a continuous loop.
+     * Remove the global application middleware as it's run from this packages
+     * Request middleware. Lumen runs middleware later in its life cycle
+     * which results in some middleware being executed twice.
      *
      * @return void
      */
-    protected function removeRequestMiddlewareFromApp()
+    protected function removeMiddlewareFromApp()
     {
+        if ($this->middlewareRemoved) {
+            return;
+        }
+
+        $this->middlewareRemoved = true;
+
         $reflection = new ReflectionClass($this->app);
         $property = $reflection->getProperty('middleware');
         $property->setAccessible(true);
 
-        $middleware = $property->getValue($this->app);
+        $property->setValue($this->app, []);
 
-        if (($key = array_search('Dingo\Api\Http\Middleware\Request', $middleware)) !== false) {
-            unset($middleware[$key]);
-        }
-
-        $property->setValue($this->app, $middleware);
         $property->setAccessible(false);
     }
 
