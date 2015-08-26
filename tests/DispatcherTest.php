@@ -38,7 +38,8 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->auth = new Auth($this->router, $this->container, []);
         $this->dispatcher = new Dispatcher($this->container, new Filesystem, $this->router, $this->auth);
 
-        $this->dispatcher->setVendor('api');
+        $this->dispatcher->setSubtype('api');
+        $this->dispatcher->setStandardsTree('vnd');
         $this->dispatcher->setDefaultVersion('v1');
         $this->dispatcher->setDefaultFormat('json');
 

@@ -137,6 +137,7 @@ abstract class ApiServiceProvider extends ServiceProvider
             $config = $app['config']['api'];
 
             $dispatcher->setSubtype($config['subtype']);
+            $dispatcher->setStandardsTree($config['standardsTree']);
             $dispatcher->setPrefix($config['prefix']);
             $dispatcher->setDefaultVersion($config['version']);
             $dispatcher->setDefaultDomain($config['domain']);
