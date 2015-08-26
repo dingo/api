@@ -333,9 +333,7 @@ abstract class ApiServiceProvider extends ServiceProvider
      */
     protected function prepareConfigValue($instance)
     {
-        if (is_callable($instance)) {
-            return call_user_func($instance, $this->app);
-        } elseif (is_string($instance)) {
+        if (is_string($instance)) {
             return $this->app->make($instance);
         } else {
             return $instance;
