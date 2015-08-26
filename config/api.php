@@ -156,7 +156,7 @@ return [
 
     'auth' => [
 
-        'basic' => 'Dingo\Api\Auth\Provider\Basic'
+        'basic' => 'Dingo\Api\Auth\Provider\Basic',
 
     ],
 
