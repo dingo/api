@@ -46,7 +46,7 @@ class LaravelServiceProvider extends ApiServiceProvider
     }
 
     /**
-     * Add the request middleware to the beggining of the kernel.
+     * Add the request middleware to the beginning of the kernel.
      *
      * @param \Illuminate\Contracts\Http\Kernel $kernel
      *
