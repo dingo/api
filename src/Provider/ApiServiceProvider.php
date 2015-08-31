@@ -185,7 +185,7 @@ abstract class ApiServiceProvider extends ServiceProvider
         $this->app->singleton('api.router', function ($app) {
             $config = $app['config']['api'];
 
-            return new Router(
+            $router = new Router(
                 $app['api.router.adapter'],
                 new Http\Parser\Accept($config['standardsTree'], $config['subtype'], $config['version'], $config['defaultFormat']),
                 $app['api.exception'],
@@ -193,6 +193,10 @@ abstract class ApiServiceProvider extends ServiceProvider
                 $config['domain'],
                 $config['prefix']
             );
+
+            $router->setConditionalRequest($config['conditionalRequest']);
+
+            return $router;
         });
 
         $this->app->singleton('Dingo\Api\Routing\ResourceRegistrar', function ($app) {
