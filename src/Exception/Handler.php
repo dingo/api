@@ -4,6 +4,7 @@ namespace Dingo\Api\Exception;
 
 use Exception;
 use ReflectionFunction;
+use Psr\Log\LoggerInterface;
 use Illuminate\Http\Response;
 use Dingo\Api\Contract\Debug\ExceptionHandler;
 use Dingo\Api\Contract\Debug\MessageBagErrors;
@@ -43,13 +44,15 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
     /**
      * Create a new exception handler instance.
      *
-     * @param array $format
-     * @param bool  $debug
+     * @param \Psr\Log\LoggerInterface $log
+     * @param array                    $format
+     * @param bool                     $debug
      *
      * @return void
      */
-    public function __construct(array $format, $debug)
+    public function __construct(LoggerInterface $log, array $format, $debug)
     {
+        $this->log = $log;
         $this->format = $format;
         $this->debug = $debug;
     }
@@ -63,7 +66,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
      */
     public function report(Exception $exception)
     {
-        //
+        $this->log->error($exception);
     }
 
     /**
@@ -117,6 +120,8 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
      */
     public function handle(Exception $exception)
     {
+        $this->report($exception);
+
         foreach ($this->handlers as $hint => $handler) {
             if (! $exception instanceof $hint) {
                 continue;
