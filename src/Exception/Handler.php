@@ -6,6 +6,7 @@ use Exception;
 use ReflectionFunction;
 use Illuminate\Http\Response;
 use Dingo\Api\Contract\Debug\ExceptionHandler;
+use Dingo\Api\Contract\Debug\MessageBagErrors;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Illuminate\Contracts\Debug\ExceptionHandler as IlluminateExceptionHandler;
 
@@ -203,7 +204,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
             ':status_code' => $statusCode,
         ];
 
-        if ($exception instanceof ResourceException && $exception->hasErrors()) {
+        if ($exception instanceof MessageBagErrors && $exception->hasErrors()) {
             $replacements[':errors'] = $exception->getErrors();
         }
 
