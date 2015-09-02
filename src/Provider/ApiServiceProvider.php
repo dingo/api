@@ -102,7 +102,7 @@ abstract class ApiServiceProvider extends ServiceProvider
             'api.limiting'       => 'Dingo\Api\Http\RateLimit\Handler',
             'api.transformer'    => 'Dingo\Api\Transformer\Factory',
             'api.url'            => 'Dingo\Api\Routing\UrlGenerator',
-            'api.exception'      => ['Dingo\Api\Exception\Handler', 'Dingo\Api\Contract\Debug\ExceptionHandler']
+            'api.exception'      => ['Dingo\Api\Exception\Handler', 'Dingo\Api\Contract\Debug\ExceptionHandler'],
         ];
 
         foreach ($aliases as $key => $aliases) {
