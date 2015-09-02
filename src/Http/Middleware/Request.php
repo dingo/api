@@ -5,10 +5,10 @@ namespace Dingo\Api\Http\Middleware;
 use Closure;
 use Exception;
 use Dingo\Api\Routing\Router;
-use Dingo\Api\Exception\Handler;
 use Illuminate\Pipeline\Pipeline;
 use Dingo\Api\Http\RequestValidator;
 use Dingo\Api\Http\Request as HttpRequest;
+use Dingo\Api\Contract\Debug\ExceptionHandler;
 use Illuminate\Contracts\Foundation\Application;
 
 class Request
@@ -23,7 +23,7 @@ class Request
     /**
      * Exception handler instance.
      *
-     * @var \Dingo\Api\Exception\Handler
+     * @var \Dingo\Api\Contract\Debug\ExceptionHandler
      */
     protected $exception;
 
@@ -52,14 +52,14 @@ class Request
      * Create a new request middleware instance.
      *
      * @param \Illuminate\Contracts\Foundation\Application $app
-     * @param \Dingo\Api\Exception\Handler                 $exception
+     * @param \Dingo\Api\Contract\Debug\ExceptionHandler   $exception
      * @param \Dingo\Api\Routing\Router                    $router
      * @param \Dingo\Api\Http\RequestValidator             $validator
      * @param array                                        $middleware
      *
      * @return void
      */
-    public function __construct(Application $app, Handler $exception, Router $router, RequestValidator $validator, array $middleware)
+    public function __construct(Application $app, ExceptionHandler $exception, Router $router, RequestValidator $validator, array $middleware)
     {
         $this->app = $app;
         $this->exception = $exception;
@@ -81,7 +81,7 @@ class Request
         try {
             if ($this->validator->validateRequest($request)) {
                 $this->app->singleton('Illuminate\Contracts\Debug\ExceptionHandler', function ($app) {
-                    return $app['Dingo\Api\Exception\Handler'];
+                    return $app['Dingo\Api\Contract\Debug\ExceptionHandler'];
                 });
 
                 $request = $this->app->make('Dingo\Api\Contract\Http\Request')->createFromIlluminate($request);

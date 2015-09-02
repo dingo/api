@@ -8,11 +8,11 @@ use RuntimeException;
 use Illuminate\Support\Str;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Http\Response;
-use Dingo\Api\Exception\Handler;
 use Dingo\Api\Http\InternalRequest;
 use Illuminate\Container\Container;
 use Dingo\Api\Contract\Routing\Adapter;
 use Illuminate\Routing\ControllerInspector;
+use Dingo\Api\Contract\Debug\ExceptionHandler;
 use Dingo\Api\Http\Parser\Accept as AcceptParser;
 use Illuminate\Http\Response as IlluminateResponse;
 use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
@@ -36,7 +36,7 @@ class Router
     /**
      * Exception handler instance.
      *
-     * @var \Dingo\Api\Exception\Handler
+     * @var \Dingo\Api\Contract\Debug\ExceptionHandler
      */
     protected $exception;
 
@@ -92,16 +92,16 @@ class Router
     /**
      * Create a new router instance.
      *
-     * @param \Dingo\Api\Routing\Adapter\Adapter  $adapter
-     * @param \Dingo\Api\Http\Parser\AcceptParser $accept
-     * @param \Dingo\Api\Exception\Handler        $exception
-     * @param \Illuminate\Container\Container     $container
-     * @param string                              $domain
-     * @param string                              $prefix
+     * @param \Dingo\Api\Routing\Adapter\Adapter         $adapter
+     * @param \Dingo\Api\Http\Parser\AcceptParser        $accept
+     * @param \Dingo\Api\Contract\Debug\ExceptionHandler $exception
+     * @param \Illuminate\Container\Container            $container
+     * @param string                                     $domain
+     * @param string                                     $prefix
      *
      * @return void
      */
-    public function __construct(Adapter $adapter, AcceptParser $accept, Handler $exception, Container $container, $domain, $prefix)
+    public function __construct(Adapter $adapter, AcceptParser $accept, ExceptionHandler $exception, Container $container, $domain, $prefix)
     {
         $this->adapter = $adapter;
         $this->accept = $accept;

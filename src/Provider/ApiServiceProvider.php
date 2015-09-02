@@ -102,11 +102,13 @@ abstract class ApiServiceProvider extends ServiceProvider
             'api.limiting'       => 'Dingo\Api\Http\RateLimit\Handler',
             'api.transformer'    => 'Dingo\Api\Transformer\Factory',
             'api.url'            => 'Dingo\Api\Routing\UrlGenerator',
-            'api.exception'      => 'Dingo\Api\Exception\Handler',
+            'api.exception'      => ['Dingo\Api\Exception\Handler', 'Dingo\Api\Contract\Debug\ExceptionHandler']
         ];
 
-        foreach ($aliases as $key => $alias) {
-            $this->app->alias($key, $alias);
+        foreach ($aliases as $key => $aliases) {
+            foreach ((array) $aliases as $alias) {
+                $this->app->alias($key, $alias);
+            }
         }
     }
 
@@ -188,7 +190,7 @@ abstract class ApiServiceProvider extends ServiceProvider
             $router = new Router(
                 $app['api.router.adapter'],
                 new Http\Parser\Accept($config['standardsTree'], $config['subtype'], $config['version'], $config['defaultFormat']),
-                $app['api.exception'],
+                $app['Dingo\Api\Contract\Debug\ExceptionHandler'],
                 $app,
                 $config['domain'],
                 $config['prefix']
