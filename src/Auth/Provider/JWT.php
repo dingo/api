@@ -47,8 +47,6 @@ class JWT extends Authorization
         } catch (JWTException $e) {
             throw new UnauthorizedHttpException('JWTAuth', $e->getMessage());
         }
-
-        return $user;
     }
 
     /**
