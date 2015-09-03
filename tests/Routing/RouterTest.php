@@ -82,6 +82,70 @@ class RouterTest extends Adapter\BaseAdapterTest
         });
     }
 
+    public function testMatchRoutes()
+    {
+        $this->router->version('v1', function ($api) {
+            $api->match(['get', 'post'], 'foo', function () {
+                return 'bar';
+            });
+        });
+
+        $this->router->setConditionalRequest(false);
+
+        $response = $this->router->dispatch(
+            $request = $this->createRequest('foo', 'GET', ['accept' => 'application/vnd.api.v1+json'])
+        );
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('bar', $response->getContent());
+
+        $response = $this->router->dispatch(
+            $request = $this->createRequest('foo', 'POST', ['accept' => 'application/vnd.api.v1+json'])
+        );
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('bar', $response->getContent());
+    }
+
+    public function testAnyRoutes()
+    {
+        $this->router->version('v1', function ($api) {
+            $api->any('foo', function () {
+                return 'bar';
+            });
+        });
+
+        $this->router->setConditionalRequest(false);
+
+        $response = $this->router->dispatch(
+            $request = $this->createRequest('foo', 'GET', ['accept' => 'application/vnd.api.v1+json'])
+        );
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('bar', $response->getContent());
+
+        $response = $this->router->dispatch(
+            $request = $this->createRequest('foo', 'POST', ['accept' => 'application/vnd.api.v1+json'])
+        );
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('bar', $response->getContent());
+
+        $response = $this->router->dispatch(
+            $request = $this->createRequest('foo', 'PATCH', ['accept' => 'application/vnd.api.v1+json'])
+        );
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('bar', $response->getContent());
+
+        $response = $this->router->dispatch(
+            $request = $this->createRequest('foo', 'DELETE', ['accept' => 'application/vnd.api.v1+json'])
+        );
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('bar', $response->getContent());
+    }
+
     public function testRouterPreparesNotModifiedResponse()
     {
         $this->router->version('v1', function () {

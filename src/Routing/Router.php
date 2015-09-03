@@ -254,6 +254,35 @@ class Router
     }
 
     /**
+     * Create a new route that responding to all verbs.
+     *
+     * @param string                $uri
+     * @param array|string|callable $action
+     *
+     * @return mixed
+     */
+    public function any($uri, $action)
+    {
+        $verbs = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'];
+
+        return $this->addRoute($verbs, $uri, $action);
+    }
+
+    /**
+     * Create a new route with the given verbs.
+     *
+     * @param array|string          $methods
+     * @param string                $uri
+     * @param array|string|callable $action
+     *
+     * @return mixed
+     */
+    public function match($methods, $uri, $action)
+    {
+        return $this->addRoute(array_map('strtoupper', (array) $methods), $uri, $action);
+    }
+
+    /**
      * Register an array of resources.
      *
      * @param array $resources
