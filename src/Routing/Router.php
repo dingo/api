@@ -5,6 +5,7 @@ namespace Dingo\Api\Routing;
 use Closure;
 use Exception;
 use RuntimeException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Http\Response;
@@ -357,7 +358,7 @@ class Router
             foreach ($routes as $route) {
                 $this->{$route['verb']}($route['uri'], [
                     'uses' => $controller.'@'.$method,
-                    'as' => array_get($names, $method),
+                    'as' => Arr::get($names, $method),
                 ]);
             }
         }
@@ -461,10 +462,10 @@ class Router
             $new['uses'] = $this->formatUses($new, $old);
         }
 
-        $new['where'] = array_merge(array_get($old, 'where', []), array_get($new, 'where', []));
+        $new['where'] = array_merge(Arr::get($old, 'where', []), Arr::get($new, 'where', []));
 
         if (isset($old['as'])) {
-            $new['as'] = $old['as'].array_get($new, 'as', '');
+            $new['as'] = $old['as'].Arr::get($new, 'as', '');
         }
 
         return array_merge_recursive(array_except($old, ['namespace', 'prefix', 'where', 'as']), $new);
@@ -480,7 +481,7 @@ class Router
      */
     protected function formatArrayBasedOption($option, array $new)
     {
-        $value = array_get($new, $option, []);
+        $value = Arr::get($new, $option, []);
 
         return is_string($value) ? explode('|', $value) : $value;
     }
@@ -518,7 +519,7 @@ class Router
             return trim($new['namespace'], '\\');
         }
 
-        return array_get($old, 'namespace');
+        return Arr::get($old, 'namespace');
     }
 
     /**
@@ -532,10 +533,10 @@ class Router
     protected function formatPrefix($new, $old)
     {
         if (isset($new['prefix'])) {
-            return trim(array_get($old, 'prefix'), '/').'/'.trim($new['prefix'], '/');
+            return trim(Arr::get($old, 'prefix'), '/').'/'.trim($new['prefix'], '/');
         }
 
-        return array_get($old, 'prefix', '');
+        return Arr::get($old, 'prefix', '');
     }
 
     /**

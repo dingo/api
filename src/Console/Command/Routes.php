@@ -2,6 +2,8 @@
 
 namespace Dingo\Api\Console\Command;
 
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Dingo\Api\Routing\Router;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
@@ -77,7 +79,7 @@ class Routes extends RouteListCommand
         }
 
         if ($sort = $this->option('sort')) {
-            $routes = array_sort($routes, function ($value) use ($sort) {
+            $routes = Arr::sort($routes, function ($value) use ($sort) {
                 return $value[$sort];
             });
         }
@@ -157,7 +159,7 @@ class Routes extends RouteListCommand
      */
     protected function filterByPath(array $route)
     {
-        return str_contains($route['uri'], $this->option('path'));
+        return Str::contains($route['uri'], $this->option('path'));
     }
 
     /**
@@ -194,7 +196,7 @@ class Routes extends RouteListCommand
     protected function filterByVersions(array $route)
     {
         foreach ($this->option('versions') as $version) {
-            if (str_contains($route['versions'], $version)) {
+            if (Str::contains($route['versions'], $version)) {
                 return true;
             }
         }
@@ -211,7 +213,7 @@ class Routes extends RouteListCommand
      */
     protected function filterByName(array $route)
     {
-        return str_contains($route['name'], $this->option('name'));
+        return Str::contains($route['name'], $this->option('name'));
     }
 
     /**
@@ -224,7 +226,7 @@ class Routes extends RouteListCommand
     protected function filterByScopes(array $route)
     {
         foreach ($this->option('scopes') as $scope) {
-            if (str_contains($route['scopes'], $scope)) {
+            if (Str::contains($route['scopes'], $scope)) {
                 return true;
             }
         }
