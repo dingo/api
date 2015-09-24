@@ -43,7 +43,7 @@ class UrlGenerator extends IlluminateUrlGenerator
     /**
      * Set the route collection instance.
      *
-     * @param \Dingo\Api\Routing\RouteCollection $collections
+     * @param array $collections
      *
      * @return void
      */

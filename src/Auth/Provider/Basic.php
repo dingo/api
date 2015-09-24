@@ -40,8 +40,8 @@ class Basic extends Authorization
     /**
      * Authenticate request with Basic.
      *
-     * @param \Illuminate\Http\Request  $request
-     * @param \Illuminate\Routing\Route $route
+     * @param \Illuminate\Http\Request $request
+     * @param \Dingo\Api\Routing\Route $route
      *
      * @return mixed
      */

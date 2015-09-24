@@ -543,6 +543,8 @@ class Router
      *
      * @param \Dingo\Api\Http\Request $request
      *
+     * @throws \Exception
+     *
      * @return \Dingo\Api\Http\Response
      */
     public function dispatch(Request $request)
@@ -574,7 +576,6 @@ class Router
      * @param mixed                   $response
      * @param \Dingo\Api\Http\Request $request
      * @param string                  $format
-     * @param bool                    $raw
      *
      * @return \Dingo\Api\Http\Response
      */
@@ -674,7 +675,7 @@ class Router
      *
      * @param array|\Illuminate\Routing\Route $route
      *
-     * @return \Dingi\Api\Routing\Route
+     * @return \Dingo\Api\Routing\Route
      */
     public function createRoute($route)
     {
