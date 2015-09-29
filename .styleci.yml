@@ -9,4 +9,3 @@ disabled:
   - align_double_arrow
   - new_with_braces
   - ordered_use
-  - psr0
