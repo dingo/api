@@ -433,7 +433,7 @@ class Route
      */
     public function getActionName()
     {
-        return array_get($this->action, 'controller', 'Closure');
+        return is_string($this->action['uses']) ? $this->action['uses'] : 'Closure';
     }
 
     /**
