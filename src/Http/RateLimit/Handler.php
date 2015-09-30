@@ -79,9 +79,9 @@ class Handler
     /**
      * Execute the rate limiting for the given request.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int                      $limit
-     * @param int                      $expires
+     * @param \Dingo\Api\Http\Request $request
+     * @param int                     $limit
+     * @param int                     $expires
      *
      * @return void
      */
