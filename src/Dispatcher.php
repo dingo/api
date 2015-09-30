@@ -3,7 +3,6 @@
 namespace Dingo\Api;
 
 use Dingo\Api\Auth\Auth;
-use Illuminate\Http\Request;
 use Dingo\Api\Routing\Router;
 use Illuminate\Container\Container;
 use Dingo\Api\Http\InternalRequest;

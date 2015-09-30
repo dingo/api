@@ -2,7 +2,6 @@
 
 namespace Dingo\Api\Console\Command;
 
-use Dingo\Api\Routing\Router;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 
