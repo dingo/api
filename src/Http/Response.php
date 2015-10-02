@@ -3,9 +3,10 @@
 namespace Dingo\Api\Http;
 
 use ArrayObject;
-use Dingo\Api\Event;
 use UnexpectedValueException;
 use Dingo\Api\Transformer\Binding;
+use Dingo\Api\Event\ResponseIsMorphing;
+use Dingo\Api\Event\ResponseWasMorphed;
 use Illuminate\Contracts\Support\Arrayable;
 use Symfony\Component\HttpFoundation\Cookie;
 use Illuminate\Http\Response as IlluminateResponse;
@@ -127,7 +128,7 @@ class Response extends IlluminateResponse
             return;
         }
 
-        static::$events->fire(new Event\ResponseWasMorphed($this, $this->content));
+        static::$events->fire(new ResponseWasMorphed($this, $this->content));
     }
 
     /**
@@ -141,7 +142,7 @@ class Response extends IlluminateResponse
             return;
         }
 
-        static::$events->fire(new Event\ResponseIsMorphing($this, $this->content));
+        static::$events->fire(new ResponseIsMorphing($this, $this->content));
     }
 
     /**
