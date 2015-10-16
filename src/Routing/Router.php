@@ -22,14 +22,14 @@ class Router
     /**
      * Routing adapter instance.
      *
-     * @var \Dingo\Api\Routing\Adapter\AdapterInterface
+     * @var \Dingo\Api\Contract\Routing\Adapter
      */
     protected $adapter;
 
     /**
      * Accept parser instance.
      *
-     * @var \Dingo\Api\Http\Parser\AcceptParser
+     * @var \Dingo\Api\Http\Parser\Accept
      */
     protected $accept;
 
@@ -92,8 +92,8 @@ class Router
     /**
      * Create a new router instance.
      *
-     * @param \Dingo\Api\Routing\Adapter\Adapter         $adapter
-     * @param \Dingo\Api\Http\Parser\AcceptParser        $accept
+     * @param \Dingo\Api\Contract\Routing\Adapter        $adapter
+     * @param \Dingo\Api\Http\Parser\Accept              $accept
      * @param \Dingo\Api\Contract\Debug\ExceptionHandler $exception
      * @param \Illuminate\Container\Container            $container
      * @param string                                     $domain

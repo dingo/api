@@ -171,7 +171,7 @@ class Auth
      *
      * @param \Illuminate\Auth\GenericUser|\Illuminate\Database\Eloquent\Model $user
      *
-     * @return \Dingo\Api\Auth\Authenticator
+     * @return \Dingo\Api\Auth\Auth
      */
     public function setUser($user)
     {
