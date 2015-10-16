@@ -125,9 +125,9 @@ class Route
      * Create a new route instance.
      *
      * @param \Dingo\Api\Contract\Routing\Adapter $adapter
-     * @param \Illuminate\Container\Container    $container
-     * @param \Illuminate\Http\Request           $request
-     * @param array|\Illuminate\Routing\Route    $route
+     * @param \Illuminate\Container\Container     $container
+     * @param \Illuminate\Http\Request            $request
+     * @param array|\Illuminate\Routing\Route     $route
      *
      * @return void
      */
