@@ -74,5 +74,27 @@ class RouteTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(20, $route->getRateExpiration(), 'Route did not setup rate limit expiration correctly.');
         $this->assertTrue($route->hasThrottle(), 'Route did not setup throttle correctly.');
         $this->assertInstanceOf('Dingo\Api\Tests\Stubs\BasicThrottleStub', $route->getThrottle(), 'Route did not setup throttle correctly.');
+
+        $route = new Route($this->adapter, $this->container, $request, [
+            'uri' => 'foo/bar',
+            'methods' => ['GET', 'HEAD'],
+            'action' => [
+                'scopes' => ['foo', 'bar'],
+                'providers' => ['foo'],
+                'limit' => 5,
+                'expires' => 10,
+                'throttle' => 'Foo',
+                'version' => ['v1'],
+                'conditionalRequest' => false,
+                'uses' => 'Dingo\Api\Tests\Stubs\RoutingControllerStub@show',
+            ],
+        ]);
+
+        $this->assertEquals(['foo', 'bar', 'baz', 'bing', 'bob'], $route->scopes(), 'Route did not setup scopes correctly.');
+        $this->assertEquals(['foo'], $route->getAuthProviders(), 'Route did not setup authentication providers correctly.');
+        $this->assertEquals(10, $route->getRateLimit(), 'Route did not setup rate limit correctly.');
+        $this->assertEquals(20, $route->getRateExpiration(), 'Route did not setup rate limit expiration correctly.');
+        $this->assertTrue($route->hasThrottle(), 'Route did not setup throttle correctly.');
+        $this->assertInstanceOf('Dingo\Api\Tests\Stubs\BasicThrottleStub', $route->getThrottle(), 'Route did not setup throttle correctly.');
     }
 }
