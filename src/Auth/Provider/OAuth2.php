@@ -119,17 +119,13 @@ class OAuth2 extends Authorization
     {
         $scopes = $route->scopes();
 
-        if (empty($scopes)) {
-            return true;
-        }
-
         foreach ($scopes as $scope) {
-            if ($token->hasScope($scope)) {
-                return true;
+            if (! $token->hasScope($scope)) {
+                throw new InvalidScopeException($scope);
             }
         }
 
-        throw new InvalidScopeException($scope);
+        return true;
     }
 
     /**
