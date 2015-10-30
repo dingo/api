@@ -14,7 +14,7 @@
         "illuminate/routing": "~5.1",
         "illuminate/support": "~5.1",
         "dingo/blueprint": "0.1.*",
-        "league/fractal": "0.12.*",
+        "league/fractal": ">=0.12.*",
         "doctrine/annotations": "1.2.*",
         "phpdocumentor/reflection-docblock": "2.0.*"
     },
