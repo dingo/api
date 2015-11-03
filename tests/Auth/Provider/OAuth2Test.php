@@ -40,7 +40,10 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
         $this->provider->authenticate($request, $route);
     }
 
-    public function testOnlyOneScopeRequiredToValidateCorrectly()
+    /**
+     * @expectedException \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
+     */
+    public function testAllScopeRequiredToValidateCorrectly()
     {
         $request = Request::create('GET', '/', [], [], [], ['HTTP_AUTHORIZATION' => 'Bearer 12345']);
 
@@ -48,13 +51,8 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
 
         $token = m::mock('League\OAuth2\Server\Entity\AccessTokenEntity');
         $token->shouldReceive('hasScope')->once()->with('foo')->andReturn(true);
+        $token->shouldReceive('hasScope')->once()->with('bar')->andReturn(false);
         $this->server->shouldReceive('getAccessToken')->once()->andReturn($token);
-
-        $session = m::mock('League\OAuth2\Server\Entity\SessionEntity');
-        $token->shouldReceive('getSession')->once()->andReturn($session);
-
-        $session->shouldReceive('getOwnerType')->once()->andReturn('client');
-        $session->shouldReceive('getOwnerId')->once()->andReturn(1);
 
         $this->provider->setClientResolver(function ($id) {
             //
@@ -63,7 +61,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
         $route = m::mock('Dingo\Api\Routing\Route');
         $route->shouldReceive('scopes')->once()->andReturn(['foo', 'bar']);
 
-        $this->assertNull($this->provider->authenticate($request, $route));
+        $this->provider->authenticate($request, $route);
     }
 
     public function testClientIsResolved()
