@@ -36,11 +36,12 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
 
         $route = m::mock('Dingo\Api\Routing\Route');
         $route->shouldReceive('scopes')->once()->andReturn(['foo']);
+        $route->shouldReceive('requiresAllScopes')->once()->andReturn(false);
 
         $this->provider->authenticate($request, $route);
     }
 
-    public function testOnlyOneScopeRequiredToValidateCorrectly()
+    public function testOnlyOneScopeRequiredToValidateCorrectlyIfRequiredAllSetToFalse()
     {
         $request = Request::create('GET', '/', [], [], [], ['HTTP_AUTHORIZATION' => 'Bearer 12345']);
 
@@ -62,8 +63,34 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
 
         $route = m::mock('Dingo\Api\Routing\Route');
         $route->shouldReceive('scopes')->once()->andReturn(['foo', 'bar']);
+        $route->shouldReceive('requiresAllScopes')->once()->andReturn(false);
 
         $this->assertNull($this->provider->authenticate($request, $route));
+    }
+
+    /**
+     * @expectedException \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
+     */
+    public function testAllScopeRequiredToValidateCorrectlyIfRequiredAllSetToTrue()
+    {
+        $request = Request::create('GET', '/', [], [], [], ['HTTP_AUTHORIZATION' => 'Bearer 12345']);
+
+        $this->server->shouldReceive('isValidRequest')->once()->andReturn(true);
+        
+        $token = m::mock('League\OAuth2\Server\Entity\AccessTokenEntity');
+        $token->shouldReceive('hasScope')->once()->with('foo')->andReturn(true);
+        $token->shouldReceive('hasScope')->once()->with('bar')->andReturn(false);
+        $this->server->shouldReceive('getAccessToken')->once()->andReturn($token);
+        
+        $this->provider->setClientResolver(function ($id) {
+            //
+        });
+        
+        $route = m::mock('Dingo\Api\Routing\Route');
+        $route->shouldReceive('scopes')->once()->andReturn(['foo', 'bar']);
+        $route->shouldReceive('requiresAllScopes')->once()->andReturn(true);
+
+        $this->provider->authenticate($request, $route);
     }
 
     public function testClientIsResolved()
@@ -87,6 +114,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
 
         $route = m::mock('Dingo\Api\Routing\Route');
         $route->shouldReceive('scopes')->once()->andReturn([]);
+        $route->shouldReceive('requiresAllScopes')->once()->andReturn(false);
 
         $this->assertEquals('foo', $this->provider->authenticate($request, $route));
     }
@@ -112,6 +140,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
 
         $route = m::mock('Dingo\Api\Routing\Route');
         $route->shouldReceive('scopes')->once()->andReturn([]);
+        $route->shouldReceive('requiresAllScopes')->once()->andReturn(false);
 
         $this->assertEquals('foo', $this->provider->authenticate($request, $route));
     }

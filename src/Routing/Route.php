@@ -353,6 +353,16 @@ class Route
     }
 
     /**
+     * Check if route requires any or all scopes
+     *
+     * @return bool
+     */
+    public function requiresAllScopes()
+    {
+        return array_get($this->action, 'requireAll', false);
+    }
+
+    /**
      * Get the route authentication providers.
      *
      * @return array
