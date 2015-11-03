@@ -25,6 +25,11 @@ class RoutingControllerStub
         return 'foo';
     }
 
+    public function show()
+    {
+        return 'bar';
+    }
+
     public function getIndex()
     {
         return 'foo';

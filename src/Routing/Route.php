@@ -203,8 +203,8 @@ class Route
             return true;
         } elseif (isset($options['only']) && in_array($this->method, $this->explodeOnPipes($options['only']))) {
             return true;
-        } elseif (isset($options['except']) && in_array($this->method, $this->explodeOnPipes($options['except']))) {
-            return false;
+        } elseif (isset($options['except'])) {
+            return ! in_array($this->method, $this->explodeOnPipes($options['except']));
         } elseif (in_array($this->method, $this->explodeOnPipes($options))) {
             return true;
         }
