@@ -4,6 +4,12 @@ namespace Dingo\Api\Routing;
 
 use ErrorException;
 
+/**
+ * @property \Dingo\Api\Dispatcher                                            $api
+ * @property \Illuminate\Auth\GenericUser|\Illuminate\Database\Eloquent\Model $user
+ * @property \Dingo\Api\Auth\Auth                                             $auth
+ * @property \Dingo\Api\Http\Response\Factory                                 $response
+ */
 trait Helpers
 {
     /**
