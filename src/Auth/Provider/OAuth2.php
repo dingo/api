@@ -137,7 +137,7 @@ class OAuth2 extends Authorization
      *
      * @param callable $resolver
      *
-     * @return \Dingo\Api\Auth\LeagueOAuth2Provider
+     * @return \Dingo\Api\Contract\Auth\Provider
      */
     public function setUserResolver(callable $resolver)
     {
@@ -151,7 +151,7 @@ class OAuth2 extends Authorization
      *
      * @param callable $resolver
      *
-     * @return \Dingo\Api\Auth\LeagueOAuth2Provider
+     * @return \Dingo\Api\Contract\Auth\Provider
      */
     public function setClientResolver(callable $resolver)
     {

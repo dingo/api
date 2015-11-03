@@ -12,7 +12,7 @@ class Route
     /**
      * Routing adapter instance.
      *
-     * @var \Dingo\Api\Routing\Adapter\Adapter
+     * @var \Dingo\Api\Contract\Routing\Adapter
      */
     protected $adapter;
 
@@ -124,10 +124,10 @@ class Route
     /**
      * Create a new route instance.
      *
-     * @param \Dingo\Api\Routing\Adapter\Adapter $adapter
-     * @param \Illuminate\Container\Container    $container
-     * @param \Illuminate\Http\Request           $request
-     * @param array|\Illuminate\Routing\Route    $route
+     * @param \Dingo\Api\Contract\Routing\Adapter $adapter
+     * @param \Illuminate\Container\Container     $container
+     * @param \Illuminate\Http\Request            $request
+     * @param array|\Illuminate\Routing\Route     $route
      *
      * @return void
      */
