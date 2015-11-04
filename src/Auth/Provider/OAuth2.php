@@ -81,7 +81,7 @@ class OAuth2 extends Authorization
 
             $token = $this->resource->getAccessToken();
 
-            if ($route->requiresAllScopes()) {
+            if ($route->scopeStrict()) {
                 $this->validateAllRouteScopes($token, $route);
             } else {
                 $this->validateAnyRouteScopes($token, $route);

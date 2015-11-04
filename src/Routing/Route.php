@@ -353,13 +353,14 @@ class Route
     }
 
     /**
-     * Check if route requires any or all scopes
+     * Check if route requires all scopes
+     * or any scope to be valid.
      *
      * @return bool
      */
-    public function requiresAllScopes()
+    public function scopeStrict()
     {
-        return array_get($this->action, 'requireAll', false);
+        return array_get($this->action, 'scopeStrict', false);
     }
 
     /**
