@@ -56,7 +56,7 @@ class Handler extends CoreExceptionHandler implements ExceptionHandler, Illumina
         $this->log = $log;
         $this->format = $format;
         $this->debug = $debug;
-        $this->dontReport = config("api.dontReport", []);
+        $this->dontReport = config('api.dontReport', []);
     }
 
     /**
