@@ -10,8 +10,9 @@ use Dingo\Api\Contract\Debug\ExceptionHandler;
 use Dingo\Api\Contract\Debug\MessageBagErrors;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Illuminate\Contracts\Debug\ExceptionHandler as IlluminateExceptionHandler;
+use Illuminate\Foundation\Exceptions\Handler as CoreExceptionHandler;
 
-class Handler implements ExceptionHandler, IlluminateExceptionHandler
+class Handler extends CoreExceptionHandler implements ExceptionHandler, IlluminateExceptionHandler
 {
     /**
      * Array of exception handlers.
@@ -55,6 +56,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
         $this->log = $log;
         $this->format = $format;
         $this->debug = $debug;
+        $this->dontReport = config('api.dontReport', []);
     }
 
     /**
@@ -66,7 +68,9 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
      */
     public function report(Exception $exception)
     {
-        $this->log->error($exception);
+        if ($this->shouldReport($exception)) {
+            $this->log->error($exception);
+        }
     }
 
     /**
