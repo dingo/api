@@ -206,4 +206,6 @@ return [
 
     ],
 
+    'dontReport' => [],
+
 ];
