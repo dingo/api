@@ -83,6 +83,20 @@ class FactoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals([['name' => 'Jason'], ['name' => 'Bob']], $response);
     }
 
+    public function testTransforingWithIlluminateRequest()
+    {
+        $container = new Container;
+        $container['request'] = new \Illuminate\Http\Request();
+
+        $factory = new Factory($container, new TransformerStub);
+
+        $factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub);
+
+        $response = $factory->transform(new UserStub('Jason'));
+
+        $this->assertEquals(['name' => 'Jason'], $response);
+    }
+
     /**
      * @expectedException \RuntimeException
      * @expectedExceptionMessage Unable to find bound transformer for "Dingo\Api\Tests\Stubs\UserStub" class
