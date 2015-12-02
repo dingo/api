@@ -4,10 +4,12 @@ namespace Dingo\Api\Transformer;
 
 use Closure;
 use RuntimeException;
+use Dingo\Api\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Container\Container;
 use Dingo\Api\Contract\Transformer\Adapter;
 use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Http\Request as IlluminateRequest;
 
 class Factory
 {
@@ -82,7 +84,7 @@ class Factory
     {
         $binding = $this->getBinding($response);
 
-        return $this->adapter->transform($response, $binding->resolveTransformer(), $binding, $this->container['request']);
+        return $this->adapter->transform($response, $binding->resolveTransformer(), $binding, $this->getRequest());
     }
 
     /**
@@ -223,5 +225,21 @@ class Factory
     public function getAdapter()
     {
         return $this->adapter;
+    }
+
+    /**
+     * Get the request from the container.
+     *
+     * @return \Dingo\Api\Http\Request
+     */
+    public function getRequest()
+    {
+        $request = $this->container['request'];
+
+        if ($request instanceof IlluminateRequest && ! $request instanceof Request) {
+            $request = (new Request())->createFromIlluminate($request);
+        }
+
+        return $request;
     }
 }
