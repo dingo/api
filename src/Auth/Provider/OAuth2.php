@@ -79,7 +79,13 @@ class OAuth2 extends Authorization
         try {
             $this->resource->isValidRequest($this->httpHeadersOnly);
 
-            $this->validateRouteScopes($token = $this->resource->getAccessToken(), $route);
+            $token = $this->resource->getAccessToken();
+
+            if ($route->scopeStrict()) {
+                $this->validateAllRouteScopes($token, $route);
+            } else {
+                $this->validateAnyRouteScopes($token, $route);
+            }
 
             return $this->resolveResourceOwner($token);
         } catch (OAuthException $exception) {
@@ -106,7 +112,7 @@ class OAuth2 extends Authorization
     }
 
     /**
-     * Validate a routes scopes.
+     * Validate a route has any scopes.
      *
      * @param \League\OAuth2\Server\Entity\AccessTokenEntity $token
      * @param \Dingo\Api\Routing\Route                       $route
@@ -115,7 +121,7 @@ class OAuth2 extends Authorization
      *
      * @return bool
      */
-    protected function validateRouteScopes(AccessTokenEntity $token, Route $route)
+    protected function validateAnyRouteScopes(AccessTokenEntity $token, Route $route)
     {
         $scopes = $route->scopes();
 
@@ -130,6 +136,29 @@ class OAuth2 extends Authorization
         }
 
         throw new InvalidScopeException($scope);
+    }
+
+    /**
+     * Validate a route has all scopes.
+     *
+     * @param \League\OAuth2\Server\Entity\AccessTokenEntity $token
+     * @param \Dingo\Api\Routing\Route                       $route
+     *
+     * @throws \League\OAuth2\Server\Exception\InvalidScopeException
+     *
+     * @return bool
+     */
+    protected function validateAllRouteScopes(AccessTokenEntity $token, Route $route)
+    {
+        $scopes = $route->scopes();
+
+        foreach ($scopes as $scope) {
+            if (! $token->hasScope($scope)) {
+                throw new InvalidScopeException($scope);
+            }
+        }
+
+        return true;
     }
 
     /**

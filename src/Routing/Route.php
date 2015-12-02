@@ -355,6 +355,17 @@ class Route
     }
 
     /**
+     * Check if route requires all scopes
+     * or any scope to be valid.
+     *
+     * @return bool
+     */
+    public function scopeStrict()
+    {
+        return array_get($this->action, 'scopeStrict', false);
+    }
+
+    /**
      * Get the route authentication providers.
      *
      * @return array
