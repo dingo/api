@@ -37,7 +37,7 @@ class Domain implements Validator
      */
     public function validate(Request $request)
     {
-        return ! is_null($this->domain) && $request->getHost() == $this->getStrippedDomain();
+        return ! is_null($this->domain) && $request->getHost() === $this->getStrippedDomain();
     }
 
     /**
