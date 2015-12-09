@@ -7,7 +7,6 @@ use Dingo\Api\Contract\Http\Validator;
 
 class Domain implements Validator
 {
-
     const PATTERN_STRIP_PROTOCOL = '/:\d*$/';
 
     /**
