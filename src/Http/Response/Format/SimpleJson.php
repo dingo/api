@@ -2,15 +2,14 @@
 
 namespace Dingo\Api\Http\Response\Format;
 
-use Illuminate\Support\Str;
 use Illuminate\Contracts\Support\Arrayable;
 
 /**
- * Class Json formats results according to the specifications laid out by http://jsonapi.org/
+ * Class SimpleJson formats results in a simple array/object or "plain JSON" format.
  *
  * @package Dingo\Api\Http\Response\Format
  */
-class Json extends Format
+class SimpleJson extends Format
 {
     /**
      * Format an Eloquent model.
@@ -21,13 +20,13 @@ class Json extends Format
      */
     public function formatEloquentModel($model)
     {
-        $key = Str::singular($model->getTable());
+        $key = str_singular($model->getTable());
 
         if (! $model::$snakeAttributes) {
-            $key = Str::camel($key);
+            $key = camel_case($key);
         }
 
-        return $this->encode([$key => $model->toArray()]);
+        return $this->encode($model->toArray());
     }
 
     /**
@@ -44,13 +43,13 @@ class Json extends Format
         }
 
         $model = $collection->first();
-        $key = Str::plural($model->getTable());
+        $key = str_plural($model->getTable());
 
         if (! $model::$snakeAttributes) {
-            $key = Str::camel($key);
+            $key = camel_case($key);
         }
 
-        return $this->encode([$key => $collection->toArray()]);
+        return $this->encode($collection->toArray());
     }
 
     /**
