@@ -23,7 +23,7 @@ abstract class ApiServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->setupConfig();
+
 
         Http\Response::setFormatters($this->prepareConfigValues($this->app['config']['api.formats']));
         Http\Response::setTransformer($this->app['api.transformer']);
@@ -43,6 +43,8 @@ abstract class ApiServiceProvider extends ServiceProvider
     {
         $this->setupClassAliases();
 
+        $this->setupConfig();
+        
         $this->registerExceptionHandler();
         $this->registerDispatcher();
         $this->registerAuth();
