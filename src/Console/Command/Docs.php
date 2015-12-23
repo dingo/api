@@ -4,6 +4,7 @@ namespace Dingo\Api\Console\Command;
 
 use ReflectionClass;
 use Dingo\Blueprint\Writer;
+use Illuminate\Support\Arr;
 use Dingo\Api\Routing\Router;
 use Dingo\Blueprint\Blueprint;
 use Illuminate\Console\Command;
@@ -178,7 +179,7 @@ class Docs extends Command
 
         $reflection = new ReflectionClass($controller);
 
-        $interface = array_first($reflection->getInterfaces(), function ($key, $value) {
+        $interface = Arr::first($reflection->getInterfaces(), function ($key, $value) {
             return ends_with($key, 'Docs');
         });
 

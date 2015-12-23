@@ -6,6 +6,7 @@ use ArrayIterator;
 use ReflectionClass;
 use FastRoute\Dispatcher;
 use FastRoute\RouteParser;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use FastRoute\DataGenerator;
 use FastRoute\RouteCollector;
@@ -169,7 +170,7 @@ class Lumen implements Adapter
      */
     protected function breakUriSegments($uri)
     {
-        if (! str_contains($uri, '?}')) {
+        if (! Str::contains($uri, '?}')) {
             return (array) $uri;
         }
 

@@ -2,6 +2,7 @@
 
 namespace Dingo\Api\Http\Response\Format;
 
+use Illuminate\Support\Str;
 use Illuminate\Contracts\Support\Arrayable;
 
 class Json extends Format
@@ -15,10 +16,10 @@ class Json extends Format
      */
     public function formatEloquentModel($model)
     {
-        $key = str_singular($model->getTable());
+        $key = Str::singular($model->getTable());
 
         if (! $model::$snakeAttributes) {
-            $key = camel_case($key);
+            $key = Str::camel($key);
         }
 
         return $this->encode([$key => $model->toArray()]);
@@ -38,10 +39,10 @@ class Json extends Format
         }
 
         $model = $collection->first();
-        $key = str_plural($model->getTable());
+        $key = Str::plural($model->getTable());
 
         if (! $model::$snakeAttributes) {
-            $key = camel_case($key);
+            $key = Str::camel($key);
         }
 
         return $this->encode([$key => $collection->toArray()]);

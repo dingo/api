@@ -2,6 +2,7 @@
 
 namespace Dingo\Api\Http\Validation;
 
+use Illuminate\support\Str;
 use Illuminate\Http\Request;
 use Dingo\Api\Contract\Http\Validator;
 
@@ -47,7 +48,7 @@ class Domain implements Validator
      */
     protected function stripProtocol($domain)
     {
-        if (str_contains($domain, '://')) {
+        if (Str::contains($domain, '://')) {
             $domain = substr($domain, strpos($domain, '://') + 3);
         }
 

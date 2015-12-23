@@ -3,6 +3,8 @@
 namespace Dingo\Api\Routing;
 
 use Closure;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Container\Container;
 use Dingo\Api\Contract\Routing\Adapter;
@@ -138,8 +140,8 @@ class Route
 
         list($this->uri, $this->methods, $this->action) = $this->adapter->getRouteProperties($route, $request);
 
-        $this->versions = array_pull($this->action, 'version');
-        $this->conditionalRequest = array_pull($this->action, 'conditionalRequest', true);
+        $this->versions = Arr::pull($this->action, 'version');
+        $this->conditionalRequest = Arr::pull($this->action, 'conditionalRequest', true);
     }
 
     /**
@@ -249,7 +251,7 @@ class Route
             return $this->controller;
         }
 
-        if (str_contains($this->action['uses'], '@')) {
+        if (Str::contains($this->action['uses'], '@')) {
             list($controller, $this->method) = explode('@', $this->action['uses']);
 
             $this->container->instance($controller, $this->controller = $this->container->make($controller));
@@ -302,7 +304,7 @@ class Route
     public function getThrottle()
     {
         if (is_null($this->throttle)) {
-            $this->throttle = array_pull($this->action, 'throttle', []);
+            $this->throttle = Arr::pull($this->action, 'throttle', []);
 
             $this->findControllerOptions('throttles', function ($value) {
                 $this->throttle = $value['throttle'];
@@ -323,7 +325,7 @@ class Route
      */
     public function getName()
     {
-        return array_get($this->action, 'as', null);
+        return Arr::get($this->action, 'as', null);
     }
 
     /**
@@ -344,7 +346,7 @@ class Route
     public function getScopes()
     {
         if (is_null($this->scopes)) {
-            $this->scopes = array_pull($this->action, 'scopes', []);
+            $this->scopes = Arr::pull($this->action, 'scopes', []);
 
             $this->findControllerOptions('scopes', function ($value) {
                 $this->scopes = array_merge($this->scopes, $value['scopes']);
@@ -362,7 +364,7 @@ class Route
      */
     public function scopeStrict()
     {
-        return array_get($this->action, 'scopeStrict', false);
+        return Arr::get($this->action, 'scopeStrict', false);
     }
 
     /**
@@ -373,7 +375,7 @@ class Route
     public function getAuthProviders()
     {
         if (is_null($this->authProviders)) {
-            $this->authProviders = array_pull($this->action, 'providers', []);
+            $this->authProviders = Arr::pull($this->action, 'providers', []);
 
             $this->findControllerOptions('providers', function ($value) {
                 $this->authProviders = array_merge($this->authProviders, $value['providers']);
@@ -391,7 +393,7 @@ class Route
     public function getRateLimit()
     {
         if (is_null($this->rateLimit)) {
-            $this->rateLimit = array_pull($this->action, 'limit', 0);
+            $this->rateLimit = Arr::pull($this->action, 'limit', 0);
 
             $this->findControllerOptions('rateLimit', function ($value) {
                 $this->rateLimit = $value['limit'];
@@ -409,7 +411,7 @@ class Route
     public function getRateExpiration()
     {
         if (is_null($this->rateExpiration)) {
-            $this->rateExpiration = array_pull($this->action, 'expires', 0);
+            $this->rateExpiration = Arr::pull($this->action, 'expires', 0);
 
             $this->findControllerOptions('rateLimit', function ($value) {
                 $this->rateExpiration = $value['expires'];
@@ -446,7 +448,7 @@ class Route
      */
     public function getActionName()
     {
-        return is_string($this->action['uses']) ? $this->action['uses'] : 'Closure';
+        return Arr::get($this->action, 'controller', 'Closure');
     }
 
     /**
@@ -546,6 +548,6 @@ class Route
      */
     public function domain()
     {
-        return array_get($this->action, 'domain');
+        return Arr::get($this->action, 'domain');
     }
 }
