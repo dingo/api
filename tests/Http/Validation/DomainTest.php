@@ -31,4 +31,22 @@ class DomainTest extends PHPUnit_Framework_TestCase
         $validator = new Domain('https://foo.bar');
         $this->assertTrue($validator->validate(Request::create('http://foo.bar', 'GET')), 'Validation failed when it should have passed with a valid domain.');
     }
+
+    public function testValidationPassesWithPortOnDomain()
+    {
+        $validator = new Domain('http://foo.bar:8888');
+        $this->assertTrue($validator->validate(Request::create('http://foo.bar', 'GET')), 'Validation failed when it should have passed with a valid domain.');
+    }
+
+    public function testValidationPassesWithPortOnRequest()
+    {
+        $validator = new Domain('http://foo.bar');
+        $this->assertTrue($validator->validate(Request::create('http://foo.bar:8888', 'GET')), 'Validation failed when it should have passed with a valid domain.');
+    }
+
+    public function testValidationPassesWithPortOnDomainAndRequest()
+    {
+        $validator = new Domain('http://foo.bar:8888');
+        $this->assertTrue($validator->validate(Request::create('http://foo.bar:8888', 'GET')), 'Validation failed when it should have passed with a valid domain.');
+    }
 }
