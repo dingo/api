@@ -8,7 +8,6 @@ use Dingo\Api\Transformer\Binding;
 use Dingo\Api\Event\ResponseIsMorphing;
 use Dingo\Api\Event\ResponseWasMorphed;
 use Illuminate\Contracts\Support\Arrayable;
-use Symfony\Component\HttpFoundation\Cookie;
 use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Events\Dispatcher as EventDispatcher;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
@@ -307,11 +306,11 @@ class Response extends IlluminateResponse
     /**
      * Add a cookie to the response.
      *
-     * @param \Symfony\Component\HttpFoundation\Cookie $cookie
+     * @param \Symfony\Component\HttpFoundation\Cookie|mixed $cookie
      *
      * @return \Dingo\Api\Http\Response
      */
-    public function cookie(Cookie $cookie)
+    public function cookie($cookie)
     {
         return $this->withCookie($cookie);
     }
