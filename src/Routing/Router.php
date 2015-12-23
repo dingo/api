@@ -101,10 +101,9 @@ class Router
      *
      * @return void
      */
-    public function __construct(Adapter $adapter, AcceptParser $accept, ExceptionHandler $exception, Container $container, $domain, $prefix)
+    public function __construct(Adapter $adapter, ExceptionHandler $exception, Container $container, $domain, $prefix)
     {
         $this->adapter = $adapter;
-        $this->accept = $accept;
         $this->exception = $exception;
         $this->container = $container;
         $this->domain = $domain;
@@ -551,14 +550,12 @@ class Router
     {
         $this->currentRoute = null;
 
-        $accept = $this->accept->parse($request);
-
         $this->container->instance('Dingo\Api\Http\Request', $request);
 
         $this->routesDispatched++;
 
         try {
-            $response = $this->adapter->dispatch($request, $accept['version']);
+            $response = $this->adapter->dispatch($request, $request->version());
         } catch (Exception $exception) {
             if ($request instanceof InternalRequest) {
                 throw $exception;
@@ -567,7 +564,7 @@ class Router
             $response = $this->exception->handle($exception);
         }
 
-        return $this->prepareResponse($response, $request, $accept['format']);
+        return $this->prepareResponse($response, $request, $request->format());
     }
 
     /**

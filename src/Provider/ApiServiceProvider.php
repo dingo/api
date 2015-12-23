@@ -29,6 +29,12 @@ abstract class ApiServiceProvider extends ServiceProvider
         Http\Response::setTransformer($this->app['api.transformer']);
         Http\Response::setEventDispatcher($this->app['events']);
 
+        $config = $this->app['config']['api'];
+
+        Http\Request::setAcceptParser(
+            new Http\Parser\Accept($config['standardsTree'], $config['subtype'], $config['version'], $config['defaultFormat'])
+        );
+
         $this->app->rebinding('api.routes', function ($app, $routes) {
             $app['api.url']->setRouteCollections($routes);
         });
@@ -189,7 +195,6 @@ abstract class ApiServiceProvider extends ServiceProvider
 
             $router = new Router(
                 $app['api.router.adapter'],
-                new Http\Parser\Accept($config['standardsTree'], $config['subtype'], $config['version'], $config['defaultFormat']),
                 $app['Dingo\Api\Contract\Debug\ExceptionHandler'],
                 $app,
                 $config['domain'],
