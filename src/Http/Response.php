@@ -73,6 +73,8 @@ class Response extends IlluminateResponse
     {
         $new = static::create($old->getOriginalContent(), $old->getStatusCode());
 
+        $new->setProtocolVersion($old->getProtocolVersion());
+
         $new->headers = $old->headers;
 
         return $new;
