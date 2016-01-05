@@ -157,7 +157,7 @@ return [
     |
     */
 
-    'errorHandlerClass' => \Dingo\Api\Exception\Handler::class,
+    'exceptionHandler' => \Dingo\Api\Exception\Handler::class,
 
 
     /*
