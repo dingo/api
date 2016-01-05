@@ -144,6 +144,22 @@ return [
         'debug' => ':debug',
     ],
 
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Custom error handler
+    |--------------------------------------------------------------------------
+    |
+    | If you want to implement custom error handler, you can assign its class here.
+    | By default, all exceptions will be handled by the default handler.
+    | Your custom handler should extend from \Dingo\Api\Exception\Handler.
+    |
+    */
+
+    'errorHandlerClass' => \Dingo\Api\Exception\Handler::class,
+
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Providers

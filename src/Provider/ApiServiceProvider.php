@@ -128,7 +128,13 @@ abstract class ApiServiceProvider extends ServiceProvider
         $this->app->singleton('api.exception', function ($app) {
             $config = $app['config']['api'];
 
-            return new ExceptionHandler($app['log'], $config['errorFormat'], $config['debug']);
+            $class = ExceptionHandler::class;
+
+            if (isset($config['exceptionHandler'])) {
+                $class = $config['exceptionHandler'];
+            }
+
+            return new $class($app['log'], $config['errorFormat'], $config['debug']);
         });
     }
 
