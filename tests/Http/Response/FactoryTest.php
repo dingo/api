@@ -132,6 +132,14 @@ class FactoryTest extends PHPUnit_Framework_TestCase
         $this->factory->errorUnauthorized();
     }
 
+    /**
+     * @expectedException \Symfony\Component\HttpKernel\Exception\HttpException
+     */
+    public function testMethodNotAllowedThrowsHttpException()
+    {
+        $this->factory->errorMethodNotAllowed();
+    }
+
     public function testMakingArrayResponse()
     {
         $response = $this->factory->array(['foo' => 'bar']);
