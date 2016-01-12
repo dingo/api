@@ -79,7 +79,7 @@ class Cache extends Command
     /**
      * Get a fresh application instance.
      *
-     * @return \Illuminate\Foundation\Application
+     * @return \Illuminate\Contracts\Container\Container
      */
     protected function getFreshApplication()
     {
