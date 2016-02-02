@@ -65,7 +65,7 @@ abstract class ApiServiceProvider extends ServiceProvider
             'Dingo\Api\Console\Command\Docs',
         ]);
 
-        if (class_exists('Illuminate\Contracts\Foundation\Application', false)) {
+        if (class_exists('Illuminate\Foundation\Application', false)) {
             $this->commands([
                 'Dingo\Api\Console\Command\Cache',
                 'Dingo\Api\Console\Command\Routes',
