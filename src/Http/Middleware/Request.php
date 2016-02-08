@@ -5,11 +5,11 @@ namespace Dingo\Api\Http\Middleware;
 use Closure;
 use Exception;
 use Dingo\Api\Routing\Router;
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Pipeline\Pipeline;
 use Dingo\Api\Http\RequestValidator;
 use Dingo\Api\Http\Request as HttpRequest;
 use Dingo\Api\Contract\Debug\ExceptionHandler;
-use Illuminate\Contracts\Foundation\Application;
 
 class Request
 {
@@ -59,7 +59,7 @@ class Request
      *
      * @return void
      */
-    public function __construct(Application $app, ExceptionHandler $exception, Router $router, RequestValidator $validator, array $middleware)
+    public function __construct(Container $app, ExceptionHandler $exception, Router $router, RequestValidator $validator, array $middleware)
     {
         $this->app = $app;
         $this->exception = $exception;
