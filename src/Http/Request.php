@@ -41,6 +41,7 @@ class Request extends IlluminateRequest implements RequestInterface
         }
 
         $new->setRouteResolver($old->getRouteResolver());
+        $new->setUserResolver($old->getUserResolver());
 
         return $new;
     }
