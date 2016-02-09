@@ -7,6 +7,7 @@ use Dingo\Api\Http\Request;
 use Dingo\Api\Http\Response;
 use PHPUnit_Framework_TestCase;
 use Illuminate\Cache\CacheManager;
+use Dingo\Api\Http\InternalRequest;
 use Illuminate\Container\Container;
 use Dingo\Api\Http\RateLimit\Handler;
 use Dingo\Api\Tests\Stubs\ThrottleStub;
@@ -45,6 +46,29 @@ class RateLimitTest extends PHPUnit_Framework_TestCase
         $route->shouldReceive('getRateExpiration')->once()->andReturn(0);
 
         $this->router->shouldReceive('getCurrentRoute')->once()->andReturn($route);
+
+        $this->handler->extend(new ThrottleStub([], false));
+
+        $response = $this->middleware->handle($request, function ($request) {
+            return new Response('foo');
+        });
+
+        $this->assertEquals('foo', $response->getContent());
+        $this->assertArrayNotHasKey('x-ratelimit-limit', $response->headers->all());
+        $this->assertArrayNotHasKey('x-ratelimit-remaining', $response->headers->all());
+        $this->assertArrayNotHasKey('x-ratelimit-reset', $response->headers->all());
+    }
+
+    public function testMiddlewareBypassesInternalRequest()
+    {
+        $request = InternalRequest::create('test', 'GET');
+
+        $route = m::mock('Dingo\Api\Routing\Route');
+        $route->shouldReceive('hasThrottle')->never();
+        $route->shouldReceive('getRateLimit')->never();
+        $route->shouldReceive('getRateExpiration')->never();
+
+        $this->router->shouldReceive('getCurrentRoute')->never();
 
         $this->handler->extend(new ThrottleStub([], false));
 
