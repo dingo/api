@@ -453,7 +453,7 @@ class Dispatcher
         // If the URI does not have a scheme then we can assume that there it is not an
         // absolute URI, in this case we'll prefix the root requests path to the URI.
         if (! parse_url($uri, PHP_URL_SCHEME)) {
-            $uri = rtrim($this->getRootRequest()->root(), '/').'/'.ltrim($uri);
+            $uri = rtrim($this->getRootRequest()->root(), '/').'/'.ltrim($uri, '/');
         }
 
         $request = InternalRequest::create($uri, $verb, $parameters, $this->cookies, $this->uploads, [], $this->content);
