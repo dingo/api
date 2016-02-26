@@ -111,7 +111,7 @@ class Fractal implements Adapter
      */
     protected function shouldEagerLoad($response)
     {
-        if ($response instanceof IlluminatePaginator) {
+        if ($response instanceof IlluminatePaginator && method_exists($response->getCollection(), 'load'))) {
             $response = $response->getCollection();
         }
 
