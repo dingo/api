@@ -249,7 +249,8 @@ class Factory
             return call_user_func_array([$this, Str::camel(substr($method, 4))], $parameters);
 
         // Because PHP won't let us name the method "array" we'll simply watch for it
-        // in here and return the new binding. Gross.
+        // in here and return the new binding. Gross. This is now DEPRECATED and
+        // should not be used. Just return an array or a new response instance.
         } elseif ($method == 'array') {
             return new Response($parameters[0]);
         }
