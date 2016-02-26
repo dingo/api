@@ -15,8 +15,8 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->log = m::mock('Psr\Log\LoggerInterface');
-        $this->exceptionHandler = new Handler($this->log, [
+        $this->parentHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler');
+        $this->exceptionHandler = new Handler($this->parentHandler, [
             'message' => ':message',
             'errors' => ':errors',
             'code' => ':code',
@@ -44,7 +44,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
             return new Response('foo', 404);
         });
 
-        $this->log->shouldReceive('error')->once()->with($exception = new HttpException(404, 'bar'));
+        $exception = new HttpException(404, 'bar');
 
         $response = $this->exceptionHandler->handle($exception);
 
@@ -58,7 +58,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
             return 'foo';
         });
 
-        $this->log->shouldReceive('error')->once()->with($exception = new HttpException(404, 'bar'));
+        $exception = new HttpException(404, 'bar');
 
         $response = $this->exceptionHandler->handle($exception);
 
@@ -69,7 +69,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 
     public function testExceptionHandlerReturnsGenericWhenNoMatchingHandler()
     {
-        $this->log->shouldReceive('error')->once()->with($exception = new HttpException(404, 'bar'));
+        $exception = new HttpException(404, 'bar');
 
         $response = $this->exceptionHandler->handle($exception);
 
@@ -90,7 +90,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
             ],
         ]);
 
-        $this->log->shouldReceive('error')->once()->with($exception = new HttpException(404, 'bar'));
+        $exception = new HttpException(404, 'bar');
 
         $response = $this->exceptionHandler->handle($exception);
 
@@ -101,7 +101,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 
     public function testRegularExceptionsAreHandledByGenericHandler()
     {
-        $this->log->shouldReceive('error')->once()->with($exception = new RuntimeException('Uh oh'));
+        $exception = new RuntimeException('Uh oh');
 
         $response = $this->exceptionHandler->handle($exception);
 
@@ -111,7 +111,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 
     public function testResourceExceptionErrorsAreIncludedInResponse()
     {
-        $this->log->shouldReceive('error')->once()->with($exception = new ResourceException('bar', ['foo' => 'bar'], null, [], 10));
+        $exception = new ResourceException('bar', ['foo' => 'bar'], null, [], 10);
 
         $response = $this->exceptionHandler->handle($exception);
 
@@ -124,7 +124,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
     {
         $this->exceptionHandler->setDebug(true);
 
-        $this->log->shouldReceive('error')->once()->with($exception = new HttpException(404, 'bar'));
+        $exception = new HttpException(404, 'bar');
 
         $response = $this->exceptionHandler->handle($exception);
 
@@ -135,7 +135,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 
     public function testHttpExceptionsWithNoMessageUseStatusCodeMessage()
     {
-        $this->log->shouldReceive('error')->once()->with($exception = new HttpException(404));
+        $exception = new HttpException(404);
 
         $response = $this->exceptionHandler->handle($exception);
 
@@ -148,7 +148,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
     {
         $request = ApiRequest::create('foo', 'GET');
 
-        $this->log->shouldReceive('error')->once()->with($exception = new HttpException(404));
+        $exception = new HttpException(404);
 
         $response = $this->exceptionHandler->render($request, $exception);
 
@@ -160,7 +160,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $this->exceptionHandler->setReplacements([':foo' => 'bar']);
         $this->exceptionHandler->setErrorFormat(['bing' => ':foo']);
 
-        $this->log->shouldReceive('error')->once()->with($exception = new HttpException(404));
+        $exception = new HttpException(404);
 
         $response = $this->exceptionHandler->handle($exception);
 

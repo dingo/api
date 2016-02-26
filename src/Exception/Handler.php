@@ -4,7 +4,6 @@ namespace Dingo\Api\Exception;
 
 use Exception;
 use ReflectionFunction;
-use Psr\Log\LoggerInterface;
 use Illuminate\Http\Response;
 use Dingo\Api\Contract\Debug\ExceptionHandler;
 use Dingo\Api\Contract\Debug\MessageBagErrors;
@@ -42,17 +41,24 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
     protected $replacements = [];
 
     /**
+     * The parent Illuminate exception handler instance.
+     *
+     * @var \Illuminate\Contracts\Debug\ExceptionHandler
+     */
+    protected $parentHandler;
+
+    /**
      * Create a new exception handler instance.
      *
-     * @param \Psr\Log\LoggerInterface $log
-     * @param array                    $format
-     * @param bool                     $debug
+     * @param \Illuminate\Contracts\Debug\ExceptionHandler $parentHandler
+     * @param array                                        $format
+     * @param bool                                         $debug
      *
      * @return void
      */
-    public function __construct(LoggerInterface $log, array $format, $debug)
+    public function __construct(IlluminateExceptionHandler $parentHandler, array $format, $debug)
     {
-        $this->log = $log;
+        $this->parentHandler = $parentHandler;
         $this->format = $format;
         $this->debug = $debug;
     }
@@ -66,7 +72,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
      */
     public function report(Exception $exception)
     {
-        $this->log->error($exception);
+        $this->parentHandler->report($exception);
     }
 
     /**
@@ -94,7 +100,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
      */
     public function renderForConsole($output, Exception $exception)
     {
-        //
+        return $this->parentHandler->renderForConsole($output, $exception);
     }
 
     /**
@@ -120,8 +126,6 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
      */
     public function handle(Exception $exception)
     {
-        $this->report($exception);
-
         foreach ($this->handlers as $hint => $handler) {
             if (! $exception instanceof $hint) {
                 continue;
