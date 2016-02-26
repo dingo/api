@@ -48,6 +48,8 @@ abstract class ApiServiceProvider extends ServiceProvider
         $this->setupConfig();
         $this->setupClassAliases();
 
+        $this->setupConfig();
+
         $this->registerExceptionHandler();
         $this->registerDispatcher();
         $this->registerAuth();
