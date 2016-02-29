@@ -188,7 +188,8 @@ class Fractal implements Adapter
      */
     protected function mergeEagerLoads($transformer, $requestedIncludes)
     {
-        $includes = array_merge($requestedIncludes, $transformer->getDefaultIncludes());
+        $availableRequestedIncludes = array_values(array_intersect($requestedIncludes, $transformer->getAvailableIncludes()));
+        $includes = array_merge($availableRequestedIncludes, $transformer->getDefaultIncludes());
 
         $eagerLoads = [];
 
