@@ -60,7 +60,7 @@ class Accept implements Parser
      */
     public function parse(Request $request, $strict = false)
     {
-        $pattern = '/application\/'.$this->standardsTree.'\.('.$this->subtype.')\.(v?[\d\.]+)\+([\w]+)/';
+        $pattern = '/application\/'.$this->standardsTree.'\.('.$this->subtype.')\.([\w\d\.]+)\+([\w]+)/';
 
         if (! preg_match($pattern, $request->header('accept'), $matches)) {
             if ($strict) {
