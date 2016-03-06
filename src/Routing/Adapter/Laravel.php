@@ -183,4 +183,16 @@ class Laravel implements Adapter
 
         return $route;
     }
+
+    /**
+     * Gather the route middlewares.
+     *
+     * @param \Illuminate\Routing\Route $route
+     *
+     * @return array
+     */
+    public function gatherRouteMiddlewares($route)
+    {
+        return $this->router->gatherRouteMiddlewares($route);
+    }
 }

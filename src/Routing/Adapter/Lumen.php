@@ -307,4 +307,17 @@ class Lumen implements Adapter
     {
         // Route caching is not implemented for Lumen.
     }
+
+    /**
+     * Gather the route middlewares.
+     *
+     * @param array $route
+     *
+     * @return array
+     */
+    public function gatherRouteMiddlewares($route)
+    {
+        // Route middleware in Lumen is not terminated.
+        return [];
+    }
 }

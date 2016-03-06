@@ -9,6 +9,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Http\Response;
+use Illuminate\Support\Collection;
 use Dingo\Api\Http\InternalRequest;
 use Illuminate\Container\Container;
 use Dingo\Api\Contract\Routing\Adapter;
@@ -605,6 +606,18 @@ class Router
         }
 
         return $response;
+    }
+
+    /**
+     * Gather the middleware for the given route.
+     *
+     * @param mixed $route
+     *
+     * @return array
+     */
+    public function gatherRouteMiddlewares($route)
+    {
+        return $this->adapter->gatherRouteMiddlewares($route);
     }
 
     /**
