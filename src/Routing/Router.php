@@ -395,7 +395,7 @@ class Router
     public function addRoute($methods, $uri, $action)
     {
         if (is_string($action)) {
-            $action = ['uses' => $action];
+            $action = ['uses' => $action, 'controller' => $action];
         } elseif ($action instanceof Closure) {
             $action = [$action];
         }
