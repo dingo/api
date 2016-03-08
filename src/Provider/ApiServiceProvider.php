@@ -23,11 +23,11 @@ abstract class ApiServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Http\Response::setFormatters($this->prepareConfigValues($this->app['config']['api.formats']));
+        $config = $this->app['config']['api'];
+
+        Http\Response::setFormatters($this->prepareConfigValues($config['formats']));
         Http\Response::setTransformer($this->app['api.transformer']);
         Http\Response::setEventDispatcher($this->app['events']);
-
-        $config = $this->app['config']['api'];
 
         Http\Request::setAcceptParser(
             new Http\Parser\Accept($config['standardsTree'], $config['subtype'], $config['version'], $config['defaultFormat'])
@@ -346,8 +346,8 @@ abstract class ApiServiceProvider extends ServiceProvider
     {
         if (is_string($instance)) {
             return $this->app->make($instance);
-        } else {
-            return $instance;
         }
+
+        return $instance;
     }
 }
