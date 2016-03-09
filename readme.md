@@ -25,6 +25,10 @@ This package provides tools for the following, and more:
 
 Please refer to our extensive [Wiki documentation](https://github.com/dingo/api/wiki) for more information.
 
+## Support
+
+For answers you may not find in the Wiki, do not post issues. Feel free to ask for support on the dedicated [Slack](https://larachat.slack.com/messages/api/) room. 
+
 ## License
 
 This package is licensed under the [BSD 3-Clause license](http://opensource.org/licenses/BSD-3-Clause).
