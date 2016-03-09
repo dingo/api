@@ -114,7 +114,7 @@ class Lumen implements Adapter
     {
         $query = $request->server->get('QUERY_STRING');
 
-        $uri = '/'.trim(str_replace('?'.$query, '', $request->server->get('REQUEST_URI')), '/').'?'.$query;
+        $uri = '/'.trim(str_replace('?'.$query, '', $request->server->get('REQUEST_URI')), '/').($query ? '?'.$query : '');
 
         $request->server->set('REQUEST_URI', $uri);
     }
