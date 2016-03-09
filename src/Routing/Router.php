@@ -9,6 +9,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Http\Response;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Dingo\Api\Http\InternalRequest;
 use Illuminate\Container\Container;
@@ -558,7 +559,9 @@ class Router
         try {
             $response = $this->adapter->dispatch($request, $request->version());
 
-            if ($response->exception instanceof Exception) {
+            if ($response instanceof JsonResponse) {
+                throw new RuntimeException('Unsupported response object \'Illuminate\Http\JsonResponse\', use supported response objects.');
+            } elseif ($response->exception instanceof Exception) {
                 throw $response->exception;
             }
         } catch (Exception $exception) {
