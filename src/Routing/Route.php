@@ -287,6 +287,26 @@ class Route
     }
 
     /**
+     * Determine if the route is protected.
+     *
+     * @return bool
+     */
+    public function isProtected()
+    {
+        $middleware = $this->getMiddleware();
+
+        if (isset($middleware['api.auth'])) {
+            if (! $this->usesController()) {
+                return true;
+            }
+
+            return $this->optionsApplyToControllerMethod($middleware['api.auth']);
+        }
+
+        return false;
+    }
+
+    /**
      * Determine if the route has a throttle.
      *
      * @return bool

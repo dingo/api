@@ -71,7 +71,7 @@ class Routes extends RouteListCommand
                     'uri'       => implode('|', $route->methods()).' '.$route->uri(),
                     'name'      => $route->getName(),
                     'action'    => $route->getActionName(),
-                    'protected' => $this->routeHasAuthMiddleware($route) ? 'Yes' : 'No',
+                    'protected' => $route->isProtected() ? 'Yes' : 'No',
                     'versions'  => implode(', ', $route->versions()),
                     'scopes'    => implode(', ', $route->scopes()),
                 ]);
@@ -89,18 +89,6 @@ class Routes extends RouteListCommand
         }
 
         return array_filter(array_unique($routes, SORT_REGULAR));
-    }
-
-    /**
-     * Determine if the route has the authentication middleware.
-     *
-     * @return string
-     */
-    protected function routeHasAuthMiddleware($route)
-    {
-        $middleware = $route->getMiddleware();
-
-        return isset($middleware['api.auth']);
     }
 
     /**
