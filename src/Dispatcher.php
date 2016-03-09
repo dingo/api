@@ -430,6 +430,16 @@ class Dispatcher
             $this->content = $content;
         }
 
+        // Sometimes after setting the initial request another request might be made prior to
+        // internally dispatching an API request. We need to capture this request as well
+        // and add it to the request stack as it has become the new parent request to
+        // this internal request. This will generally occur during tests when
+        // using the crawler to navigate pages that also make internal
+        // requests.
+        if (end($this->requestStack) != $this->container['request']) {
+            $this->requestStack[] = $this->container['request'];
+        }
+
         $this->requestStack[] = $request = $this->createRequest($verb, $uri, $parameters);
 
         return $this->dispatch($request);
