@@ -198,4 +198,28 @@ class Fractal implements Adapter
 
         return $eagerLoads;
     }
+
+    /**
+     * Disable eager loading.
+     *
+     * @return \Dingo\Api\Transformer\Adapter\Fractal
+     */
+    public function disableEagerLoading()
+    {
+        $this->eagerLoading = false;
+
+        return $this;
+    }
+
+    /**
+     * Enable eager loading.
+     *
+     * @return \Dingo\Api\Transformer\Adapter\Fractal
+     */
+    public function enableEagerLoading()
+    {
+        $this->eagerLoading = true;
+
+        return $this;
+    }
 }

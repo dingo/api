@@ -242,4 +242,17 @@ class Factory
 
         return $request;
     }
+
+    /**
+     * Pass unknown method calls through to the adapter.
+     *
+     * @param string $method
+     * @Param array  $parameters
+     *
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        return call_user_func_array([$this->adapter, $method], $parameters);
+    }
 }
