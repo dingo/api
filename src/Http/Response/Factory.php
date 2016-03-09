@@ -234,6 +234,20 @@ class Factory
     }
 
     /**
+     * Return a 405 method not allowed error.
+     *
+     * @param string $message
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\HttpException
+     *
+     * @return void
+     */
+    public function errorMethodNotAllowed($message = 'Method Not Allowed')
+    {
+        $this->error($message, 405);
+    }
+
+    /**
      * Call magic methods beginning with "with".
      *
      * @param string $method
