@@ -18,6 +18,13 @@ use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 class Response extends IlluminateResponse
 {
     /**
+     * The exception that triggered the error response.
+     *
+     * @var \Exception
+     */
+    public $exception;
+
+    /**
      * Transformer binding instance.
      *
      * @var \Dingo\Api\Transformer\Binding
