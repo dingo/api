@@ -113,6 +113,7 @@ class Laravel implements Adapter
         $this->createRouteCollections($versions);
 
         $route = new Route($methods, $uri, $action);
+        $route->where($action['where']);
 
         foreach ($versions as $version) {
             $this->routes[$version]->add($route);
