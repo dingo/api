@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Container\Container;
 use Dingo\Api\Contract\Routing\Adapter;
+use Laravel\Lumen\Routing\Controller as LumenController;
 
 class Route
 {
@@ -194,7 +195,15 @@ class Route
 
         $controller = $this->getControllerInstance();
 
-        $this->middleware = array_merge($this->middleware, $controller->getMiddleware());
+        $controllerMiddleware = [];
+
+        if (method_exists($controller, 'getMiddleware')) {
+            $controllerMiddleware = $controller->getMiddleware();
+        } elseif (method_exists($controller, 'getMiddlewareForMethod')) {
+            $controllerMiddleware = $controller->getMiddlewareForMethod($this->controllerMethod);
+        }
+
+        $this->middleware = array_merge($this->middleware, $controllerMiddleware);
 
         if ($property = $this->findControllerPropertyOptions('throttles')) {
             $this->throttle = $property['class'];
