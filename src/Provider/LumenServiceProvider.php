@@ -18,25 +18,19 @@ class LumenServiceProvider extends ApiServiceProvider
     {
         parent::boot();
 
-        // When Lumen is running in the console there is no external request which means the service
-        // bindings for the request (Application::registerRequestBindings) are never run so the
-        // route resolver is never set. This is different from Laravel in that the route
-        // resolver is set once the route has been matched from the routing dispatcher.
-        // To get around this we'll watch for the rebinding of rebinding of the
-        // request object and simply use reflection to grab the currentRoute
-        // property and return it for the route resolver.
-        if ($this->app->runningInConsole()) {
-            $this->app->rebinding('Illuminate\Http\Request', function ($app, $request) {
-                $request->setRouteResolver(function () use ($app) {
-                    $reflection = new ReflectionClass($app);
+        // Because Lumen sets the route resolver at a very weird point we're going to
+        // have to use reflection whenever the request instance is rebound to
+        // set the route resolver to get the current route.
+        $this->app->rebinding('Illuminate\Http\Request', function ($app, $request) {
+            $request->setRouteResolver(function () use ($app) {
+                $reflection = new ReflectionClass($app);
 
-                    $property = $reflection->getProperty('currentRoute');
-                    $property->setAccessible(true);
+                $property = $reflection->getProperty('currentRoute');
+                $property->setAccessible(true);
 
-                    return $property->getValue($app);
-                });
+                return $property->getValue($app);
             });
-        }
+        });
 
         $this->app->routeMiddleware([
             'api.auth' => 'Dingo\Api\Http\Middleware\Auth',
