@@ -61,7 +61,7 @@ class RateLimit
             $this->handler->setThrottle($route->getThrottle());
         }
 
-        $this->handler->rateLimitRequest($request, $route->getRateLimit(), $route->getRateExpiration());
+        $this->handler->rateLimitRequest($request, $route->getRateLimit(), $route->getRateLimitExpiration());
 
         if ($this->handler->exceededRateLimit()) {
             throw new HttpException(403, 'You have exceeded your rate limit.', null, $this->getHeaders());

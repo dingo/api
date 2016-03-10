@@ -43,7 +43,7 @@ class RateLimitTest extends PHPUnit_Framework_TestCase
         $route = m::mock('Dingo\Api\Routing\Route');
         $route->shouldReceive('hasThrottle')->once()->andReturn(false);
         $route->shouldReceive('getRateLimit')->once()->andReturn(0);
-        $route->shouldReceive('getRateExpiration')->once()->andReturn(0);
+        $route->shouldReceive('getRateLimitExpiration')->once()->andReturn(0);
 
         $this->router->shouldReceive('getCurrentRoute')->once()->andReturn($route);
 
@@ -66,7 +66,7 @@ class RateLimitTest extends PHPUnit_Framework_TestCase
         $route = m::mock('Dingo\Api\Routing\Route');
         $route->shouldReceive('hasThrottle')->never();
         $route->shouldReceive('getRateLimit')->never();
-        $route->shouldReceive('getRateExpiration')->never();
+        $route->shouldReceive('getRateLimitExpiration')->never();
 
         $this->router->shouldReceive('getCurrentRoute')->never();
 
@@ -89,7 +89,7 @@ class RateLimitTest extends PHPUnit_Framework_TestCase
         $route = m::mock('Dingo\Api\Routing\Route');
         $route->shouldReceive('hasThrottle')->once()->andReturn(false);
         $route->shouldReceive('getRateLimit')->once()->andReturn(0);
-        $route->shouldReceive('getRateExpiration')->once()->andReturn(0);
+        $route->shouldReceive('getRateLimitExpiration')->once()->andReturn(0);
 
         $this->router->shouldReceive('getCurrentRoute')->once()->andReturn($route);
 
@@ -112,7 +112,7 @@ class RateLimitTest extends PHPUnit_Framework_TestCase
         $route = m::mock('Dingo\Api\Routing\Route');
         $route->shouldReceive('hasThrottle')->once()->andReturn(false);
         $route->shouldReceive('getRateLimit')->once()->andReturn(0);
-        $route->shouldReceive('getRateExpiration')->once()->andReturn(0);
+        $route->shouldReceive('getRateLimitExpiration')->once()->andReturn(0);
 
         $this->router->shouldReceive('getCurrentRoute')->once()->andReturn($route);
 
@@ -138,7 +138,7 @@ class RateLimitTest extends PHPUnit_Framework_TestCase
         $route = m::mock('Dingo\Api\Routing\Route');
         $route->shouldReceive('hasThrottle')->once()->andReturn(false);
         $route->shouldReceive('getRateLimit')->once()->andReturn(5);
-        $route->shouldReceive('getRateExpiration')->once()->andReturn(10);
+        $route->shouldReceive('getRateLimitExpiration')->once()->andReturn(10);
 
         $this->router->shouldReceive('getCurrentRoute')->once()->andReturn($route);
 
@@ -161,7 +161,7 @@ class RateLimitTest extends PHPUnit_Framework_TestCase
         $route->shouldReceive('hasThrottle')->once()->andReturn(true);
         $route->shouldReceive('getThrottle')->once()->andReturn(new ThrottleStub(['limit' => 10, 'expires' => 20]));
         $route->shouldReceive('getRateLimit')->once()->andReturn(0);
-        $route->shouldReceive('getRateExpiration')->once()->andReturn(0);
+        $route->shouldReceive('getRateLimitExpiration')->once()->andReturn(0);
 
         $this->router->shouldReceive('getCurrentRoute')->once()->andReturn($route);
 

@@ -47,7 +47,7 @@ class Auth
         $route = $this->router->getCurrentRoute();
 
         if (! $this->auth->check(false)) {
-            $this->auth->authenticate($route->getAuthProviders());
+            $this->auth->authenticate($route->getAuthenticationProviders());
         }
 
         return $next($request);

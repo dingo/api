@@ -52,9 +52,9 @@ class RouterTest extends Adapter\BaseAdapterTest
         $route = $this->router->getCurrentRoute();
 
         $this->assertEquals(['baz', 'bing'], $route->scopes());
-        $this->assertEquals(['foo', 'red', 'black'], $route->getAuthProviders());
+        $this->assertEquals(['foo', 'red', 'black'], $route->getAuthenticationProviders());
         $this->assertEquals(10, $route->getRateLimit());
-        $this->assertEquals(20, $route->getRateExpiration());
+        $this->assertEquals(20, $route->getRateLimitExpiration());
         $this->assertInstanceOf('Dingo\Api\Tests\Stubs\BasicThrottleStub', $route->getThrottle());
     }
 

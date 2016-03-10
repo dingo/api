@@ -13,28 +13,44 @@ use ErrorException;
 trait Helpers
 {
     /**
-     * Array of controller method properties.
+     * Controller scopes.
      *
      * @var array
      */
-    protected $methodProperties = [
-        'scopes' => [],
-        'providers' => [],
-        'rateLimit' => [],
-        'throttles' => [],
-    ];
+    protected $scopes = [];
+
+    /**
+     * Controller authentication providers.
+     *
+     * @var array
+     */
+    protected $authenticationProviders = [];
+
+    /**
+     * Controller rate limit and expiration.
+     *
+     * @var array
+     */
+    protected $rateLimit = [];
+
+    /**
+     * Controller rate limit throttles.
+     *
+     * @var array
+     */
+    protected $throttles = [];
 
     /**
      * Throttles for controller methods.
      *
-     * @param string|\Dingo\Api\Http\RateLimit\Throttle\Throttle $throttle
+     * @param string|\Dingo\Api\Contract\Http\RateLimit\Throttle $class
      * @param array                                              $options
      *
      * @return void
      */
-    protected function throttle($throttle, array $options = [])
+    protected function throttle($class, array $options = [])
     {
-        $this->methodProperties['throttles'][] = array_merge($this->methodProperties['throttles'], compact('throttle', 'options'));
+        $this->throttles[] = compact('class', 'options');
     }
 
     /**
@@ -48,31 +64,7 @@ trait Helpers
      */
     protected function rateLimit($limit, $expires, array $options = [])
     {
-        $this->methodProperties['rateLimit'][] = compact('limit', 'expires', 'options');
-    }
-
-    /**
-     * Protect controller methods.
-     *
-     * @param array $options
-     *
-     * @return void
-     */
-    protected function protect(array $options = [])
-    {
-        $this->methodProperties['protected'][] = compact('options');
-    }
-
-    /**
-     * Unprotect controller methods.
-     *
-     * @param array $options
-     *
-     * @return void
-     */
-    protected function unprotect(array $options = [])
-    {
-        $this->methodProperties['unprotected'][] = compact('options');
+        $this->rateLimit[] = compact('limit', 'expires', 'options');
     }
 
     /**
@@ -85,9 +77,9 @@ trait Helpers
      */
     protected function scopes($scopes, array $options = [])
     {
-        $scopes = $this->propertyValue($scopes);
+        $scopes = $this->getPropertyValue($scopes);
 
-        $this->methodProperties['scopes'][] = compact('scopes', 'options');
+        $this->scopes[] = compact('scopes', 'options');
     }
 
     /**
@@ -100,9 +92,9 @@ trait Helpers
      */
     protected function authenticateWith($providers, array $options = [])
     {
-        $providers = $this->propertyValue($providers);
+        $providers = $this->getPropertyValue($providers);
 
-        $this->methodProperties['providers'][] = compact('providers', 'options');
+        $this->authenticationProviders[] = compact('providers', 'options');
     }
 
     /**
@@ -112,19 +104,49 @@ trait Helpers
      *
      * @return array
      */
-    protected function propertyValue($value)
+    protected function getPropertyValue($value)
     {
         return is_string($value) ? explode('|', $value) : $value;
     }
 
     /**
-     * Get controller method properties.
+     * Get the controllers rate limiting throttles.
      *
      * @return array
      */
-    public function getMethodProperties()
+    public function getThrottles()
     {
-        return $this->methodProperties;
+        return $this->throttles;
+    }
+
+    /**
+     * Get the controllers rate limit and expiration.
+     *
+     * @return array
+     */
+    public function getRateLimit()
+    {
+        return $this->rateLimit;
+    }
+
+    /**
+     * Get the controllers scopes.
+     *
+     * @return array
+     */
+    public function getScopes()
+    {
+        return $this->scopes;
+    }
+
+    /**
+     * Get the controllers authentication providers.
+     *
+     * @return array
+     */
+    public function getAuthenticationProviders()
+    {
+        return $this->authenticationProviders;
     }
 
     /**

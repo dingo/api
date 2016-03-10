@@ -9,7 +9,7 @@ class ThrottleStub extends Throttle
 {
     protected $enabled;
 
-    public function __construct(array $options, $enabled = true)
+    public function __construct(array $options = ['limit' => 60, 'expires' => 60], $enabled = true)
     {
         $this->enabled = $enabled;
 

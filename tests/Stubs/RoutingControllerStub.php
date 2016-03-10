@@ -3,8 +3,9 @@
 namespace Dingo\Api\Tests\Stubs;
 
 use Dingo\Api\Routing\Helpers;
+use Illuminate\Routing\Controller;
 
-class RoutingControllerStub
+class RoutingControllerStub extends Controller
 {
     use Helpers;
 
