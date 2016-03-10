@@ -667,13 +667,11 @@ class Router
     {
         if (isset($this->currentRoute)) {
             return $this->currentRoute;
-        } elseif (! $this->hasDispatchedRoutes()) {
+        } elseif (! $this->hasDispatchedRoutes() || ! $route = $this->container['request']->route()) {
             return;
         }
 
-        $request = $this->container['request'];
-
-        return $this->currentRoute = $this->createRoute($request->route());
+        return $this->currentRoute = $this->createRoute($route);
     }
 
     /**
