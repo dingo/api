@@ -120,7 +120,11 @@ class Request
      */
     public function terminate($request, $response)
     {
-        $request = $this->app['request'];
+        if (! ($request = $this->app['request']) instanceof HttpRequest) {
+            return;
+        }
+
+        \Log::info('dingo is terminating the route middleware');
 
         // Laravel's route middlewares can be terminated just like application
         // middleware, so we'll gather all the route middleware here.
