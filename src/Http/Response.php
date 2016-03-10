@@ -4,6 +4,7 @@ namespace Dingo\Api\Http;
 
 use ArrayObject;
 use UnexpectedValueException;
+use Illuminate\Http\JsonResponse;
 use Dingo\Api\Transformer\Binding;
 use Dingo\Api\Event\ResponseIsMorphing;
 use Dingo\Api\Event\ResponseWasMorphed;
@@ -81,6 +82,22 @@ class Response extends IlluminateResponse
         $new = static::create($old->getOriginalContent(), $old->getStatusCode());
 
         $new->headers = $old->headers;
+
+        return $new;
+    }
+
+    /**
+     * Make an API response from an existing JSON response.
+     *
+     * @param \Illuminate\Http\JsonResponse $json
+     *
+     * @return \Dingo\Api\Http\Response
+     */
+    public static function makeFromJson(JsonResponse $json)
+    {
+        $new = static::create(json_decode($json->getContent(), true), $json->getStatusCode());
+
+        $new->headers = $json->headers;
 
         return $new;
     }

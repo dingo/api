@@ -558,9 +558,7 @@ class Router
         try {
             $response = $this->adapter->dispatch($request, $request->version());
 
-            if ($response instanceof JsonResponse) {
-                throw new RuntimeException('Unsupported response object \'Illuminate\Http\JsonResponse\', use supported response objects.');
-            } elseif ($response->exception instanceof Exception) {
+            if (property_exists($response, 'exception') && $response->exception instanceof Exception) {
                 throw $response->exception;
             }
         } catch (Exception $exception) {
@@ -587,6 +585,8 @@ class Router
     {
         if ($response instanceof IlluminateResponse) {
             $response = Response::makeFromExisting($response);
+        } elseif ($response instanceof JsonResponse) {
+            $response = Response::makeFromJson($response);
         }
 
         if ($response instanceof Response) {
