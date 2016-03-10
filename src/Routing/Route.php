@@ -288,7 +288,7 @@ class Route
 
         do {
             $traits = array_merge(class_uses($controller, false), $traits);
-        } while($controller = get_parent_class($controller));
+        } while ($controller = get_parent_class($controller));
 
         foreach ($traits as $trait => $same) {
             $traits = array_merge(class_uses($trait, false), $traits);

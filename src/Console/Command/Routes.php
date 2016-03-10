@@ -74,7 +74,7 @@ class Routes extends RouteListCommand
                     'protected' => $route->isProtected() ? 'Yes' : 'No',
                     'versions'  => implode(', ', $route->versions()),
                     'scopes'    => implode(', ', $route->scopes()),
-                    'rate' => $this->routeRateLimit($route)
+                    'rate' => $this->routeRateLimit($route),
                 ]);
             }
         }
