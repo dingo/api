@@ -37,7 +37,7 @@ class Routes extends RouteListCommand
      *
      * @var array
      */
-    protected $headers = ['Host', 'URI', 'Name', 'Action', 'Protected', 'Version(s)', 'Scope(s)'];
+    protected $headers = ['Host', 'URI', 'Name', 'Action', 'Protected', 'Version(s)', 'Scope(s)', 'Rate Limit'];
 
     /**
      * Create a new routes command instance.
@@ -74,6 +74,7 @@ class Routes extends RouteListCommand
                     'protected' => $route->isProtected() ? 'Yes' : 'No',
                     'versions'  => implode(', ', $route->versions()),
                     'scopes'    => implode(', ', $route->scopes()),
+                    'rate' => $this->routeRateLimit($route)
                 ]);
             }
         }
@@ -89,6 +90,25 @@ class Routes extends RouteListCommand
         }
 
         return array_filter(array_unique($routes, SORT_REGULAR));
+    }
+
+    /**
+     * Display the routes rate limiting requests per second. This takes the limit
+     * and divides it by the expiration time in seconds to give you a rough
+     * idea of how many requests you'd be able to fire off per second
+     * on the route.
+     *
+     * @param \Dingo\Api\Routing\Route $route
+     *
+     * @return null|string
+     */
+    protected function routeRateLimit($route)
+    {
+        list($limit, $expires) = [$route->getRateLimit(), $route->getRateLimitExpiration()];
+
+        if ($limit && $expires) {
+            return sprintf('%s req/s', round($limit / ($expires * 60), 2));
+        }
     }
 
     /**
