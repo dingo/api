@@ -12,14 +12,24 @@ class LumenTest extends BaseAdapterTest
 {
     public function getAdapterInstance()
     {
-        $app = new Application;
-
-        $app->routeMiddleware([
+        $this->container->routeMiddleware([
             'api.auth' => get_class($this->container['api.auth']),
             'api.limiting' => get_class($this->container['api.limiting']),
         ]);
 
-        return new Lumen($app, new StdRouteParser, new GcbDataGenerator, GcbDispatcher::class);
+        // When we rebind the "request" instance during testing we'll pull the route resolver
+        // from the Lumen request instance and set it on our request so we can fetch
+        // the route properly.
+        $this->container->rebinding('request', function ($app, $request) {
+            $request->setRouteResolver($app['Illuminate\Http\Request']->getRouteResolver());
+        });
+
+        return new Lumen($this->container, new StdRouteParser, new GcbDataGenerator, GcbDispatcher::class);
+    }
+
+    public function getContainerInstance()
+    {
+        return new Application;
     }
 
     public function testRoutesWithDomains()

@@ -6,14 +6,13 @@ use Mockery as m;
 use Dingo\Api\Http;
 use Dingo\Api\Routing\Router;
 use PHPUnit_Framework_TestCase;
-use Illuminate\Container\Container;
 use Dingo\Api\Tests\Stubs\MiddlewareStub;
 
 abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->container = new Container;
+        $this->container = $this->getContainerInstance();
         $this->container['Illuminate\Container\Container'] = $this->container;
         $this->container['api.auth'] = new MiddlewareStub;
         $this->container['api.limiting'] = new MiddlewareStub;
@@ -32,6 +31,8 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
     {
         m::close();
     }
+
+    abstract public function getContainerInstance();
 
     abstract public function getAdapterInstance();
 

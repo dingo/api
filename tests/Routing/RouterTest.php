@@ -16,6 +16,11 @@ class RouterTest extends Adapter\BaseAdapterTest
         return $this->container->make('Dingo\Api\Tests\Stubs\RoutingAdapterStub');
     }
 
+    public function getContainerInstance()
+    {
+        return new Container;
+    }
+
     public function testRouteOptionsMergeCorrectly()
     {
         $this->router->version('v1', ['scopes' => 'foo|bar'], function () {
