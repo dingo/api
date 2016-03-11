@@ -2,6 +2,8 @@
 
 namespace Dingo\Api\Exception;
 
+use Exception;
+
 class ValidationHttpException extends ResourceException
 {
     /**
