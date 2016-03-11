@@ -150,7 +150,7 @@ class Docs extends Command
 
         foreach ($this->router->getRoutes() as $collections) {
             foreach ($collections as $route) {
-                if ($controller = $route->getController()) {
+                if ($controller = $route->getControllerInstance()) {
                     $this->addControllerIfNotExists($controllers, $controller);
                 }
             }
