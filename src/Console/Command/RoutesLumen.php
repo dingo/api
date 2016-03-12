@@ -50,7 +50,7 @@ class RoutesLumen extends Command
         parent::__construct();
         $this->routes = $router->getRoutes();
     }
-    
+
     /**
      * Execute the console command.
      *

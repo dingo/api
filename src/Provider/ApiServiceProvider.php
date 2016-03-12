@@ -323,7 +323,7 @@ abstract class ApiServiceProvider extends ServiceProvider
             );
         });
     }
-    
+
     /**
      * Register the routes command for Lumen.
      *
