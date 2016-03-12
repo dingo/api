@@ -69,6 +69,11 @@ abstract class ApiServiceProvider extends ServiceProvider
                 'Dingo\Api\Console\Command\Cache',
                 'Dingo\Api\Console\Command\Routes',
             ]);
+        } else {
+            $this->registerRoutesLumenCommand();
+            $this->commands([
+                'Dingo\Api\Console\Command\RoutesLumen',
+            ]);
         }
     }
 
@@ -316,6 +321,18 @@ abstract class ApiServiceProvider extends ServiceProvider
                 $config['name'],
                 $config['version']
             );
+        });
+    }
+    
+    /**
+     * Register the routes command for Lumen.
+     *
+     * @return void
+     */
+    protected function registerRoutesLumenCommand()
+    {
+        $this->app->singleton('Dingo\Api\Console\Command\RoutesLumen', function ($app) {
+            return new Command\RoutesLumen($app['api.router']);
         });
     }
 
