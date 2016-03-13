@@ -525,7 +525,7 @@ class Route
      */
     public function getActionName()
     {
-        return Arr::get($this->action, 'controller', 'Closure');
+        return Arr::get($this->action, 'uses', 'Closure');
     }
 
     /**
