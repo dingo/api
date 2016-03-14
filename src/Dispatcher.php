@@ -466,7 +466,15 @@ class Dispatcher
             $uri = rtrim($this->getRootRequest()->root(), '/').'/'.ltrim($uri, '/');
         }
 
-        $request = InternalRequest::create($uri, $verb, $parameters, $this->cookies, $this->uploads, [], $this->content);
+        $request = InternalRequest::create(
+            $uri,
+            $verb,
+            $parameters,
+            $this->cookies,
+            $this->uploads,
+            $this->container['request']->server->all(),
+            $this->content
+        );
 
         $request->headers->set('host', $this->getDomain());
 
