@@ -226,7 +226,7 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
         });
 
         $routes = $this->adapter->getIterableRoutes();
-        $this->assertEquals('v1', key($routes));
+        $this->assertTrue(array_key_exists('v1', (array) $routes));
         $this->assertEquals(2, count($routes['v1']));
     }
 }
