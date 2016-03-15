@@ -217,4 +217,16 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('foo', $this->router->dispatch($request)->getContent(), 'Router did not register controller correctly.');
     }
+
+    public function testIterableRoutes()
+    {
+        $this->router->version('v1', ['namespace' => 'Dingo\Api\Tests\Stubs'], function () {
+            $this->router->post('/', ['uses' => 'RoutingControllerStub@index']);
+            $this->router->post('/find', ['uses' => 'RoutingControllerOtherStub@show']);
+        });
+
+        $routes = $this->adapter->getIterableRoutes();
+        $this->assertEquals('v1', key($routes));
+        $this->assertEquals(2, count($routes['v1']));
+    }
 }
