@@ -8,7 +8,6 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Container\Container;
 use Dingo\Api\Contract\Routing\Adapter;
-use Laravel\Lumen\Routing\Controller as LumenController;
 
 class Route
 {
