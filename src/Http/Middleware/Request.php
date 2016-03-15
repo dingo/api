@@ -124,8 +124,6 @@ class Request
             return;
         }
 
-        \Log::info('dingo is terminating the route middleware');
-
         // Laravel's route middlewares can be terminated just like application
         // middleware, so we'll gather all the route middleware here.
         // On Lumen this will simply be an empty array as it does
