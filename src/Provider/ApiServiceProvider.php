@@ -275,7 +275,9 @@ abstract class ApiServiceProvider extends ServiceProvider
     protected function registerMiddleware()
     {
         $this->app->singleton('Dingo\Api\Http\Middleware\Request', function ($app) {
-            return new Http\Middleware\Request($app, $app['api.exception'], $app['api.router'], $app['api.http.validator'], $app['app.middleware']);
+            $middleware = array_merge($app['app.middleware'], $app['config']['api.middleware']);
+
+            return new Http\Middleware\Request($app, $app['api.exception'], $app['api.router'], $app['api.http.validator'], $middleware);
         });
 
         $this->app->singleton('Dingo\Api\Http\Middleware\Auth', function ($app) {
