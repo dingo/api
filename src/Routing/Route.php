@@ -356,8 +356,8 @@ class Route
      */
     public function isProtected()
     {
-        if (isset($this->middleware['api.auth'])) {
-            if ($this->controller) {
+        if (isset($this->middleware['api.auth']) || in_array('api.auth', $this->middleware)) {
+            if ($this->controller && isset($this->middleware['api.auth'])) {
                 return $this->optionsApplyToControllerMethod($this->middleware['api.auth']);
             }
 
