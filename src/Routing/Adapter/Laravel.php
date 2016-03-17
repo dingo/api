@@ -26,13 +26,6 @@ class Laravel implements Adapter
     protected $routes = [];
 
     /**
-     * Old routes already defined on the router.
-     *
-     * @var \Illuminate\Routing\RouteCollection
-     */
-    protected $oldRoutes;
-
-    /**
      * Create a new laravel routing adapter instance.
      *
      * @param \Illuminate\Routing\Router $router
@@ -58,31 +51,9 @@ class Laravel implements Adapter
             throw new UnknownVersionException;
         }
 
-        $routes = $this->mergeExistingRoutes($this->routes[$version]);
-
-        $this->router->setRoutes($routes);
+        $this->router->setRoutes($this->routes[$version]);
 
         return $this->router->dispatch($request);
-    }
-
-    /**
-     * Merge the existing routes with the new routes.
-     *
-     * @param \Illuminate\Routing\RouteCollection $routes
-     *
-     * @return \Illuminate\Routing\RouteCollection
-     */
-    protected function mergeExistingRoutes(RouteCollection $routes)
-    {
-        if (! isset($this->oldRoutes)) {
-            $this->oldRoutes = $this->router->getRoutes();
-        }
-
-        foreach ($this->oldRoutes as $route) {
-            $routes->add($route);
-        }
-
-        return $routes;
     }
 
     /**

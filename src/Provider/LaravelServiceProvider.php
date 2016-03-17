@@ -3,6 +3,7 @@
 namespace Dingo\Api\Provider;
 
 use ReflectionClass;
+use Illuminate\Routing\Router;
 use Illuminate\Contracts\Http\Kernel;
 use Dingo\Api\Routing\Adapter\Laravel as LaravelAdapter;
 
@@ -41,7 +42,7 @@ class LaravelServiceProvider extends ApiServiceProvider
         $this->addRequestMiddlewareToBeginning($kernel);
 
         $this->app->singleton('api.router.adapter', function ($app) {
-            return new LaravelAdapter($app['router']);
+            return new LaravelAdapter(new Router($app['events'], $app));
         });
     }
 
