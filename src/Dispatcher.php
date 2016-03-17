@@ -183,13 +183,13 @@ class Dispatcher
     }
 
     /**
-     * Setup the request stack by cloning the initial request.
+     * Setup the request stack by grabbing the initial request.
      *
      * @return void
      */
     protected function setupRequestStack()
     {
-        $this->requestStack[] = clone $this->container['request'];
+        $this->requestStack[] = $this->container['request'];
     }
 
     /**
