@@ -98,7 +98,12 @@ class Fractal implements Adapter
 
         $binding->fireCallback($resource, $this->fractal);
 
-        return $this->fractal->createData($resource)->toArray();
+        $scopeIdentifier = null;
+        if (array_key_exists('scopeIdentifier', $binding->getParameters())) {
+            $scopeIdentifier = $binding->getParameters()['scopeIdentifier'];
+        }
+
+        return $this->fractal->createData($resource, $scopeIdentifier)->toArray();
     }
 
     /**
