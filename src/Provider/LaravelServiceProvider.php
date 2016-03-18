@@ -21,9 +21,6 @@ class LaravelServiceProvider extends ApiServiceProvider
         $this->publishes([
             realpath(__DIR__.'/../../config/api.php') => config_path('api.php'),
         ]);
-
-        $this->app['router']->middleware('api.auth', 'Dingo\Api\Http\Middleware\Auth');
-        $this->app['router']->middleware('api.throttle', 'Dingo\Api\Http\Middleware\RateLimit');
     }
 
     /**
@@ -42,7 +39,16 @@ class LaravelServiceProvider extends ApiServiceProvider
         $this->addRequestMiddlewareToBeginning($kernel);
 
         $this->app->singleton('api.router.adapter', function ($app) {
-            return new LaravelAdapter(new Router($app['events'], $app));
+            $router = new Router($app['events'], $app);
+
+            $router->middleware('api.auth', 'Dingo\Api\Http\Middleware\Auth');
+            $router->middleware('api.throttle', 'Dingo\Api\Http\Middleware\RateLimit');
+
+            foreach ($app['router']->getMiddleware() as $name => $class) {
+                $router->middleware($name, $class);
+            }
+
+            return new LaravelAdapter($router);
         });
     }
 
