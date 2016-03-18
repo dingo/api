@@ -12,6 +12,13 @@ use Illuminate\Foundation\Console\RouteListCommand;
 class Routes extends RouteListCommand
 {
     /**
+     * Dingo router instance.
+     *
+     * @var \Dingo\Api\Routing\Router
+     */
+    protected $router;
+
+    /**
      * Array of route collections.
      *
      * @var array
@@ -52,7 +59,19 @@ class Routes extends RouteListCommand
         // constructor on the command class.
         Command::__construct();
 
-        $this->routes = $router->getRoutes();
+        $this->router = $router;
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return void
+     */
+    public function fire()
+    {
+        $this->routes = $this->router->getRoutes();
+
+        parent::fire();
     }
 
     /**
@@ -64,7 +83,7 @@ class Routes extends RouteListCommand
     {
         $routes = [];
 
-        foreach ($this->routes as $collection) {
+        foreach ($this->router->getRoutes() as $collection) {
             foreach ($collection->getRoutes() as $route) {
                 $routes[] = $this->filterRoute([
                     'host'      => $route->domain(),
