@@ -149,6 +149,13 @@ class Laravel implements Adapter
         return $this->routes;
     }
 
+    /**
+     * Get a normalized iterable set of routes.
+     *
+     * @param string $version
+     *
+     * @return mixed
+     */
     public function getIterableRoutes($version = null)
     {
         return $this->getRoutes($version);

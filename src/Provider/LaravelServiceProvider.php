@@ -9,7 +9,7 @@ use Dingo\Api\Event\RequestWasMatched;
 use Illuminate\Routing\ControllerDispatcher;
 use Dingo\Api\Routing\Adapter\Laravel as LaravelAdapter;
 
-class LaravelServiceProvider extends ApiServiceProvider
+class LaravelServiceProvider extends DingoServiceProvider
 {
     /**
      * Boot the service provider.
@@ -20,9 +20,15 @@ class LaravelServiceProvider extends ApiServiceProvider
     {
         parent::boot();
 
-        $this->publishes([
-            realpath(__DIR__.'/../../config/api.php') => config_path('api.php'),
-        ]);
+        $this->publishes([realpath(__DIR__.'/../../config/api.php') => config_path('api.php')]);
+
+        $kernel = $this->app->make('Illuminate\Contracts\Http\Kernel');
+
+        $this->app['Dingo\Api\Http\Middleware\Request']->mergeMiddlewares(
+            $this->gatherAppMiddleware($kernel)
+        );
+
+        $this->addRequestMiddlewareToBeginning($kernel);
 
         $this->replaceRouteDispatcher();
     }
@@ -49,12 +55,6 @@ class LaravelServiceProvider extends ApiServiceProvider
     public function register()
     {
         parent::register();
-
-        $kernel = $this->app->make('Illuminate\Contracts\Http\Kernel');
-
-        $this->app->instance('app.middleware', $this->gatherAppMiddleware($kernel));
-
-        $this->addRequestMiddlewareToBeginning($kernel);
 
         $this->registerRouterAdapter();
     }

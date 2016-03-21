@@ -7,7 +7,7 @@ use FastRoute\RouteParser\Std as StdRouteParser;
 use Dingo\Api\Routing\Adapter\Lumen as LumenAdapter;
 use FastRoute\DataGenerator\GroupCountBased as GcbDataGenerator;
 
-class LumenServiceProvider extends ApiServiceProvider
+class LumenServiceProvider extends DingoServiceProvider
 {
     /**
      * Boot the service provider.

@@ -207,4 +207,16 @@ class Request
     {
         $this->middleware = $middleware;
     }
+
+    /**
+     * Merge new middlewares onto the existing middlewares.
+     *
+     * @param array $middleware
+     *
+     * @return void
+     */
+    public function mergeMiddlewares(array $middleware)
+    {
+        $this->middleware = array_merge($this->middleware, $middleware);
+    }
 }
