@@ -22,6 +22,8 @@ class HttpServiceProvider extends ServiceProvider
 
         $this->registerHttpValidation();
 
+        $this->registerHttpParsers();
+
         $this->registerResponseFactory();
 
         $this->registerMiddleware();
@@ -60,8 +62,25 @@ class HttpServiceProvider extends ServiceProvider
 
         $this->app->singleton('Dingo\Api\Http\Validation\Accept', function ($app) {
             return new Validation\Accept(
-                new AcceptParser($this->config('standardsTree'), $this->config('subtype'), $this->config('version'), $this->config('defaultFormat')),
+                $this->app['Dingo\Api\Http\Parser\Accept'],
                 $this->config('strict')
+            );
+        });
+    }
+
+    /**
+     * Register the HTTP parsers.
+     *
+     * @return void
+     */
+    protected function registerHttpParsers()
+    {
+        $this->app->singleton('Dingo\Api\Http\Parser\Accept', function ($app) {
+            return new AcceptParser(
+                $this->config('standardsTree'),
+                $this->config('subtype'),
+                $this->config('version'),
+                $this->config('defaultFormat')
             );
         });
     }

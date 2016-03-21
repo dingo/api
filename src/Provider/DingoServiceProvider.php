@@ -8,7 +8,6 @@ use Dingo\Api\Dispatcher;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Console\Command;
-use Dingo\Api\Http\Parser\Accept as AcceptParser;
 use Dingo\Api\Exception\Handler as ExceptionHandler;
 use Dingo\Api\Transformer\Factory as TransformerFactory;
 
@@ -23,9 +22,7 @@ class DingoServiceProvider extends ServiceProvider
     {
         $this->setResponseStaticInstances();
 
-        Request::setAcceptParser(
-            new AcceptParser($this->config('standardsTree'), $this->config('subtype'), $this->config('version'), $this->config('defaultFormat'))
-        );
+        Request::setAcceptParser($this->app['Dingo\Api\Http\Parser\Accept']);
 
         $this->app->rebinding('api.routes', function ($app, $routes) {
             $app['api.url']->setRouteCollections($routes);
