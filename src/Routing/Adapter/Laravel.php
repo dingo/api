@@ -7,10 +7,18 @@ use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
 use Illuminate\Routing\RouteCollection;
 use Dingo\Api\Contract\Routing\Adapter;
+use Illuminate\Contracts\Container\Container;
 use Dingo\Api\Exception\UnknownVersionException;
 
 class Laravel implements Adapter
 {
+    /**
+     * Application container instance.
+     *
+     * @var \Illuminate\Contracts\Container\Container
+     */
+    protected $container;
+
     /**
      * Laravel router instance.
      *
@@ -26,15 +34,26 @@ class Laravel implements Adapter
     protected $routes = [];
 
     /**
+     * Application routes.
+     *
+     * @var \Illuminate\Routing\RouteCollection
+     */
+    protected $applicationRoutes = [];
+
+    /**
      * Create a new laravel routing adapter instance.
      *
-     * @param \Illuminate\Routing\Router $router
+     * @param \Illuminate\Contracts\Container\Container $container
+     * @param \Illuminate\Routing\Router                $router
+     * @param \Illuminate\Routing\RouteCollection       $applicationRoutes
      *
      * @return void
      */
-    public function __construct(Router $router)
+    public function __construct(Container $container, Router $router, RouteCollection $applicationRoutes)
     {
+        $this->container = $container;
         $this->router = $router;
+        $this->applicationRoutes = $applicationRoutes;
     }
 
     /**
@@ -52,6 +71,11 @@ class Laravel implements Adapter
         }
 
         $this->router->setRoutes($this->routes[$version]);
+
+        // Because the above call will reset the routes defined on the applications
+        // UrlGenerator we will simply rebind the routes to the application
+        // container which will trigger the rebinding event.
+        $this->container->instance('routes', $this->applicationRoutes);
 
         return $this->router->dispatch($request);
     }

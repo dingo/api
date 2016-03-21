@@ -76,7 +76,7 @@ class LaravelServiceProvider extends ApiServiceProvider
                 $router->middleware($name, $class);
             }
 
-            return new LaravelAdapter($router);
+            return new LaravelAdapter($app, $router, $app['router']->getRoutes());
         });
     }
 
