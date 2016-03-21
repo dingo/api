@@ -8,15 +8,30 @@ use Illuminate\Routing\Router;
 use Illuminate\Routing\RouteCollection;
 use Dingo\Api\Contract\Routing\Adapter;
 use Dingo\Api\Exception\UnknownVersionException;
+use Illuminate\Contracts\Foundation\Application;
 
 class Laravel implements Adapter
 {
+    /**
+     * Laravel application instance.
+     *
+     * @var \Illuminate\Contracts\Foundation\Application
+     */
+    protected $app;
+
     /**
      * Laravel router instance.
      *
      * @var \Illuminate\Routing\Router
      */
     protected $router;
+
+    /**
+     * Old routes already defined on the router.
+     *
+     * @var \Illuminate\Routing\RouteCollection
+     */
+    protected $oldRoutes;
 
     /**
      * Array of registered routes.
@@ -29,12 +44,15 @@ class Laravel implements Adapter
      * Create a new laravel routing adapter instance.
      *
      * @param \Illuminate\Routing\Router $router
+     * @param \Illuminate\Contracts\Foundation\Application $application
      *
      * @return void
      */
-    public function __construct(Router $router)
+    public function __construct(Router $router, Application $app)
     {
         $this->router = $router;
+        $this->app = $app;
+        $this->oldRoutes = $app['routes'];
     }
 
     /**
@@ -53,7 +71,26 @@ class Laravel implements Adapter
 
         $this->router->setRoutes($this->routes[$version]);
 
+        $this->setUrlGeneratorRoutes($this->routes[$version]);
+
         return $this->router->dispatch($request);
+    }
+
+    /**
+     * Update url generator routes.
+     *
+     * @param \Illuminate\Routing\RouteCollection $routes
+     *
+     * @return void
+     */
+    public function setUrlGeneratorRoutes(RouteCollection $routes)
+    {
+        // Add new routes to existing laravel routes.
+        foreach ($routes as $route) {
+            $this->oldRoutes->add($route);
+        }
+
+        $this->app['url']->setRoutes($this->oldRoutes);
     }
 
     /**
