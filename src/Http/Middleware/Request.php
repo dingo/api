@@ -7,9 +7,11 @@ use Exception;
 use Dingo\Api\Routing\Router;
 use Illuminate\Pipeline\Pipeline;
 use Dingo\Api\Http\RequestValidator;
+use Dingo\Api\Event\RequestWasMatched;
 use Dingo\Api\Http\Request as HttpRequest;
 use Illuminate\Contracts\Container\Container;
 use Dingo\Api\Contract\Debug\ExceptionHandler;
+use Illuminate\Events\Dispatcher as EventDispatcher;
 
 class Request
 {
@@ -42,11 +44,18 @@ class Request
     protected $validator;
 
     /**
+     * Event dispatcher instance.
+     *
+     * @var \Illuminate\Events\Dispatcher
+     */
+    protected $events;
+
+    /**
      * Array of middleware.
      *
      * @var array
      */
-    protected $middleware;
+    protected $middleware = [];
 
     /**
      * Create a new request middleware instance.
@@ -55,17 +64,17 @@ class Request
      * @param \Dingo\Api\Contract\Debug\ExceptionHandler   $exception
      * @param \Dingo\Api\Routing\Router                    $router
      * @param \Dingo\Api\Http\RequestValidator             $validator
-     * @param array                                        $middleware
+     * @param \Illuminate\Events\Dispatcher                $events
      *
      * @return void
      */
-    public function __construct(Container $app, ExceptionHandler $exception, Router $router, RequestValidator $validator, array $middleware)
+    public function __construct(Container $app, ExceptionHandler $exception, Router $router, RequestValidator $validator, EventDispatcher $events)
     {
         $this->app = $app;
         $this->exception = $exception;
         $this->router = $router;
         $this->validator = $validator;
-        $this->middleware = $middleware;
+        $this->events = $events;
     }
 
     /**
@@ -85,6 +94,8 @@ class Request
                 });
 
                 $request = $this->app->make('Dingo\Api\Contract\Http\Request')->createFromIlluminate($request);
+
+                $this->events->fire(new RequestWasMatched($request, $this->app));
 
                 return $this->sendRequestThroughRouter($request);
             }
@@ -183,5 +194,17 @@ class Request
         }
 
         return [];
+    }
+
+    /**
+     * Set the middlewares.
+     *
+     * @param array $middlewares
+     *
+     * @return void
+     */
+    public function setMiddlewares(array $middleware)
+    {
+        $this->middleware = $middleware;
     }
 }

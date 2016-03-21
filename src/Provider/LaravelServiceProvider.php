@@ -5,6 +5,8 @@ namespace Dingo\Api\Provider;
 use ReflectionClass;
 use Illuminate\Routing\Router;
 use Illuminate\Contracts\Http\Kernel;
+use Dingo\Api\Event\RequestWasMatched;
+use Illuminate\Routing\ControllerDispatcher;
 use Dingo\Api\Routing\Adapter\Laravel as LaravelAdapter;
 
 class LaravelServiceProvider extends ApiServiceProvider
@@ -21,6 +23,22 @@ class LaravelServiceProvider extends ApiServiceProvider
         $this->publishes([
             realpath(__DIR__.'/../../config/api.php') => config_path('api.php'),
         ]);
+
+        $this->replaceRouteDispatcher();
+    }
+
+    /**
+     * Replace the route dispatcher.
+     *
+     * @return void
+     */
+    protected function replaceRouteDispatcher()
+    {
+        $this->app['events']->listen(RequestWasMatched::class, function (RequestWasMatched $event) {
+            $this->app->singleton('illuminate.route.dispatcher', function ($app) {
+                return new ControllerDispatcher($app['api.router.adapter']->getRouter(), $app);
+            });
+        });
     }
 
     /**
@@ -38,6 +56,16 @@ class LaravelServiceProvider extends ApiServiceProvider
 
         $this->addRequestMiddlewareToBeginning($kernel);
 
+        $this->registerRouterAdapter();
+    }
+
+    /**
+     * Register the router adapter.
+     *
+     * @return void
+     */
+    protected function registerRouterAdapter()
+    {
         $this->app->singleton('api.router.adapter', function ($app) {
             $router = new Router($app['events'], $app);
 

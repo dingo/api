@@ -9,6 +9,7 @@ use PHPUnit_Framework_TestCase;
 use Dingo\Api\Http\RequestValidator;
 use Dingo\Api\Tests\Stubs\ApplicationStub;
 use Dingo\Api\Http\Parser\Accept as AcceptParser;
+use Illuminate\Events\Dispatcher as EventDispatcher;
 use Dingo\Api\Http\Middleware\Request as RequestMiddleware;
 
 class RequestTest extends PHPUnit_Framework_TestCase
@@ -19,10 +20,11 @@ class RequestTest extends PHPUnit_Framework_TestCase
         $this->router = m::mock('Dingo\Api\Routing\Router');
         $this->validator = new RequestValidator($this->app);
         $this->handler = m::mock('Dingo\Api\Exception\Handler');
+        $this->events = new EventDispatcher($this->app);
 
         $this->app->alias('Dingo\Api\Http\Request', 'Dingo\Api\Contract\Http\Request');
 
-        $this->middleware = new RequestMiddleware($this->app, $this->handler, $this->router, $this->validator, []);
+        $this->middleware = new RequestMiddleware($this->app, $this->handler, $this->router, $this->validator, $this->events);
     }
 
     public function tearDown()

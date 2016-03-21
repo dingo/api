@@ -167,4 +167,14 @@ class Laravel implements Adapter
     {
         return $this->router->gatherRouteMiddlewares($route);
     }
+
+    /**
+     * Get the Laravel router instance.
+     *
+     * @return \Illuminate\Routing\Router
+     */
+    public function getRouter()
+    {
+        return $this->router;
+    }
 }
