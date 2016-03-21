@@ -43,7 +43,7 @@ class Laravel implements Adapter
     /**
      * Create a new laravel routing adapter instance.
      *
-     * @param \Illuminate\Routing\Router $router
+     * @param \Illuminate\Routing\Router                   $router
      * @param \Illuminate\Contracts\Foundation\Application $application
      *
      * @return void
