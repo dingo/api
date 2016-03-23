@@ -22,8 +22,6 @@ class LaravelServiceProvider extends DingoServiceProvider
 
         $this->publishes([realpath(__DIR__.'/../../config/api.php') => config_path('api.php')]);
 
-
-
         $kernel = $this->app->make('Illuminate\Contracts\Http\Kernel');
 
         $this->app['Dingo\Api\Http\Middleware\Request']->mergeMiddlewares(
@@ -31,7 +29,6 @@ class LaravelServiceProvider extends DingoServiceProvider
         );
 
         $this->addRequestMiddlewareToBeginning($kernel);
-
 
         $this->app['events']->listen(RequestWasMatched::class, function (RequestWasMatched $event) {
             $this->replaceRouteDispatcher();
@@ -109,13 +106,13 @@ class LaravelServiceProvider extends DingoServiceProvider
      */
     protected function cloneLaravelRouter()
     {
-         $router = clone $this->app['router'];
+        $router = clone $this->app['router'];
 
-         $router->middleware('api.auth', 'Dingo\Api\Http\Middleware\Auth');
-         $router->middleware('api.throttle', 'Dingo\Api\Http\Middleware\RateLimit');
-         $router->middleware('api.controllers', 'Dingo\Api\Http\Middleware\PrepareController');
+        $router->middleware('api.auth', 'Dingo\Api\Http\Middleware\Auth');
+        $router->middleware('api.throttle', 'Dingo\Api\Http\Middleware\RateLimit');
+        $router->middleware('api.controllers', 'Dingo\Api\Http\Middleware\PrepareController');
 
-         return $router;
+        return $router;
     }
 
     /**

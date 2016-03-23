@@ -12,7 +12,7 @@ abstract class ServiceProvider extends IlluminateServiceProvider
      * @var array
      */
     protected $instantiable = [
-        'middleware', 'auth', 'throttling', 'transformer', 'formats'
+        'middleware', 'auth', 'throttling', 'transformer', 'formats',
     ];
 
     /**
