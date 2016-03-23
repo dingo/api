@@ -4,6 +4,7 @@ namespace Dingo\Api\Exception;
 
 use Exception;
 use ReflectionFunction;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Dingo\Api\Contract\Debug\ExceptionHandler;
 use Dingo\Api\Contract\Debug\MessageBagErrors;
@@ -132,7 +133,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
             }
 
             if ($response = $handler($exception)) {
-                if (! $response instanceof Response) {
+                if (! $response instanceof Response && ! $response instanceof JsonResponse) {
                     $response = new Response($response, $this->getExceptionStatusCode($exception));
                 }
 
