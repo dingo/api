@@ -113,6 +113,7 @@ class LaravelServiceProvider extends DingoServiceProvider
 
          $router->middleware('api.auth', 'Dingo\Api\Http\Middleware\Auth');
          $router->middleware('api.throttle', 'Dingo\Api\Http\Middleware\RateLimit');
+         $router->middleware('api.controllers', 'Dingo\Api\Http\Middleware\PrepareController');
 
          return $router;
     }

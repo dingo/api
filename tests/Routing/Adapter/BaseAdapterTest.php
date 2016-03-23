@@ -16,6 +16,7 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
         $this->container['Illuminate\Container\Container'] = $this->container;
         $this->container['api.auth'] = new MiddlewareStub;
         $this->container['api.limiting'] = new MiddlewareStub;
+        $this->container['api.controllers'] = new MiddlewareStub;
         $this->container['request'] = new Http\Request;
 
         Http\Request::setAcceptParser(new Http\Parser\Accept('vnd', 'api', 'v1', 'json'));

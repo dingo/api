@@ -125,5 +125,9 @@ class HttpServiceProvider extends ServiceProvider
         $this->app->singleton('Dingo\Api\Http\Middleware\RateLimit', function ($app) {
             return new Middleware\RateLimit($app['Dingo\Api\Routing\Router'], $app['Dingo\Api\Http\RateLimit\Handler']);
         });
+
+        $this->app->singleton('Dingo\Api\Http\Middleware\PrepareController', function ($app) {
+            return new Middleware\PrepareController($app['Dingo\Api\Routing\Router']);
+        });
     }
 }
