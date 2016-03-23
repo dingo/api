@@ -7,6 +7,15 @@ use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
 abstract class ServiceProvider extends IlluminateServiceProvider
 {
     /**
+     * Array of config items that are instantiable.
+     *
+     * @var array
+     */
+    protected $instantiable = [
+        'middleware', 'auth', 'throttling', 'transformer', 'formats'
+    ];
+
+    /**
      * Retrieve and instantiate a config value if it exists and is a class.
      *
      * @param string $key
@@ -14,28 +23,29 @@ abstract class ServiceProvider extends IlluminateServiceProvider
      *
      * @return mixed
      */
-    protected function config($key, $instantiate = true)
+    protected function config($item, $instantiate = true)
     {
-        $value = $this->app['config']->get('api.'.$key);
+        $value = $this->app['config']->get('api.'.$item);
 
         if (is_array($value)) {
-            return $instantiate ? $this->instantiateConfigValues($value) : $value;
+            return $instantiate ? $this->instantiateConfigValues($item, $value) : $value;
         }
 
-        return $instantiate ? $this->instantiateConfigValue($value) : $value;
+        return $instantiate ? $this->instantiateConfigValue($item, $value) : $value;
     }
 
     /**
      * Instantiate an array of instantiable configuration values.
      *
-     * @param array $values
+     * @param string $item
+     * @param array  $values
      *
      * @return array
      */
-    protected function instantiateConfigValues(array $values)
+    protected function instantiateConfigValues($item, array $values)
     {
         foreach ($values as $key => $value) {
-            $values[$key] = $this->instantiateConfigValue($value);
+            $values[$key] = $this->instantiateConfigValue($item, $value);
         }
 
         return $values;
@@ -44,13 +54,14 @@ abstract class ServiceProvider extends IlluminateServiceProvider
     /**
      * Instantiate an instantiable configuration value.
      *
-     * @param mixed $value
+     * @param string $item
+     * @param mixed  $value
      *
-     * @return object
+     * @return mixed
      */
-    protected function instantiateConfigValue($value)
+    protected function instantiateConfigValue($item, $value)
     {
-        if (is_string($value) && class_exists($value)) {
+        if (is_string($value) && in_array($item, $this->instantiable)) {
             return $this->app->make($value);
         }
 
