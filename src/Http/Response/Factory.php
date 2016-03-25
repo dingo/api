@@ -35,14 +35,21 @@ class Factory
     /**
      * Respond with a created response and associate a location if provided.
      *
+     * @param object   $item
+     * @param object   $transformer
+     * @param array    $parameters
+     * @param \Closure $after
      * @param null|string $location
      *
      * @return \Dingo\Api\Http\Response
      */
-    public function created($location = null)
+    public function created($item, $transformer, array $parameters = [], Closure $after = null, $location = null)
     {
-        $response = new Response(null);
-        $response->setStatusCode(201);
+        $class = get_class($item);
+
+        $binding = $this->transformer->register($class, $transformer, $parameters, $after);
+
+        $response = new Response($item, 201, [], $binding);
 
         if (! is_null($location)) {
             $response->header('Location', $location);
