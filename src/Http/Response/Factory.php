@@ -35,10 +35,10 @@ class Factory
     /**
      * Respond with a created response and associate a location if provided.
      *
-     * @param object   $item
-     * @param object   $transformer
-     * @param array    $parameters
-     * @param \Closure $after
+     * @param object      $item
+     * @param object      $transformer
+     * @param array       $parameters
+     * @param \Closure    $after
      * @param null|string $location
      *
      * @return \Dingo\Api\Http\Response
