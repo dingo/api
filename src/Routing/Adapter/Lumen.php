@@ -263,8 +263,13 @@ class Lumen implements Adapter
             $routeData = $collector->getData();
 
             // The first element in the array are the static routes that do not have any parameters.
-            foreach ($routeData[0] as $uri => $route) {
-                $iterable[$version][] = array_shift($route);
+            foreach ($routeData[0] as $uri => $routes) {
+                foreach ($routes as $method => $route) {
+                    if ($method === 'HEAD') {
+                        continue;
+                    }
+                    $iterable[$version][] = $route;
+                }
             }
 
             // The second element is the more complicated regex routes that have parameters.
