@@ -222,12 +222,13 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
     public function testIterableRoutes()
     {
         $this->router->version('v1', ['namespace' => 'Dingo\Api\Tests\Stubs'], function () {
+            $this->router->get('/', ['uses' => 'RoutingControllerStub@index']);
             $this->router->post('/', ['uses' => 'RoutingControllerStub@index']);
-            $this->router->post('/find', ['uses' => 'RoutingControllerOtherStub@show']);
+            $this->router->get('/find', ['uses' => 'RoutingControllerOtherStub@show']);
         });
 
         $routes = $this->adapter->getIterableRoutes();
         $this->assertTrue(array_key_exists('v1', (array) $routes));
-        $this->assertEquals(2, count($routes['v1']));
+        $this->assertEquals(3, count($routes['v1']));
     }
 }
