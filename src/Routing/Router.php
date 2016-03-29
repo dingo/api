@@ -13,7 +13,6 @@ use Illuminate\Http\JsonResponse;
 use Dingo\Api\Http\InternalRequest;
 use Illuminate\Container\Container;
 use Dingo\Api\Contract\Routing\Adapter;
-use Illuminate\Routing\ControllerInspector;
 use Dingo\Api\Contract\Debug\ExceptionHandler;
 use Illuminate\Http\Response as IlluminateResponse;
 use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
