@@ -263,8 +263,14 @@ class Lumen implements Adapter
             $routeData = $collector->getData();
 
             // The first element in the array are the static routes that do not have any parameters.
-            foreach ($routeData[0] as $uri => $route) {
-                $iterable[$version][] = array_shift($route);
+            foreach ($this->normalizeStaticRoutes($routeData[0]) as $method => $routes) {
+                if ($method === 'HEAD') {
+                    continue;
+                }
+
+                foreach ($routes as $route) {
+                    $iterable[$version][] = $route;
+                }
             }
 
             // The second element is the more complicated regex routes that have parameters.
@@ -282,6 +288,51 @@ class Lumen implements Adapter
         }
 
         return new ArrayIterator($iterable);
+    }
+
+    /**
+     * Normalize the FastRoute static routes so they're the same across multiple versions.
+     *
+     * @param array $routes
+     *
+     * @return array
+     */
+    protected function normalizeStaticRoutes(array $routes)
+    {
+        foreach (array_keys($routes) as $key) {
+            // If any of the keys are  an HTTP method then we are running on a newer version of
+            // Lumen and FastRoute which means we can leave the routes as they are.
+            if ($this->stringIsHttpMethod($key)) {
+                return $routes;
+            }
+        }
+
+        $normalized = [];
+
+        // To normalize the routes we'll take the inner array which contains the routes method as the
+        // key and make that the parent element on the array. We'll then add all routes for a
+        // particular HTTP method as children of it by keying them to their URI.
+        foreach ($routes as $uri => $value) {
+            foreach ($value as $method => $route) {
+                $normalized[$method][$uri] = $route;
+            }
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * Determine if a string is an HTTP method.
+     *
+     * @param string $string
+     *
+     * @return bool
+     */
+    protected function stringIsHttpMethod($string)
+    {
+        $methods = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
+
+        return in_array($string, $methods, true);
     }
 
     /**
