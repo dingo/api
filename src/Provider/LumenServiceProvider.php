@@ -18,6 +18,8 @@ class LumenServiceProvider extends DingoServiceProvider
     {
         parent::boot();
 
+        $this->app->configure('api');
+
         // Because Lumen sets the route resolver at a very weird point we're going to
         // have to use reflection whenever the request instance is rebound to
         // set the route resolver to get the current route.
