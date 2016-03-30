@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Container\Container;
 use Dingo\Api\Http\RateLimit\Throttle\Route;
 use Dingo\Api\Contract\Http\RateLimit\Throttle;
+use Dingo\Api\Contract\Http\RateLimit\HasRateLimiter;
 
 class Handler
 {
@@ -92,7 +93,9 @@ class Handler
         // If the throttle instance is already set then we'll just carry on as
         // per usual.
         if ($this->throttle instanceof Throttle) {
-            //
+            if ($this->throttle instanceof HasRateLimiter) {
+                $this->setRateLimiter([$this->throttle, 'getRateLimiter']);
+            }
 
         // If the developer specified a certain amount of requests or expiration
         // time on a specific route then we'll always use the route specific
