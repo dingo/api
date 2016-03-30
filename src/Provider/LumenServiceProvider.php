@@ -20,6 +20,14 @@ class LumenServiceProvider extends DingoServiceProvider
 
         $this->app->configure('api');
 
+        $reflection = new ReflectionClass($this->app);
+
+        $this->app['Dingo\Api\Http\Middleware\Request']->mergeMiddlewares(
+            $this->gatherAppMiddleware($reflection)
+        );
+
+        $this->addRequestMiddlewareToBeginning($reflection);
+
         // Because Lumen sets the route resolver at a very weird point we're going to
         // have to use reflection whenever the request instance is rebound to
         // set the route resolver to get the current route.
@@ -61,12 +69,6 @@ class LumenServiceProvider extends DingoServiceProvider
     public function register()
     {
         parent::register();
-
-        $reflection = new ReflectionClass($this->app);
-
-        $this->app->instance('app.middleware', $this->gatherAppMiddleware($reflection));
-
-        $this->addRequestMiddlewareToBeginning($reflection);
 
         $this->app->singleton('api.router.adapter', function ($app) {
             return new LumenAdapter($app, new StdRouteParser, new GcbDataGenerator, 'FastRoute\Dispatcher\GroupCountBased');
