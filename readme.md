@@ -27,7 +27,7 @@ Please refer to our extensive [Wiki documentation](https://github.com/dingo/api/
 
 ## Support
 
-For answers you may not find in the Wiki, avoid posting issues. Feel free to ask for support on the dedicated [Slack](https://larachat.slack.com/messages/api/) room. Make sure to metion **@jasonlewis** so he is notified.
+For answers you may not find in the Wiki, avoid posting issues. Feel free to ask for support on the dedicated [Slack](https://larachat.slack.com/messages/api/) room. Make sure to mention **@jasonlewis** so he is notified.
 
 ## License
 
