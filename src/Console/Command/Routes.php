@@ -44,7 +44,7 @@ class Routes extends RouteListCommand
      *
      * @var array
      */
-    protected $headers = ['Host', 'URI', 'Name', 'Action', 'Protected', 'Version(s)', 'Scope(s)', 'Rate Limit'];
+    protected $headers = ['Host', 'Method', 'URI', 'Name', 'Action', 'Protected', 'Version(s)', 'Scope(s)', 'Rate Limit'];
 
     /**
      * Create a new routes command instance.
@@ -87,13 +87,14 @@ class Routes extends RouteListCommand
             foreach ($collection->getRoutes() as $route) {
                 $routes[] = $this->filterRoute([
                     'host'      => $route->domain(),
-                    'uri'       => implode('|', $route->methods()).' '.$route->uri(),
+                    'method'    => implode('|', $route->methods()),
+                    'uri'       => $route->uri(),
                     'name'      => $route->getName(),
                     'action'    => $route->getActionName(),
                     'protected' => $route->isProtected() ? 'Yes' : 'No',
                     'versions'  => implode(', ', $route->versions()),
                     'scopes'    => implode(', ', $route->scopes()),
-                    'rate' => $this->routeRateLimit($route),
+                    'rate'      => $this->routeRateLimit($route),
                 ]);
             }
         }
@@ -106,6 +107,14 @@ class Routes extends RouteListCommand
 
         if ($this->option('reverse')) {
             $routes = array_reverse($routes);
+        }
+
+        if ($this->option('short')) {
+            $this->headers = ['Method', 'URI', 'Name', 'Version(s)'];
+
+            $routes = array_map(function($item) {
+                return array_only($item, ['method', 'uri', 'name', 'versions']);
+            }, $routes);
         }
 
         return array_filter(array_unique($routes, SORT_REGULAR));
@@ -173,6 +182,7 @@ class Routes extends RouteListCommand
                 ['scopes', 'S', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Filter the routes by scopes'],
                 ['protected', null, InputOption::VALUE_NONE, 'Filter the protected routes'],
                 ['unprotected', null, InputOption::VALUE_NONE, 'Filter the unprotected routes'],
+                ['short', null, InputOption::VALUE_NONE, 'Get an abridged version of the routes'],
             ]
         );
     }
