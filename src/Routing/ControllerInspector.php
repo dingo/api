@@ -15,7 +15,7 @@ class ControllerInspector extends IlluminateControllerInspector
     protected $unroutable = ['getThrottles', 'getRateLimit', 'getScopes', 'getAuthenticationProviders'];
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isRoutable(ReflectionMethod $method)
     {
