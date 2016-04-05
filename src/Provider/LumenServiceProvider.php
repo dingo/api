@@ -16,8 +16,6 @@ class LumenServiceProvider extends DingoServiceProvider
      */
     public function boot()
     {
-        parent::boot();
-
         $this->app->configure('api');
 
         $reflection = new ReflectionClass($this->app);
@@ -47,6 +45,8 @@ class LumenServiceProvider extends DingoServiceProvider
             'api.throttle' => 'Dingo\Api\Http\Middleware\RateLimit',
             'api.controllers' => 'Dingo\Api\Http\Middleware\PrepareController',
         ]);
+
+        parent::boot();
     }
 
     /**

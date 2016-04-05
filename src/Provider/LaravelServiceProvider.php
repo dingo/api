@@ -18,8 +18,6 @@ class LaravelServiceProvider extends DingoServiceProvider
      */
     public function boot()
     {
-        parent::boot();
-
         $this->publishes([realpath(__DIR__.'/../../config/api.php') => config_path('api.php')]);
 
         $kernel = $this->app->make('Illuminate\Contracts\Http\Kernel');
@@ -35,6 +33,8 @@ class LaravelServiceProvider extends DingoServiceProvider
 
             $this->updateRouterBindings();
         });
+
+        parent::boot();
     }
 
     /**
