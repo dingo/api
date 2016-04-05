@@ -129,7 +129,7 @@ class Docs extends Command
      */
     protected function getIncludePath()
     {
-        return rtrim($this->laravel['path.base'].'/'.$this->option('include-path'), '/');
+        return base_path($this->option('include-path'));
     }
 
     /**
