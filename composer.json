@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": ">=5.5.9",
+        "php": "^5.5.9 || ^7.0",
         "illuminate/routing": "~5.1",
         "illuminate/support": "~5.1",
         "dingo/blueprint": "0.1.*",
@@ -30,7 +30,7 @@
         "illuminate/console": "~5.1",
         "illuminate/filesystem": "~5.1",
         "illuminate/log": "~5.1",
-        "phpunit/phpunit": "~4.0",
+        "phpunit/phpunit": "^4.8 || ^5.0",
         "mockery/mockery": "~0.9",
         "squizlabs/php_codesniffer": "~2.0"
     },
