@@ -112,7 +112,7 @@ class Routes extends RouteListCommand
         if ($this->option('short')) {
             $this->headers = ['Method', 'URI', 'Name', 'Version(s)'];
 
-            $routes = array_map(function($item) {
+            $routes = array_map(function ($item) {
                 return array_only($item, ['method', 'uri', 'name', 'versions']);
             }, $routes);
         }
