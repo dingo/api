@@ -37,7 +37,7 @@ class Routes extends RouteListCommand
      *
      * @var string
      */
-    protected $description = 'List all registeted API routes';
+    protected $description = 'List all registered API routes';
 
     /**
      * The table headers for the command.
