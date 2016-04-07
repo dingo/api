@@ -45,7 +45,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Dingo\\Api\\": "src"
+            "Dingo\\Api\\": "src/"
         },
         "files": [
             "src/helpers.php"
@@ -53,7 +53,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Dingo\\Api\\Tests\\": "tests"
+            "Dingo\\Api\\Tests\\": "tests/"
         }
     },
     "extra": {
