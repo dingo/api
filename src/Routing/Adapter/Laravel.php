@@ -77,7 +77,13 @@ class Laravel implements Adapter
 
         $this->router->setRoutes($routes);
 
-        return $this->router->dispatch($request);
+        $router = clone $this->router;
+
+        $response = $router->dispatch($request);
+
+        unset($router);
+
+        return $response;
     }
 
     /**
