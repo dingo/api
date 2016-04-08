@@ -25,12 +25,7 @@ class Route
      */
     protected $container;
 
-    /**
-     * Request instance.
-     *
-     * @var \Illuminate\Http\Request
-     */
-    protected $request;
+    protected $route;
 
     /**
      * Route URI.
@@ -144,6 +139,7 @@ class Route
     {
         $this->adapter = $adapter;
         $this->container = $container;
+        $this->route = $route;
 
         $this->setupRouteProperties($request, $route);
     }
@@ -627,5 +623,15 @@ class Route
     public function domain()
     {
         return Arr::get($this->action, 'domain');
+    }
+
+    /**
+     * Get the original route.
+     *
+     * @return array|\Illuminate\Routing\Route
+     */
+    public function getOriginalRoute()
+    {
+        return $this->route;
     }
 }

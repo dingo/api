@@ -18,6 +18,8 @@ class LaravelServiceProvider extends DingoServiceProvider
      */
     public function boot()
     {
+        parent::boot();
+
         $this->publishes([realpath(__DIR__.'/../../config/api.php') => config_path('api.php')]);
 
         $kernel = $this->app->make('Illuminate\Contracts\Http\Kernel');
@@ -34,7 +36,9 @@ class LaravelServiceProvider extends DingoServiceProvider
             $this->updateRouterBindings();
         });
 
-        parent::boot();
+        $this->app['router']->middleware('api.auth', 'Dingo\Api\Http\Middleware\Auth');
+        $this->app['router']->middleware('api.throttle', 'Dingo\Api\Http\Middleware\RateLimit');
+        $this->app['router']->middleware('api.controllers', 'Dingo\Api\Http\Middleware\PrepareController');
     }
 
     /**
@@ -95,24 +99,8 @@ class LaravelServiceProvider extends DingoServiceProvider
     protected function registerRouterAdapter()
     {
         $this->app->singleton('api.router.adapter', function ($app) {
-            return new LaravelAdapter($app, $this->cloneLaravelRouter(), $app['router']->getRoutes());
+            return new LaravelAdapter($app['router']);
         });
-    }
-
-    /**
-     * Clone the Laravel router and set the middleware on the cloned router.
-     *
-     * @return \Illuminate\Routing\Router
-     */
-    protected function cloneLaravelRouter()
-    {
-        $router = clone $this->app['router'];
-
-        $router->middleware('api.auth', 'Dingo\Api\Http\Middleware\Auth');
-        $router->middleware('api.throttle', 'Dingo\Api\Http\Middleware\RateLimit');
-        $router->middleware('api.controllers', 'Dingo\Api\Http\Middleware\PrepareController');
-
-        return $router;
     }
 
     /**

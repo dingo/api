@@ -34,26 +34,29 @@ class Laravel implements Adapter
     protected $routes = [];
 
     /**
-     * Application routes.
+     * Array of merged old routes and API routes.
+     *
+     * @var array
+     */
+    protected $mergedRoutes = [];
+
+    /**
+     * Routes already defined on the router.
      *
      * @var \Illuminate\Routing\RouteCollection
      */
-    protected $applicationRoutes = [];
+    protected $oldRoutes;
 
     /**
      * Create a new laravel routing adapter instance.
      *
-     * @param \Illuminate\Contracts\Container\Container $container
-     * @param \Illuminate\Routing\Router                $router
-     * @param \Illuminate\Routing\RouteCollection       $applicationRoutes
+     * @param \Illuminate\Routing\Router $router
      *
      * @return void
      */
-    public function __construct(Container $container, Router $router, RouteCollection $applicationRoutes)
+    public function __construct(Router $router)
     {
-        $this->container = $container;
         $this->router = $router;
-        $this->applicationRoutes = $applicationRoutes;
     }
 
     /**
@@ -70,14 +73,35 @@ class Laravel implements Adapter
             throw new UnknownVersionException;
         }
 
-        $this->router->setRoutes($this->routes[$version]);
+        $routes = $this->mergeOldRoutes($version);
 
-        // Because the above call will reset the routes defined on the applications
-        // UrlGenerator we will simply rebind the routes to the application
-        // container which will trigger the rebinding event.
-        $this->container->instance('routes', $this->applicationRoutes);
+        $this->router->setRoutes($routes);
 
         return $this->router->dispatch($request);
+    }
+
+    /**
+     * Merge the old application routes with the API routes.
+     *
+     * @param string $version
+     *
+     * @return array
+     */
+    protected function mergeOldRoutes($version)
+    {
+        if (! isset($this->oldRoutes)) {
+            $this->oldRoutes = $this->router->getRoutes();
+        }
+
+        if (! isset($this->mergedRoutes[$version])) {
+            $this->mergedRoutes[$version] = $this->routes[$version];
+
+            foreach ($this->oldRoutes as $route) {
+                $this->mergedRoutes[$version]->add($route);
+            }
+        }
+
+        return $this->mergedRoutes[$version];
     }
 
     /**
