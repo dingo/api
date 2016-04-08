@@ -12,7 +12,7 @@ class LaravelTest extends BaseAdapterTest
 {
     public function getAdapterInstance()
     {
-        return new Laravel($this->container, new Router(new Dispatcher, $this->container), new RouteCollection);
+        return new Laravel(new Router(new Dispatcher, $this->container));
     }
 
     public function getContainerInstance()
