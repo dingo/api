@@ -100,7 +100,7 @@ class Request
                 return $this->sendRequestThroughRouter($request);
             }
         } catch (Exception $exception) {
-            $this->app['Dingo\Api\Contract\Debug\ExceptionHandler']->report($exception);
+            $this->exception->report($exception);
 
             return $this->exception->handle($exception);
         }

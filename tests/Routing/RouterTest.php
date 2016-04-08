@@ -252,6 +252,7 @@ class RouterTest extends Adapter\BaseAdapterTest
             });
         });
 
+        $this->exception->shouldReceive('report')->once()->with($exception);
         $this->exception->shouldReceive('handle')->once()->with($exception)->andReturn(new Http\Response('exception'));
 
         $request = $this->createRequest('foo', 'GET', ['accept' => 'application/vnd.api.v1+json']);
