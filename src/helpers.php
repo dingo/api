@@ -13,3 +13,18 @@ if (! function_exists('version')) {
         return app('api.url')->version($version);
     }
 }
+
+if (! function_exists('api_route')) {
+    /**
+     * Generate a API URL to the named route.
+     *
+     * @param string $version
+     * @param string $name
+     *
+     * @return string
+     */
+    function api_route($version, $name)
+    {
+        return app('Dingo\Api\Routing\UrlGenerator')->version($version)->route($name);
+    }
+}
