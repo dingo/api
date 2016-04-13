@@ -458,11 +458,11 @@ class Dispatcher
     {
         $parameters = array_merge($this->parameters, (array) $parameters);
 
-        $uri = $this->addPrefixToUri($uri);
-
         // If the URI does not have a scheme then we can assume that there it is not an
         // absolute URI, in this case we'll prefix the root requests path to the URI.
         if (! parse_url($uri, PHP_URL_SCHEME)) {
+            $uri = $this->addPrefixToUri($uri);
+
             $uri = rtrim($this->getRootRequest()->root(), '/').'/'.ltrim($uri, '/');
         }
 
