@@ -171,6 +171,7 @@ class Handler
                     return true;
                 }
             }
+
             return false;
         } else {
             return false;
@@ -237,6 +238,7 @@ class Handler
             foreach ($limiter as $eachLimiter) {
                 array_push($values, $this->cache->get($this->key($key, $eachLimiter)));
             }
+
             return $values;
         } else {
             return $this->cache->get($this->key($key, $limiter));
