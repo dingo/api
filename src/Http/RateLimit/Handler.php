@@ -235,7 +235,7 @@ class Handler
         $limiter = $this->getRateLimiter();
         if (is_array($limiter)) {
             foreach ($limiter as $eachLimiter) {
-                array_push($values , $this->cache->get($this->key($key, $eachLimiter)));
+                array_push($values, $this->cache->get($this->key($key, $eachLimiter)));
             }
             return $values;
         } else {
