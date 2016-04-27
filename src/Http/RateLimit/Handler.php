@@ -133,10 +133,21 @@ class Handler
      */
     protected function prepareCacheStore()
     {
-        if ($this->retrieve('expires') != $this->throttle->getExpires()) {
-            $this->forget('requests');
-            $this->forget('expires');
-            $this->forget('reset');
+        $expiresValues = $this->retrieve('expires');
+        if (is_array($expiresValues)) {
+            foreach ($expiresValues as $expires) {
+                if ($expires != $this->throttle->getExpires()) {
+                    $this->forget('requests');
+                    $this->forget('expires');
+                    $this->forget('reset');
+                }
+            }
+        } else {
+            if ($expiresValues != $this->throttle->getExpires()) {
+                $this->forget('requests');
+                $this->forget('expires');
+                $this->forget('reset');
+            }
         }
     }
 
@@ -147,7 +158,23 @@ class Handler
      */
     public function exceededRateLimit()
     {
-        return $this->requestWasRateLimited() ? $this->retrieve('requests') > $this->throttle->getLimit() : false;
+        if ($this->requestWasRateLimited()) {
+            $requestsValues = $this->retrieve('requests');
+            if (is_array($requestsValues)) {
+                foreach ($requestsValues as $requests) {
+                    if ($requests > $this->throttle->getLimit()) {
+                        return true;
+                    }
+                }
+            } else {
+                if ($requestsValues > $this->throttle->getLimit()) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -169,9 +196,9 @@ class Handler
      *
      * @return string
      */
-    protected function key($key)
+    protected function key($key, $eachLimiter)
     {
-        return sprintf('dingo.api.%s.%s.%s', $this->keyPrefix, $key, $this->getRateLimiter());
+        return sprintf('dingo.api.%s.%s.%s', $this->keyPrefix, $key, $eachLimiter);
     }
 
     /**
@@ -185,7 +212,14 @@ class Handler
      */
     protected function cache($key, $value, $minutes)
     {
-        $this->cache->add($this->key($key), $value, $minutes);
+        $limiter = $this->getRateLimiter();
+        if (is_array($limiter)) {
+            foreach ($limiter as $eachLimiter) {
+                $this->cache->add($this->key($key, $eachLimiter), $value, $minutes);
+            }
+        } else {
+            $this->cache->add($this->key($key, $limiter), $value, $minutes);
+        }
     }
 
     /**
@@ -197,7 +231,16 @@ class Handler
      */
     protected function retrieve($key)
     {
-        return $this->cache->get($this->key($key));
+        $values = [];
+        $limiter = $this->getRateLimiter();
+        if (is_array($limiter)) {
+            foreach ($limiter as $eachLimiter) {
+                array_push($values , $this->cache->get($this->key($key, $eachLimiter)));
+            }
+            return $values;
+        } else {
+            return $this->cache->get($this->key($key, $limiter));
+        }
     }
 
     /**
@@ -209,7 +252,14 @@ class Handler
      */
     protected function increment($key)
     {
-        $this->cache->increment($this->key($key));
+        $limiter = $this->getRateLimiter();
+        if (is_array($limiter)) {
+            foreach ($limiter as $eachLimiter) {
+                $this->cache->increment($this->key($key, $eachLimiter));
+            }
+        } else {
+            $this->cache->increment($this->key($key, $limiter));
+        }
     }
 
     /**
@@ -221,7 +271,14 @@ class Handler
      */
     protected function forget($key)
     {
-        $this->cache->forget($this->key($key));
+        $limiter = $this->getRateLimiter();
+        if (is_array($limiter)) {
+            foreach ($limiter as $eachLimiter) {
+                $this->cache->forget($this->key($key, $eachLimiter));
+            }
+        } else {
+            $this->cache->forget($this->key($key, $limiter));
+        }
     }
 
     /**
@@ -301,7 +358,12 @@ class Handler
      */
     public function getRemainingLimit()
     {
-        $remaining = $this->throttle->getLimit() - $this->retrieve('requests');
+        $requestsValues = $this->retrieve('requests');
+        if (is_array($requestsValues)) {
+            $remaining = $this->throttle->getLimit() - max($requestsValues);
+        } else {
+            $remaining = $this->throttle->getLimit() - $requestsValues;
+        }
 
         return $remaining > 0 ? $remaining : 0;
     }
@@ -313,7 +375,12 @@ class Handler
      */
     public function getRateLimitReset()
     {
-        return $this->retrieve('reset');
+        $resetValues = $this->retrieve('reset');
+        if (is_array($resetValues)) {
+            return max($this->retrieve('reset'));
+        } else {
+            return $resetValues;
+        }
     }
 
     /**
