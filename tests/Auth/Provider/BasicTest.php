@@ -3,16 +3,18 @@
 namespace Dingo\Api\Tests\Auth\Provider;
 
 use Mockery as m;
+use Dingo\Api\Routing\Route;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use PHPUnit_Framework_TestCase;
+use Illuminate\Auth\AuthManager;
 use Dingo\Api\Auth\Provider\Basic;
 
 class BasicTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->auth = m::mock('Illuminate\Auth\AuthManager');
+        $this->auth = m::mock(AuthManager::class);
         $this->provider = new Basic($this->auth);
     }
 
@@ -30,7 +32,7 @@ class BasicTest extends PHPUnit_Framework_TestCase
 
         $this->auth->shouldReceive('onceBasic')->once()->with('email')->andReturn(new Response('', 401));
 
-        $this->provider->authenticate($request, m::mock('Dingo\Api\Routing\Route'));
+        $this->provider->authenticate($request, m::mock(Route::class));
     }
 
     public function testValidCredentialsReturnsUser()
@@ -40,6 +42,6 @@ class BasicTest extends PHPUnit_Framework_TestCase
         $this->auth->shouldReceive('onceBasic')->once()->with('email')->andReturn(null);
         $this->auth->shouldReceive('user')->once()->andReturn('foo');
 
-        $this->assertEquals('foo', $this->provider->authenticate($request, m::mock('Dingo\Api\Routing\Route')));
+        $this->assertEquals('foo', $this->provider->authenticate($request, m::mock(Route::class)));
     }
 }

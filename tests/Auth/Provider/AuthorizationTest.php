@@ -3,6 +3,7 @@
 namespace Dingo\Api\Tests\Auth\Provider;
 
 use Mockery as m;
+use Dingo\Api\Routing\Route;
 use Illuminate\Http\Request;
 use PHPUnit_Framework_TestCase;
 use Dingo\Api\Tests\Stubs\AuthorizationProviderStub;
@@ -21,6 +22,6 @@ class AuthorizationTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('GET', '/');
 
-        (new AuthorizationProviderStub)->authenticate($request, m::mock('Dingo\Api\Routing\Route'));
+        (new AuthorizationProviderStub)->authenticate($request, m::mock(Route::class));
     }
 }

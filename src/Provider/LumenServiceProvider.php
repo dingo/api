@@ -3,7 +3,13 @@
 namespace Dingo\Api\Provider;
 
 use ReflectionClass;
+use Dingo\Api\Http\Middleware\Auth;
+use Dingo\Api\Http\Middleware\Request;
+use Dingo\Api\Http\Middleware\RateLimit;
+use FastRoute\Dispatcher\GroupCountBased;
+use Dingo\Api\Http\Middleware\PrepareController;
 use FastRoute\RouteParser\Std as StdRouteParser;
+use Illuminate\Http\Request as IlluminateRequest;
 use Dingo\Api\Routing\Adapter\Lumen as LumenAdapter;
 use FastRoute\DataGenerator\GroupCountBased as GcbDataGenerator;
 
@@ -22,7 +28,7 @@ class LumenServiceProvider extends DingoServiceProvider
 
         $reflection = new ReflectionClass($this->app);
 
-        $this->app['Dingo\Api\Http\Middleware\Request']->mergeMiddlewares(
+        $this->app[Request::class]->mergeMiddlewares(
             $this->gatherAppMiddleware($reflection)
         );
 
@@ -31,7 +37,7 @@ class LumenServiceProvider extends DingoServiceProvider
         // Because Lumen sets the route resolver at a very weird point we're going to
         // have to use reflection whenever the request instance is rebound to
         // set the route resolver to get the current route.
-        $this->app->rebinding('Illuminate\Http\Request', function ($app, $request) {
+        $this->app->rebinding(IlluminateRequest::class, function ($app, $request) {
             $request->setRouteResolver(function () use ($app) {
                 $reflection = new ReflectionClass($app);
 
@@ -43,9 +49,9 @@ class LumenServiceProvider extends DingoServiceProvider
         });
 
         $this->app->routeMiddleware([
-            'api.auth' => 'Dingo\Api\Http\Middleware\Auth',
-            'api.throttle' => 'Dingo\Api\Http\Middleware\RateLimit',
-            'api.controllers' => 'Dingo\Api\Http\Middleware\PrepareController',
+            'api.auth' => Auth::class,
+            'api.throttle' => RateLimit::class,
+            'api.controllers' => PrepareController::class,
         ]);
     }
 
@@ -71,7 +77,7 @@ class LumenServiceProvider extends DingoServiceProvider
         parent::register();
 
         $this->app->singleton('api.router.adapter', function ($app) {
-            return new LumenAdapter($app, new StdRouteParser, new GcbDataGenerator, 'FastRoute\Dispatcher\GroupCountBased');
+            return new LumenAdapter($app, new StdRouteParser, new GcbDataGenerator, GroupCountBased::class);
         });
     }
 
@@ -90,7 +96,7 @@ class LumenServiceProvider extends DingoServiceProvider
 
         $middleware = $property->getValue($this->app);
 
-        array_unshift($middleware, 'Dingo\Api\Http\Middleware\Request');
+        array_unshift($middleware, Request::class);
 
         $property->setValue($this->app, $middleware);
         $property->setAccessible(false);

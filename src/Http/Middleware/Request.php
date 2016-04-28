@@ -5,6 +5,7 @@ namespace Dingo\Api\Http\Middleware;
 use Closure;
 use Exception;
 use Dingo\Api\Routing\Router;
+use Laravel\Lumen\Application;
 use Illuminate\Pipeline\Pipeline;
 use Dingo\Api\Http\RequestValidator;
 use Dingo\Api\Event\RequestWasMatched;
@@ -12,6 +13,8 @@ use Dingo\Api\Http\Request as HttpRequest;
 use Illuminate\Contracts\Container\Container;
 use Dingo\Api\Contract\Debug\ExceptionHandler;
 use Illuminate\Events\Dispatcher as EventDispatcher;
+use Dingo\Api\Contract\Http\Request as RequestContract;
+use Illuminate\Contracts\Debug\ExceptionHandler as LaravelExceptionHandler;
 
 class Request
 {
@@ -89,11 +92,11 @@ class Request
     {
         try {
             if ($this->validator->validateRequest($request)) {
-                $this->app->singleton('Illuminate\Contracts\Debug\ExceptionHandler', function ($app) {
-                    return $app['Dingo\Api\Contract\Debug\ExceptionHandler'];
+                $this->app->singleton(LaravelExceptionHandler::class, function ($app) {
+                    return $app[ExceptionHandler::class];
                 });
 
-                $request = $this->app->make('Dingo\Api\Contract\Http\Request')->createFromIlluminate($request);
+                $request = $this->app->make(RequestContract::class)->createFromIlluminate($request);
 
                 $this->events->fire(new RequestWasMatched($request, $this->app));
 
@@ -145,7 +148,7 @@ class Request
         // application middlewares now so that we can terminate them. Laravel does
         // not need this as it handles things a little more gracefully so it
         // can terminate the application ones itself.
-        if (class_exists('Laravel\Lumen\Application', false)) {
+        if (class_exists(Application::class, false)) {
             $middlewares = array_merge($middlewares, $this->middleware);
         }
 
