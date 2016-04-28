@@ -91,8 +91,8 @@ class AuthTest extends PHPUnit_Framework_TestCase
 
     public function testGettingUserWhenNotAuthenticatedAttemptsToAuthenticateAndReturnsNull()
     {
-        $this->router->shouldReceive('getCurrentRoute')->once()->andReturn('foo');
-        $this->router->shouldReceive('getCurrentRequest')->once()->andReturn('bar');
+        $this->router->shouldReceive('getCurrentRoute')->once()->andReturn(m::mock(Route::class));
+        $this->router->shouldReceive('getCurrentRequest')->once()->andReturn(Request::create('foo', 'GET'));
 
         $this->auth->extend('provider', m::mock(Provider::class));
 
