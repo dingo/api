@@ -7,6 +7,7 @@ use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
 use Illuminate\Routing\RouteCollection;
 use Dingo\Api\Contract\Routing\Adapter;
+use Dingo\Api\Http\InternalRequest;
 use Illuminate\Contracts\Container\Container;
 use Dingo\Api\Exception\UnknownVersionException;
 
