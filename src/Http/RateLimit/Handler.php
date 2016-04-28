@@ -379,7 +379,7 @@ class Handler
     {
         $resetValues = $this->retrieve('reset');
         if (is_array($resetValues)) {
-            return max($this->retrieve('reset'));
+            return max($resetValues);
         } else {
             return $resetValues;
         }
