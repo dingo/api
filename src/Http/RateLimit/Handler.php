@@ -330,7 +330,7 @@ class Handler
 
         $this->throttles->push($throttle);
     }
-    
+
     /**
      * Get the key prefix.
      *
@@ -339,10 +339,8 @@ class Handler
     public function getKeyPrefix()
     {
         if (method_exists($this->throttle, 'group') && $this->throttle->group()) {
-            
             return call_user_func($this->throttle->group(), $this->container, $this->request);
         } else {
-            
             return md5($this->request->path());
         }
     }
