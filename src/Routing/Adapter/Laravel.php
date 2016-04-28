@@ -81,6 +81,13 @@ class Laravel implements Adapter
 
         $response = $router->dispatch($request);
 
+        // if an internal request, remove controller from container to be fresh for the next request
+        if ($request instanceof InternalRequest) {
+            list($controller) = explode('@', $router->getCurrentRoute()->getAction()['uses']);
+
+            app()->forgetInstance($controller);
+        }
+
         unset($router);
 
         return $response;
