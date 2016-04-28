@@ -8,12 +8,13 @@ use Illuminate\Support\Collection;
 use Dingo\Api\Tests\Stubs\UserStub;
 use Dingo\Api\Http\Response\Factory;
 use Illuminate\Pagination\Paginator;
+use Dingo\Api\Transformer\Factory as TransformerFactory;
 
 class FactoryTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->transformer = Mockery::mock('Dingo\Api\Transformer\Factory');
+        $this->transformer = Mockery::mock(TransformerFactory::class);
         $this->factory = new Factory($this->transformer);
     }
 
@@ -70,10 +71,10 @@ class FactoryTest extends PHPUnit_Framework_TestCase
 
     public function testMakingCollectionRegistersUnderlyingClassWithTransformer()
     {
-        $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], null);
+        $this->transformer->shouldReceive('register')->twice()->with(UserStub::class, 'test', [], null);
 
-        $this->assertInstanceOf('Illuminate\Support\Collection', $this->factory->collection(new Collection([new UserStub('Jason')]), 'test')->getOriginalContent());
-        $this->assertInstanceOf('Illuminate\Support\Collection', $this->factory->withCollection(new Collection([new UserStub('Jason')]), 'test')->getOriginalContent());
+        $this->assertInstanceOf(Collection::class, $this->factory->collection(new Collection([new UserStub('Jason')]), 'test')->getOriginalContent());
+        $this->assertInstanceOf(Collection::class, $this->factory->withCollection(new Collection([new UserStub('Jason')]), 'test')->getOriginalContent());
     }
 
     public function testMakingCollectionResponseWithThreeParameters()
@@ -94,10 +95,10 @@ class FactoryTest extends PHPUnit_Framework_TestCase
 
     public function testMakingItemsRegistersClassWithTransformer()
     {
-        $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], null);
+        $this->transformer->shouldReceive('register')->twice()->with(UserStub::class, 'test', [], null);
 
-        $this->assertInstanceOf('Dingo\Api\Tests\Stubs\UserStub', $this->factory->item(new UserStub('Jason'), 'test')->getOriginalContent());
-        $this->assertInstanceOf('Dingo\Api\Tests\Stubs\UserStub', $this->factory->withItem(new UserStub('Jason'), 'test')->getOriginalContent());
+        $this->assertInstanceOf(UserStub::class, $this->factory->item(new UserStub('Jason'), 'test')->getOriginalContent());
+        $this->assertInstanceOf(UserStub::class, $this->factory->withItem(new UserStub('Jason'), 'test')->getOriginalContent());
     }
 
     public function testMakingItemResponseWithThreeParameters()
@@ -118,10 +119,10 @@ class FactoryTest extends PHPUnit_Framework_TestCase
 
     public function testMakingPaginatorRegistersUnderlyingClassWithTransformer()
     {
-        $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], null);
+        $this->transformer->shouldReceive('register')->twice()->with(UserStub::class, 'test', [], null);
 
-        $this->assertInstanceOf('Illuminate\Pagination\Paginator', $this->factory->paginator(new Paginator([new UserStub('Jason')], 1), 'test')->getOriginalContent());
-        $this->assertInstanceOf('Illuminate\Pagination\Paginator', $this->factory->withPaginator(new Paginator([new UserStub('Jason')], 1), 'test')->getOriginalContent());
+        $this->assertInstanceOf(Paginator::class, $this->factory->paginator(new Paginator([new UserStub('Jason')], 1), 'test')->getOriginalContent());
+        $this->assertInstanceOf(Paginator::class, $this->factory->withPaginator(new Paginator([new UserStub('Jason')], 1), 'test')->getOriginalContent());
     }
 
     /**

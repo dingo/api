@@ -293,7 +293,7 @@ class Route
             $traits = array_merge(class_uses($trait, false), $traits);
         }
 
-        return isset($traits['Dingo\Api\Routing\Helpers']);
+        return isset($traits[Helpers::class]);
     }
 
     /**

@@ -7,6 +7,9 @@ use Mockery as m;
 use Dingo\Api\Http\Response;
 use PHPUnit_Framework_TestCase;
 use Dingo\Api\Transformer\Binding;
+use Illuminate\Container\Container;
+use Dingo\Api\Event\ResponseIsMorphing;
+use Dingo\Api\Event\ResponseWasMorphed;
 use Dingo\Api\Http\Response\Format\Json;
 use Illuminate\Events\Dispatcher as EventDispatcher;
 
@@ -44,7 +47,7 @@ class ResponseTest extends PHPUnit_Framework_TestCase
 
     public function testAddingAndSettingMetaCallsUnderlyingTransformerBinding()
     {
-        $binding = new Binding(m::mock('Illuminate\Container\Container'), 'foo');
+        $binding = new Binding(m::mock(Container::class), 'foo');
 
         $response = new Response('test', 200, [], $binding);
         $response->setMeta(['foo' => 'bar']);
@@ -65,7 +68,7 @@ class ResponseTest extends PHPUnit_Framework_TestCase
 
     public function testChangingContentWithEvents()
     {
-        $this->events->listen('Dingo\Api\Event\ResponseWasMorphed', function ($event) {
+        $this->events->listen(ResponseWasMorphed::class, function ($event) {
             $event->content['foo'] = 'bam!';
         });
 
@@ -75,12 +78,12 @@ class ResponseTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame('{"foo":"bam!"}', $response->morph('json')->getContent());
 
-        $this->events->forget('Dingo\Api\Event\ResponseWasMorphed');
+        $this->events->forget(ResponseWasMorphed::class);
     }
 
     public function testChangingResponseHeadersWithEvents()
     {
-        $this->events->listen('Dingo\Api\Event\ResponseIsMorphing', function ($event) {
+        $this->events->listen(ResponseIsMorphing::class, function ($event) {
             $event->response->headers->set('x-foo', 'bar');
         });
 
@@ -90,6 +93,6 @@ class ResponseTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame('bar', $response->morph('json')->headers->get('x-foo'));
 
-        $this->events->forget('Dingo\Api\Event\ResponseIsMorphing');
+        $this->events->forget(ResponseIsMorphing::class);
     }
 }
