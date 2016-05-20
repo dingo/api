@@ -116,7 +116,11 @@ class Fractal implements Adapter
         if ($response instanceof IlluminatePaginator) {
             $response = $response->getCollection();
         }
-
+        
+       if ($response instanceof EloquentCollection && method_exists($response->first(), 'apiEagerLoad')) {
+            $this->eagerLoading = (bool) $response->first()->apiEagerLoad();
+        }
+        
         return $response instanceof EloquentCollection && $this->eagerLoading;
     }
 
