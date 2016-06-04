@@ -37,6 +37,7 @@ class Factory
      *
      * @param null|string $location
      * @param mixed       $content
+     * 
      * @return \Dingo\Api\Http\Response
      */
     public function created($location = null, $content = null)
