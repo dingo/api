@@ -88,7 +88,9 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
     public function testInternalRequestWithVersionAndParameters()
     {
         $this->router->version('v1', function () {
-            $this->router->get('test', function () { return 'test'; });
+            $this->router->get('test', function () {
+                return 'test';
+            });
         });
 
         $this->assertEquals('test', $this->dispatcher->version('v1')->with(['foo' => 'bar'])->get('test'));

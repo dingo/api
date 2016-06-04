@@ -33,10 +33,10 @@ class Factory
     }
 
     /**
-     * Respond with a created response and associate a location if provided
+     * Respond with a created response and associate a location if provided.
      *
-     * @param  null|string $location
-     * @param  mixed       $content
+     * @param null|string $location
+     * @param mixed       $content
      * @return \Dingo\Api\Http\Response
      */
     public function created($location = null, $content = null)
