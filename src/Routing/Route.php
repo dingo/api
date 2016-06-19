@@ -199,8 +199,10 @@ class Route
         } elseif (method_exists($controller, 'getMiddlewareForMethod')) {
             $controllerMiddleware = $controller->getMiddlewareForMethod($this->controllerMethod);
         }
-
-        $this->middleware = array_merge($this->middleware, $controllerMiddleware);
+        
+        if( count($controllerMiddleware) ) {
+            $this->middleware = array_merge($this->middleware, $controllerMiddleware);
+        }
 
         if ($property = $this->findControllerPropertyOptions('throttles')) {
             $this->throttle = $property['class'];
