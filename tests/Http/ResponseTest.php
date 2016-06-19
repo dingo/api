@@ -92,4 +92,40 @@ class ResponseTest extends PHPUnit_Framework_TestCase
 
         $this->events->forget('Dingo\Api\Event\ResponseIsMorphing');
     }
+
+    public function testResponseConstructWithTransformerBinding()
+    {
+        $modelMock = $this
+            ->getMockBuilder('\Illuminate\Database\Eloquent\Model')
+            ->getMock();
+        $modelMock->expects($this->never())
+            ->method('toJson')
+            ->willReturn(['data' => 'test']);
+
+        $modelMock->expects($this->never())
+            ->method('toArray')
+            ->willReturn(['data' => 'test']);
+
+        $bindingMock = $this
+            ->getMockBuilder('\Dingo\Api\Transformer\Binding')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $response = new Response($modelMock, 200, [], $bindingMock);
+        $this->assertSame($modelMock, $response->getOriginalContent());
+    }
+
+    public function testResponseConstructWithOutTransformerBinding()
+    {
+        $modelMock = $this
+            ->getMockBuilder('\Illuminate\Database\Eloquent\Model')
+            ->getMock();
+        $modelMock->expects($this->once())
+            ->method('toJson')
+            ->willReturn('{}');
+
+        $response = new Response($modelMock, 200, []);
+        $this->assertSame($modelMock, $response->getOriginalContent());
+        $this->assertEquals('{}', $response->getContent());
+    }
 }

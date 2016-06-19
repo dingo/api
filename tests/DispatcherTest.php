@@ -22,6 +22,26 @@ use Illuminate\Support\Facades\Request as RequestFacade;
 
 class DispatcherTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @var Container
+     */
+    protected $container;
+
+    /**
+     * @var TransformerFactory
+     */
+    protected $transformerFactory;
+
+    /**
+     * @var Dispatcher
+     */
+    protected $dispatcher;
+
+    /**
+     * @var Router;
+     */
+    protected $router;
+
     public function setUp()
     {
         $this->container = new Container;
@@ -88,7 +108,9 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
     public function testInternalRequestWithVersionAndParameters()
     {
         $this->router->version('v1', function () {
-            $this->router->get('test', function () { return 'test'; });
+            $this->router->get('test', function () {
+                return 'test';
+            });
         });
 
         $this->assertEquals('test', $this->dispatcher->version('v1')->with(['foo' => 'bar'])->get('test'));
@@ -365,5 +387,57 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('bar', $response);
         $this->assertNull(RequestFacade::input('foo'));
+    }
+
+    /**
+     * Test model serialization with transformer binding.
+     */
+    public function testModelSerializationWithTransformers()
+    {
+        $modelMock = $this
+            ->getMockBuilder('\Illuminate\Database\Eloquent\Model')
+            ->getMock();
+        $modelMock
+            ->method('getTable')
+            ->willReturn('test');
+
+        $modelMock
+            ->expects($this->never())
+            ->method('toJson');
+        $modelMock
+            ->expects($this->never())
+            ->method('toArray');
+
+        $transformerMock = $this
+            ->getMockBuilder('\League\Fractal\TransformerAbstract')
+            ->setMethods(['transform'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $transformerMock
+            ->expects($this->once())
+            ->method('transform')
+            ->willReturn(['data' => 'test']);
+
+        $bindingMock = $this
+            ->getMockBuilder('\Dingo\Api\Transformer\Binding')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $bindingMock
+            ->method('resolveTransformer')
+            ->willReturn($transformerMock);
+
+        $this->router->version('v1', function () use ($modelMock, $bindingMock) {
+            $this->router->get('foo', function () use ($modelMock, $bindingMock) {
+                return new Http\Response($modelMock, 200, [], $bindingMock);
+            });
+        });
+
+        $this->transformerFactory->register(get_class($modelMock), $transformerMock);
+
+        $response = $this->dispatcher->raw()->get('foo');
+
+        $this->assertInstanceOf('Dingo\Api\Http\Response', $response);
+        $this->assertEquals('{"data":"test"}', $response->getContent());
+        $this->assertEquals($modelMock, $response->getOriginalContent());
     }
 }
