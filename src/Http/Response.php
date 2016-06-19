@@ -65,9 +65,8 @@ class Response extends IlluminateResponse
      */
     public function __construct($content, $status = 200, $headers = [], Binding $binding = null)
     {
-        parent::__construct($content, $status, $headers);
-
         $this->binding = $binding;
+        parent::__construct($content, $status, $headers);
     }
 
     /**
@@ -178,6 +177,12 @@ class Response extends IlluminateResponse
         // case we'll simply leave the content as null and set the original
         // content value and continue.
         try {
+            if ($this->binding) {
+                $this->original = $this->content = $content;
+
+                return $this;
+            }
+
             return parent::setContent($content);
         } catch (UnexpectedValueException $exception) {
             $this->original = $content;
