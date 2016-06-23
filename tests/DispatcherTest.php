@@ -211,13 +211,13 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
     {
         $this->router->version('v1', function () {
             $this->router->get('foo', function () {
-                return 'foo' . $this->dispatcher->version('v2')->get('foo');
+                return 'foo'.$this->dispatcher->version('v2')->get('foo');
             });
         });
 
         $this->router->version('v2', function () {
             $this->router->get('foo', function () {
-                return 'bar' . $this->dispatcher->version('v3')->get('foo');
+                return 'bar'.$this->dispatcher->version('v3')->get('foo');
             });
         });
 
@@ -262,7 +262,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
                     $this->assertEquals('foo', $this->router->getCurrentRoute()->getName());
                     $this->dispatcher->post('bar');
                     $this->assertEquals('foo', $this->router->getCurrentRoute()->getName());
-                }
+                },
             ]);
 
             $this->router->post('bar', [
@@ -271,14 +271,14 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
                     $this->assertEquals('bar', $this->router->getCurrentRoute()->getName());
                     $this->dispatcher->post('baz');
                     $this->assertEquals('bar', $this->router->getCurrentRoute()->getName());
-                }
+                },
             ]);
 
             $this->router->post('baz', [
                 'as' => 'bazinga',
                 function () {
                     $this->assertEquals('bazinga', $this->router->getCurrentRoute()->getName());
-                }
+                },
             ]);
         });
 

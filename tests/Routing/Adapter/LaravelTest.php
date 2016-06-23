@@ -2,11 +2,10 @@
 
 namespace Dingo\Api\Tests\Routing\Adapter;
 
-use Illuminate\Routing\Router;
-use Illuminate\Events\Dispatcher;
-use Illuminate\Container\Container;
 use Dingo\Api\Routing\Adapter\Laravel;
-use Illuminate\Routing\RouteCollection;
+use Illuminate\Container\Container;
+use Illuminate\Events\Dispatcher;
+use Illuminate\Routing\Router;
 
 class LaravelTest extends BaseAdapterTest
 {
