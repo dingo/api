@@ -2,14 +2,14 @@
 
 namespace Dingo\Api\Tests\Transformer;
 
+use Dingo\Api\Tests\Stubs\TransformerStub;
+use Dingo\Api\Tests\Stubs\UserStub;
+use Dingo\Api\Tests\Stubs\UserTransformerStub;
+use Dingo\Api\Transformer\Factory;
+use Illuminate\Container\Container;
+use Illuminate\Support\Collection;
 use Mockery;
 use PHPUnit_Framework_TestCase;
-use Dingo\Api\Transformer\Factory;
-use Illuminate\Support\Collection;
-use Illuminate\Container\Container;
-use Dingo\Api\Tests\Stubs\UserStub;
-use Dingo\Api\Tests\Stubs\TransformerStub;
-use Dingo\Api\Tests\Stubs\UserTransformerStub;
 
 class FactoryTest extends PHPUnit_Framework_TestCase
 {
@@ -38,22 +38,19 @@ class FactoryTest extends PHPUnit_Framework_TestCase
     public function testRegisterParameterOrder()
     {
         // Third parameter is parameters and fourth is callback.
-        $binding = $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub, ['foo' => 'bar'], function ($foo) {
-            $this->assertEquals('foo', $foo);
-        });
+        $binding = $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub, ['foo' => 'bar'],
+            function ($foo) {
+                $this->assertEquals('foo', $foo);
+            });
 
         $binding->fireCallback('foo');
         $this->assertEquals(['foo' => 'bar'], $binding->getParameters());
 
         // Third parameter is parameters and fourth is null.
-        $binding = $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub, ['foo' => 'bar']);
+        $binding = $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub,
+            ['foo' => 'bar']);
 
         $this->assertEquals(['foo' => 'bar'], $binding->getParameters());
-
-        // Third parameter is callback and fourth is null.
-        $binding = $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub, function ($foo) {
-            $this->assertEquals('foo', $foo);
-        });
 
         $binding->fireCallback('foo');
     }
@@ -62,7 +59,7 @@ class FactoryTest extends PHPUnit_Framework_TestCase
     {
         $this->assertFalse($this->factory->transformableType(['foo' => 'bar']));
         $this->assertTrue($this->factory->transformableType('Foo'));
-        $this->assertTrue($this->factory->transformableType((object) ['foo' => 'bar']));
+        $this->assertTrue($this->factory->transformableType((object)['foo' => 'bar']));
     }
 
     public function testTransformingResponse()

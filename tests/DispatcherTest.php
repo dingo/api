@@ -2,23 +2,23 @@
 
 namespace Dingo\Api\Tests;
 
-use Mockery as m;
-use Dingo\Api\Http;
 use Dingo\Api\Auth\Auth;
 use Dingo\Api\Dispatcher;
-use Illuminate\Http\Request;
+use Dingo\Api\Exception\InternalHttpException;
+use Dingo\Api\Http;
 use Dingo\Api\Routing\Router;
-use PHPUnit_Framework_TestCase;
+use Dingo\Api\Tests\Stubs\MiddlewareStub;
+use Dingo\Api\Tests\Stubs\RoutingAdapterStub;
+use Dingo\Api\Tests\Stubs\TransformerStub;
 use Dingo\Api\Tests\Stubs\UserStub;
+use Dingo\Api\Tests\Stubs\UserTransformerStub;
+use Dingo\Api\Transformer\Factory as TransformerFactory;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
-use Dingo\Api\Tests\Stubs\MiddlewareStub;
-use Dingo\Api\Tests\Stubs\TransformerStub;
-use Dingo\Api\Tests\Stubs\RoutingAdapterStub;
-use Dingo\Api\Tests\Stubs\UserTransformerStub;
-use Dingo\Api\Exception\InternalHttpException;
-use Dingo\Api\Transformer\Factory as TransformerFactory;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Request as RequestFacade;
+use Mockery as m;
+use PHPUnit_Framework_TestCase;
 
 class DispatcherTest extends PHPUnit_Framework_TestCase
 {
@@ -88,7 +88,9 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
     public function testInternalRequestWithVersionAndParameters()
     {
         $this->router->version('v1', function () {
-            $this->router->get('test', function () { return 'test'; });
+            $this->router->get('test', function () {
+                return 'test';
+            });
         });
 
         $this->assertEquals('test', $this->dispatcher->version('v1')->with(['foo' => 'bar'])->get('test'));
@@ -209,13 +211,13 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
     {
         $this->router->version('v1', function () {
             $this->router->get('foo', function () {
-                return 'foo'.$this->dispatcher->version('v2')->get('foo');
+                return 'foo' . $this->dispatcher->version('v2')->get('foo');
             });
         });
 
         $this->router->version('v2', function () {
             $this->router->get('foo', function () {
-                return 'bar'.$this->dispatcher->version('v3')->get('foo');
+                return 'bar' . $this->dispatcher->version('v3')->get('foo');
             });
         });
 
@@ -254,21 +256,30 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
     public function testRouteStackIsMaintained()
     {
         $this->router->version('v1', function () {
-            $this->router->post('foo', ['as' => 'foo', function () {
-                $this->assertEquals('foo', $this->router->getCurrentRoute()->getName());
-                $this->dispatcher->post('bar');
-                $this->assertEquals('foo', $this->router->getCurrentRoute()->getName());
-            }]);
+            $this->router->post('foo', [
+                'as' => 'foo',
+                function () {
+                    $this->assertEquals('foo', $this->router->getCurrentRoute()->getName());
+                    $this->dispatcher->post('bar');
+                    $this->assertEquals('foo', $this->router->getCurrentRoute()->getName());
+                }
+            ]);
 
-            $this->router->post('bar', ['as' => 'bar', function () {
-                $this->assertEquals('bar', $this->router->getCurrentRoute()->getName());
-                $this->dispatcher->post('baz');
-                $this->assertEquals('bar', $this->router->getCurrentRoute()->getName());
-            }]);
+            $this->router->post('bar', [
+                'as' => 'bar',
+                function () {
+                    $this->assertEquals('bar', $this->router->getCurrentRoute()->getName());
+                    $this->dispatcher->post('baz');
+                    $this->assertEquals('bar', $this->router->getCurrentRoute()->getName());
+                }
+            ]);
 
-            $this->router->post('baz', ['as' => 'bazinga', function () {
-                $this->assertEquals('bazinga', $this->router->getCurrentRoute()->getName());
-            }]);
+            $this->router->post('baz', [
+                'as' => 'bazinga',
+                function () {
+                    $this->assertEquals('bazinga', $this->router->getCurrentRoute()->getName());
+                }
+            ]);
         });
 
         $this->dispatcher->post('foo');
