@@ -133,7 +133,7 @@ class Lumen implements Adapter
         $methods = isset($route['methods']) ? $route['methods'] : (array) $request->getMethod();
         $action = (isset($route[1]) && is_array($route[1])) ? $route[1] : $route;
 
-        if (in_array('GET', $methods) && !in_array('HEAD', $methods)) {
+        if (in_array('GET', $methods) && ! in_array('HEAD', $methods)) {
             $methods[] = 'HEAD';
         }
 
@@ -377,7 +377,7 @@ class Lumen implements Adapter
     }
 
     /**
-     * @param array $route
+     * @param array  $route
      * @param string $method
      *
      * @return array
