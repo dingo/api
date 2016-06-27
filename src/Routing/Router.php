@@ -638,9 +638,9 @@ class Router
      *
      * @return array
      */
-    public function gatherRouteMiddlewares($route)
+    public function gatherRouteMiddleware($route)
     {
-        return $this->adapter->gatherRouteMiddlewares($route);
+        return $this->adapter->gatherRouteMiddleware($route);
     }
 
     /**

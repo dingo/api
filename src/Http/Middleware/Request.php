@@ -139,7 +139,7 @@ class Request
         // middleware, so we'll gather all the route middleware here.
         // On Lumen this will simply be an empty array as it does
         // not implement terminable route middleware.
-        $middlewares = $this->gatherRouteMiddlewares($request);
+        $middlewares = $this->gatherRouteMiddleware($request);
 
         // Because of how middleware is executed on Lumen we'll need to merge in the
         // application middlewares now so that we can terminate them. Laravel does
@@ -187,10 +187,10 @@ class Request
      *
      * @return array
      */
-    protected function gatherRouteMiddlewares($request)
+    protected function gatherRouteMiddleware($request)
     {
         if ($route = $request->route()) {
-            return $this->router->gatherRouteMiddlewares($route);
+            return $this->router->gatherRouteMiddleware($route);
         }
 
         return [];
