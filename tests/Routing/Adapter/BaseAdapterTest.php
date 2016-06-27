@@ -6,14 +6,17 @@ use Mockery as m;
 use Dingo\Api\Http;
 use Dingo\Api\Routing\Router;
 use PHPUnit_Framework_TestCase;
+use Dingo\Api\Exception\Handler;
 use Dingo\Api\Tests\Stubs\MiddlewareStub;
+use Illuminate\Contracts\Container\Container;
+use Dingo\Api\Tests\Stubs\RoutingControllerStub;
 
 abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
         $this->container = $this->getContainerInstance();
-        $this->container['Illuminate\Container\Container'] = $this->container;
+        $this->container[Container::class] = $this->container;
         $this->container['api.auth'] = new MiddlewareStub;
         $this->container['api.limiting'] = new MiddlewareStub;
         $this->container['api.controllers'] = new MiddlewareStub;
@@ -22,7 +25,7 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
         Http\Request::setAcceptParser(new Http\Parser\Accept('vnd', 'api', 'v1', 'json'));
 
         $this->adapter = $this->getAdapterInstance();
-        $this->exception = m::mock('Dingo\Api\Exception\Handler');
+        $this->exception = m::mock(Handler::class);
         $this->router = new Router($this->adapter, $this->exception, $this->container, null, null);
 
         Http\Response::setFormatters(['json' => new Http\Response\Format\Json]);
@@ -197,7 +200,7 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
 
         $this->router->version('v2', function () {
             $this->router->controllers([
-                'bar' => 'Dingo\Api\Tests\Stubs\RoutingControllerStub',
+                'bar' => RoutingControllerStub::class,
             ]);
         });
 
@@ -223,7 +226,7 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
     {
         $this->router->version('v1', ['namespace' => 'Dingo\Api\Tests\Stubs'], function () {
             $this->router->post('/', ['uses' => 'RoutingControllerStub@index']);
-            $this->router->post('/find', ['uses' => 'RoutingControllerOtherStub@show']);
+            $this->router->post('/find', ['uses' => 'RoutingControllerStub@show']);
         });
 
         $routes = $this->adapter->getIterableRoutes();

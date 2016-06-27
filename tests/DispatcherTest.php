@@ -3,38 +3,45 @@
 namespace Dingo\Api\Tests;
 
 use Mockery as m;
-use Dingo\Api\Http;
 use Dingo\Api\Auth\Auth;
 use Dingo\Api\Dispatcher;
-use Illuminate\Http\Request;
+use Dingo\Api\Http\Request;
+use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
 use PHPUnit_Framework_TestCase;
+use Dingo\Api\Exception\Handler;
 use Dingo\Api\Tests\Stubs\UserStub;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Database\Eloquent\Model;
+use Dingo\Api\Http\Response\Format\Json;
 use Dingo\Api\Tests\Stubs\MiddlewareStub;
 use Dingo\Api\Tests\Stubs\TransformerStub;
 use Dingo\Api\Tests\Stubs\RoutingAdapterStub;
 use Dingo\Api\Tests\Stubs\UserTransformerStub;
 use Dingo\Api\Exception\InternalHttpException;
+use Dingo\Api\Http\Parser\Accept as AcceptParser;
+use Illuminate\Http\Request as IlluminateRequest;
+use Illuminate\Http\Response as IlluminateResponse;
 use Dingo\Api\Transformer\Factory as TransformerFactory;
 use Illuminate\Support\Facades\Request as RequestFacade;
+use Symfony\Component\HttpKernel\Exception\GoneHttpException;
 
 class DispatcherTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
         $this->container = new Container;
-        $this->container['request'] = Request::create('/', 'GET');
+        $this->container['request'] = IlluminateRequest::create('/', 'GET');
         $this->container['api.auth'] = new MiddlewareStub;
         $this->container['api.limiting'] = new MiddlewareStub;
 
-        Http\Request::setAcceptParser(new Http\Parser\Accept('vnd', 'api', 'v1', 'json'));
+        Request::setAcceptParser(new AcceptParser('vnd', 'api', 'v1', 'json'));
 
         $this->transformerFactory = new TransformerFactory($this->container, new TransformerStub);
 
         $this->adapter = new RoutingAdapterStub;
-        $this->exception = m::mock('Dingo\Api\Exception\Handler');
+        $this->exception = m::mock(Handler::class);
         $this->router = new Router($this->adapter, $this->exception, $this->container, null, null);
 
         $this->auth = new Auth($this->router, $this->container, []);
@@ -45,8 +52,8 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->dispatcher->setDefaultVersion('v1');
         $this->dispatcher->setDefaultFormat('json');
 
-        Http\Response::setFormatters(['json' => new Http\Response\Format\Json]);
-        Http\Response::setTransformer($this->transformerFactory);
+        Response::setFormatters(['json' => new Json]);
+        Response::setTransformer($this->transformerFactory);
     }
 
     public function tearDown()
@@ -131,7 +138,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
     {
         $this->router->version('v1', function () {
             $this->router->get('test', function () {
-                return new \Illuminate\Http\Response('test', 403);
+                return new IlluminateResponse('test', 403);
             });
         });
 
@@ -142,14 +149,14 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
     {
         $this->router->version('v1', function () {
             $this->router->get('test', function () {
-                return new \Illuminate\Http\Response('test', 401);
+                return new IlluminateResponse('test', 401);
             });
         });
 
         try {
             $this->dispatcher->get('test');
         } catch (InternalHttpException $exception) {
-            $this->assertInstanceOf('Illuminate\Http\Response', $exception->getResponse());
+            $this->assertInstanceOf(IlluminateResponse::class, $exception->getResponse());
             $this->assertEquals('test', $exception->getResponse()->getContent());
         }
     }
@@ -158,7 +165,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
     {
         $this->router->version('v1', function () {
             $this->router->get('test', function () {
-                throw new \Symfony\Component\HttpKernel\Exception\GoneHttpException;
+                throw new GoneHttpException;
             });
         });
 
@@ -166,7 +173,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
 
         try {
             $this->dispatcher->get('test');
-        } catch (\Symfony\Component\HttpKernel\Exception\GoneHttpException $exception) {
+        } catch (GoneHttpException $exception) {
             $passed = true;
         }
 
@@ -175,7 +182,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
 
     public function testPretendingToBeUserForSingleRequest()
     {
-        $user = m::mock('Illuminate\Database\Eloquent\Model');
+        $user = m::mock(Model::class);
 
         $this->router->version('v1', function () use ($user) {
             $this->router->get('test', function () use ($user) {
@@ -325,7 +332,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
 
         $response = $this->dispatcher->raw()->get('foo');
 
-        $this->assertInstanceOf('Dingo\Api\Http\Response', $response);
+        $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals('{"foo":"bar"}', $response->getContent());
         $this->assertEquals(['foo' => 'bar'], $response->getOriginalContent());
     }
@@ -344,7 +351,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
 
         $response = $this->dispatcher->raw()->get('foo');
 
-        $this->assertInstanceOf('Dingo\Api\Http\Response', $response);
+        $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals('{"name":"Jason"}', $response->getContent());
         $this->assertEquals($instance, $response->getOriginalContent());
     }

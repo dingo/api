@@ -9,13 +9,14 @@ use PHPUnit_Framework_TestCase;
 use Dingo\Api\Exception\Handler;
 use Dingo\Api\Http\Request as ApiRequest;
 use Dingo\Api\Exception\ResourceException;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class HandlerTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->parentHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler');
+        $this->parentHandler = m::mock(ExceptionHandler::class);
         $this->exceptionHandler = new Handler($this->parentHandler, [
             'message' => ':message',
             'errors' => ':errors',
@@ -35,7 +36,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $this->exceptionHandler->register(function (HttpException $e) {
             //
         });
-        $this->assertArrayHasKey('Symfony\Component\HttpKernel\Exception\HttpException', $this->exceptionHandler->getHandlers());
+        $this->assertArrayHasKey(HttpException::class, $this->exceptionHandler->getHandlers());
     }
 
     public function testExceptionHandlerHandlesException()
@@ -62,7 +63,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 
         $response = $this->exceptionHandler->handle($exception);
 
-        $this->assertInstanceOf('Illuminate\Http\Response', $response);
+        $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals('foo', $response->getContent());
         $this->assertEquals(404, $response->getStatusCode());
     }
@@ -73,7 +74,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 
         $response = $this->exceptionHandler->handle($exception);
 
-        $this->assertInstanceOf('Illuminate\Http\Response', $response);
+        $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals('{"message":"bar","status_code":404}', $response->getContent());
         $this->assertEquals(404, $response->getStatusCode());
     }
@@ -94,7 +95,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 
         $response = $this->exceptionHandler->handle($exception);
 
-        $this->assertInstanceOf('Illuminate\Http\Response', $response);
+        $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals('{"error":{"message":"bar","status_code":404}}', $response->getContent());
         $this->assertEquals(404, $response->getStatusCode());
     }
@@ -115,7 +116,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 
         $response = $this->exceptionHandler->handle($exception);
 
-        $this->assertInstanceOf('Illuminate\Http\Response', $response);
+        $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals('{"message":"bar","errors":{"foo":["bar"]},"code":10,"status_code":422}', $response->getContent());
         $this->assertEquals(422, $response->getStatusCode());
     }
@@ -139,7 +140,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 
         $response = $this->exceptionHandler->handle($exception);
 
-        $this->assertInstanceOf('Illuminate\Http\Response', $response);
+        $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals('{"message":"404 Not Found","status_code":404}', $response->getContent());
         $this->assertEquals(404, $response->getStatusCode());
     }

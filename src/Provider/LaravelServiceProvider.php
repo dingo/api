@@ -3,10 +3,13 @@
 namespace Dingo\Api\Provider;
 
 use ReflectionClass;
-use Illuminate\Routing\Router;
+use Dingo\Api\Http\Middleware\Auth;
 use Illuminate\Contracts\Http\Kernel;
 use Dingo\Api\Event\RequestWasMatched;
+use Dingo\Api\Http\Middleware\Request;
+use Dingo\Api\Http\Middleware\RateLimit;
 use Illuminate\Routing\ControllerDispatcher;
+use Dingo\Api\Http\Middleware\PrepareController;
 use Dingo\Api\Routing\Adapter\Laravel as LaravelAdapter;
 
 class LaravelServiceProvider extends DingoServiceProvider
@@ -22,9 +25,9 @@ class LaravelServiceProvider extends DingoServiceProvider
 
         $this->publishes([realpath(__DIR__.'/../../config/api.php') => config_path('api.php')]);
 
-        $kernel = $this->app->make('Illuminate\Contracts\Http\Kernel');
+        $kernel = $this->app->make(Kernel::class);
 
-        $this->app['Dingo\Api\Http\Middleware\Request']->mergeMiddlewares(
+        $this->app[Request::class]->mergeMiddlewares(
             $this->gatherAppMiddleware($kernel)
         );
 
@@ -36,9 +39,9 @@ class LaravelServiceProvider extends DingoServiceProvider
             $this->updateRouterBindings();
         });
 
-        $this->app['router']->middleware('api.auth', 'Dingo\Api\Http\Middleware\Auth');
-        $this->app['router']->middleware('api.throttle', 'Dingo\Api\Http\Middleware\RateLimit');
-        $this->app['router']->middleware('api.controllers', 'Dingo\Api\Http\Middleware\PrepareController');
+        $this->app['router']->middleware('api.auth', Auth::class);
+        $this->app['router']->middleware('api.throttle', RateLimit::class);
+        $this->app['router']->middleware('api.controllers', PrepareController::class);
     }
 
     /**
@@ -112,7 +115,7 @@ class LaravelServiceProvider extends DingoServiceProvider
      */
     protected function addRequestMiddlewareToBeginning(Kernel $kernel)
     {
-        $kernel->prependMiddleware('Dingo\Api\Http\Middleware\Request');
+        $kernel->prependMiddleware(Request::class);
     }
 
     /**

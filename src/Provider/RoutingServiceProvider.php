@@ -4,7 +4,9 @@ namespace Dingo\Api\Provider;
 
 use Dingo\Api\Routing\Router;
 use Dingo\Api\Routing\UrlGenerator;
+use Dingo\Api\Contract\Routing\Adapter;
 use Dingo\Api\Routing\ResourceRegistrar;
+use Dingo\Api\Contract\Debug\ExceptionHandler;
 
 class RoutingServiceProvider extends ServiceProvider
 {
@@ -29,8 +31,8 @@ class RoutingServiceProvider extends ServiceProvider
     {
         $this->app->singleton('api.router', function ($app) {
             $router = new Router(
-                $app['Dingo\Api\Contract\Routing\Adapter'],
-                $app['Dingo\Api\Contract\Debug\ExceptionHandler'],
+                $app[Adapter::class],
+                $app[ExceptionHandler::class],
                 $app,
                 $this->config('domain'),
                 $this->config('prefix')
@@ -41,8 +43,8 @@ class RoutingServiceProvider extends ServiceProvider
             return $router;
         });
 
-        $this->app->singleton('Dingo\Api\Routing\ResourceRegistrar', function ($app) {
-            return new ResourceRegistrar($app['Dingo\Api\Routing\Router']);
+        $this->app->singleton(ResourceRegistrar::class, function ($app) {
+            return new ResourceRegistrar($app[Router::class]);
         });
     }
 
@@ -56,7 +58,7 @@ class RoutingServiceProvider extends ServiceProvider
         $this->app->singleton('api.url', function ($app) {
             $url = new UrlGenerator($app['request']);
 
-            $url->setRouteCollections($app['Dingo\Api\Routing\Router']->getRoutes());
+            $url->setRouteCollections($app[Router::class]->getRoutes());
 
             return $url;
         });
