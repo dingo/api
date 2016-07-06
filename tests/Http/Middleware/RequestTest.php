@@ -41,7 +41,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
         $request = Request::create('foo', 'GET');
 
         $this->middleware->handle($request, function ($handled) use ($request) {
-            $this->assertEquals($handled, $request);
+            $this->assertSame($handled, $request);
         });
     }
 
@@ -74,7 +74,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
         $request = Request::create('bing/bar/foo', 'GET');
 
         $this->middleware->handle($request, function ($handled) use ($request) {
-            $this->assertEquals($handled, $request);
+            $this->assertSame($handled, $request);
         });
     }
 
@@ -95,7 +95,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
         $request = Request::create('http://bing.foo.bar/baz', 'GET');
 
         $this->middleware->handle($request, function ($handled) use ($request) {
-            $this->assertEquals($handled, $request);
+            $this->assertSame($handled, $request);
         });
     }
 }

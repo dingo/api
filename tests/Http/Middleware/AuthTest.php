@@ -39,7 +39,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
         $this->router->shouldReceive('getCurrentRoute')->once()->andReturn($route);
 
         $this->middleware->handle($request, function ($handledRequest) use ($request) {
-            $this->assertEquals($handledRequest, $request);
+            $this->assertSame($handledRequest, $request);
         });
     }
 
@@ -59,7 +59,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
         $this->router->shouldReceive('getCurrentRoute')->once()->andReturn($route);
 
         $this->middleware->handle($request, function ($handledRequest) use ($request) {
-            $this->assertEquals($handledRequest, $request);
+            $this->assertSame($handledRequest, $request);
         });
     }
 

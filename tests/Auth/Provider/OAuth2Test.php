@@ -116,7 +116,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
         $route->shouldReceive('scopes')->once()->andReturn([]);
         $route->shouldReceive('scopeStrict')->once()->andReturn(false);
 
-        $this->assertEquals('foo', $this->provider->authenticate($request, $route));
+        $this->assertSame('foo', $this->provider->authenticate($request, $route));
     }
 
     public function testUserIsResolved()
@@ -142,6 +142,6 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
         $route->shouldReceive('scopes')->once()->andReturn([]);
         $route->shouldReceive('scopeStrict')->once()->andReturn(false);
 
-        $this->assertEquals('foo', $this->provider->authenticate($request, $route));
+        $this->assertSame('foo', $this->provider->authenticate($request, $route));
     }
 }
