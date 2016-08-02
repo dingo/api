@@ -12,6 +12,7 @@ use Illuminate\Support\Collection as IlluminateCollection;
 use League\Fractal\Resource\Collection as FractalCollection;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Contracts\Pagination\Paginator as IlluminatePaginator;
+use League\Fractal\TransformerAbstract;
 
 class Fractal implements Adapter
 {
@@ -65,7 +66,7 @@ class Fractal implements Adapter
      * Transform a response with a transformer.
      *
      * @param mixed                          $response
-     * @param object                         $transformer
+     * @param object|TransformerAbstract     $transformer
      * @param \Dingo\Api\Transformer\Binding $binding
      * @param \Dingo\Api\Http\Request        $request
      *
@@ -88,6 +89,11 @@ class Fractal implements Adapter
 
         if ($this->shouldEagerLoad($response)) {
             $eagerLoads = $this->mergeEagerLoads($transformer, $this->fractal->getRequestedIncludes());
+
+            if($transformer instanceof TransformerAbstract){
+                // Only eager load the items in available includes
+                $eagerLoads = array_intersect($eagerLoads, $transformer->getAvailableIncludes());
+            }
 
             $response->load($eagerLoads);
         }
