@@ -90,7 +90,7 @@ class Fractal implements Adapter
         if ($this->shouldEagerLoad($response)) {
             $eagerLoads = $this->mergeEagerLoads($transformer, $this->fractal->getRequestedIncludes());
 
-            if($transformer instanceof TransformerAbstract){
+            if ($transformer instanceof TransformerAbstract) {
                 // Only eager load the items in available includes
                 $eagerLoads = array_intersect($eagerLoads, $transformer->getAvailableIncludes());
             }
