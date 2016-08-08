@@ -223,10 +223,9 @@ class Route
     /**
      * Find the controller options and whether or not it will apply to this routes controller method.
      *
-     * @param string   $option
-     * @param \Closure $callback
-     *
-     * @return void
+     * @param string   $name
+     * 
+     * @return array
      */
     protected function findControllerPropertyOptions($name)
     {
