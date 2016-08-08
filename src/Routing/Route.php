@@ -223,7 +223,7 @@ class Route
     /**
      * Find the controller options and whether or not it will apply to this routes controller method.
      *
-     * @param string   $name
+     * @param string $name
      * 
      * @return array
      */
