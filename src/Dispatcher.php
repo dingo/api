@@ -247,7 +247,7 @@ class Dispatcher
 
         $this->content = $content;
 
-        return $this->header('content-type', 'application/json');
+        return $this->header('Content-Type', 'application/json');
     }
 
     /**

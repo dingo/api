@@ -121,9 +121,9 @@ class Response extends IlluminateResponse
 
         $formatter = static::getFormatter($format);
 
-        $defaultContentType = $this->headers->get('content-type');
+        $defaultContentType = $this->headers->get('Content-Type');
 
-        $this->headers->set('content-type', $formatter->getContentType());
+        $this->headers->set('Content-Type', $formatter->getContentType());
 
         $this->fireMorphedEvent();
 
@@ -134,7 +134,7 @@ class Response extends IlluminateResponse
         } elseif (is_array($this->content) || $this->content instanceof ArrayObject || $this->content instanceof Arrayable) {
             $this->content = $formatter->formatArray($this->content);
         } else {
-            $this->headers->set('content-type', $defaultContentType);
+            $this->headers->set('Content-Type', $defaultContentType);
         }
 
         return $this;
