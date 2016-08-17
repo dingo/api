@@ -27,12 +27,12 @@ class FactoryTest extends PHPUnit_Framework_TestCase
         $response = $this->factory->created();
         $responseWithLocation = $this->factory->created('test');
 
-        $this->assertEquals($response->getStatusCode(), 201);
+        $this->assertSame($response->getStatusCode(), 201);
         $this->assertFalse($response->headers->has('Location'));
 
-        $this->assertEquals($responseWithLocation->getStatusCode(), 201);
+        $this->assertSame($responseWithLocation->getStatusCode(), 201);
         $this->assertTrue($responseWithLocation->headers->has('Location'));
-        $this->assertEquals($responseWithLocation->headers->get('Location'), 'test');
+        $this->assertSame($responseWithLocation->headers->get('Location'), 'test');
     }
 
     public function testMakingAnAcceptedResponse()
@@ -42,30 +42,30 @@ class FactoryTest extends PHPUnit_Framework_TestCase
         $responseWithContent = $this->factory->accepted(null, 'testContent');
         $responseWithBoth = $this->factory->accepted('testHeader', 'testContent');
 
-        $this->assertEquals($response->getStatusCode(), 202);
+        $this->assertSame($response->getStatusCode(), 202);
         $this->assertFalse($response->headers->has('Location'));
-        $this->assertEquals('', $response->getContent());
+        $this->assertSame('', $response->getContent());
 
-        $this->assertEquals($responseWithLocation->getStatusCode(), 202);
+        $this->assertSame($responseWithLocation->getStatusCode(), 202);
         $this->assertTrue($responseWithLocation->headers->has('Location'));
-        $this->assertEquals($responseWithLocation->headers->get('Location'), 'testHeader');
-        $this->assertEquals('', $responseWithLocation->getContent());
+        $this->assertSame($responseWithLocation->headers->get('Location'), 'testHeader');
+        $this->assertSame('', $responseWithLocation->getContent());
 
-        $this->assertEquals($responseWithContent->getStatusCode(), 202);
+        $this->assertSame($responseWithContent->getStatusCode(), 202);
         $this->assertFalse($responseWithContent->headers->has('Location'));
-        $this->assertEquals('testContent', $responseWithContent->getContent());
+        $this->assertSame('testContent', $responseWithContent->getContent());
 
-        $this->assertEquals($responseWithBoth->getStatusCode(), 202);
+        $this->assertSame($responseWithBoth->getStatusCode(), 202);
         $this->assertTrue($responseWithBoth->headers->has('Location'));
-        $this->assertEquals($responseWithBoth->headers->get('Location'), 'testHeader');
-        $this->assertEquals('testContent', $responseWithBoth->getContent());
+        $this->assertSame($responseWithBoth->headers->get('Location'), 'testHeader');
+        $this->assertSame('testContent', $responseWithBoth->getContent());
     }
 
     public function testMakingANoContentResponse()
     {
         $response = $this->factory->noContent();
-        $this->assertEquals(204, $response->getStatusCode());
-        $this->assertEquals('', $response->getContent());
+        $this->assertSame(204, $response->getStatusCode());
+        $this->assertSame('', $response->getContent());
     }
 
     public function testMakingCollectionRegistersUnderlyingClassWithTransformer()
@@ -143,12 +143,12 @@ class FactoryTest extends PHPUnit_Framework_TestCase
     public function testMakingArrayResponse()
     {
         $response = $this->factory->array(['foo' => 'bar']);
-        $this->assertEquals('{"foo":"bar"}', $response->getContent());
+        $this->assertSame('{"foo":"bar"}', $response->getContent());
     }
 
     public function testPrefixingWithCallsMethodsCorrectly()
     {
         $response = $this->factory->withArray(['foo' => 'bar']);
-        $this->assertEquals('{"foo":"bar"}', $response->getContent());
+        $this->assertSame('{"foo":"bar"}', $response->getContent());
     }
 }

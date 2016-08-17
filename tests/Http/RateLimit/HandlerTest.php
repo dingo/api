@@ -64,6 +64,6 @@ class HandlerTest extends PHPUnit_Framework_TestCase
     {
         $this->limiter->extend(new ThrottleStub(['limit' => 10, 'expires' => 200]));
         $this->limiter->rateLimitRequest(Request::create('test', 'GET'));
-        $this->assertEquals(9, $this->limiter->getRemainingLimit());
+        $this->assertSame(9, $this->limiter->getRemainingLimit());
     }
 }

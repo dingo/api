@@ -68,7 +68,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
 
         $user = $this->auth->authenticate();
 
-        $this->assertEquals(1, $user->id);
+        $this->assertSame(1, $user->id);
     }
 
     public function testProvidersAreFilteredWhenSpecificProviderIsRequested()
@@ -83,7 +83,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
         $this->auth->extend('two', $provider);
 
         $this->auth->authenticate(['two']);
-        $this->assertEquals($provider, $this->auth->getProviderUsed());
+        $this->assertSame($provider, $this->auth->getProviderUsed());
     }
 
     public function testGettingUserWhenNotAuthenticatedAttemptsToAuthenticateAndReturnsNull()
@@ -100,7 +100,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
     {
         $this->auth->setUser((object) ['id' => 1]);
 
-        $this->assertEquals(1, $this->auth->user()->id);
+        $this->assertSame(1, $this->auth->user()->id);
         $this->assertTrue($this->auth->check());
     }
 }
