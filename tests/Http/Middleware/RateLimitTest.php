@@ -53,7 +53,7 @@ class RateLimitTest extends PHPUnit_Framework_TestCase
             return new Response('foo');
         });
 
-        $this->assertEquals('foo', $response->getContent());
+        $this->assertSame('foo', $response->getContent());
         $this->assertArrayNotHasKey('x-ratelimit-limit', $response->headers->all());
         $this->assertArrayNotHasKey('x-ratelimit-remaining', $response->headers->all());
         $this->assertArrayNotHasKey('x-ratelimit-reset', $response->headers->all());
@@ -76,7 +76,7 @@ class RateLimitTest extends PHPUnit_Framework_TestCase
             return new Response('foo');
         });
 
-        $this->assertEquals('foo', $response->getContent());
+        $this->assertSame('foo', $response->getContent());
         $this->assertArrayNotHasKey('x-ratelimit-limit', $response->headers->all());
         $this->assertArrayNotHasKey('x-ratelimit-remaining', $response->headers->all());
         $this->assertArrayNotHasKey('x-ratelimit-reset', $response->headers->all());
@@ -99,7 +99,7 @@ class RateLimitTest extends PHPUnit_Framework_TestCase
             return new Response('foo');
         });
 
-        $this->assertEquals('foo', $response->getContent());
+        $this->assertSame('foo', $response->getContent());
         $this->assertArrayHasKey('x-ratelimit-limit', $response->headers->all());
         $this->assertArrayHasKey('x-ratelimit-remaining', $response->headers->all());
         $this->assertArrayHasKey('x-ratelimit-reset', $response->headers->all());
@@ -123,8 +123,8 @@ class RateLimitTest extends PHPUnit_Framework_TestCase
                 return new Response('foo');
             });
         } catch (HttpException $exception) {
-            $this->assertEquals(403, $exception->getStatusCode());
-            $this->assertEquals('You have exceeded your rate limit.', $exception->getMessage());
+            $this->assertSame(403, $exception->getStatusCode());
+            $this->assertSame('You have exceeded your rate limit.', $exception->getMessage());
             $this->assertArrayHasKey('X-RateLimit-Limit', $exception->getHeaders());
             $this->assertArrayHasKey('X-RateLimit-Remaining', $exception->getHeaders());
             $this->assertArrayHasKey('X-RateLimit-Reset', $exception->getHeaders());
@@ -149,8 +149,8 @@ class RateLimitTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('x-ratelimit-limit', $response->headers->all());
         $this->assertArrayHasKey('x-ratelimit-remaining', $response->headers->all());
         $this->assertArrayHasKey('x-ratelimit-reset', $response->headers->all());
-        $this->assertEquals(4, $response->headers->get('x-ratelimit-remaining'));
-        $this->assertEquals(5, $response->headers->get('x-ratelimit-limit'));
+        $this->assertSame(4, $response->headers->get('x-ratelimit-remaining'));
+        $this->assertSame(5, $response->headers->get('x-ratelimit-limit'));
     }
 
     public function testRateLimitingWithRouteThrottle()
@@ -172,7 +172,7 @@ class RateLimitTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('x-ratelimit-limit', $response->headers->all());
         $this->assertArrayHasKey('x-ratelimit-remaining', $response->headers->all());
         $this->assertArrayHasKey('x-ratelimit-reset', $response->headers->all());
-        $this->assertEquals(9, $response->headers->get('x-ratelimit-remaining'));
-        $this->assertEquals(10, $response->headers->get('x-ratelimit-limit'));
+        $this->assertSame(9, $response->headers->get('x-ratelimit-remaining'));
+        $this->assertSame(10, $response->headers->get('x-ratelimit-limit'));
     }
 }
