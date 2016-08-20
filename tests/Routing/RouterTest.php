@@ -244,6 +244,7 @@ class RouterTest extends Adapter\BaseAdapterTest
 
     public function testExceptionsAreHandledByExceptionHandler()
     {
+        $this->markTestIncomplete('Test does not fully reflect adapters route handling, needs work.');
         $exception = new HttpException(400);
 
         $this->router->version('v1', function () use ($exception) {
