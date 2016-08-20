@@ -37,6 +37,7 @@ class RouteTest extends PHPUnit_Framework_TestCase
                 'throttle' => 'Dingo\Api\Tests\Stubs\BasicThrottleStub',
                 'version' => ['v1'],
                 'conditionalRequest' => false,
+                'middleware' => 'foo.bar'
             ],
         ]);
 
@@ -65,6 +66,7 @@ class RouteTest extends PHPUnit_Framework_TestCase
                 'version' => ['v1'],
                 'conditionalRequest' => false,
                 'uses' => 'Dingo\Api\Tests\Stubs\RoutingControllerStub@index',
+                'middleware' => 'foo.bar'
             ],
         ]);
 
