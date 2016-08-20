@@ -103,8 +103,6 @@ class Handler
         } elseif ($limit > 0 || $expires > 0) {
             $this->throttle = new Route(['limit' => $limit, 'expires' => $expires]);
 
-            $this->keyPrefix = md5($request->path());
-
         // Otherwise we'll use the throttle that gives the consumer the largest
         // amount of requests. If no matching throttle is found then rate
         // limiting will not be imposed for the request.
@@ -119,6 +117,7 @@ class Handler
         }
 
         $this->prepareCacheStore();
+        $this->keyPrefix = $this->getKeyPrefix();
 
         $this->cache('requests', 0, $this->throttle->getExpires());
         $this->cache('expires', $this->throttle->getExpires(), $this->throttle->getExpires());
@@ -330,5 +329,19 @@ class Handler
         }
 
         $this->throttles->push($throttle);
+    }
+
+    /**
+     * Get the key prefix.
+     *
+     * @return string
+     */
+    public function getKeyPrefix()
+    {
+        if (method_exists($this->throttle, 'group') && $this->throttle->group()) {
+            return call_user_func($this->throttle->group(), $this->container, $this->request);
+        } else {
+            return md5($this->request->path());
+        }
     }
 }
