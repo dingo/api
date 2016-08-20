@@ -52,6 +52,17 @@ class AcceptTest extends PHPUnit_Framework_TestCase
         $this->assertSame('xml', $accept['format']);
     }
 
+    public function testApiVersionWithHyphen()
+    {
+        $parser = new Accept('vnd', 'api', '1.0-beta', 'json');
+
+        $accept = $parser->parse($this->createRequest('foo', 'GET', ['accept' => 'application/vnd.api.1.0-beta+xml']));
+
+        $this->assertSame('api', $accept['subtype']);
+        $this->assertSame('1.0-beta', $accept['version']);
+        $this->assertSame('xml', $accept['format']);
+    }
+
     protected function createRequest($uri, $method, array $headers = [])
     {
         $request = Request::create($uri, $method);

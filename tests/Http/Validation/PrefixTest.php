@@ -23,4 +23,11 @@ class PrefixTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($validator->validate(Request::create('foo', 'GET')), 'Validation failed when it should have passed with a valid prefix.');
         $this->assertTrue($validator->validate(Request::create('foo/bar', 'GET')), 'Validation failed when it should have passed with a valid prefix.');
     }
+
+    public function testValidationPassesWithHyphenatedPrefix()
+    {
+        $validator = new Prefix('web-api');
+        $this->assertTrue($validator->validate(Request::create('web-api', 'GET')), 'Validation failed when it should have passed with a valid prefix.');
+        $this->assertTrue($validator->validate(Request::create('web-api/bar', 'GET')), 'Validation failed when it should have passed with a valid prefix.');
+    }
 }
