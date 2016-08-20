@@ -155,7 +155,7 @@ class Route
 
         $this->versions = Arr::pull($this->action, 'version');
         $this->conditionalRequest = Arr::pull($this->action, 'conditionalRequest', true);
-        $this->middleware = Arr::pull($this->action, 'middleware', []);
+        $this->middleware = (array) Arr::pull($this->action, 'middleware', []);
         $this->throttle = Arr::pull($this->action, 'throttle');
         $this->scopes = Arr::pull($this->action, 'scopes', []);
         $this->authenticationProviders = Arr::pull($this->action, 'providers', []);
