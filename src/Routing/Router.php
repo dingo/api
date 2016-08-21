@@ -580,6 +580,10 @@ class Router
             if ($request instanceof InternalRequest) {
                 throw $exception;
             }
+
+            $this->exception->report($exception);
+
+            $response = $this->exception->handle($exception);
         }
 
         return $this->prepareResponse($response, $request, $request->format());
