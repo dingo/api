@@ -2,6 +2,8 @@
 
 namespace Dingo\Api\Tests\Exception;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Mockery as m;
 use RuntimeException;
 use Illuminate\Http\Response;
@@ -64,6 +66,36 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Illuminate\Http\Response', $response);
         $this->assertSame('foo', $response->getContent());
+        $this->assertSame(404, $response->getStatusCode());
+    }
+
+    public function testExceptionHandlerHandlesExceptionWithRedirectResponse()
+    {
+        $this->exceptionHandler->register(function (HttpException $e) {
+            return new RedirectResponse('foo');
+        });
+
+        $exception = new HttpException(404, 'bar');
+
+        $response = $this->exceptionHandler->handle($exception);
+
+        $this->assertInstanceOf('Illuminate\Http\RedirectResponse', $response);
+        $this->assertSame('foo', $response->getTargetUrl());
+        $this->assertSame(302, $response->getStatusCode());
+    }
+
+    public function testExceptionHandlerHandlesExceptionWithJsonResponse()
+    {
+        $this->exceptionHandler->register(function (HttpException $e) {
+            return new JsonResponse(['foo' => 'bar'], 404);
+        });
+
+        $exception = new HttpException(404, 'bar');
+
+        $response = $this->exceptionHandler->handle($exception);
+
+        $this->assertInstanceOf('Illuminate\Http\JsonResponse', $response);
+        $this->assertSame('{"foo":"bar"}', $response->getContent());
         $this->assertSame(404, $response->getStatusCode());
     }
 
