@@ -76,12 +76,44 @@ class FactoryTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Illuminate\Support\Collection', $this->factory->withCollection(new Collection([new UserStub('Jason')]), 'test')->getOriginalContent());
     }
 
+    public function testMakingCollectionResponseWithThreeParameters()
+    {
+        $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], Mockery::on(function ($param) {
+            return $param instanceof \Closure;
+        }));
+
+        $this->assertInstanceOf('Illuminate\Support\Collection', $this->factory->collection(new Collection([new UserStub('Jason')]), 'test', function ($resource, $fractal) {
+            $this->assertInstanceOf('League\Fractal\Resource\Collection', $resource);
+            $this->assertInstanceOf('League\Fractal\Manager', $fractal);
+        })->getOriginalContent());
+        $this->assertInstanceOf('Illuminate\Support\Collection', $this->factory->withCollection(new Collection([new UserStub('Jason')]), 'test', function ($resource, $fractal) {
+            $this->assertInstanceOf('League\Fractal\Resource\Collection', $resource);
+            $this->assertInstanceOf('League\Fractal\Manager', $fractal);
+        })->getOriginalContent());
+    }
+
     public function testMakingItemsRegistersClassWithTransformer()
     {
         $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], null);
 
         $this->assertInstanceOf('Dingo\Api\Tests\Stubs\UserStub', $this->factory->item(new UserStub('Jason'), 'test')->getOriginalContent());
         $this->assertInstanceOf('Dingo\Api\Tests\Stubs\UserStub', $this->factory->withItem(new UserStub('Jason'), 'test')->getOriginalContent());
+    }
+
+    public function testMakingItemResponseWithThreeParameters()
+    {
+        $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], Mockery::on(function ($param) {
+            return $param instanceof \Closure;
+        }));
+
+        $this->assertInstanceOf('Dingo\Api\Tests\Stubs\UserStub', $this->factory->item(new UserStub('Jason'), 'test', function ($resource, $fractal) {
+            $this->assertInstanceOf('League\Fractal\Resource\Item', $resource);
+            $this->assertInstanceOf('League\Fractal\Manager', $fractal);
+        })->getOriginalContent());
+        $this->assertInstanceOf('Dingo\Api\Tests\Stubs\UserStub', $this->factory->withItem(new UserStub('Jason'), 'test', function ($resource, $fractal) {
+            $this->assertInstanceOf('League\Fractal\Resource\Item', $resource);
+            $this->assertInstanceOf('League\Fractal\Manager', $fractal);
+        })->getOriginalContent());
     }
 
     public function testMakingPaginatorRegistersUnderlyingClassWithTransformer()
