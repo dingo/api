@@ -7,7 +7,7 @@ use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
 use Dingo\Api\Http\InternalRequest;
 use Dingo\Api\Http\RateLimit\Handler;
-use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
+use Dingo\Api\Exception\RateLimitExceededException;
 
 class RateLimit
 {
@@ -64,8 +64,9 @@ class RateLimit
         $this->handler->rateLimitRequest($request, $route->getRateLimit(), $route->getRateLimitExpiration());
 
         if ($this->handler->exceededRateLimit()) {
-            $retryAfter = $this->getHeaders()['X-RateLimit-Reset'] - time();
-            throw new TooManyRequestsHttpException($retryAfter, 'You have exceeded your rate limit.');
+            $headers = $this->getHeaders();
+            $headers['Retry-After'] = $headers['X-RateLimit-Reset'] - time();
+            throw new RateLimitExceededException('You have exceeded your rate limit.', null, $headers);
         }
 
         $response = $next($request);
