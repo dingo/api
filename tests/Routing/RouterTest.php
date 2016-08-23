@@ -353,4 +353,29 @@ class RouterTest extends Adapter\BaseAdapterTest
         $this->assertTrue($this->router->uses('*'));
         $this->assertTrue($this->router->uses('Dingo\Api\Tests\Stubs\RoutingControllerStub@*'));
     }
+
+    public function testRoutePatternsAreAppliedCorrectly()
+    {
+        $adapter = $this->adapter;
+        $adapter->pattern('bar', '[0-9]+');
+
+        $this->router = new Router($adapter, $this->exception, $this->container, null, null);
+        $this->router->version('v1', function ($api) {
+            $api->any('foo/{bar}', function () {
+                return 'bar';
+            });
+        });
+
+        $this->router->setConditionalRequest(false);
+
+        $this->exception->shouldReceive('report')->once()->with('Symfony\Component\HttpKernel\Exception\HttpException');
+        $this->exception->shouldReceive('handle')->with(m::type('Symfony\Component\HttpKernel\Exception\HttpException'))->andReturn(new Http\Response('Not Found!', 404));
+
+        $response = $this->router->dispatch(
+            $request = $this->createRequest('foo/abc', 'GET', ['accept' => 'application/vnd.api.v1+json'])
+        );
+
+        $this->assertSame(404, $response->getStatusCode());
+        $this->assertSame('Not Found!', $response->getContent());
+    }
 }

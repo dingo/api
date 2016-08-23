@@ -14,6 +14,8 @@ class RoutingAdapterStub implements Adapter
 {
     protected $routes = [];
 
+    protected $patterns = [];
+
     public function dispatch(Request $request, $version)
     {
         $routes = $this->routes[$version];
@@ -65,7 +67,8 @@ class RoutingAdapterStub implements Adapter
         $this->createRouteCollections($versions);
 
         $route = new \Illuminate\Routing\Route($methods, $uri, $action);
-        $route->where($action['where']);
+        $this->addWhereClausesToRoute($route);
+
         foreach ($versions as $version) {
             $this->routes[$version]->add($route);
         }
@@ -97,6 +100,11 @@ class RoutingAdapterStub implements Adapter
         //
     }
 
+    public function pattern($key, $pattern)
+    {
+        $this->patterns[$key] = $pattern;
+    }
+
     protected function createRouteCollections(array $versions)
     {
         foreach ($versions as $version) {
@@ -104,5 +112,14 @@ class RoutingAdapterStub implements Adapter
                 $this->routes[$version] = new \Illuminate\Routing\RouteCollection;
             }
         }
+    }
+
+    protected function addWhereClausesToRoute($route)
+    {
+        $where = isset($route->getAction()['where']) ? $route->getAction()['where'] : [];
+
+        $route->where(array_merge($this->patterns, $where));
+
+        return $route;
     }
 }
