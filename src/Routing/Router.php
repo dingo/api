@@ -580,7 +580,7 @@ class Router
             if ($request instanceof InternalRequest) {
                 throw $exception;
             }
-//            dd(get_class($exception), $exception->getMessage(), $exception->getFile(), $exception->getLine(), $request);
+
             $this->exception->report($exception);
 
             $response = $this->exception->handle($exception);
