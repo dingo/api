@@ -64,9 +64,7 @@ class RateLimit
         $this->handler->rateLimitRequest($request, $route->getRateLimit(), $route->getRateLimitExpiration());
 
         if ($this->handler->exceededRateLimit()) {
-            $headers = $this->getHeaders();
-            $headers['Retry-After'] = $headers['X-RateLimit-Reset'] - time();
-            throw new RateLimitExceededException('You have exceeded your rate limit.', null, $headers);
+            throw new RateLimitExceededException('You have exceeded your rate limit.', null, $this->getHeaders());
         }
 
         $response = $next($request);
