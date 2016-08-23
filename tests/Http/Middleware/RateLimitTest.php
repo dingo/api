@@ -125,10 +125,10 @@ class RateLimitTest extends PHPUnit_Framework_TestCase
         } catch (HttpException $exception) {
             $this->assertSame(429, $exception->getStatusCode());
             $this->assertSame('You have exceeded your rate limit.', $exception->getMessage());
+            $this->assertSame($exception->getHeaders()['X-RateLimit-Reset'] - time(), $exception->getHeaders()['Retry-After']);
             $this->assertArrayHasKey('X-RateLimit-Limit', $exception->getHeaders());
             $this->assertArrayHasKey('X-RateLimit-Remaining', $exception->getHeaders());
             $this->assertArrayHasKey('X-RateLimit-Reset', $exception->getHeaders());
-            $this->assertArrayHasKey('Retry-After', $exception->getHeaders());
         }
     }
 
