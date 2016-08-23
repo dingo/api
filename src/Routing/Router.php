@@ -479,7 +479,7 @@ class Router
         $new['where'] = array_merge(Arr::get($old, 'where', []), Arr::get($new, 'where', []));
 
         if (isset($old['as'])) {
-            $new['as'] = $old['as'].Arr::get($new, 'as', '');
+            $new['as'] = trim($old['as'].'.'.Arr::get($new, 'as', ''), '.');
         }
 
         return array_merge_recursive(array_except($old, ['namespace', 'prefix', 'where', 'as']), $new);
@@ -580,7 +580,7 @@ class Router
             if ($request instanceof InternalRequest) {
                 throw $exception;
             }
-
+//            dd(get_class($exception), $exception->getMessage(), $exception->getFile(), $exception->getLine(), $request);
             $this->exception->report($exception);
 
             $response = $this->exception->handle($exception);
