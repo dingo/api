@@ -3,7 +3,6 @@
 namespace Dingo\Api\Tests\Stubs;
 
 use Closure;
-use ArrayIterator;
 use Illuminate\Container\Container;
 use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
