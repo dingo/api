@@ -26,20 +26,16 @@ class RouteTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('foo', 'GET');
 
-        $route = new Route($this->adapter, $this->container, $request, [
-            'uri' => 'foo',
-            'methods' => ['GET', 'HEAD'],
-            'action' => [
-                'scopes' => ['foo', 'bar'],
-                'providers' => ['foo'],
-                'limit' => 5,
-                'expires' => 10,
-                'throttle' => 'Dingo\Api\Tests\Stubs\BasicThrottleStub',
-                'version' => ['v1'],
-                'conditionalRequest' => false,
-                'middleware' => 'foo.bar',
-            ],
-        ]);
+        $route = new Route($this->adapter, $this->container, $request, new \Illuminate\Routing\Route(['GET', 'HEAD'], 'foo', [
+            'scopes' => ['foo', 'bar'],
+            'providers' => ['foo'],
+            'limit' => 5,
+            'expires' => 10,
+            'throttle' => 'Dingo\Api\Tests\Stubs\BasicThrottleStub',
+            'version' => ['v1'],
+            'conditionalRequest' => false,
+            'middleware' => 'foo.bar',
+        ]));
 
         $this->assertSame(['foo', 'bar'], $route->scopes(), 'Route did not setup scopes correctly.');
         $this->assertSame(['foo'], $route->getAuthenticationProviders(), 'Route did not setup authentication providers correctly.');
@@ -54,21 +50,17 @@ class RouteTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('foo', 'GET');
 
-        $route = new Route($this->adapter, $this->container, $request, [
-            'uri' => 'foo',
-            'methods' => ['GET', 'HEAD'],
-            'action' => [
-                'scopes' => ['foo', 'bar'],
-                'providers' => ['foo'],
-                'limit' => 5,
-                'expires' => 10,
-                'throttle' => 'Dingo\Api\Tests\Stubs\ThrottleStub',
-                'version' => ['v1'],
-                'conditionalRequest' => false,
-                'uses' => 'Dingo\Api\Tests\Stubs\RoutingControllerStub@index',
-                'middleware' => 'foo.bar',
-            ],
-        ]);
+        $route = new Route($this->adapter, $this->container, $request, new \Illuminate\Routing\Route(['GET', 'HEAD'], 'foo', [
+            'scopes' => ['foo', 'bar'],
+            'providers' => ['foo'],
+            'limit' => 5,
+            'expires' => 10,
+            'throttle' => 'Dingo\Api\Tests\Stubs\ThrottleStub',
+            'version' => ['v1'],
+            'conditionalRequest' => false,
+            'uses' => 'Dingo\Api\Tests\Stubs\RoutingControllerStub@index',
+            'middleware' => 'foo.bar',
+        ]));
 
         $this->assertSame(['foo', 'bar', 'baz', 'bing'], $route->scopes(), 'Route did not setup scopes correctly.');
         $this->assertSame(['foo', 'red', 'black'], $route->getAuthenticationProviders(), 'Route did not setup authentication providers correctly.');
@@ -77,20 +69,16 @@ class RouteTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($route->hasThrottle(), 'Route did not setup throttle correctly.');
         $this->assertInstanceOf('Dingo\Api\Tests\Stubs\BasicThrottleStub', $route->getThrottle(), 'Route did not setup throttle correctly.');
 
-        $route = new Route($this->adapter, $this->container, $request, [
-            'uri' => 'foo/bar',
-            'methods' => ['GET', 'HEAD'],
-            'action' => [
-                'scopes' => ['foo', 'bar'],
-                'providers' => ['foo'],
-                'limit' => 5,
-                'expires' => 10,
-                'throttle' => 'Dingo\Api\Tests\Stubs\ThrottleStub',
-                'version' => ['v1'],
-                'conditionalRequest' => false,
-                'uses' => 'Dingo\Api\Tests\Stubs\RoutingControllerStub@show',
-            ],
-        ]);
+        $route = new Route($this->adapter, $this->container, $request, new \Illuminate\Routing\Route(['GET', 'HEAD'], 'foo/bar', [
+            'scopes' => ['foo', 'bar'],
+            'providers' => ['foo'],
+            'limit' => 5,
+            'expires' => 10,
+            'throttle' => 'Dingo\Api\Tests\Stubs\ThrottleStub',
+            'version' => ['v1'],
+            'conditionalRequest' => false,
+            'uses' => 'Dingo\Api\Tests\Stubs\RoutingControllerStub@show',
+        ]));
 
         $this->assertSame(['foo', 'bar', 'baz', 'bing', 'bob'], $route->scopes(), 'Route did not setup scopes correctly.');
         $this->assertSame(['foo'], $route->getAuthenticationProviders(), 'Route did not setup authentication providers correctly.');

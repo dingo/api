@@ -26,12 +26,9 @@ class AuthTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('test', 'GET');
 
-        $route = new Route($this->adapter, $this->container, $request, [
-            'uri' => '/test',
-            'action' => [
-                'providers' => [],
-            ],
-        ]);
+        $route = new Route($this->adapter, $this->container, $request, new \Illuminate\Routing\Route('GET', '/test', [
+            'providers' => [],
+        ]));
 
         $this->auth->shouldReceive('check')->once()->with(false)->andReturn(false);
         $this->auth->shouldReceive('authenticate')->once()->with([])->andReturn(null);
@@ -47,12 +44,9 @@ class AuthTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('test', 'GET');
 
-        $route = new Route($this->adapter, $this->container, $request, [
-            'uri' => '/test',
-            'action' => [
-                'providers' => [],
-            ],
-        ]);
+        $route = new Route($this->adapter, $this->container, $request, new \Illuminate\Routing\Route('GET', '/test', [
+            'providers' => [],
+        ]));
 
         $this->auth->shouldReceive('check')->once()->with(false)->andReturn(true);
 
@@ -72,12 +66,9 @@ class AuthTest extends PHPUnit_Framework_TestCase
 
         $request = Request::create('test', 'GET');
 
-        $route = new Route($this->adapter, $this->container, $request, [
-            'uri' => '/test',
-            'action' => [
-                'providers' => [],
-            ],
-        ]);
+        $route = new Route($this->adapter, $this->container, $request, new \Illuminate\Routing\Route('GET', '/test', [
+            'providers' => [],
+        ]));
 
         $this->auth->shouldReceive('check')->once()->with(false)->andReturn(false);
         $this->auth->shouldReceive('authenticate')->once()->with([])->andThrow($exception);

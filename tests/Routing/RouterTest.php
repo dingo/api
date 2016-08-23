@@ -73,7 +73,7 @@ class RouterTest extends Adapter\BaseAdapterTest
 
         $routes = $this->router->getRoutes('v1');
 
-        $this->assertInstanceOf('Dingo\Api\Routing\Route', $routes->getByName('apiusers'));
+        $this->assertInstanceOf('Dingo\Api\Routing\Route', $routes->getByName('api.users'));
     }
 
     /**
