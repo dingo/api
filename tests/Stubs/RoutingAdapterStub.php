@@ -50,6 +50,8 @@ class RoutingAdapterStub implements Adapter
             $response = Response::makeFromExisting($response);
         } elseif ($response instanceof JsonResponse) {
             $response = Response::makeFromJson($response);
+        } else {
+            $response = new Response($response);
         }
 
         return $response->prepare($request);
