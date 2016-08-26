@@ -2,6 +2,7 @@
 
 namespace Dingo\Api\Tests;
 
+use Dingo\Api\Exception\ValidationHttpException;
 use Mockery as m;
 use Dingo\Api\Http;
 use Dingo\Api\Auth\Auth;
@@ -367,5 +368,47 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame('bar', $response);
         $this->assertNull(RequestFacade::input('foo'));
+    }
+
+    public function testRedirectResponseThrowsException()
+    {
+        $this->router->version('v1', function () {
+            $this->router->get('redirect', function () {
+                return new \Illuminate\Http\RedirectResponse('redirect-test');
+            });
+        });
+
+        $response = $this->dispatcher->get('redirect');
+        $this->assertInstanceOf('Illuminate\Http\RedirectResponse', $response);
+        $this->assertSame('redirect-test', $response->getTargetUrl());
+    }
+
+    /**
+     * @expectedException \Dingo\Api\Exception\InternalHttpException
+     */
+    public function testNotOkJsonResponseThrowsException()
+    {
+        $this->router->version('v1', function () {
+            $this->router->get('json', function () {
+                return new \Illuminate\Http\JsonResponse(['is' => 'json'], 422);
+            });
+        });
+
+        $this->dispatcher->get('json');
+    }
+
+    /**
+     * @expectedException \Dingo\Api\Exception\ValidationHttpException
+     */
+    public function testFormRequestValidationFailureThrowsValidationException()
+    {
+        $this->router->version('v1', function () {
+            $this->router->get('fail', function () {
+                //Mocking the form validation call is challenging at the moment, so next best thing
+                throw new ValidationHttpException(['foo' => 'bar']);
+            });
+        });
+
+        $this->dispatcher->get('fail');
     }
 }

@@ -4,6 +4,7 @@ namespace Dingo\Api\Tests\Stubs;
 
 use Closure;
 use Illuminate\Container\Container;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Contract\Routing\Adapter;
@@ -45,8 +46,10 @@ class RoutingAdapterStub implements Adapter
 
     protected function prepareResponse($request, $response)
     {
-        if (! $response instanceof Response && ! $response instanceof IlluminateResponse) {
-            $response = new Response($response);
+        if ($response instanceof IlluminateResponse) {
+            $response = Response::makeFromExisting($response);
+        } elseif ($response instanceof JsonResponse) {
+            $response = Response::makeFromJson($response);
         }
 
         return $response->prepare($request);
