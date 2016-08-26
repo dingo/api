@@ -10,8 +10,6 @@ class RoutingServiceProvider extends ServiceProvider
 {
     /**
      * Register the service provider.
-     *
-     * @return void
      */
     public function register()
     {
@@ -22,8 +20,6 @@ class RoutingServiceProvider extends ServiceProvider
 
     /**
      * Register the router.
-     *
-     * @return void
      */
     protected function registerRouter()
     {
@@ -48,8 +44,6 @@ class RoutingServiceProvider extends ServiceProvider
 
     /**
      * Register the URL generator.
-     *
-     * @return void
      */
     protected function registerUrlGenerator()
     {
@@ -76,5 +70,17 @@ class RoutingServiceProvider extends ServiceProvider
 
             return $url;
         });
+    }
+
+    /**
+     * Get the URL generator request rebinder.
+     *
+     * @return \Closure
+     */
+    private function requestRebinder()
+    {
+        return function ($app, $request) {
+            $app['api.url']->setRequest($request);
+        };
     }
 }
