@@ -54,7 +54,23 @@ class RoutingServiceProvider extends ServiceProvider
     protected function registerUrlGenerator()
     {
         $this->app->singleton('api.url', function ($app) {
-            $url = new UrlGenerator($app['request']);
+            $routes = $app['router']->getRoutes();
+
+            $app->instance('routes', $routes);
+
+            $url = new UrlGenerator(
+                $routes, $app->rebinding(
+                    'request', $this->requestRebinder()
+                )
+            );
+
+            $url->setSessionResolver(function () {
+                return $this->app['session'];
+            });
+
+            $app->rebinding('routes', function ($app, $routes) {
+                $app['url']->setRoutes($routes);
+            });
 
             $url->setRouteCollections($app['Dingo\Api\Routing\Router']->getRoutes());
 
