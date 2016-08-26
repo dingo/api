@@ -20,7 +20,6 @@ class UrlGenerator extends IlluminateUrlGenerator
      *
      * @param \Illuminate\Routing\RouteCollection $routes
      * @param \Dingo\Api\Http\Request|Request     $request
-     *
      */
     public function __construct(IlluminateRouteCollection $routes, Request $request)
     {
@@ -45,8 +44,6 @@ class UrlGenerator extends IlluminateUrlGenerator
      * Set the route collection instance.
      *
      * @param array $collections
-     *
-     * @return void
      */
     public function setRouteCollections(array $collections)
     {
