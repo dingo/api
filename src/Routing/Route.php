@@ -132,8 +132,6 @@ class Route
      * @param \Illuminate\Container\Container     $container
      * @param \Illuminate\Http\Request            $request
      * @param array|\Illuminate\Routing\Route     $route
-     *
-     * @return void
      */
     public function __construct(Adapter $adapter, Container $container, Request $request, $route)
     {
@@ -146,8 +144,6 @@ class Route
 
     /**
      * Setup the route properties.
-     *
-     * @return void
      */
     protected function setupRouteProperties(Request $request, $route)
     {
@@ -175,8 +171,6 @@ class Route
 
     /**
      * Merge the controller properties onto the route properties.
-     *
-     * @return void
      */
     protected function mergeControllerProperties()
     {
@@ -186,7 +180,7 @@ class Route
             $this->makeControllerInstance();
         }
 
-        if (! $this->controllerUsesHelpersTrait()) {
+        if (!$this->controllerUsesHelpersTrait()) {
             return;
         }
 
@@ -225,15 +219,13 @@ class Route
      *
      * @param string   $option
      * @param \Closure $callback
-     *
-     * @return void
      */
     protected function findControllerPropertyOptions($name)
     {
         $properties = [];
 
         foreach ($this->getControllerInstance()->{'get'.ucfirst($name)}() as $property) {
-            if (isset($property['options']) && ! $this->optionsApplyToControllerMethod($property['options'])) {
+            if (isset($property['options']) && !$this->optionsApplyToControllerMethod($property['options'])) {
                 continue;
             }
 
@@ -259,7 +251,7 @@ class Route
         } elseif (isset($options['only']) && in_array($this->controllerMethod, $this->explodeOnPipes($options['only']))) {
             return true;
         } elseif (isset($options['except'])) {
-            return ! in_array($this->controllerMethod, $this->explodeOnPipes($options['except']));
+            return !in_array($this->controllerMethod, $this->explodeOnPipes($options['except']));
         } elseif (in_array($this->controllerMethod, $this->explodeOnPipes($options))) {
             return true;
         }
@@ -286,7 +278,7 @@ class Route
      */
     protected function controllerUsesHelpersTrait()
     {
-        if (! $controller = $this->getControllerInstance()) {
+        if (!$controller = $this->getControllerInstance()) {
             return false;
         }
 
@@ -372,7 +364,7 @@ class Route
      */
     public function hasThrottle()
     {
-        return ! is_null($this->throttle);
+        return !is_null($this->throttle);
     }
 
     /**
