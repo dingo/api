@@ -180,7 +180,7 @@ class Route
             $this->makeControllerInstance();
         }
 
-        if (!$this->controllerUsesHelpersTrait()) {
+        if (! $this->controllerUsesHelpersTrait()) {
             return;
         }
 
@@ -226,7 +226,7 @@ class Route
         $properties = [];
 
         foreach ($this->getControllerInstance()->{'get'.ucfirst($name)}() as $property) {
-            if (isset($property['options']) && !$this->optionsApplyToControllerMethod($property['options'])) {
+            if (isset($property['options']) && ! $this->optionsApplyToControllerMethod($property['options'])) {
                 continue;
             }
 
@@ -252,7 +252,7 @@ class Route
         } elseif (isset($options['only']) && in_array($this->controllerMethod, $this->explodeOnPipes($options['only']))) {
             return true;
         } elseif (isset($options['except'])) {
-            return !in_array($this->controllerMethod, $this->explodeOnPipes($options['except']));
+            return ! in_array($this->controllerMethod, $this->explodeOnPipes($options['except']));
         } elseif (in_array($this->controllerMethod, $this->explodeOnPipes($options))) {
             return true;
         }
@@ -279,7 +279,7 @@ class Route
      */
     protected function controllerUsesHelpersTrait()
     {
-        if (!$controller = $this->getControllerInstance()) {
+        if (! $controller = $this->getControllerInstance()) {
             return false;
         }
 
@@ -365,7 +365,7 @@ class Route
      */
     public function hasThrottle()
     {
-        return !is_null($this->throttle);
+        return ! is_null($this->throttle);
     }
 
     /**
