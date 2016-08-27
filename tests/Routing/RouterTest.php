@@ -4,6 +4,7 @@ namespace Dingo\Api\Tests\Routing;
 
 use Mockery as m;
 use Dingo\Api\Http;
+use Dingo\Api\Routing\Router;
 use Illuminate\Container\Container;
 use Dingo\Api\Tests\Stubs\ThrottleStub;
 use Symfony\Component\HttpKernel\Exception\HttpException;
