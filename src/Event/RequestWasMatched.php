@@ -24,8 +24,8 @@ class RequestWasMatched
     /**
      * Create a new request was matched event.
      *
-     * @param \Dingo\Api\Http\Request                   $response
-     * @param \Illuminate\Contracts\Container\Container $content
+     * @param \Dingo\Api\Http\Request                   $request
+     * @param \Illuminate\Contracts\Container\Container $app
      *
      * @return void
      */
