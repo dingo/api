@@ -366,7 +366,7 @@ class Lumen implements Adapter
      *
      * @return array
      */
-    public function gatherRouteMiddlewares($route)
+    public function gatherRouteMiddleware($route)
     {
         // Route middleware in Lumen is not terminated.
         return [];

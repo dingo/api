@@ -224,9 +224,9 @@ class Laravel implements Adapter
      *
      * @return array
      */
-    public function gatherRouteMiddlewares($route)
+    public function gatherRouteMiddleware($route)
     {
-        return $this->router->gatherRouteMiddlewares($route);
+        return $this->router->gatherRouteMiddleware($route);
     }
 
     /**
