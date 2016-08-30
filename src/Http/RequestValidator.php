@@ -64,7 +64,7 @@ class RequestValidator
     /**
      * Extend the validators.
      *
-     * @param string|\Dingo\Api\Http\Validator
+     * @param string|\Dingo\Api\Http\Validator $validator
      *
      * @return void
      */
