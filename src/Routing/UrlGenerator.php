@@ -3,7 +3,6 @@
 namespace Dingo\Api\Routing;
 
 use Illuminate\Http\Request;
-use Illuminate\Routing\RouteCollection as IlluminateRouteCollection;
 use Illuminate\Routing\UrlGenerator as IlluminateUrlGenerator;
 
 class UrlGenerator extends IlluminateUrlGenerator
@@ -18,12 +17,13 @@ class UrlGenerator extends IlluminateUrlGenerator
     /**
      * Create a new URL generator instance.
      *
-     * @param \Illuminate\Routing\RouteCollection $routes
-     * @param \Dingo\Api\Http\Request|Request     $request
+     * @param \Dingo\Api\Http\Request $request
+     *
+     * @return void
      */
-    public function __construct(IlluminateRouteCollection $routes, Request $request)
+    public function __construct(Request $request)
     {
-        parent::__construct($routes, $request);
+        $this->setRequest($request);
     }
 
     /**
