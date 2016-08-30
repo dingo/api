@@ -226,6 +226,10 @@ class Laravel implements Adapter
      */
     public function gatherRouteMiddlewares($route)
     {
+        if (method_exists($this->router, 'gatherRouteMiddleware')) {
+            return $this->router->gatherRouteMiddleware($route);
+        }
+
         return $this->router->gatherRouteMiddlewares($route);
     }
 
