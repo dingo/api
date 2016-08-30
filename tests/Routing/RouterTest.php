@@ -173,18 +173,18 @@ class RouterTest extends Adapter\BaseAdapterTest
         $response = $this->router->dispatch($request);
 
         $this->assertSame(200, $response->getStatusCode());
-        $this->assertSame('"'.md5('bar').'"', $response->getETag());
+        $this->assertSame('"'.sha1('bar').'"', $response->getETag());
         $this->assertSame('bar', $response->getContent());
 
         $request = $this->createRequest('foo', 'GET', [
-            'if-none-match' => '"'.md5('bar').'"',
+            'if-none-match' => '"'.sha1('bar').'"',
             'accept' => 'application/vnd.api.v1+json',
         ]);
 
         $response = $this->router->dispatch($request);
 
         $this->assertSame(304, $response->getStatusCode());
-        $this->assertSame('"'.md5('bar').'"', $response->getETag());
+        $this->assertSame('"'.sha1('bar').'"', $response->getETag());
         $this->assertEmpty($response->getContent());
 
         $request = $this->createRequest('foo', 'GET', [
@@ -195,7 +195,7 @@ class RouterTest extends Adapter\BaseAdapterTest
         $response = $this->router->dispatch($request);
 
         $this->assertSame(200, $response->getStatusCode());
-        $this->assertSame('"'.md5('bar').'"', $response->getETag());
+        $this->assertSame('"'.sha1('bar').'"', $response->getETag());
         $this->assertSame('bar', $response->getContent());
     }
 
