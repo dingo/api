@@ -86,15 +86,15 @@ class Routes extends RouteListCommand
         foreach ($this->router->getRoutes() as $collection) {
             foreach ($collection->getRoutes() as $route) {
                 $routes[] = $this->filterRoute([
-                    'host'      => $route->domain(),
-                    'method'    => implode('|', $route->methods()),
-                    'uri'       => $route->uri(),
-                    'name'      => $route->getName(),
-                    'action'    => $route->getActionName(),
+                    'host' => $route->domain(),
+                    'method' => implode('|', $route->methods()),
+                    'uri' => $route->uri(),
+                    'name' => $route->getName(),
+                    'action' => $route->getActionName(),
                     'protected' => $route->isProtected() ? 'Yes' : 'No',
-                    'versions'  => implode(', ', $route->versions()),
-                    'scopes'    => implode(', ', $route->scopes()),
-                    'rate'      => $this->routeRateLimit($route),
+                    'versions' => implode(', ', $route->versions()),
+                    'scopes' => implode(', ', $route->scopes()),
+                    'rate' => $this->routeRateLimit($route),
                 ]);
             }
         }
