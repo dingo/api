@@ -183,29 +183,6 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
         $this->assertSame('bar', $this->router->dispatch($request)->getContent(), 'Router does not support point release versions.');
     }
 
-    public function testRoutingControllers()
-    {
-        $this->router->version('v1', ['namespace' => 'Dingo\Api\Tests\Stubs'], function () {
-            $this->router->controllers([
-                'bar' => 'RoutingControllerStub',
-            ]);
-        });
-
-        $request = $this->createRequest('/bar/index', 'GET', ['accept' => 'application/vnd.api.v1+json']);
-
-        $this->assertSame('foo', $this->router->dispatch($request)->getContent(), 'Router did not register controller correctly.');
-
-        $this->router->version('v2', function () {
-            $this->router->controllers([
-                'bar' => 'Dingo\Api\Tests\Stubs\RoutingControllerStub',
-            ]);
-        });
-
-        $request = $this->createRequest('/bar/index', 'GET', ['accept' => 'application/vnd.api.v1+json']);
-
-        $this->assertSame('foo', $this->router->dispatch($request)->getContent(), 'Router did not register controller correctly.');
-    }
-
     public function testRoutingResources()
     {
         $this->router->version('v1', ['namespace' => 'Dingo\Api\Tests\Stubs'], function () {
