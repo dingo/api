@@ -65,10 +65,10 @@ class Fractal implements Adapter
     /**
      * Transform a response with a transformer.
      *
-     * @param mixed                          $response
-     * @param TransformerAbstract|object     $transformer
-     * @param \Dingo\Api\Transformer\Binding $binding
-     * @param \Dingo\Api\Http\Request        $request
+     * @param mixed                                         $response
+     * @param League\Fractal\TransformerAbstract|object     $transformer
+     * @param \Dingo\Api\Transformer\Binding                $binding
+     * @param \Dingo\Api\Http\Request                       $request
      *
      * @return array
      */
