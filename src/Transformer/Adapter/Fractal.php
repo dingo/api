@@ -4,6 +4,7 @@ namespace Dingo\Api\Transformer\Adapter;
 
 use Dingo\Api\Http\Request;
 use Dingo\Api\Transformer\Binding;
+use League\Fractal\TransformerAbstract;
 use Dingo\Api\Contract\Transformer\Adapter;
 use League\Fractal\Manager as FractalManager;
 use League\Fractal\Resource\Item as FractalItem;
@@ -12,7 +13,6 @@ use Illuminate\Support\Collection as IlluminateCollection;
 use League\Fractal\Resource\Collection as FractalCollection;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Contracts\Pagination\Paginator as IlluminatePaginator;
-use League\Fractal\TransformerAbstract;
 
 class Fractal implements Adapter
 {
@@ -66,7 +66,7 @@ class Fractal implements Adapter
      * Transform a response with a transformer.
      *
      * @param mixed                          $response
-     * @param object|TransformerAbstract     $transformer
+     * @param TransformerAbstract|object     $transformer
      * @param \Dingo\Api\Transformer\Binding $binding
      * @param \Dingo\Api\Http\Request        $request
      *
