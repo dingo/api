@@ -466,13 +466,18 @@ class Dispatcher
             $uri = rtrim($this->getRootRequest()->root(), '/').'/'.ltrim($uri, '/');
         }
 
+        // If the RequestURI contains the script filename in it, the basePath is
+        // incorrectly set and the route 404s. @see https://github.com/dingo/api/issues/1199
+        $server = $this->container['request']->server->all();
+        $server['SCRIPT_FILENAME'] = '';
+
         $request = InternalRequest::create(
             $uri,
             $verb,
             $parameters,
             $this->cookies,
             $this->uploads,
-            $this->container['request']->server->all(),
+            $server,
             $this->content
         );
 

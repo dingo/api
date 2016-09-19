@@ -7,6 +7,7 @@ use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
 use Illuminate\Routing\RouteCollection;
 use Dingo\Api\Contract\Routing\Adapter;
+use Dingo\Api\Http\InternalRequest;
 use Illuminate\Contracts\Container\Container;
 use Dingo\Api\Exception\UnknownVersionException;
 
@@ -80,6 +81,13 @@ class Laravel implements Adapter
         $router = clone $this->router;
 
         $response = $router->dispatch($request);
+
+        // if an internal request, remove controller from container to be fresh for the next request
+        if ($request instanceof InternalRequest) {
+            list($controller) = explode('@', $router->getCurrentRoute()->getAction()['uses']);
+
+            app()->forgetInstance($controller);
+        }
 
         unset($router);
 
