@@ -26,12 +26,9 @@ class AuthTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('test', 'GET');
 
-        $route = new Route($this->adapter, $this->container, $request, [
-            'uri' => '/test',
-            'action' => [
-                'providers' => [],
-            ],
-        ]);
+        $route = new Route($this->adapter, $this->container, $request, new \Illuminate\Routing\Route('GET', '/test', [
+            'providers' => [],
+        ]));
 
         $this->auth->shouldReceive('check')->once()->with(false)->andReturn(false);
         $this->auth->shouldReceive('authenticate')->once()->with([])->andReturn(null);
@@ -39,7 +36,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
         $this->router->shouldReceive('getCurrentRoute')->once()->andReturn($route);
 
         $this->middleware->handle($request, function ($handledRequest) use ($request) {
-            $this->assertEquals($handledRequest, $request);
+            $this->assertSame($handledRequest, $request);
         });
     }
 
@@ -47,19 +44,16 @@ class AuthTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('test', 'GET');
 
-        $route = new Route($this->adapter, $this->container, $request, [
-            'uri' => '/test',
-            'action' => [
-                'providers' => [],
-            ],
-        ]);
+        $route = new Route($this->adapter, $this->container, $request, new \Illuminate\Routing\Route('GET', '/test', [
+            'providers' => [],
+        ]));
 
         $this->auth->shouldReceive('check')->once()->with(false)->andReturn(true);
 
         $this->router->shouldReceive('getCurrentRoute')->once()->andReturn($route);
 
         $this->middleware->handle($request, function ($handledRequest) use ($request) {
-            $this->assertEquals($handledRequest, $request);
+            $this->assertSame($handledRequest, $request);
         });
     }
 
@@ -72,12 +66,9 @@ class AuthTest extends PHPUnit_Framework_TestCase
 
         $request = Request::create('test', 'GET');
 
-        $route = new Route($this->adapter, $this->container, $request, [
-            'uri' => '/test',
-            'action' => [
-                'providers' => [],
-            ],
-        ]);
+        $route = new Route($this->adapter, $this->container, $request, new \Illuminate\Routing\Route('GET', '/test', [
+            'providers' => [],
+        ]));
 
         $this->auth->shouldReceive('check')->once()->with(false)->andReturn(false);
         $this->auth->shouldReceive('authenticate')->once()->with([])->andThrow($exception);

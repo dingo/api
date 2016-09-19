@@ -322,67 +322,6 @@ class Router
     }
 
     /**
-     * Register an array of controllers.
-     *
-     * @param array $controllers
-     *
-     * @return void
-     */
-    public function controllers(array $controllers)
-    {
-        foreach ($controllers as $uri => $controller) {
-            $this->controller($uri, $controller);
-        }
-    }
-
-    /**
-     * Register a controller.
-     *
-     * @param string $uri
-     * @param string $controller
-     * @param array  $names
-     *
-     * @return void
-     */
-    public function controller($uri, $controller, $names = [])
-    {
-        $routable = (new ControllerInspector)->getRoutable($this->addGroupNamespace($controller), $uri);
-
-        foreach ($routable as $method => $routes) {
-            if ($method == 'getMethodProperties') {
-                continue;
-            }
-
-            foreach ($routes as $route) {
-                $this->{$route['verb']}($route['uri'], [
-                    'uses' => $controller.'@'.$method,
-                    'as' => Arr::get($names, $method),
-                ]);
-            }
-        }
-    }
-
-    /**
-     * Add the group namespace to a controller.
-     *
-     * @param string $controller
-     *
-     * @return string
-     */
-    protected function addGroupNamespace($controller)
-    {
-        if (! empty($this->groupStack)) {
-            $group = end($this->groupStack);
-
-            if (isset($group['namespace']) && strpos($controller, '\\') !== 0) {
-                return $group['namespace'].'\\'.$controller;
-            }
-        }
-
-        return $controller;
-    }
-
-    /**
      * Add a route to the routing adapter.
      *
      * @param string|array          $methods
@@ -479,7 +418,7 @@ class Router
         $new['where'] = array_merge(Arr::get($old, 'where', []), Arr::get($new, 'where', []));
 
         if (isset($old['as'])) {
-            $new['as'] = $old['as'].Arr::get($new, 'as', '');
+            $new['as'] = trim($old['as'].'.'.Arr::get($new, 'as', ''), '.');
         }
 
         return array_merge_recursive(array_except($old, ['namespace', 'prefix', 'where', 'as']), $new);
@@ -622,7 +561,7 @@ class Router
 
         if ($response->isSuccessful() && $this->requestIsConditional()) {
             if (! $response->headers->has('ETag')) {
-                $response->setEtag(md5($response->getContent()));
+                $response->setEtag(sha1($response->getContent()));
             }
 
             $response->isNotModified($request);

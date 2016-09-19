@@ -50,7 +50,7 @@ class ResponseTest extends PHPUnit_Framework_TestCase
         $response->setMeta(['foo' => 'bar']);
         $response->meta('bing', 'bang');
 
-        $this->assertEquals(['foo' => 'bar', 'bing' => 'bang'], $response->getMeta());
+        $this->assertSame(['foo' => 'bar', 'bing' => 'bang'], $response->getMeta());
     }
 
     public function testBuildingWithCustomStatusCodeAndHeaders()
@@ -59,8 +59,8 @@ class ResponseTest extends PHPUnit_Framework_TestCase
         $response->statusCode(302);
         $response->header('Foo', 'Bar');
 
-        $this->assertEquals('Bar', $response->headers->get('Foo'));
-        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertSame('Bar', $response->headers->get('Foo'));
+        $this->assertSame(302, $response->getStatusCode());
     }
 
     public function testChangingContentWithEvents()
@@ -73,7 +73,7 @@ class ResponseTest extends PHPUnit_Framework_TestCase
 
         $response = new Response(['foo' => 'bar']);
 
-        $this->assertEquals('{"foo":"bam!"}', $response->morph('json')->getContent());
+        $this->assertSame('{"foo":"bam!"}', $response->morph('json')->getContent());
 
         $this->events->forget('Dingo\Api\Event\ResponseWasMorphed');
     }
@@ -88,7 +88,7 @@ class ResponseTest extends PHPUnit_Framework_TestCase
 
         $response = new Response(['foo' => 'bar']);
 
-        $this->assertEquals('bar', $response->morph('json')->headers->get('x-foo'));
+        $this->assertSame('bar', $response->morph('json')->headers->get('x-foo'));
 
         $this->events->forget('Dingo\Api\Event\ResponseIsMorphing');
     }
