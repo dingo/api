@@ -7,6 +7,7 @@ The Dingo API package is meant to provide you, the developer, with a set of tool
 [![Development Version](https://img.shields.io/packagist/vpre/dingo/api.svg?style=flat-square)](https://packagist.org/packages/dingo/api)
 [![Monthly Installs](https://img.shields.io/packagist/dm/dingo/api.svg?style=flat-square)](https://packagist.org/packages/dingo/api)
 [![StyleCI](https://styleci.io/repos/18673522/shield)](https://styleci.io/repos/18673522)
+[![codecov.io](https://codecov.io/github/dingo/api/coverage.svg?branch=master)](https://codecov.io/github/dingo/api?branch=master)
 
 ## Features
 
