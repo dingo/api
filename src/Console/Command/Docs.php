@@ -20,6 +20,13 @@ class Docs extends Command
     protected $router;
 
     /**
+     * The blueprint instance.
+     *
+     * @var \Dingo\Blueprint\Blueprint
+     */
+    protected $blueprint;
+
+    /**
      * Blueprint instance.
      *
      * @var \Dingo\Blueprint\Blueprint
