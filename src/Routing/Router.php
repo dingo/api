@@ -358,7 +358,7 @@ class Router
     /**
      * Add the controller preparation middleware to the beginning of the routes middleware.
      *
-     * @param array @action
+     * @param array $action
      *
      * @return array
      */
