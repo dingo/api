@@ -261,7 +261,7 @@ class Handler
     /**
      * Set the throttle to use for rate limiting.
      *
-     * @param string|\Dingo\Api\Contract\Http\RateLimit\Throttle
+     * @param string|\Dingo\Api\Contract\Http\RateLimit\Throttle $throttle
      *
      * @return void
      */
