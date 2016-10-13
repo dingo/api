@@ -7,7 +7,6 @@ use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
 use Illuminate\Routing\RouteCollection;
 use Dingo\Api\Contract\Routing\Adapter;
-use Illuminate\Contracts\Container\Container;
 use Dingo\Api\Exception\UnknownVersionException;
 
 class Laravel implements Adapter

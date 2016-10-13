@@ -8,6 +8,7 @@ use Illuminate\Cache\CacheManager;
 use Illuminate\Container\Container;
 use Dingo\Api\Http\RateLimit\Handler;
 use Dingo\Api\Tests\Stubs\ThrottleStub;
+use Dingo\Api\Http\RateLimit\Throttle\Route;
 
 class HandlerTest extends PHPUnit_Framework_TestCase
 {
@@ -30,7 +31,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 
         $throttle = $this->limiter->getThrottle();
 
-        $this->assertInstanceOf('Dingo\Api\Http\RateLimit\Throttle\Route', $throttle);
+        $this->assertInstanceOf(Route::class, $throttle);
         $this->assertSame(100, $throttle->getLimit());
         $this->assertSame(100, $throttle->getExpires());
     }
