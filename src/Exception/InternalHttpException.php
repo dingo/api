@@ -9,6 +9,13 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 class InternalHttpException extends HttpException
 {
     /**
+     * The response.
+     *
+     * @var \Illuminate\Http\Response
+     */
+    protected $response;
+
+    /**
      * Create a new internal HTTP exception instance.
      *
      * @param \Symfony\Component\HttpFoundation\Response $response
