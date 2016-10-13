@@ -132,6 +132,8 @@ class Route
      * @param \Illuminate\Container\Container     $container
      * @param \Illuminate\Http\Request            $request
      * @param array|\Illuminate\Routing\Route     $route
+     *
+     * @return void
      */
     public function __construct(Adapter $adapter, Container $container, Request $request, $route)
     {

@@ -43,6 +43,8 @@ class Accept implements Parser
      * @param string $subtype
      * @param string $version
      * @param string $format
+     *
+     * @return void
      */
     public function __construct($standardsTree, $subtype, $version, $format)
     {
