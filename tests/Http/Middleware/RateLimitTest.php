@@ -14,6 +14,7 @@ use Illuminate\Container\Container;
 use Dingo\Api\Http\RateLimit\Handler;
 use Dingo\Api\Tests\Stubs\ThrottleStub;
 use Dingo\Api\Http\Middleware\RateLimit;
+use Dingo\Api\Exception\RateLimitExceededException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class RateLimitTest extends PHPUnit_Framework_TestCase
@@ -125,11 +126,15 @@ class RateLimitTest extends PHPUnit_Framework_TestCase
                 return new Response('foo');
             });
         } catch (HttpException $exception) {
-            $this->assertSame(403, $exception->getStatusCode());
+            $this->assertInstanceOf(RateLimitExceededException::class, $exception);
+            $this->assertSame(429, $exception->getStatusCode());
             $this->assertSame('You have exceeded your rate limit.', $exception->getMessage());
-            $this->assertArrayHasKey('X-RateLimit-Limit', $exception->getHeaders());
-            $this->assertArrayHasKey('X-RateLimit-Remaining', $exception->getHeaders());
-            $this->assertArrayHasKey('X-RateLimit-Reset', $exception->getHeaders());
+
+            $headers = $exception->getHeaders();
+            $this->assertSame($headers['X-RateLimit-Reset'] - time(), $headers['Retry-After']);
+            $this->assertArrayHasKey('X-RateLimit-Limit', $headers);
+            $this->assertArrayHasKey('X-RateLimit-Remaining', $headers);
+            $this->assertArrayHasKey('X-RateLimit-Reset', $headers);
         }
     }
 
