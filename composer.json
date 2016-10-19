@@ -16,7 +16,7 @@
     ],
     "require": {
         "php": "^5.5.9 || ^7.0",
-        "dingo/blueprint": "0.2.*",
+        "dingo/blueprint": "0.1.*",
         "doctrine/annotations": "1.2.*",
         "illuminate/routing": "5.1.* || 5.2.* || 5.3.*",
         "illuminate/support": "5.1.* || 5.2.* || 5.3.*",
