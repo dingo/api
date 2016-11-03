@@ -377,6 +377,8 @@ class Lumen implements Adapter
     }
 
     /**
+     * Append given method to the current route methods.
+     *
      * @param array  $route
      * @param string $method
      *
