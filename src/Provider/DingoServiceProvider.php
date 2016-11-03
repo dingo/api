@@ -92,16 +92,16 @@ class DingoServiceProvider extends ServiceProvider
     {
         $aliases = [
             'Dingo\Api\Http\Request' => 'Dingo\Api\Contract\Http\Request',
-            'api.dispatcher'         => 'Dingo\Api\Dispatcher',
-            'api.http.validator'     => 'Dingo\Api\Http\RequestValidator',
-            'api.http.response'      => 'Dingo\Api\Http\Response\Factory',
-            'api.router'             => 'Dingo\Api\Routing\Router',
-            'api.router.adapter'     => 'Dingo\Api\Contract\Routing\Adapter',
-            'api.auth'               => 'Dingo\Api\Auth\Auth',
-            'api.limiting'           => 'Dingo\Api\Http\RateLimit\Handler',
-            'api.transformer'        => 'Dingo\Api\Transformer\Factory',
-            'api.url'                => 'Dingo\Api\Routing\UrlGenerator',
-            'api.exception'          => ['Dingo\Api\Exception\Handler', 'Dingo\Api\Contract\Debug\ExceptionHandler'],
+            'api.dispatcher' => 'Dingo\Api\Dispatcher',
+            'api.http.validator' => 'Dingo\Api\Http\RequestValidator',
+            'api.http.response' => 'Dingo\Api\Http\Response\Factory',
+            'api.router' => 'Dingo\Api\Routing\Router',
+            'api.router.adapter' => 'Dingo\Api\Contract\Routing\Adapter',
+            'api.auth' => 'Dingo\Api\Auth\Auth',
+            'api.limiting' => 'Dingo\Api\Http\RateLimit\Handler',
+            'api.transformer' => 'Dingo\Api\Transformer\Factory',
+            'api.url' => 'Dingo\Api\Routing\UrlGenerator',
+            'api.exception' => ['Dingo\Api\Exception\Handler', 'Dingo\Api\Contract\Debug\ExceptionHandler'],
         ];
 
         foreach ($aliases as $key => $aliases) {

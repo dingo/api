@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use PHPUnit_Framework_TestCase;
 use Illuminate\Container\Container;
 use Dingo\Api\Http\RequestValidator;
+use Dingo\Api\Tests\Stubs\HttpValidatorStub;
 use Dingo\Api\Http\Parser\Accept as AcceptParser;
 
 class RequestValidatorTest extends PHPUnit_Framework_TestCase
@@ -13,7 +14,7 @@ class RequestValidatorTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->container = new Container;
-        $this->container->instance('Dingo\Api\Http\Parser\Accept', new AcceptParser('vnd', 'test', 'v1', 'json'));
+        $this->container->instance(AcceptParser::class, new AcceptParser('vnd', 'test', 'v1', 'json'));
         $this->validator = new RequestValidator($this->container);
     }
 
@@ -26,14 +27,14 @@ class RequestValidatorTest extends PHPUnit_Framework_TestCase
 
     public function testValidationFails()
     {
-        $this->validator->replace(['Dingo\Api\Tests\Stubs\HttpValidatorStub']);
+        $this->validator->replace([HttpValidatorStub::class]);
 
         $this->assertFalse($this->validator->validateRequest(Request::create('foo', 'GET')), 'Validation passed when given a GET request.');
     }
 
     public function testValidationPasses()
     {
-        $this->validator->replace(['Dingo\Api\Tests\Stubs\HttpValidatorStub']);
+        $this->validator->replace([HttpValidatorStub::class]);
 
         $this->assertTrue($this->validator->validateRequest(Request::create('foo', 'POST')), 'Validation failed when given a POST request.');
     }

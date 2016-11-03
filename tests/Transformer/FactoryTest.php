@@ -39,20 +39,20 @@ class FactoryTest extends PHPUnit_Framework_TestCase
     {
         // Third parameter is parameters and fourth is callback.
         $binding = $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub, ['foo' => 'bar'], function ($foo) {
-            $this->assertEquals('foo', $foo);
+            $this->assertSame('foo', $foo);
         });
 
         $binding->fireCallback('foo');
-        $this->assertEquals(['foo' => 'bar'], $binding->getParameters());
+        $this->assertSame(['foo' => 'bar'], $binding->getParameters());
 
         // Third parameter is parameters and fourth is null.
         $binding = $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub, ['foo' => 'bar']);
 
-        $this->assertEquals(['foo' => 'bar'], $binding->getParameters());
+        $this->assertSame(['foo' => 'bar'], $binding->getParameters());
 
         // Third parameter is callback and fourth is null.
         $binding = $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub, function ($foo) {
-            $this->assertEquals('foo', $foo);
+            $this->assertSame('foo', $foo);
         });
 
         $binding->fireCallback('foo');
@@ -71,7 +71,7 @@ class FactoryTest extends PHPUnit_Framework_TestCase
 
         $response = $this->factory->transform(new UserStub('Jason'));
 
-        $this->assertEquals(['name' => 'Jason'], $response);
+        $this->assertSame(['name' => 'Jason'], $response);
     }
 
     public function testTransformingCollectionResponse()
@@ -80,7 +80,7 @@ class FactoryTest extends PHPUnit_Framework_TestCase
 
         $response = $this->factory->transform(new Collection([new UserStub('Jason'), new UserStub('Bob')]));
 
-        $this->assertEquals([['name' => 'Jason'], ['name' => 'Bob']], $response);
+        $this->assertSame([['name' => 'Jason'], ['name' => 'Bob']], $response);
     }
 
     public function testTransforingWithIlluminateRequest()
@@ -94,7 +94,7 @@ class FactoryTest extends PHPUnit_Framework_TestCase
 
         $response = $factory->transform(new UserStub('Jason'));
 
-        $this->assertEquals(['name' => 'Jason'], $response);
+        $this->assertSame(['name' => 'Jason'], $response);
     }
 
     /**

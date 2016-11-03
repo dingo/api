@@ -14,7 +14,7 @@ class FormRequest extends IlluminateFormRequest
      *
      * @param \Illuminate\Contracts\Validation\Validator $validator
      *
-     * @return mixed
+     * @return void
      */
     protected function failedValidation(Validator $validator)
     {
@@ -28,7 +28,7 @@ class FormRequest extends IlluminateFormRequest
     /**
      * Handle a failed authorization attempt.
      *
-     * @return mixed
+     * @return void
      */
     protected function failedAuthorization()
     {

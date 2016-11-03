@@ -103,7 +103,7 @@ class Handler
         } elseif ($limit > 0 || $expires > 0) {
             $this->throttle = new Route(['limit' => $limit, 'expires' => $expires]);
 
-            $this->keyPrefix = md5($request->path());
+            $this->keyPrefix = sha1($request->path());
 
         // Otherwise we'll use the throttle that gives the consumer the largest
         // amount of requests. If no matching throttle is found then rate
@@ -261,7 +261,7 @@ class Handler
     /**
      * Set the throttle to use for rate limiting.
      *
-     * @param string|\Dingo\Api\Contract\Http\RateLimit\Throttle
+     * @param string|\Dingo\Api\Contract\Http\RateLimit\Throttle $throttle
      *
      * @return void
      */

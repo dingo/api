@@ -9,6 +9,13 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class Accept implements Parser
 {
     /**
+     * Standards tree.
+     *
+     * @var string
+     */
+    protected $standardsTree;
+
+    /**
      * API subtype.
      *
      * @var string
@@ -60,7 +67,7 @@ class Accept implements Parser
      */
     public function parse(Request $request, $strict = false)
     {
-        $pattern = '/application\/'.$this->standardsTree.'\.('.$this->subtype.')\.([\w\d\.]+)\+([\w]+)/';
+        $pattern = '/application\/'.$this->standardsTree.'\.('.$this->subtype.')\.([\w\d\.\-]+)\+([\w]+)/';
 
         if (! preg_match($pattern, $request->header('accept'), $matches)) {
             if ($strict) {

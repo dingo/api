@@ -247,7 +247,7 @@ class Dispatcher
 
         $this->content = $content;
 
-        return $this->header('content-type', 'application/json');
+        return $this->header('Content-Type', 'application/json');
     }
 
     /**
@@ -539,7 +539,7 @@ class Dispatcher
 
             $response = $this->router->dispatch($request);
 
-            if (! $response->isSuccessful()) {
+            if (! $response->isSuccessful() && ! $response->isRedirection()) {
                 throw new InternalHttpException($response);
             } elseif (! $this->raw) {
                 $response = $response->getOriginalContent();

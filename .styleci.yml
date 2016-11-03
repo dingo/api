@@ -1,11 +1,8 @@
-preset: recommended
+preset: laravel
 
 linting: true
 
 enabled:
-  - logical_not_operators_with_successor_space
-
-disabled:
-  - align_double_arrow
-  - new_with_braces
-  - ordered_use
+  - phpdoc_order
+  - phpdoc_separation
+  - unalign_double_arrow

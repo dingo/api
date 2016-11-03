@@ -32,28 +32,28 @@ class JsonpTest extends PHPUnit_Framework_TestCase
     {
         $response = (new Response(new EloquentModelStub))->morph();
 
-        $this->assertEquals('foo({"foo_bar":{"foo":"bar"}});', $response->getContent());
+        $this->assertSame('foo({"foo_bar":{"foo":"bar"}});', $response->getContent());
     }
 
     public function testMorphingEloquentCollection()
     {
         $response = (new Response(new Collection([new EloquentModelStub, new EloquentModelStub])))->morph();
 
-        $this->assertEquals('foo({"foo_bars":[{"foo":"bar"},{"foo":"bar"}]});', $response->getContent());
+        $this->assertSame('foo({"foo_bars":[{"foo":"bar"},{"foo":"bar"}]});', $response->getContent());
     }
 
     public function testMorphingEmptyEloquentCollection()
     {
         $response = (new Response(new Collection))->morph();
 
-        $this->assertEquals('foo([]);', $response->getContent());
+        $this->assertSame('foo([]);', $response->getContent());
     }
 
     public function testMorphingString()
     {
         $response = (new Response('foo'))->morph();
 
-        $this->assertEquals('foo', $response->getContent());
+        $this->assertSame('foo', $response->getContent());
     }
 
     public function testMorphingArray()
@@ -62,11 +62,11 @@ class JsonpTest extends PHPUnit_Framework_TestCase
 
         $response = (new Response(['foo' => 'bar', 'baz' => $messages]))->morph();
 
-        $this->assertEquals('foo({"foo":"bar","baz":{"foo":["bar"]}});', $response->getContent());
+        $this->assertSame('foo({"foo":"bar","baz":{"foo":["bar"]}});', $response->getContent());
     }
 
     public function testMorphingUnknownType()
     {
-        $this->assertEquals(1, (new Response(1))->morph()->getContent());
+        $this->assertSame(1, (new Response(1))->morph()->getContent());
     }
 }

@@ -13,6 +13,10 @@ env:
   global:
     - setup=basic
 
+cache:
+  directories:
+    - $HOME/.composer/cache
+
 matrix:
   include:
     - php: 5.5.9
@@ -21,9 +25,9 @@ matrix:
       env: setup=stable
 
 install:
-  - if [[ $setup = 'basic' ]]; then travis_retry composer install --no-interaction --prefer-dist; fi
-  - if [[ $setup = 'stable' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-stable; fi
-  - if [[ $setup = 'lowest' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-lowest --prefer-stable; fi
+  - if [[ $setup = 'basic' ]]; then travis_retry composer install --prefer-dist --no-interaction --no-suggest; fi
+  - if [[ $setup = 'stable' ]]; then travis_retry composer update --prefer-dist --no-interaction --no-suggest --prefer-stable; fi
+  - if [[ $setup = 'lowest' ]]; then travis_retry composer update --prefer-dist --no-interaction --no-suggest --prefer-stable --prefer-lowest; fi
 
 script:
   - vendor/bin/phpunit

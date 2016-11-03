@@ -14,9 +14,9 @@ class AcceptTest extends PHPUnit_Framework_TestCase
 
         $accept = $parser->parse($this->createRequest('foo', 'GET', ['accept' => 'application/vnd.foo.v2+xml']));
 
-        $this->assertEquals('api', $accept['subtype']);
-        $this->assertEquals('v1', $accept['version']);
-        $this->assertEquals('json', $accept['format']);
+        $this->assertSame('api', $accept['subtype']);
+        $this->assertSame('v1', $accept['version']);
+        $this->assertSame('json', $accept['format']);
     }
 
     /**
@@ -36,9 +36,9 @@ class AcceptTest extends PHPUnit_Framework_TestCase
 
         $accept = $parser->parse($this->createRequest('foo', 'GET', ['accept' => 'application/vnd.api.v2+xml']));
 
-        $this->assertEquals('api', $accept['subtype']);
-        $this->assertEquals('v2', $accept['version']);
-        $this->assertEquals('xml', $accept['format']);
+        $this->assertSame('api', $accept['subtype']);
+        $this->assertSame('v2', $accept['version']);
+        $this->assertSame('xml', $accept['format']);
     }
 
     public function testApiVersionWithoutVSuffix()
@@ -47,9 +47,20 @@ class AcceptTest extends PHPUnit_Framework_TestCase
 
         $accept = $parser->parse($this->createRequest('foo', 'GET', ['accept' => 'application/vnd.api.1.0+xml']));
 
-        $this->assertEquals('api', $accept['subtype']);
-        $this->assertEquals('1.0', $accept['version']);
-        $this->assertEquals('xml', $accept['format']);
+        $this->assertSame('api', $accept['subtype']);
+        $this->assertSame('1.0', $accept['version']);
+        $this->assertSame('xml', $accept['format']);
+    }
+
+    public function testApiVersionWithHyphen()
+    {
+        $parser = new Accept('vnd', 'api', '1.0-beta', 'json');
+
+        $accept = $parser->parse($this->createRequest('foo', 'GET', ['accept' => 'application/vnd.api.1.0-beta+xml']));
+
+        $this->assertSame('api', $accept['subtype']);
+        $this->assertSame('1.0-beta', $accept['version']);
+        $this->assertSame('xml', $accept['format']);
     }
 
     protected function createRequest($uri, $method, array $headers = [])

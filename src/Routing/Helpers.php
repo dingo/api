@@ -3,6 +3,9 @@
 namespace Dingo\Api\Routing;
 
 use ErrorException;
+use Dingo\Api\Auth\Auth;
+use Dingo\Api\Dispatcher;
+use Dingo\Api\Http\Response\Factory;
 
 /**
  * @property \Dingo\Api\Dispatcher                                            $api
@@ -156,7 +159,7 @@ trait Helpers
      */
     public function api()
     {
-        return app('Dingo\Api\Dispatcher');
+        return app(Dispatcher::class);
     }
 
     /**
@@ -166,7 +169,7 @@ trait Helpers
      */
     protected function user()
     {
-        return app('Dingo\Api\Auth\Auth')->user();
+        return app(Auth::class)->user();
     }
 
     /**
@@ -176,7 +179,7 @@ trait Helpers
      */
     protected function auth()
     {
-        return app('Dingo\Api\Auth\Auth');
+        return app(Auth::class);
     }
 
     /**
@@ -186,7 +189,7 @@ trait Helpers
      */
     protected function response()
     {
-        return app('Dingo\Api\Http\Response\Factory');
+        return app(Factory::class);
     }
 
     /**

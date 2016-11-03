@@ -18,7 +18,7 @@ class RoutingControllerStub extends Controller
 
         $this->rateLimit(10, 20);
 
-        $this->throttle('Dingo\Api\Tests\Stubs\BasicThrottleStub');
+        $this->throttle(BasicThrottleStub::class);
     }
 
     public function index()
