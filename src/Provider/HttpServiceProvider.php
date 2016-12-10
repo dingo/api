@@ -75,7 +75,8 @@ class HttpServiceProvider extends ServiceProvider
         $this->app->singleton(Accept::class, function ($app) {
             return new Validation\Accept(
                 $this->app[AcceptParser::class],
-                $this->config('strict')
+                $this->config('strict'),
+                $this->config('strictSpecUrl')
             );
         });
     }
