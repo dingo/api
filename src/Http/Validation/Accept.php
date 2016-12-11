@@ -35,8 +35,9 @@ class Accept implements Validator
      *
      * @param \Dingo\Api\Http\Parser\Accept $accept
      * @param bool                          $strict
-     *
      * @param null                          $strictSpecUrl
+     *
+     * @return void
      */
     public function __construct(AcceptParser $accept, $strict = false, $strictSpecUrl = null)
     {
