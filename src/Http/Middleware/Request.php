@@ -153,6 +153,10 @@ class Request
         }
 
         foreach ($middlewares as $middleware) {
+            if ($middleware instanceof Closure) {
+                continue;
+            }
+
             list($name, $parameters) = $this->parseMiddleware($middleware);
 
             $instance = $this->app->make($name);
