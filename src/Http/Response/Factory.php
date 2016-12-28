@@ -7,8 +7,8 @@ use ErrorException;
 use Illuminate\Support\Str;
 use Dingo\Api\Http\Response;
 use Illuminate\Support\Collection;
-use Dingo\Api\Transformer\Factory as TransformerFactory;
 use Illuminate\Contracts\Pagination\Paginator;
+use Dingo\Api\Transformer\Factory as TransformerFactory;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Factory

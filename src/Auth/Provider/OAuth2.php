@@ -3,8 +3,8 @@
 namespace Dingo\Api\Auth\Provider;
 
 use Exception;
-use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
+use Illuminate\Http\Request;
 use League\OAuth2\Server\ResourceServer;
 use League\OAuth2\Server\Entity\AccessTokenEntity;
 use League\OAuth2\Server\Exception\OAuthException;
