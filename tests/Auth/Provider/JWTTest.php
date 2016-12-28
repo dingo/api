@@ -10,6 +10,9 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 
 class JWTTest extends PHPUnit_Framework_TestCase
 {
+    protected $auth;
+    protected $provider;
+
     public function setUp()
     {
         $this->auth = m::mock('Tymon\JWTAuth\JWTAuth');

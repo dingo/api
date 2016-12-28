@@ -6,13 +6,15 @@ use Mockery;
 use PHPUnit_Framework_TestCase;
 use Dingo\Api\Transformer\Factory;
 use Illuminate\Support\Collection;
-use Illuminate\Container\Container;
 use Dingo\Api\Tests\Stubs\UserStub;
+use Illuminate\Container\Container;
 use Dingo\Api\Tests\Stubs\TransformerStub;
 use Dingo\Api\Tests\Stubs\UserTransformerStub;
 
 class FactoryTest extends PHPUnit_Framework_TestCase
 {
+    protected $factory;
+
     public function setUp()
     {
         $container = new Container;
