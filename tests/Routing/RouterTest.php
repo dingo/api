@@ -77,7 +77,7 @@ class RouterTest extends Adapter\BaseAdapterTest
     }
 
     /**
-     * @expectedException RuntimeException
+     * @expectedException \RuntimeException
      * @expectedMessage A version is required for an API group definition.
      */
     public function testNoGroupVersionThrowsException()
