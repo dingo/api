@@ -2,6 +2,7 @@
 
 namespace Dingo\Api\Tests\Http\Middleware;
 
+use Illuminate\Routing\Route as IlluminateRoute;
 use Mockery as m;
 use Dingo\Api\Auth\Auth;
 use Dingo\Api\Http\Request;
@@ -28,7 +29,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('test', 'GET');
 
-        $route = new Route($this->adapter, $this->container, $request, new \Illuminate\Routing\Route('GET', '/test', [
+        $route = new Route($this->adapter, $this->container, $request, new IlluminateRoute('GET', '/test', [
             'providers' => [],
         ]));
 
@@ -46,7 +47,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('test', 'GET');
 
-        $route = new Route($this->adapter, $this->container, $request, new \Illuminate\Routing\Route('GET', '/test', [
+        $route = new Route($this->adapter, $this->container, $request, new IlluminateRoute('GET', '/test', [
             'providers' => [],
         ]));
 
@@ -68,7 +69,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
 
         $request = Request::create('test', 'GET');
 
-        $route = new Route($this->adapter, $this->container, $request, new \Illuminate\Routing\Route('GET', '/test', [
+        $route = new Route($this->adapter, $this->container, $request, new IlluminateRoute('GET', '/test', [
             'providers' => [],
         ]));
 

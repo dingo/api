@@ -10,6 +10,7 @@ use Dingo\Api\Http\Response;
 use Dingo\Api\Contract\Routing\Adapter;
 use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Pipeline\Pipeline;
+use Illuminate\Routing\Route as IlluminateRoute;
 
 class RoutingAdapterStub implements Adapter
 {
@@ -71,7 +72,7 @@ class RoutingAdapterStub implements Adapter
     {
         $this->createRouteCollections($versions);
 
-        $route = new \Illuminate\Routing\Route($methods, $uri, $action);
+        $route = new IlluminateRoute($methods, $uri, $action);
         $this->addWhereClausesToRoute($route);
 
         foreach ($versions as $version) {
