@@ -26,7 +26,7 @@ matrix:
       env: xdebug=false
 
 before_install:
-  - if [[ $xdebug != 'true' ]] ; then phpenv config-rm xdebug.ini; fi
+  - if [[ $xdebug = 'true' ]] ; then phpenv config-rm xdebug.ini; fi
 
 install:
   - if [[ $setup = 'basic' ]]; then travis_retry composer install --prefer-dist --no-interaction --no-suggest; fi
