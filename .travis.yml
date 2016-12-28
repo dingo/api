@@ -23,6 +23,8 @@ matrix:
       env: setup=lowest
     - php: 5.5.9
       env: setup=stable
+  allow_failures:
+    - php: hhvm
 
 install:
   - if [[ $setup = 'basic' ]]; then travis_retry composer install --prefer-dist --no-interaction --no-suggest; fi
