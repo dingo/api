@@ -2,13 +2,13 @@
 
 namespace Dingo\Api\Tests\Routing;
 
-use Illuminate\Routing\Route as IlluminateRoute;
 use Mockery as m;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Routing\Route;
 use PHPUnit_Framework_TestCase;
 use Illuminate\Container\Container;
 use Dingo\Api\Tests\Stubs\RoutingAdapterStub;
+use Illuminate\Routing\Route as IlluminateRoute;
 
 class RouteTest extends PHPUnit_Framework_TestCase
 {

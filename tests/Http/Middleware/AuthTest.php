@@ -2,7 +2,6 @@
 
 namespace Dingo\Api\Tests\Http\Middleware;
 
-use Illuminate\Routing\Route as IlluminateRoute;
 use Mockery as m;
 use Dingo\Api\Auth\Auth;
 use Dingo\Api\Http\Request;
@@ -10,8 +9,9 @@ use Dingo\Api\Routing\Route;
 use Dingo\Api\Routing\Router;
 use PHPUnit_Framework_TestCase;
 use Illuminate\Container\Container;
-use Dingo\Api\Http\Middleware\Auth as AuthMiddleware;
 use Dingo\Api\Tests\Stubs\RoutingAdapterStub;
+use Illuminate\Routing\Route as IlluminateRoute;
+use Dingo\Api\Http\Middleware\Auth as AuthMiddleware;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class AuthTest extends PHPUnit_Framework_TestCase

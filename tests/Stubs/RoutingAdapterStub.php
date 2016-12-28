@@ -3,14 +3,14 @@
 namespace Dingo\Api\Tests\Stubs;
 
 use Closure;
-use Illuminate\Container\Container;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
-use Dingo\Api\Contract\Routing\Adapter;
-use Illuminate\Http\Response as IlluminateResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Pipeline\Pipeline;
+use Illuminate\Container\Container;
+use Dingo\Api\Contract\Routing\Adapter;
 use Illuminate\Routing\Route as IlluminateRoute;
+use Illuminate\Http\Response as IlluminateResponse;
 
 class RoutingAdapterStub implements Adapter
 {
