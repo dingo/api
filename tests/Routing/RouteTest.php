@@ -8,6 +8,7 @@ use Dingo\Api\Routing\Route;
 use PHPUnit_Framework_TestCase;
 use Illuminate\Container\Container;
 use Dingo\Api\Tests\Stubs\RoutingAdapterStub;
+use Illuminate\Routing\Route as IlluminateRoute;
 
 class RouteTest extends PHPUnit_Framework_TestCase
 {
@@ -26,7 +27,7 @@ class RouteTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('foo', 'GET');
 
-        $route = new Route($this->adapter, $this->container, $request, new \Illuminate\Routing\Route(['GET', 'HEAD'], 'foo', [
+        $route = new Route($this->adapter, $this->container, $request, new IlluminateRoute(['GET', 'HEAD'], 'foo', [
             'scopes' => ['foo', 'bar'],
             'providers' => ['foo'],
             'limit' => 5,
@@ -50,7 +51,7 @@ class RouteTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('foo', 'GET');
 
-        $route = new Route($this->adapter, $this->container, $request, new \Illuminate\Routing\Route(['GET', 'HEAD'], 'foo', [
+        $route = new Route($this->adapter, $this->container, $request, new IlluminateRoute(['GET', 'HEAD'], 'foo', [
             'scopes' => ['foo', 'bar'],
             'providers' => ['foo'],
             'limit' => 5,
@@ -69,7 +70,7 @@ class RouteTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($route->hasThrottle(), 'Route did not setup throttle correctly.');
         $this->assertInstanceOf('Dingo\Api\Tests\Stubs\BasicThrottleStub', $route->getThrottle(), 'Route did not setup throttle correctly.');
 
-        $route = new Route($this->adapter, $this->container, $request, new \Illuminate\Routing\Route(['GET', 'HEAD'], 'foo/bar', [
+        $route = new Route($this->adapter, $this->container, $request, new IlluminateRoute(['GET', 'HEAD'], 'foo/bar', [
             'scopes' => ['foo', 'bar'],
             'providers' => ['foo'],
             'limit' => 5,

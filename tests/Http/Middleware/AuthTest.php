@@ -9,8 +9,9 @@ use Dingo\Api\Routing\Route;
 use Dingo\Api\Routing\Router;
 use PHPUnit_Framework_TestCase;
 use Illuminate\Container\Container;
-use Dingo\Api\Http\Middleware\Auth as AuthMiddleware;
 use Dingo\Api\Tests\Stubs\RoutingAdapterStub;
+use Illuminate\Routing\Route as IlluminateRoute;
+use Dingo\Api\Http\Middleware\Auth as AuthMiddleware;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class AuthTest extends PHPUnit_Framework_TestCase
@@ -28,7 +29,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('test', 'GET');
 
-        $route = new Route($this->adapter, $this->container, $request, new \Illuminate\Routing\Route('GET', '/test', [
+        $route = new Route($this->adapter, $this->container, $request, new IlluminateRoute('GET', '/test', [
             'providers' => [],
         ]));
 
@@ -46,7 +47,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
     {
         $request = Request::create('test', 'GET');
 
-        $route = new Route($this->adapter, $this->container, $request, new \Illuminate\Routing\Route('GET', '/test', [
+        $route = new Route($this->adapter, $this->container, $request, new IlluminateRoute('GET', '/test', [
             'providers' => [],
         ]));
 
@@ -68,7 +69,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
 
         $request = Request::create('test', 'GET');
 
-        $route = new Route($this->adapter, $this->container, $request, new \Illuminate\Routing\Route('GET', '/test', [
+        $route = new Route($this->adapter, $this->container, $request, new IlluminateRoute('GET', '/test', [
             'providers' => [],
         ]));
 
