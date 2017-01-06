@@ -60,5 +60,9 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "scripts": {
+        "test": "vendor/bin/phpunit --colors=always",
+        "test:ci": "vendor/bin/phpunit --verbose --coverage-text --coverage-clover=coverage.xml"
+    }
 }
