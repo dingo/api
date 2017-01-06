@@ -25,7 +25,7 @@ matrix:
     - php: hhvm
 
 before_install:
-  - if [[ $xdebug = 'false' ]] ; then phpenv config-rm xdebug.ini; fi
+  - if [[ $xdebug = 'false' ] && [ $php != 'hhvm' ]] ; then phpenv config-rm xdebug.ini; fi
 
 install:
   - if [[ $setup = 'basic' ]]; then travis_retry composer install --prefer-dist --no-interaction --no-suggest; fi
