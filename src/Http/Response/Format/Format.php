@@ -53,7 +53,8 @@ abstract class Format
      *
      * @return mixed
      */
-    public function formatOtherContent($content) {
+    public function formatOtherContent($content)
+    {
         return $content;
     }
 
