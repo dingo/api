@@ -119,7 +119,7 @@ class Laravel implements Adapter
      */
     public function getRouteProperties($route, Request $request)
     {
-        return [$route->getUri(), $route->getMethods(), $route->getAction()];
+        return [$route->uri(), $route->methods(), $route->getAction()];
     }
 
     /**
