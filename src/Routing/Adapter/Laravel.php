@@ -2,12 +2,12 @@
 
 namespace Dingo\Api\Routing\Adapter;
 
-use Illuminate\Http\Request;
-use Illuminate\Routing\Route;
-use Illuminate\Routing\Router;
-use Illuminate\Routing\RouteCollection;
-use Dingo\Api\Contract\Routing\Adapter;
 use Dingo\Api\Exception\UnknownVersionException;
+use Dingo\Api\Contract\Routing\Adapter;
+use Illuminate\Routing\RouteCollection;
+use Illuminate\Routing\Router;
+use Illuminate\Routing\Route;
+use Illuminate\Http\Request;
 
 class Laravel implements Adapter
 {
