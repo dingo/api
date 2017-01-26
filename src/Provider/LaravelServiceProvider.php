@@ -123,8 +123,8 @@ class LaravelServiceProvider extends DingoServiceProvider
      * with Laravel < 5.4 check if aliasMiddleware exists since this
      * method has been renamed.
      *
-     * @param $name
-     * @param $class
+     * @param string $name
+     * @param string $class
      *
      * @return void
      */
