@@ -3,6 +3,7 @@
 namespace Dingo\Api\Exception;
 
 use Exception;
+use Carbon\Carbon;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class RateLimitExceededException extends HttpException
@@ -20,7 +21,7 @@ class RateLimitExceededException extends HttpException
     public function __construct($message = null, Exception $previous = null, $headers = [], $code = 0)
     {
         if (array_key_exists('X-RateLimit-Reset', $headers)) {
-            $headers['Retry-After'] = $headers['X-RateLimit-Reset'] - time();
+            $headers['Retry-After'] = Carbon::createFromTimestampUTC($headers['X-RateLimit-Reset'])->diffInSeconds();
         }
 
         parent::__construct(429, $message ?: 'You have exceeded your rate limit.', $previous, $headers, $code);
