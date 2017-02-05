@@ -121,7 +121,7 @@ class Docs extends Command
     {
         $name = $this->option('name') ?: $this->name;
 
-        if (! $name) {
+        if (!$name) {
             $this->comment('A name for the documentation was not supplied. Use the --name option or set a default in the configuration.');
 
             exit;
@@ -149,7 +149,7 @@ class Docs extends Command
     {
         $version = $this->option('use-version') ?: $this->version;
 
-        if (! $version) {
+        if (!$version) {
             $this->comment('A version for the documentation was not supplied. Use the --use-version option or set a default in the configuration.');
 
             exit;
@@ -167,7 +167,7 @@ class Docs extends Command
     {
         $controllers = new Collection;
 
-        if($controller = $this->option('use-controller')){
+        if ($controller = $this->option('use-controller')) {
             $this->addControllerIfNotExists($controllers, app($controller));
 
             return $controllers;
