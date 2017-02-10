@@ -39,9 +39,9 @@ class LaravelServiceProvider extends DingoServiceProvider
             $this->updateRouterBindings();
         });
 
-        $this->app['router']->middleware('api.auth', Auth::class);
-        $this->app['router']->middleware('api.throttle', RateLimit::class);
-        $this->app['router']->middleware('api.controllers', PrepareController::class);
+        $this->addMiddlewareAlias('api.auth', Auth::class);
+        $this->addMiddlewareAlias('api.throttle', RateLimit::class);
+        $this->addMiddlewareAlias('api.controllers', PrepareController::class);
     }
 
     /**
@@ -116,6 +116,27 @@ class LaravelServiceProvider extends DingoServiceProvider
     protected function addRequestMiddlewareToBeginning(Kernel $kernel)
     {
         $kernel->prependMiddleware(Request::class);
+    }
+
+    /**
+     * Register a short-hand name for a middleware. For Compatability
+     * with Laravel < 5.4 check if aliasMiddleware exists since this
+     * method has been renamed.
+     *
+     * @param string $name
+     * @param string $class
+     *
+     * @return void
+     */
+    protected function addMiddlewareAlias($name, $class)
+    {
+        $router = $this->app['router'];
+
+        if (method_exists($router, 'aliasMiddleware')) {
+            return $router->aliasMiddleware($name, $class);
+        }
+
+        return $router->middleware($name, $class);
     }
 
     /**
