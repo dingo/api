@@ -2,5 +2,6 @@
 .idea
 composer.lock
 phpunit.xml
+build
 storage
 vendor

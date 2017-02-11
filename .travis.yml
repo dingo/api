@@ -5,7 +5,7 @@ sudo: false
 env:
   global:
     - setup=basic
-    - xdebug=true
+    - xdebug=false
 
 cache:
   directories:
@@ -21,12 +21,11 @@ matrix:
     - php: 5.6
     - php: 7.0
     - php: 7.1
-      env: xdebug=false
+      env: xdebug=true
     - php: hhvm
-      env: xdebug=false
 
 before_install:
-  - if [[ $xdebug = 'true' ]] ; then phpenv config-rm xdebug.ini; fi
+  - if [[ $xdebug = 'false' ] && [ $php != 'hhvm' ]] ; then phpenv config-rm xdebug.ini; fi
 
 install:
   - if [[ $setup = 'basic' ]]; then travis_retry composer install --prefer-dist --no-interaction --no-suggest; fi
@@ -34,4 +33,7 @@ install:
   - if [[ $setup = 'lowest' ]]; then travis_retry composer update --prefer-dist --no-interaction --no-suggest --prefer-stable --prefer-lowest; fi
 
 script:
-  - vendor/bin/phpunit
+  - composer test:ci
+
+after_success:
+  - if [[ $php = '7.1' ]]; then bash <(curl -s https://codecov.io/bash); fi
