@@ -62,7 +62,8 @@ class Docs extends Command
     protected $signature = 'api:docs {--name= : Name of the generated documentation}
                                      {--use-version= : Version of the documentation to be generated}
                                      {--output-file= : Output the generated documentation to a file}
-                                     {--include-path= : Path where included documentation files are located}';
+                                     {--include-path= : Path where included documentation files are located}
+                                     {--use-controller= : Specify a controller where to generate documentation for}';
 
     /**
      * The console command description.
@@ -120,7 +121,7 @@ class Docs extends Command
     {
         $name = $this->option('name') ?: $this->name;
 
-        if (! $name) {
+        if (!$name) {
             $this->comment('A name for the documentation was not supplied. Use the --name option or set a default in the configuration.');
 
             exit;
@@ -148,7 +149,7 @@ class Docs extends Command
     {
         $version = $this->option('use-version') ?: $this->version;
 
-        if (! $version) {
+        if (!$version) {
             $this->comment('A version for the documentation was not supplied. Use the --use-version option or set a default in the configuration.');
 
             exit;
@@ -165,6 +166,12 @@ class Docs extends Command
     protected function getControllers()
     {
         $controllers = new Collection;
+
+        if ($controller = $this->option('use-controller')) {
+            $this->addControllerIfNotExists($controllers, app($controller));
+
+            return $controllers;
+        }
 
         foreach ($this->router->getRoutes() as $collections) {
             foreach ($collections as $route) {
