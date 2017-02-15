@@ -88,17 +88,22 @@ class Factory
      *
      * @param \Illuminate\Support\Collection $collection
      * @param object                         $transformer
-     * @param array                          $parameters
-     * @param \Closure                       $after
+     * @param array|\Closure                 $parameters
+     * @param \Closure|null                  $after
      *
      * @return \Dingo\Api\Http\Response
      */
-    public function collection(Collection $collection, $transformer, array $parameters = [], Closure $after = null)
+    public function collection(Collection $collection, $transformer, $parameters = [], Closure $after = null)
     {
         if ($collection->isEmpty()) {
             $class = get_class($collection);
         } else {
             $class = get_class($collection->first());
+        }
+
+        if ($parameters instanceof \Closure) {
+            $after = $parameters;
+            $parameters = [];
         }
 
         $binding = $this->transformer->register($class, $transformer, $parameters, $after);
@@ -116,9 +121,14 @@ class Factory
      *
      * @return \Dingo\Api\Http\Response
      */
-    public function item($item, $transformer, array $parameters = [], Closure $after = null)
+    public function item($item, $transformer, $parameters = [], Closure $after = null)
     {
         $class = get_class($item);
+
+        if ($parameters instanceof \Closure) {
+            $after = $parameters;
+            $parameters = [];
+        }
 
         $binding = $this->transformer->register($class, $transformer, $parameters, $after);
 

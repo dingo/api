@@ -3,15 +3,20 @@
 namespace Dingo\Api\Tests\Stubs;
 
 use Closure;
-use ArrayIterator;
-use Illuminate\Http\Request;
 use Dingo\Api\Http\Response;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Pipeline\Pipeline;
+use Illuminate\Container\Container;
 use Dingo\Api\Contract\Routing\Adapter;
+use Illuminate\Routing\Route as IlluminateRoute;
 use Illuminate\Http\Response as IlluminateResponse;
 
 class RoutingAdapterStub implements Adapter
 {
     protected $routes = [];
+
+    protected $patterns = [];
 
     public function dispatch(Request $request, $version)
     {
@@ -23,17 +28,12 @@ class RoutingAdapterStub implements Adapter
             return $route;
         });
 
-        if (isset($route['action']['uses'])) {
-            list($controller, $method) = explode('@', $route['action']['uses']);
-
-            $controller = new $controller;
-
-            $response = $controller->$method();
-        } else {
-            $response = call_user_func($this->findRouteClosure($route['action']));
-        }
-
-        return $this->prepare($response);
+        return (new Pipeline(new Container))
+            ->send($request)
+            ->through([])
+            ->then(function ($request) use ($route) {
+                return $this->prepareResponse($request, $route->run($request));
+            });
     }
 
     protected function findRouteClosure(array $action)
@@ -45,58 +45,41 @@ class RoutingAdapterStub implements Adapter
         }
     }
 
-    protected function prepare($response)
+    protected function prepareResponse($request, $response)
     {
-        if (! $response instanceof Response && ! $response instanceof IlluminateResponse) {
+        if ($response instanceof IlluminateResponse) {
+            $response = Response::makeFromExisting($response);
+        } elseif ($response instanceof JsonResponse) {
+            $response = Response::makeFromJson($response);
+        } else {
             $response = new Response($response);
         }
 
-        return $response;
+        return $response->prepare($request);
     }
 
-    protected function findRoute(Request $request, array $routes)
+    protected function findRoute(Request $request, $routeCollection)
     {
-        foreach ($routes as $key => $route) {
-            list($method, $domain, $uri) = explode(' ', $key);
-
-            if ($request->getMethod() == $method && $request->getHost() == $domain && trim($request->getPathInfo(), '/') === trim($route['uri'], '/')) {
-                return $route;
-            }
-        }
+        return $routeCollection->match($request);
     }
 
     public function getRouteProperties($route, Request $request)
     {
-        return [$route['uri'], (array) $request->getMethod(), $route['action']];
+        return [$route->uri(), (array) $request->getMethod(), $route->getAction()];
     }
 
     public function addRoute(array $methods, array $versions, $uri, $action)
     {
+        $this->createRouteCollections($versions);
+
+        $route = new IlluminateRoute($methods, $uri, $action);
+        $this->addWhereClausesToRoute($route);
+
         foreach ($versions as $version) {
-            if (! isset($this->routes[$version])) {
-                $this->routes[$version] = [];
-            }
-
-            if (! isset($action['domain'])) {
-                $action['domain'] = 'localhost';
-            }
-
-            if (str_contains($uri, '?}')) {
-                $uri = preg_replace('/\/\{(.*?)\?\}/', '', $uri);
-            }
-
-            foreach ($methods as $method) {
-                if ($method === 'HEAD') {
-                    continue;
-                }
-
-                if (! isset($this->routes[$version])) {
-                    $this->routes[$version] = [];
-                }
-
-                $this->routes[$version][$method.' '.$action['domain'].' '.$uri] = compact('uri', 'action');
-            }
+            $this->routes[$version]->add($route);
         }
+
+        return $route;
     }
 
     public function getRoutes($version = null)
@@ -110,7 +93,7 @@ class RoutingAdapterStub implements Adapter
 
     public function getIterableRoutes($version = null)
     {
-        return new ArrayIterator($this->getRoutes($version));
+        return $this->getRoutes($version);
     }
 
     public function setRoutes(array $routes)
@@ -121,5 +104,28 @@ class RoutingAdapterStub implements Adapter
     public function prepareRouteForSerialization($route)
     {
         //
+    }
+
+    public function pattern($key, $pattern)
+    {
+        $this->patterns[$key] = $pattern;
+    }
+
+    protected function createRouteCollections(array $versions)
+    {
+        foreach ($versions as $version) {
+            if (! isset($this->routes[$version])) {
+                $this->routes[$version] = new \Illuminate\Routing\RouteCollection;
+            }
+        }
+    }
+
+    protected function addWhereClausesToRoute($route)
+    {
+        $where = isset($route->getAction()['where']) ? $route->getAction()['where'] : [];
+
+        $route->where(array_merge($this->patterns, $where));
+
+        return $route;
     }
 }

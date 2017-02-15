@@ -247,7 +247,7 @@ class Dispatcher
 
         $this->content = $content;
 
-        return $this->header('content-type', 'application/json');
+        return $this->header('Content-Type', 'application/json');
     }
 
     /**
@@ -462,8 +462,9 @@ class Dispatcher
 
         // If the URI does not have a scheme then we can assume that there it is not an
         // absolute URI, in this case we'll prefix the root requests path to the URI.
-        if (! parse_url($uri, PHP_URL_SCHEME)) {
-            $uri = rtrim($this->getRootRequest()->root(), '/').'/'.ltrim($uri, '/');
+        $rootUrl = $this->getRootRequest()->root();
+        if ((! parse_url($uri, PHP_URL_SCHEME)) && parse_url($rootUrl) !== false) {
+            $uri = rtrim($rootUrl, '/').'/'.ltrim($uri, '/');
         }
 
         $request = InternalRequest::create(
@@ -539,7 +540,7 @@ class Dispatcher
 
             $response = $this->router->dispatch($request);
 
-            if (! $response->isSuccessful()) {
+            if (! $response->isSuccessful() && ! $response->isRedirection()) {
                 throw new InternalHttpException($response);
             } elseif (! $this->raw) {
                 $response = $response->getOriginalContent();

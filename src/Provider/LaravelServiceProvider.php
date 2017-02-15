@@ -3,10 +3,13 @@
 namespace Dingo\Api\Provider;
 
 use ReflectionClass;
-use Illuminate\Routing\Router;
+use Dingo\Api\Http\Middleware\Auth;
 use Illuminate\Contracts\Http\Kernel;
 use Dingo\Api\Event\RequestWasMatched;
+use Dingo\Api\Http\Middleware\Request;
+use Dingo\Api\Http\Middleware\RateLimit;
 use Illuminate\Routing\ControllerDispatcher;
+use Dingo\Api\Http\Middleware\PrepareController;
 use Dingo\Api\Routing\Adapter\Laravel as LaravelAdapter;
 
 class LaravelServiceProvider extends DingoServiceProvider
@@ -22,9 +25,9 @@ class LaravelServiceProvider extends DingoServiceProvider
 
         $this->publishes([realpath(__DIR__.'/../../config/api.php') => config_path('api.php')]);
 
-        $kernel = $this->app->make('Illuminate\Contracts\Http\Kernel');
+        $kernel = $this->app->make(Kernel::class);
 
-        $this->app['Dingo\Api\Http\Middleware\Request']->mergeMiddlewares(
+        $this->app[Request::class]->mergeMiddlewares(
             $this->gatherAppMiddleware($kernel)
         );
 
@@ -36,9 +39,9 @@ class LaravelServiceProvider extends DingoServiceProvider
             $this->updateRouterBindings();
         });
 
-        $this->app['router']->middleware('api.auth', 'Dingo\Api\Http\Middleware\Auth');
-        $this->app['router']->middleware('api.throttle', 'Dingo\Api\Http\Middleware\RateLimit');
-        $this->app['router']->middleware('api.controllers', 'Dingo\Api\Http\Middleware\PrepareController');
+        $this->addMiddlewareAlias('api.auth', Auth::class);
+        $this->addMiddlewareAlias('api.throttle', RateLimit::class);
+        $this->addMiddlewareAlias('api.controllers', PrepareController::class);
     }
 
     /**
@@ -112,7 +115,28 @@ class LaravelServiceProvider extends DingoServiceProvider
      */
     protected function addRequestMiddlewareToBeginning(Kernel $kernel)
     {
-        $kernel->prependMiddleware('Dingo\Api\Http\Middleware\Request');
+        $kernel->prependMiddleware(Request::class);
+    }
+
+    /**
+     * Register a short-hand name for a middleware. For Compatability
+     * with Laravel < 5.4 check if aliasMiddleware exists since this
+     * method has been renamed.
+     *
+     * @param string $name
+     * @param string $class
+     *
+     * @return void
+     */
+    protected function addMiddlewareAlias($name, $class)
+    {
+        $router = $this->app['router'];
+
+        if (method_exists($router, 'aliasMiddleware')) {
+            return $router->aliasMiddleware($name, $class);
+        }
+
+        return $router->middleware($name, $class);
     }
 
     /**

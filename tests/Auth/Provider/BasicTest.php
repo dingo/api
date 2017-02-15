@@ -40,6 +40,6 @@ class BasicTest extends PHPUnit_Framework_TestCase
         $this->auth->shouldReceive('onceBasic')->once()->with('email')->andReturn(null);
         $this->auth->shouldReceive('user')->once()->andReturn('foo');
 
-        $this->assertEquals('foo', $this->provider->authenticate($request, m::mock('Dingo\Api\Routing\Route')));
+        $this->assertSame('foo', $this->provider->authenticate($request, m::mock('Dingo\Api\Routing\Route')));
     }
 }

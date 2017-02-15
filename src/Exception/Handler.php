@@ -7,6 +7,7 @@ use ReflectionFunction;
 use Illuminate\Http\Response;
 use Dingo\Api\Contract\Debug\ExceptionHandler;
 use Dingo\Api\Contract\Debug\MessageBagErrors;
+use Symfony\Component\HttpFoundation\Response as BaseResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Illuminate\Contracts\Debug\ExceptionHandler as IlluminateExceptionHandler;
 
@@ -132,7 +133,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
             }
 
             if ($response = $handler($exception)) {
-                if (! $response instanceof Response) {
+                if (! $response instanceof BaseResponse) {
                     $response = new Response($response, $this->getExceptionStatusCode($exception));
                 }
 

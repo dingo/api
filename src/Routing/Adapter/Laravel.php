@@ -5,9 +5,8 @@ namespace Dingo\Api\Routing\Adapter;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
-use Illuminate\Routing\RouteCollection;
 use Dingo\Api\Contract\Routing\Adapter;
-use Illuminate\Contracts\Container\Container;
+use Illuminate\Routing\RouteCollection;
 use Dingo\Api\Exception\UnknownVersionException;
 
 class Laravel implements Adapter
@@ -120,6 +119,10 @@ class Laravel implements Adapter
      */
     public function getRouteProperties($route, Request $request)
     {
+        if (method_exists($route, 'uri') && method_exists($route, 'methods')) {
+            return [$route->uri(), $route->methods(), $route->getAction()];
+        }
+
         return [$route->getUri(), $route->getMethods(), $route->getAction()];
     }
 
@@ -226,6 +229,10 @@ class Laravel implements Adapter
      */
     public function gatherRouteMiddlewares($route)
     {
+        if (method_exists($this->router, 'gatherRouteMiddleware')) {
+            return $this->router->gatherRouteMiddleware($route);
+        }
+
         return $this->router->gatherRouteMiddlewares($route);
     }
 

@@ -8,12 +8,13 @@ use Illuminate\Support\Collection;
 use Dingo\Api\Tests\Stubs\UserStub;
 use Dingo\Api\Http\Response\Factory;
 use Illuminate\Pagination\Paginator;
+use Dingo\Api\Transformer\Factory as TransformerFactory;
 
 class FactoryTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->transformer = Mockery::mock('Dingo\Api\Transformer\Factory');
+        $this->transformer = Mockery::mock(TransformerFactory::class);
         $this->factory = new Factory($this->transformer);
     }
 
@@ -27,12 +28,12 @@ class FactoryTest extends PHPUnit_Framework_TestCase
         $response = $this->factory->created();
         $responseWithLocation = $this->factory->created('test');
 
-        $this->assertEquals($response->getStatusCode(), 201);
+        $this->assertSame($response->getStatusCode(), 201);
         $this->assertFalse($response->headers->has('Location'));
 
-        $this->assertEquals($responseWithLocation->getStatusCode(), 201);
+        $this->assertSame($responseWithLocation->getStatusCode(), 201);
         $this->assertTrue($responseWithLocation->headers->has('Location'));
-        $this->assertEquals($responseWithLocation->headers->get('Location'), 'test');
+        $this->assertSame($responseWithLocation->headers->get('Location'), 'test');
     }
 
     public function testMakingAnAcceptedResponse()
@@ -42,54 +43,86 @@ class FactoryTest extends PHPUnit_Framework_TestCase
         $responseWithContent = $this->factory->accepted(null, 'testContent');
         $responseWithBoth = $this->factory->accepted('testHeader', 'testContent');
 
-        $this->assertEquals($response->getStatusCode(), 202);
+        $this->assertSame($response->getStatusCode(), 202);
         $this->assertFalse($response->headers->has('Location'));
-        $this->assertEquals('', $response->getContent());
+        $this->assertSame('', $response->getContent());
 
-        $this->assertEquals($responseWithLocation->getStatusCode(), 202);
+        $this->assertSame($responseWithLocation->getStatusCode(), 202);
         $this->assertTrue($responseWithLocation->headers->has('Location'));
-        $this->assertEquals($responseWithLocation->headers->get('Location'), 'testHeader');
-        $this->assertEquals('', $responseWithLocation->getContent());
+        $this->assertSame($responseWithLocation->headers->get('Location'), 'testHeader');
+        $this->assertSame('', $responseWithLocation->getContent());
 
-        $this->assertEquals($responseWithContent->getStatusCode(), 202);
+        $this->assertSame($responseWithContent->getStatusCode(), 202);
         $this->assertFalse($responseWithContent->headers->has('Location'));
-        $this->assertEquals('testContent', $responseWithContent->getContent());
+        $this->assertSame('testContent', $responseWithContent->getContent());
 
-        $this->assertEquals($responseWithBoth->getStatusCode(), 202);
+        $this->assertSame($responseWithBoth->getStatusCode(), 202);
         $this->assertTrue($responseWithBoth->headers->has('Location'));
-        $this->assertEquals($responseWithBoth->headers->get('Location'), 'testHeader');
-        $this->assertEquals('testContent', $responseWithBoth->getContent());
+        $this->assertSame($responseWithBoth->headers->get('Location'), 'testHeader');
+        $this->assertSame('testContent', $responseWithBoth->getContent());
     }
 
     public function testMakingANoContentResponse()
     {
         $response = $this->factory->noContent();
-        $this->assertEquals(204, $response->getStatusCode());
-        $this->assertEquals('', $response->getContent());
+        $this->assertSame(204, $response->getStatusCode());
+        $this->assertSame('', $response->getContent());
     }
 
     public function testMakingCollectionRegistersUnderlyingClassWithTransformer()
     {
-        $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], null);
+        $this->transformer->shouldReceive('register')->twice()->with(UserStub::class, 'test', [], null);
 
-        $this->assertInstanceOf('Illuminate\Support\Collection', $this->factory->collection(new Collection([new UserStub('Jason')]), 'test')->getOriginalContent());
-        $this->assertInstanceOf('Illuminate\Support\Collection', $this->factory->withCollection(new Collection([new UserStub('Jason')]), 'test')->getOriginalContent());
+        $this->assertInstanceOf(Collection::class, $this->factory->collection(new Collection([new UserStub('Jason')]), 'test')->getOriginalContent());
+        $this->assertInstanceOf(Collection::class, $this->factory->withCollection(new Collection([new UserStub('Jason')]), 'test')->getOriginalContent());
+    }
+
+    public function testMakingCollectionResponseWithThreeParameters()
+    {
+        $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], Mockery::on(function ($param) {
+            return $param instanceof \Closure;
+        }));
+
+        $this->assertInstanceOf('Illuminate\Support\Collection', $this->factory->collection(new Collection([new UserStub('Jason')]), 'test', function ($resource, $fractal) {
+            $this->assertInstanceOf('League\Fractal\Resource\Collection', $resource);
+            $this->assertInstanceOf('League\Fractal\Manager', $fractal);
+        })->getOriginalContent());
+        $this->assertInstanceOf('Illuminate\Support\Collection', $this->factory->withCollection(new Collection([new UserStub('Jason')]), 'test', function ($resource, $fractal) {
+            $this->assertInstanceOf('League\Fractal\Resource\Collection', $resource);
+            $this->assertInstanceOf('League\Fractal\Manager', $fractal);
+        })->getOriginalContent());
     }
 
     public function testMakingItemsRegistersClassWithTransformer()
     {
-        $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], null);
+        $this->transformer->shouldReceive('register')->twice()->with(UserStub::class, 'test', [], null);
 
-        $this->assertInstanceOf('Dingo\Api\Tests\Stubs\UserStub', $this->factory->item(new UserStub('Jason'), 'test')->getOriginalContent());
-        $this->assertInstanceOf('Dingo\Api\Tests\Stubs\UserStub', $this->factory->withItem(new UserStub('Jason'), 'test')->getOriginalContent());
+        $this->assertInstanceOf(UserStub::class, $this->factory->item(new UserStub('Jason'), 'test')->getOriginalContent());
+        $this->assertInstanceOf(UserStub::class, $this->factory->withItem(new UserStub('Jason'), 'test')->getOriginalContent());
+    }
+
+    public function testMakingItemResponseWithThreeParameters()
+    {
+        $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], Mockery::on(function ($param) {
+            return $param instanceof \Closure;
+        }));
+
+        $this->assertInstanceOf('Dingo\Api\Tests\Stubs\UserStub', $this->factory->item(new UserStub('Jason'), 'test', function ($resource, $fractal) {
+            $this->assertInstanceOf('League\Fractal\Resource\Item', $resource);
+            $this->assertInstanceOf('League\Fractal\Manager', $fractal);
+        })->getOriginalContent());
+        $this->assertInstanceOf('Dingo\Api\Tests\Stubs\UserStub', $this->factory->withItem(new UserStub('Jason'), 'test', function ($resource, $fractal) {
+            $this->assertInstanceOf('League\Fractal\Resource\Item', $resource);
+            $this->assertInstanceOf('League\Fractal\Manager', $fractal);
+        })->getOriginalContent());
     }
 
     public function testMakingPaginatorRegistersUnderlyingClassWithTransformer()
     {
-        $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], null);
+        $this->transformer->shouldReceive('register')->twice()->with(UserStub::class, 'test', [], null);
 
-        $this->assertInstanceOf('Illuminate\Pagination\Paginator', $this->factory->paginator(new Paginator([new UserStub('Jason')], 1), 'test')->getOriginalContent());
-        $this->assertInstanceOf('Illuminate\Pagination\Paginator', $this->factory->withPaginator(new Paginator([new UserStub('Jason')], 1), 'test')->getOriginalContent());
+        $this->assertInstanceOf(Paginator::class, $this->factory->paginator(new Paginator([new UserStub('Jason')], 1), 'test')->getOriginalContent());
+        $this->assertInstanceOf(Paginator::class, $this->factory->withPaginator(new Paginator([new UserStub('Jason')], 1), 'test')->getOriginalContent());
     }
 
     /**
@@ -143,12 +176,12 @@ class FactoryTest extends PHPUnit_Framework_TestCase
     public function testMakingArrayResponse()
     {
         $response = $this->factory->array(['foo' => 'bar']);
-        $this->assertEquals('{"foo":"bar"}', $response->getContent());
+        $this->assertSame('{"foo":"bar"}', $response->getContent());
     }
 
     public function testPrefixingWithCallsMethodsCorrectly()
     {
         $response = $this->factory->withArray(['foo' => 'bar']);
-        $this->assertEquals('{"foo":"bar"}', $response->getContent());
+        $this->assertSame('{"foo":"bar"}', $response->getContent());
     }
 }

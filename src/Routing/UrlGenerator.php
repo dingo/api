@@ -44,8 +44,6 @@ class UrlGenerator extends IlluminateUrlGenerator
      * Set the route collection instance.
      *
      * @param array $collections
-     *
-     * @return void
      */
     public function setRouteCollections(array $collections)
     {

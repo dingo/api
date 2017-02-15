@@ -3,6 +3,9 @@
 namespace Dingo\Api\Http;
 
 use Illuminate\Container\Container;
+use Dingo\Api\Http\Validation\Accept;
+use Dingo\Api\Http\Validation\Domain;
+use Dingo\Api\Http\Validation\Prefix;
 use Dingo\Api\Contract\Http\Validator;
 use Illuminate\Http\Request as IlluminateRequest;
 
@@ -21,8 +24,8 @@ class RequestValidator
      * @var array
      */
     protected $validators = [
-        'Dingo\Api\Http\Validation\Domain',
-        'Dingo\Api\Http\Validation\Prefix',
+        Domain::class,
+        Prefix::class,
     ];
 
     /**
@@ -64,7 +67,7 @@ class RequestValidator
     /**
      * Extend the validators.
      *
-     * @param string|\Dingo\Api\Http\Validator
+     * @param string|\Dingo\Api\Http\Validator $validator
      *
      * @return void
      */
@@ -94,9 +97,9 @@ class RequestValidator
 
         // The accept validator will always be run once any of the previous validators have
         // been run. This ensures that we only run the accept validator once we know we
-        // have a request that is targetting the API.
+        // have a request that is targeting the API.
         if ($passed) {
-            $this->container->make('Dingo\Api\Http\Validation\Accept')->validate($request);
+            $this->container->make(Accept::class)->validate($request);
         }
 
         return $passed;

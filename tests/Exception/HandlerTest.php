@@ -2,6 +2,8 @@
 
 namespace Dingo\Api\Tests\Exception;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Mockery as m;
 use RuntimeException;
 use Illuminate\Http\Response;
@@ -48,8 +50,8 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 
         $response = $this->exceptionHandler->handle($exception);
 
-        $this->assertEquals('foo', $response->getContent());
-        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertSame('foo', $response->getContent());
+        $this->assertSame(404, $response->getStatusCode());
     }
 
     public function testExceptionHandlerHandlesExceptionAndCreatesNewResponse()
@@ -63,8 +65,38 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $response = $this->exceptionHandler->handle($exception);
 
         $this->assertInstanceOf('Illuminate\Http\Response', $response);
-        $this->assertEquals('foo', $response->getContent());
-        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertSame('foo', $response->getContent());
+        $this->assertSame(404, $response->getStatusCode());
+    }
+
+    public function testExceptionHandlerHandlesExceptionWithRedirectResponse()
+    {
+        $this->exceptionHandler->register(function (HttpException $e) {
+            return new RedirectResponse('foo');
+        });
+
+        $exception = new HttpException(404, 'bar');
+
+        $response = $this->exceptionHandler->handle($exception);
+
+        $this->assertInstanceOf('Illuminate\Http\RedirectResponse', $response);
+        $this->assertSame('foo', $response->getTargetUrl());
+        $this->assertSame(302, $response->getStatusCode());
+    }
+
+    public function testExceptionHandlerHandlesExceptionWithJsonResponse()
+    {
+        $this->exceptionHandler->register(function (HttpException $e) {
+            return new JsonResponse(['foo' => 'bar'], 404);
+        });
+
+        $exception = new HttpException(404, 'bar');
+
+        $response = $this->exceptionHandler->handle($exception);
+
+        $this->assertInstanceOf('Illuminate\Http\JsonResponse', $response);
+        $this->assertSame('{"foo":"bar"}', $response->getContent());
+        $this->assertSame(404, $response->getStatusCode());
     }
 
     public function testExceptionHandlerReturnsGenericWhenNoMatchingHandler()
@@ -74,8 +106,8 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $response = $this->exceptionHandler->handle($exception);
 
         $this->assertInstanceOf('Illuminate\Http\Response', $response);
-        $this->assertEquals('{"message":"bar","status_code":404}', $response->getContent());
-        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertSame('{"message":"bar","status_code":404}', $response->getContent());
+        $this->assertSame(404, $response->getStatusCode());
     }
 
     public function testUsingMultidimensionalArrayForGenericResponse()
@@ -95,8 +127,8 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $response = $this->exceptionHandler->handle($exception);
 
         $this->assertInstanceOf('Illuminate\Http\Response', $response);
-        $this->assertEquals('{"error":{"message":"bar","status_code":404}}', $response->getContent());
-        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertSame('{"error":{"message":"bar","status_code":404}}', $response->getContent());
+        $this->assertSame(404, $response->getStatusCode());
     }
 
     public function testRegularExceptionsAreHandledByGenericHandler()
@@ -105,8 +137,8 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 
         $response = $this->exceptionHandler->handle($exception);
 
-        $this->assertEquals('{"message":"Uh oh","status_code":500}', $response->getContent());
-        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertSame('{"message":"Uh oh","status_code":500}', $response->getContent());
+        $this->assertSame(500, $response->getStatusCode());
     }
 
     public function testResourceExceptionErrorsAreIncludedInResponse()
@@ -116,8 +148,8 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $response = $this->exceptionHandler->handle($exception);
 
         $this->assertInstanceOf('Illuminate\Http\Response', $response);
-        $this->assertEquals('{"message":"bar","errors":{"foo":["bar"]},"code":10,"status_code":422}', $response->getContent());
-        $this->assertEquals(422, $response->getStatusCode());
+        $this->assertSame('{"message":"bar","errors":{"foo":["bar"]},"code":10,"status_code":422}', $response->getContent());
+        $this->assertSame(422, $response->getStatusCode());
     }
 
     public function testExceptionTraceIncludedInResponse()
@@ -140,8 +172,8 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $response = $this->exceptionHandler->handle($exception);
 
         $this->assertInstanceOf('Illuminate\Http\Response', $response);
-        $this->assertEquals('{"message":"404 Not Found","status_code":404}', $response->getContent());
-        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertSame('{"message":"404 Not Found","status_code":404}', $response->getContent());
+        $this->assertSame(404, $response->getStatusCode());
     }
 
     public function testExceptionsHandledByRenderAreReroutedThroughHandler()
@@ -152,7 +184,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 
         $response = $this->exceptionHandler->render($request, $exception);
 
-        $this->assertEquals('{"message":"404 Not Found","status_code":404}', $response->getContent());
+        $this->assertSame('{"message":"404 Not Found","status_code":404}', $response->getContent());
     }
 
     public function testSettingUserDefinedReplacements()
@@ -164,6 +196,6 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 
         $response = $this->exceptionHandler->handle($exception);
 
-        $this->assertEquals('{"bing":"bar"}', $response->getContent());
+        $this->assertSame('{"bing":"bar"}', $response->getContent());
     }
 }

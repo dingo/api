@@ -133,7 +133,7 @@ class Lumen implements Adapter
         $methods = isset($route['methods']) ? $route['methods'] : (array) $request->getMethod();
         $action = (isset($route[1]) && is_array($route[1])) ? $route[1] : $route;
 
-        if ($request->getMethod() === 'GET' && ! in_array('HEAD', $methods)) {
+        if (in_array('GET', $methods) && ! in_array('HEAD', $methods)) {
             $methods[] = 'HEAD';
         }
 
@@ -269,6 +269,8 @@ class Lumen implements Adapter
                 }
 
                 foreach ($routes as $route) {
+                    $route['methods'] = $this->setRouteMethods($route, $method);
+
                     $iterable[$version][] = $route;
                 }
             }
@@ -281,6 +283,8 @@ class Lumen implements Adapter
 
                 foreach ($routes as $data) {
                     foreach ($data['routeMap'] as list($route, $parameters)) {
+                        $route['methods'] = $this->setRouteMethods($route, $method);
+
                         $iterable[$version][] = $route;
                     }
                 }
@@ -370,5 +374,20 @@ class Lumen implements Adapter
     {
         // Route middleware in Lumen is not terminated.
         return [];
+    }
+
+    /**
+     * Append given method to the current route methods.
+     *
+     * @param array  $route
+     * @param string $method
+     *
+     * @return array
+     */
+    private function setRouteMethods($route, $method)
+    {
+        return isset($route['methods'])
+            ? array_push($route['methods'], $method)
+            : [$method];
     }
 }
