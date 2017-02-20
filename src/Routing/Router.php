@@ -537,7 +537,7 @@ class Router
      *
      * @return \Dingo\Api\Http\Response
      */
-    protected function prepareResponse($response, Request $request, $format)
+    public function prepareResponse($response, Request $request, $format)
     {
         if ($response instanceof IlluminateResponse) {
             $response = Response::makeFromExisting($response);
