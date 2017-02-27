@@ -5,7 +5,7 @@ namespace Dingo\Api\Http\Response\Format;
 class Jsonp extends Json
 {
     /**
-     * Name of JSONP callback paramater.
+     * Name of JSONP callback parameter.
      *
      * @var string
      */

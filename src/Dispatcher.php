@@ -734,7 +734,7 @@ class Dispatcher
     }
 
     /**
-     * Set the defult format.
+     * Set the default format.
      *
      * @param string $format
      *

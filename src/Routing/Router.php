@@ -93,7 +93,6 @@ class Router
      * Create a new router instance.
      *
      * @param \Dingo\Api\Contract\Routing\Adapter        $adapter
-     * @param \Dingo\Api\Http\Parser\Accept              $accept
      * @param \Dingo\Api\Contract\Debug\ExceptionHandler $exception
      * @param \Illuminate\Container\Container            $container
      * @param string                                     $domain
@@ -116,7 +115,7 @@ class Router
      * attributes and a required callback.
      *
      * This method can be called without the third parameter, however,
-     * the callback should always be the last paramter.
+     * the callback should always be the last parameter.
      *
      * @param string         $version
      * @param array|callable $second
