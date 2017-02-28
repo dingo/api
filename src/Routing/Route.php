@@ -451,6 +451,16 @@ class Route
     }
 
     /**
+     * Determine if the route is protected.
+     *
+     * @return boolean
+     */
+    public function isProtected()
+    {
+        return $this->getAuthProviders() ? true : false;
+    }
+
+    /**
      * Get the rate limit for this route.
      *
      * @return int
