@@ -18,6 +18,13 @@ abstract class Format
      */
     protected $response;
 
+    /*
+     * Array of formats' options.
+     *
+     * @var array
+     */
+    protected $options;
+
     /**
      * Set the request instance.
      *
@@ -44,6 +51,18 @@ abstract class Format
         $this->response = $response;
 
         return $this;
+    }
+
+    /**
+     * Set the formats' options.
+     *
+     * @param array $options
+     *
+     * @return void
+     */
+    public function setOptions(array $options)
+    {
+        $this->options = $options;
     }
 
     /**

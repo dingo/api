@@ -24,6 +24,24 @@ class JsonTest extends PHPUnit_Framework_TestCase
         EloquentModelStub::$snakeAttributes = true;
 
         Response::setFormatters([]);
+
+        Response::setFormatsOptions([]);
+    }
+
+    /*
+     * Read expected pretty printed JSON string from external file.
+     *
+     * JSON strings, that are expected for assertion in each test, are placed
+     * in separate files to avoid littering tests and available on demand.
+     * All the filenames are the same as the tests they associated to.
+     *
+     * @return string
+     */
+    private function getExpectedPrettyPrintedJson($test_method_name)
+    {
+        return require __DIR__ . DIRECTORY_SEPARATOR .
+            'ExpectedPrettyPrintedJson' . DIRECTORY_SEPARATOR .
+            $test_method_name . '.json.php';
     }
 
     public function testMorphingEloquentModel()
@@ -84,5 +102,80 @@ class JsonTest extends PHPUnit_Framework_TestCase
         $response = (new Response(new Collection([new EloquentModelStub, new EloquentModelStub])))->morph();
 
         $this->assertSame('{"fooBars":[{"foo":"bar"},{"foo":"bar"}]}', $response->getContent());
+    }
+
+    public function testMorphingArrayWithTwoSpacesPrettyPrintIndent()
+    {
+        $options = [
+            'json' => [
+                'prettyPrint' => true,
+                'indentStyle' => 'space',
+                'indentSize' => 2,
+            ],
+        ];
+
+        Response::setFormatsOptions($options);
+
+        $array = ['foo' => 'bar', 'baz' => ['foobar' => [42, 0.00042, '', null]]];
+
+        $response = (new Response($array))->morph();
+
+        $this->assertSame($this->getExpectedPrettyPrintedJson(__FUNCTION__), $response->getContent()
+        );
+    }
+
+    public function testMorphingArrayWithFourSpacesPrettyPrintIndent()
+    {
+        $options = [
+            'json' => [
+                'prettyPrint' => true,
+                'indentStyle' => 'space',
+                'indentSize' => 4,
+            ],
+        ];
+
+        Response::setFormatsOptions($options);
+
+        $array = ['foo' => 'bar', 'baz' => ['foobar' => [42, 0.00042, '', null]]];
+
+        $response = (new Response($array))->morph();
+
+        $this->assertSame($this->getExpectedPrettyPrintedJson(__FUNCTION__), $response->getContent());
+    }
+
+    public function testMorphingArrayWithEightSpacesPrettyPrintIndent()
+    {
+        $options = [
+            'json' => [
+                'prettyPrint' => true,
+                'indentStyle' => 'space',
+                'indentSize' => 8,
+            ],
+        ];
+
+        Response::setFormatsOptions($options);
+
+        $array = ['foo' => 'bar', 'baz' => ['foobar' => [42, 0.00042, '', null]]];
+
+        $response = (new Response($array))->morph();
+
+        $this->assertSame($this->getExpectedPrettyPrintedJson(__FUNCTION__), $response->getContent());
+    }
+
+    public function testMorphingArrayWithOneTabPrettyPrintIndent()
+    {
+        $options = [
+            'json' => [
+                'prettyPrint' => true,
+                'indentStyle' => 'tab',
+            ],
+        ];
+
+        Response::setFormatsOptions($options);
+
+        $array = ['foo' => 'bar', 'baz' => ['foobar' => [42, 0.00042, '', null]]];
+        $response = (new Response($array))->morph();
+
+        $this->assertSame($this->getExpectedPrettyPrintedJson(__FUNCTION__), $response->getContent());
     }
 }

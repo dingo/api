@@ -208,7 +208,7 @@ return [
     |
     | Responses can be returned in multiple formats by registering different
     | response formatters. You can also customize an existing response
-    | formatter.
+    | formatter by setting options to configure it's output.
     |
     */
 
@@ -217,6 +217,16 @@ return [
     'formats' => [
 
         'json' => Dingo\Api\Http\Response\Format\Json::class,
+
+    ],
+
+    'formatsOptions' => [
+
+        'json' => [
+            'prettyPrint' => env('API_JSON_FORMAT_PRETTY_PRINT_ENABLED', false),
+            'indentStyle' => env('API_JSON_FORMAT_INDENT_STYLE', 'space'),
+            'indentSize'  => env('API_JSON_FORMAT_INDENT_SIZE', 2),
+        ],
 
     ],
 
