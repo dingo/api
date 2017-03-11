@@ -193,6 +193,18 @@ trait Helpers
     }
 
     /**
+     * Use the UrlGenerator to create versioned API urls from routes.
+     *
+     * @param  string $version
+     * @param  string $route
+     * @return string
+     */
+    protected function url($version, $route)
+    {
+        return app('Dingo\Api\Routing\UrlGenerator')->version($version)->route($route);
+    }
+
+    /**
      * Magically handle calls to certain properties.
      *
      * @param string $key
