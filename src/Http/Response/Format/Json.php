@@ -7,7 +7,7 @@ use Illuminate\Contracts\Support\Arrayable;
 
 class Json extends Format
 {
-    /**
+    /*
      * JSON format (as well as JSONP) uses JsonOptionalFormatting trait, which
      * provides extra functionality for the process of encoding data to
      * it's JSON representation.

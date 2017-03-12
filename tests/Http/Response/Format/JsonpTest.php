@@ -41,9 +41,9 @@ class JsonpTest extends PHPUnit_Framework_TestCase
      */
     private function getExpectedPrettyPrintedJsonp($test_method_name)
     {
-        return require __DIR__ . DIRECTORY_SEPARATOR .
-            'ExpectedPrettyPrintedJsonp' . DIRECTORY_SEPARATOR .
-            $test_method_name . '.jsonp.php';
+        return require __DIR__.DIRECTORY_SEPARATOR.
+            'ExpectedPrettyPrintedJsonp'.DIRECTORY_SEPARATOR.
+            $test_method_name.'.jsonp.php';
     }
 
     public function testMorphingEloquentModel()

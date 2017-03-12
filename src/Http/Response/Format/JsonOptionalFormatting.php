@@ -29,7 +29,7 @@ trait JsonOptionalFormatting
      * @var array
      */
     protected $indent_chars = [
-        'tab'   => "\t",
+        'tab' => "\t",
         'space' => " ",
     ];
 
@@ -102,7 +102,7 @@ trait JsonOptionalFormatting
      *
      * @param array $json_encode_options
      *
-     * @return integer
+     * @return int
      */
     protected function calucateJsonEncodeOptionsBitmask(array $json_encode_options)
     {
@@ -114,7 +114,7 @@ trait JsonOptionalFormatting
      *
      * @param string $json_string
      * @param string $indent_style
-     * @param integer $default_indent_size
+     * @param int $default_indent_size
      *
      * @return string
      */
@@ -176,17 +176,17 @@ trait JsonOptionalFormatting
      * Perform indentation for pretty printed JSON string with a given
      * indent char, repeated N times, as determined by indent size.
      *
-     * @param string   $json_string     JSON string, which must be indented
-     * @param string   $indent_char     Char, used for indent (default is tab)
-     * @param integer  $indent_size     Number of times to repeat indent char per one indent level
-     * @param integer  $default_spaces  Default number of indent spaces after json_encode()
+     * @param string  $json_string     JSON string, which must be indented
+     * @param string  $indent_char     Char, used for indent (default is tab)
+     * @param int     $indent_size     Number of times to repeat indent char per one indent level
+     * @param int     $default_spaces  Default number of indent spaces after json_encode()
      *
      * @return string
      */
     protected function peformIndentation($json_string, $indent_char = "\t", $indent_size = 1, $default_spaces = 4)
     {
-        $pattern = '/(^|\G) {' . $default_spaces . '}/m';
-        $replacement = str_repeat($indent_char, $indent_size) . '$1';
+        $pattern = '/(^|\G) {'.$default_spaces.'}/m';
+        $replacement = str_repeat($indent_char, $indent_size).'$1';
 
         return preg_replace($pattern, $replacement, $json_string);
     }

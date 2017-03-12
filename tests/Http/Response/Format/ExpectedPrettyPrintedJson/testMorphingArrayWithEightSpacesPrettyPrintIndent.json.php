@@ -6,7 +6,7 @@
  * @return string
  */
 
-return <<<JSON
+return <<<'JSON'
 {
         "foo": "bar",
         "baz": {

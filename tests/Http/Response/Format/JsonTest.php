@@ -39,9 +39,9 @@ class JsonTest extends PHPUnit_Framework_TestCase
      */
     private function getExpectedPrettyPrintedJson($test_method_name)
     {
-        return require __DIR__ . DIRECTORY_SEPARATOR .
-            'ExpectedPrettyPrintedJson' . DIRECTORY_SEPARATOR .
-            $test_method_name . '.json.php';
+        return require __DIR__.DIRECTORY_SEPARATOR.
+            'ExpectedPrettyPrintedJson'.DIRECTORY_SEPARATOR.
+            $test_method_name.'.json.php';
     }
 
     public function testMorphingEloquentModel()

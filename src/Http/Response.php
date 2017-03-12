@@ -11,8 +11,8 @@ use Dingo\Api\Event\ResponseWasMorphed;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Events\Dispatcher as EventDispatcher;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Dingo\Api\Transformer\Factory as TransformerFactory;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 

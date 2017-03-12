@@ -225,7 +225,7 @@ return [
         'json' => [
             'prettyPrint' => env('API_JSON_FORMAT_PRETTY_PRINT_ENABLED', false),
             'indentStyle' => env('API_JSON_FORMAT_INDENT_STYLE', 'space'),
-            'indentSize'  => env('API_JSON_FORMAT_INDENT_SIZE', 2),
+            'indentSize' => env('API_JSON_FORMAT_INDENT_SIZE', 2),
         ],
 
     ],
