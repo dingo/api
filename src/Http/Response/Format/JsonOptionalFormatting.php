@@ -30,7 +30,7 @@ trait JsonOptionalFormatting
      */
     protected $indent_chars = [
         'tab' => "\t",
-        'space' => " ",
+        'space' => ' ',
     ];
 
     /*
