@@ -66,12 +66,12 @@ class Jsonp extends Json
      */
     protected function encode(array $content)
     {
-        $json_string = parent::encode($content);
+        $jsonString = parent::encode($content);
 
         if ($this->hasValidCallback()) {
-            return sprintf('%s(%s);', $this->getCallback(), $json_string);
+            return sprintf('%s(%s);', $this->getCallback(), $jsonString);
         }
 
-        return $json_string;
+        return $jsonString;
     }
 }

@@ -9,7 +9,7 @@ trait JsonOptionalFormatting
      *
      * @var array
      */
-    protected $indent_styles = [
+    protected $indentStyles = [
         'tab',
         'space',
     ];
@@ -19,7 +19,7 @@ trait JsonOptionalFormatting
      *
      * @var array
      */
-    protected $has_various_indent_size = [
+    protected $hasVariousIndentSize = [
         'space',
     ];
 
@@ -28,7 +28,7 @@ trait JsonOptionalFormatting
      *
      * @var array
      */
-    protected $indent_chars = [
+    protected $indentChars = [
         'tab' => "\t",
         'space' => ' ',
     ];
@@ -41,7 +41,7 @@ trait JsonOptionalFormatting
      *
      * @var array
      */
-    protected $json_encode_options_whitelist = [
+    protected $jsonEncodeOptionsWhitelist = [
         JSON_PRETTY_PRINT,
     ];
 
@@ -65,87 +65,87 @@ trait JsonOptionalFormatting
     {
         return $this->isJsonPrettyPrintEnabled() &&
             isset($this->options['indentStyle']) &&
-            in_array($this->options['indentStyle'], $this->indent_styles);
+            in_array($this->options['indentStyle'], $this->indentStyles);
     }
 
     /**
      * Perform JSON encode.
      *
      * @param string $content
-     * @param array $json_encode_options
+     * @param array  $jsonEncodeOptions
      *
      * @return string
      */
-    protected function performJsonEncoding($content, array $json_encode_options = [])
+    protected function performJsonEncoding($content, array $jsonEncodeOptions = [])
     {
-        $json_encode_options = $this->filterJsonEncodeOptions($json_encode_options);
+        $jsonEncodeOptions = $this->filterJsonEncodeOptions($jsonEncodeOptions);
 
-        $options_bitmask = $this->calucateJsonEncodeOptionsBitmask($json_encode_options);
+        $optionsBitmask = $this->calucateJsonEncodeOptionsBitmask($jsonEncodeOptions);
 
-        return json_encode($content, $options_bitmask);
+        return json_encode($content, $optionsBitmask);
     }
 
     /**
      * Filter JSON encode options array against the whitelist array.
      *
-     * @param array $json_encode_options
+     * @param array $jsonEncodeOptions
      *
      * @return array
      */
-    protected function filterJsonEncodeOptions(array $json_encode_options)
+    protected function filterJsonEncodeOptions(array $jsonEncodeOptions)
     {
-        return array_intersect($json_encode_options, $this->json_encode_options_whitelist);
+        return array_intersect($jsonEncodeOptions, $this->jsonEncodeOptionsWhitelist);
     }
 
     /**
      * Sweep JSON encode options together to get options' bitmask.
      *
-     * @param array $json_encode_options
+     * @param array $jsonEncodeOptions
      *
      * @return int
      */
-    protected function calucateJsonEncodeOptionsBitmask(array $json_encode_options)
+    protected function calucateJsonEncodeOptionsBitmask(array $jsonEncodeOptions)
     {
-        return array_sum($json_encode_options);
+        return array_sum($jsonEncodeOptions);
     }
 
     /**
      * Indent pretty printed JSON string, using given indent style.
      *
-     * @param string $json_string
-     * @param string $indent_style
-     * @param int $default_indent_size
+     * @param string $jsonString
+     * @param string $indentStyle
+     * @param int $defaultIndentSize
      *
      * @return string
      */
-    protected function indentPrettyPrintedJson($json_string, $indent_style, $default_indent_size = 2)
+    protected function indentPrettyPrintedJson($jsonString, $indentStyle, $defaultIndentSize = 2)
     {
-        $indent_char = $this->getIndentCharForIndentStyle($indent_style);
-        $indent_size = $this->getPrettyPrintIndentSize() ?: $default_indent_size;
+        $indentChar = $this->getIndentCharForIndentStyle($indentStyle);
+        $indentSize = $this->getPrettyPrintIndentSize() ?: $defaultIndentSize;
 
         // If the given indentation style is allowed to have various indent size
         // (number of chars, that are used to indent one level in each line),
         // indent the JSON string with given (or default) indent size.
-        if ($this->hasVariousIndentSize($indent_style)) {
-            return $this->peformIndentation($json_string, $indent_char, $indent_size);
+        if ($this->hasVariousIndentSize($indentStyle)) {
+            return $this->peformIndentation($jsonString, $indentChar, $indentSize);
         }
 
         // Otherwise following the convention, that indent styles, that does not
         // allowed to have various indent size (e.g. tab) are indented using
         // one tabulation character per one indent level in each line.
-        return $this->peformIndentation($json_string, $indent_char);
+        return $this->peformIndentation($jsonString, $indentChar);
     }
 
     /**
      * Get indent char for given indent style.
      *
-     * @param string $indent_style
+     * @param string $indentStyle
      *
      * @return string
      */
-    protected function getIndentCharForIndentStyle($indent_style)
+    protected function getIndentCharForIndentStyle($indentStyle)
     {
-        return $this->indent_chars[$indent_style];
+        return $this->indentChars[$indentStyle];
     }
 
     /**
@@ -163,31 +163,31 @@ trait JsonOptionalFormatting
     /**
      * Determine if indent style is allowed to have various indent size.
      *
-     * @param string $indent_style
+     * @param string $indentStyle
      *
      * @return bool
      */
-    protected function hasVariousIndentSize($indent_style)
+    protected function hasVariousIndentSize($indentStyle)
     {
-        return in_array($indent_style, $this->has_various_indent_size);
+        return in_array($indentStyle, $this->hasVariousIndentSize);
     }
 
     /**
      * Perform indentation for pretty printed JSON string with a given
      * indent char, repeated N times, as determined by indent size.
      *
-     * @param string  $json_string     JSON string, which must be indented
-     * @param string  $indent_char     Char, used for indent (default is tab)
-     * @param int     $indent_size     Number of times to repeat indent char per one indent level
-     * @param int     $default_spaces  Default number of indent spaces after json_encode()
+     * @param string  $jsonString     JSON string, which must be indented
+     * @param string  $indentChar     Char, used for indent (default is tab)
+     * @param int     $indentSize     Number of times to repeat indent char per one indent level
+     * @param int     $defaultSpaces  Default number of indent spaces after json_encode()
      *
      * @return string
      */
-    protected function peformIndentation($json_string, $indent_char = "\t", $indent_size = 1, $default_spaces = 4)
+    protected function peformIndentation($jsonString, $indentChar = "\t", $indentSize = 1, $defaultSpaces = 4)
     {
-        $pattern = '/(^|\G) {'.$default_spaces.'}/m';
-        $replacement = str_repeat($indent_char, $indent_size).'$1';
+        $pattern = '/(^|\G) {'.$defaultSpaces.'}/m';
+        $replacement = str_repeat($indentChar, $indentSize).'$1';
 
-        return preg_replace($pattern, $replacement, $json_string);
+        return preg_replace($pattern, $replacement, $jsonString);
     }
 }

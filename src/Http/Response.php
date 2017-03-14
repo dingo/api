@@ -44,7 +44,7 @@ class Response extends IlluminateResponse
      *
      * @var array
      */
-    protected static $formats_options = [];
+    protected static $formatsOptions = [];
 
     /**
      * Transformer factory instance.
@@ -252,13 +252,13 @@ class Response extends IlluminateResponse
     /**
      * Set the formats' options.
      *
-     * @param array $formats_options
+     * @param array $formatsOptions
      *
      * @return void
      */
-    public static function setFormatsOptions(array $formats_options)
+    public static function setFormatsOptions(array $formatsOptions)
     {
-        static::$formats_options = $formats_options;
+        static::$formatsOptions = $formatsOptions;
     }
 
     /**
@@ -274,7 +274,7 @@ class Response extends IlluminateResponse
             return [];
         }
 
-        return static::$formats_options[$format];
+        return static::$formatsOptions[$format];
     }
 
     /**
@@ -286,7 +286,7 @@ class Response extends IlluminateResponse
      */
     public static function hasOptionsForFormat($format)
     {
-        return isset(static::$formats_options[$format]);
+        return isset(static::$formatsOptions[$format]);
     }
 
     /**
