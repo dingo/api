@@ -10,7 +10,7 @@ class Json extends Format
     /*
      * JSON format (as well as JSONP) uses JsonOptionalFormatting trait, which
      * provides extra functionality for the process of encoding data to
-     * it's JSON representation.
+     * its JSON representation.
      */
     use JsonOptionalFormatting;
 
@@ -96,7 +96,7 @@ class Json extends Format
     }
 
     /**
-     * Encode the content to it's JSON representation.
+     * Encode the content to its JSON representation.
      *
      * @param array $content
      *
@@ -118,7 +118,7 @@ class Json extends Format
         $jsonString = $this->performJsonEncoding($content, $jsonEncodeOptions);
 
         if ($this->isCustomIndentStyleRequired()) {
-            $jsonString = $this->indentPrettyPrintedJson($jsonString, $this->options['indentStyle']);
+            $jsonString = $this->indentPrettyPrintedJson($jsonString, $this->options['indent_style']);
         }
 
         return $jsonString;

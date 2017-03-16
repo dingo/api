@@ -208,7 +208,7 @@ return [
     |
     | Responses can be returned in multiple formats by registering different
     | response formatters. You can also customize an existing response
-    | formatter by setting options to configure it's output.
+    | formatter with a number of options to configure its output.
     |
     */
 
@@ -223,9 +223,9 @@ return [
     'formatsOptions' => [
 
         'json' => [
-            'prettyPrint' => env('API_JSON_FORMAT_PRETTY_PRINT_ENABLED', false),
-            'indentStyle' => env('API_JSON_FORMAT_INDENT_STYLE', 'space'),
-            'indentSize' => env('API_JSON_FORMAT_INDENT_SIZE', 2),
+            'pretty_print' => env('API_JSON_FORMAT_PRETTY_PRINT_ENABLED', false),
+            'indent_style' => env('API_JSON_FORMAT_INDENT_STYLE', 'space'),
+            'indent_size' => env('API_JSON_FORMAT_INDENT_SIZE', 2),
         ],
 
     ],

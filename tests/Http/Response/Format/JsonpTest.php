@@ -92,8 +92,8 @@ class JsonpTest extends PHPUnit_Framework_TestCase
     {
         $options = [
             'json' => [
-                'prettyPrint' => true,
-                'indentStyle' => 'tab',
+                'pretty_print' => true,
+                'indent_style' => 'tab',
             ],
         ];
 
@@ -109,9 +109,9 @@ class JsonpTest extends PHPUnit_Framework_TestCase
     {
         $options = [
             'json' => [
-                'prettyPrint' => true,
-                'indentStyle' => 'space',
-                'indentSize' => 2,
+                'pretty_print' => true,
+                'indent_style' => 'space',
+                'indent_size' => 2,
             ],
         ];
 
@@ -127,9 +127,9 @@ class JsonpTest extends PHPUnit_Framework_TestCase
     {
         $options = [
             'json' => [
-                'prettyPrint' => true,
-                'indentStyle' => 'space',
-                'indentSize' => 4,
+                'pretty_print' => true,
+                'indent_style' => 'space',
+                'indent_size' => 4,
             ],
         ];
 
@@ -145,9 +145,9 @@ class JsonpTest extends PHPUnit_Framework_TestCase
     {
         $options = [
             'json' => [
-                'prettyPrint' => true,
-                'indentStyle' => 'space',
-                'indentSize' => 8,
+                'pretty_print' => true,
+                'indent_style' => 'space',
+                'indent_size' => 8,
             ],
         ];
 

@@ -108,9 +108,9 @@ class JsonTest extends PHPUnit_Framework_TestCase
     {
         $options = [
             'json' => [
-                'prettyPrint' => true,
-                'indentStyle' => 'space',
-                'indentSize' => 2,
+                'pretty_print' => true,
+                'indent_style' => 'space',
+                'indent_size' => 2,
             ],
         ];
 
@@ -120,17 +120,16 @@ class JsonTest extends PHPUnit_Framework_TestCase
 
         $response = (new Response($array))->morph();
 
-        $this->assertSame($this->getExpectedPrettyPrintedJson(__FUNCTION__), $response->getContent()
-        );
+        $this->assertSame($this->getExpectedPrettyPrintedJson(__FUNCTION__), $response->getContent());
     }
 
     public function testMorphingArrayWithFourSpacesPrettyPrintIndent()
     {
         $options = [
             'json' => [
-                'prettyPrint' => true,
-                'indentStyle' => 'space',
-                'indentSize' => 4,
+                'pretty_print' => true,
+                'indent_style' => 'space',
+                'indent_size' => 4,
             ],
         ];
 
@@ -147,9 +146,9 @@ class JsonTest extends PHPUnit_Framework_TestCase
     {
         $options = [
             'json' => [
-                'prettyPrint' => true,
-                'indentStyle' => 'space',
-                'indentSize' => 8,
+                'pretty_print' => true,
+                'indent_style' => 'space',
+                'indent_size' => 8,
             ],
         ];
 
@@ -166,8 +165,8 @@ class JsonTest extends PHPUnit_Framework_TestCase
     {
         $options = [
             'json' => [
-                'prettyPrint' => true,
-                'indentStyle' => 'tab',
+                'pretty_print' => true,
+                'indent_style' => 'tab',
             ],
         ];
 

@@ -52,8 +52,7 @@ trait JsonOptionalFormatting
      */
     protected function isJsonPrettyPrintEnabled()
     {
-        return isset($this->options['prettyPrint']) &&
-            true === $this->options['prettyPrint'];
+        return isset($this->options['pretty_print']) && $this->options['pretty_print'] === true;
     }
 
     /**
@@ -64,8 +63,8 @@ trait JsonOptionalFormatting
     protected function isCustomIndentStyleRequired()
     {
         return $this->isJsonPrettyPrintEnabled() &&
-            isset($this->options['indentStyle']) &&
-            in_array($this->options['indentStyle'], $this->indentStyles);
+            isset($this->options['indent_style']) &&
+            in_array($this->options['indent_style'], $this->indentStyles);
     }
 
     /**
@@ -155,8 +154,8 @@ trait JsonOptionalFormatting
      */
     protected function getPrettyPrintIndentSize()
     {
-        return isset($this->options['indentSize'])
-            ? (int) $this->options['indentSize']
+        return isset($this->options['indent_size'])
+            ? (int) $this->options['indent_size']
             : null;
     }
 

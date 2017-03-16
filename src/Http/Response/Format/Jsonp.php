@@ -58,7 +58,7 @@ class Jsonp extends Json
     }
 
     /**
-     * Encode the content to it's JSONP representation.
+     * Encode the content to its JSONP representation.
      *
      * @param array $content
      *
