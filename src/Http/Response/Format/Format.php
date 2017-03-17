@@ -63,6 +63,8 @@ abstract class Format
     public function setOptions(array $options)
     {
         $this->options = $options;
+
+        return $this;
     }
 
     /**
