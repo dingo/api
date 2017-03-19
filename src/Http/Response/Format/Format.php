@@ -58,7 +58,7 @@ abstract class Format
      *
      * @param array $options
      *
-     * @return void
+     * @return \Dingo\Api\Http\Response\Format\Format
      */
     public function setOptions(array $options)
     {
