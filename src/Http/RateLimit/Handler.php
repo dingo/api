@@ -114,7 +114,7 @@ class Handler
         if (is_null($this->throttle)) {
             return;
         }
-        
+
         if ($this->throttle instanceof HasRateLimiter) {
             $this->setRateLimiter([$this->throttle, 'getRateLimiter']);
         }
