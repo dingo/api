@@ -2,10 +2,10 @@
 
 namespace Dingo\Api\Http;
 
-use Illuminate\Contracts\Validation\Validator;
 use Dingo\Api\Exception\ValidationHttpException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest as IlluminateFormRequest;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class FormRequest extends IlluminateFormRequest
 {
@@ -18,7 +18,9 @@ class FormRequest extends IlluminateFormRequest
      */
     protected function failedValidation(Validator $validator)
     {
-        if ($this->container['request'] instanceof Request) {
+        if ($this->container['request'] instanceof InternalRequest) {
+            // Do nothing and pass thru to the parent
+        } elseif ($this->container['request'] instanceof Request) {
             throw new ValidationHttpException($validator->errors());
         }
 
