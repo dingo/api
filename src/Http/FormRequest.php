@@ -2,10 +2,10 @@
 
 namespace Dingo\Api\Http;
 
-use Dingo\Api\Exception\ValidationHttpException;
 use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Foundation\Http\FormRequest as IlluminateFormRequest;
+use Dingo\Api\Exception\ValidationHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Foundation\Http\FormRequest as IlluminateFormRequest;
 
 class FormRequest extends IlluminateFormRequest
 {
