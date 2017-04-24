@@ -5,9 +5,9 @@ namespace Dingo\Api\Routing;
 use Closure;
 use Exception;
 use RuntimeException;
+use Dingo\Api\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Dingo\Api\Http\Request;
 use Dingo\Api\Http\Response;
 use Illuminate\Http\JsonResponse;
 use Dingo\Api\Http\InternalRequest;
@@ -589,7 +589,7 @@ class Router
      */
     protected function requestIsConditional()
     {
-        return $this->getCurrentRoute()->requestIsConditional();
+        return ($r = $this->getCurrentRoute()) ? $r->requestIsConditional() : false;
     }
 
     /**
