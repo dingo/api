@@ -79,7 +79,7 @@ class FactoryTest extends PHPUnit_Framework_TestCase
 
     public function testMakingCollectionResponseWithThreeParameters()
     {
-        $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], Mockery::on(function ($param) {
+        $this->transformer->shouldReceive('register')->twice()->with(\Dingo\Api\Tests\Stubs\UserStub::class, 'test', [], Mockery::on(function ($param) {
             return $param instanceof \Closure;
         }));
 
@@ -103,15 +103,15 @@ class FactoryTest extends PHPUnit_Framework_TestCase
 
     public function testMakingItemResponseWithThreeParameters()
     {
-        $this->transformer->shouldReceive('register')->twice()->with('Dingo\Api\Tests\Stubs\UserStub', 'test', [], Mockery::on(function ($param) {
+        $this->transformer->shouldReceive('register')->twice()->with(\Dingo\Api\Tests\Stubs\UserStub::class, 'test', [], Mockery::on(function ($param) {
             return $param instanceof \Closure;
         }));
 
-        $this->assertInstanceOf('Dingo\Api\Tests\Stubs\UserStub', $this->factory->item(new UserStub('Jason'), 'test', function ($resource, $fractal) {
+        $this->assertInstanceOf(\Dingo\Api\Tests\Stubs\UserStub::class, $this->factory->item(new UserStub('Jason'), 'test', function ($resource, $fractal) {
             $this->assertInstanceOf('League\Fractal\Resource\Item', $resource);
             $this->assertInstanceOf('League\Fractal\Manager', $fractal);
         })->getOriginalContent());
-        $this->assertInstanceOf('Dingo\Api\Tests\Stubs\UserStub', $this->factory->withItem(new UserStub('Jason'), 'test', function ($resource, $fractal) {
+        $this->assertInstanceOf(\Dingo\Api\Tests\Stubs\UserStub::class, $this->factory->withItem(new UserStub('Jason'), 'test', function ($resource, $fractal) {
             $this->assertInstanceOf('League\Fractal\Resource\Item', $resource);
             $this->assertInstanceOf('League\Fractal\Manager', $fractal);
         })->getOriginalContent());
