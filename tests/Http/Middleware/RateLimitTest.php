@@ -134,7 +134,8 @@ class RateLimitTest extends PHPUnit_Framework_TestCase
             $this->assertSame('You have exceeded your rate limit.', $exception->getMessage());
 
             $headers = $exception->getHeaders();
-            $this->assertSame($headers['X-RateLimit-Reset'], Carbon::now('UTC')->addSeconds($headers['Retry-After'])->getTimestamp());
+            $resetTimestamp = Carbon::now()->setTimezone('UTC')->addSeconds($headers['Retry-After'])->getTimestamp();
+            $this->assertSame($headers['X-RateLimit-Reset'], $resetTimestamp);
             $this->assertArrayHasKey('X-RateLimit-Limit', $headers);
             $this->assertArrayHasKey('X-RateLimit-Remaining', $headers);
             $this->assertArrayHasKey('X-RateLimit-Reset', $headers);
