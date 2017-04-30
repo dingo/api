@@ -2,7 +2,6 @@
 
 namespace Dingo\Api\Tests;
 
-use Dingo\Api\Exception\ValidationHttpException;
 use Mockery as m;
 use Dingo\Api\Http;
 use Dingo\Api\Auth\Auth;
@@ -16,8 +15,9 @@ use Illuminate\Filesystem\Filesystem;
 use Dingo\Api\Tests\Stubs\MiddlewareStub;
 use Dingo\Api\Tests\Stubs\TransformerStub;
 use Dingo\Api\Tests\Stubs\RoutingAdapterStub;
-use Dingo\Api\Tests\Stubs\UserTransformerStub;
 use Dingo\Api\Exception\InternalHttpException;
+use Dingo\Api\Tests\Stubs\UserTransformerStub;
+use Dingo\Api\Exception\ValidationHttpException;
 use Dingo\Api\Transformer\Factory as TransformerFactory;
 use Illuminate\Support\Facades\Request as RequestFacade;
 
