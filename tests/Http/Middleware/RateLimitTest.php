@@ -2,6 +2,7 @@
 
 namespace Dingo\Api\Tests\Http\Middleware;
 
+use DateTimeZone;
 use Mockery as m;
 use Carbon\Carbon;
 use Dingo\Api\Http\Request;
@@ -134,7 +135,7 @@ class RateLimitTest extends PHPUnit_Framework_TestCase
             $this->assertSame('You have exceeded your rate limit.', $exception->getMessage());
 
             $headers = $exception->getHeaders();
-            $resetTimestamp = Carbon::now()->setTimezone('UTC')->addSeconds($headers['Retry-After'])->getTimestamp();
+            $resetTimestamp = Carbon::now(new DateTimeZone('UCT'))->addSeconds($headers['Retry-After'])->getTimestamp();
             $this->assertSame($headers['X-RateLimit-Reset'], $resetTimestamp);
             $this->assertArrayHasKey('X-RateLimit-Limit', $headers);
             $this->assertArrayHasKey('X-RateLimit-Remaining', $headers);
