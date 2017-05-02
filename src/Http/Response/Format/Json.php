@@ -98,7 +98,7 @@ class Json extends Format
     protected function encode($content)
     {
         $encodedString = json_encode($content);
-        if ($encodedString === false){
+        if ($encodedString === false) {
             throw new \ErrorException('Error encoding data in JSON format: '.json_last_error());
         }
 
