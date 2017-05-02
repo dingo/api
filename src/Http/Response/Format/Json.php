@@ -2,8 +2,8 @@
 
 namespace Dingo\Api\Http\Response\Format;
 
-use Illuminate\Support\Str;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Str;
 
 class Json extends Format
 {
@@ -18,7 +18,7 @@ class Json extends Format
     {
         $key = Str::singular($model->getTable());
 
-        if (! $model::$snakeAttributes) {
+        if (!$model::$snakeAttributes) {
             $key = Str::camel($key);
         }
 
@@ -41,7 +41,7 @@ class Json extends Format
         $model = $collection->first();
         $key = Str::plural($model->getTable());
 
-        if (! $model::$snakeAttributes) {
+        if (!$model::$snakeAttributes) {
             $key = Str::camel($key);
         }
 
@@ -98,8 +98,8 @@ class Json extends Format
     protected function encode($content)
     {
         $encodedString = json_encode($content);
-        if($encodedString===false){
-            throw new \ErrorException('Error encoding data in JSON format: '.json_last_error());
+        if ($encodedString === false) {
+            throw new \ErrorException('Error encoding data in JSON format: ' . json_last_error());
         }
         return $encodedString;
     }
