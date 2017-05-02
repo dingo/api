@@ -101,6 +101,7 @@ class Json extends Format
         if ($encodedString === false){
             throw new \ErrorException('Error encoding data in JSON format: '.json_last_error());
         }
+
         return $encodedString;
     }
 }
