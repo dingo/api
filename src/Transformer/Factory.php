@@ -176,7 +176,7 @@ class Factory
 
         $class = is_object($class) ? get_class($class) : $class;
 
-        return isset($this->bindings[$class]);
+        return is_scalar($class) && isset($this->bindings[$class]);
     }
 
     /**
