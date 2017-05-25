@@ -220,4 +220,6 @@ return [
 
     ],
 
+    'jsonAssoc' => true,
+
 ];

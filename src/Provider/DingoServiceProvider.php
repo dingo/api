@@ -32,6 +32,7 @@ class DingoServiceProvider extends ServiceProvider
     protected function setResponseStaticInstances()
     {
         Response::setFormatters($this->config('formats'));
+        Response::setJsonAssoc($this->config('jsonAssoc'));
         Response::setTransformer($this->app['api.transformer']);
         Response::setEventDispatcher($this->app['events']);
     }

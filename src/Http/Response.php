@@ -54,6 +54,12 @@ class Response extends IlluminateResponse
     protected static $events;
 
     /**
+     * Specify if we want the json objects as arrays or as objects.
+     *
+     */
+    protected static $jsonAssoc;
+
+    /**
      * Create a new response instance.
      *
      * @param mixed                          $content
@@ -95,7 +101,7 @@ class Response extends IlluminateResponse
      */
     public static function makeFromJson(JsonResponse $json)
     {
-        $new = static::create(json_decode($json->getContent(), true), $json->getStatusCode());
+        $new = static::create(json_decode($json->getContent(), self::$jsonAssoc), $json->getStatusCode());
 
         $new->headers = $json->headers;
 
@@ -263,6 +269,18 @@ class Response extends IlluminateResponse
     public static function setTransformer(TransformerFactory $transformer)
     {
         static::$transformer = $transformer;
+    }
+
+    /**
+     * Specify if we want the json objects as arrays or as objects.
+     *
+     * @param boolean $jsonAssoc
+     *
+     * @return void
+     */
+    public static function setJsonAssoc($jsonAssoc)
+    {
+        static::$jsonAssoc = $jsonAssoc;
     }
 
     /**
