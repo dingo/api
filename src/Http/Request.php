@@ -37,7 +37,7 @@ class Request extends IlluminateRequest implements RequestInterface
         );
 
         if ($session = $old->getSession()) {
-            $new->setSession($old->getSession());
+            $new->setLaravelSession($old->getSession());
         }
 
         $new->setRouteResolver($old->getRouteResolver());
