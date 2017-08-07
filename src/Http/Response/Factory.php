@@ -134,6 +134,18 @@ class Factory
 
         return new Response($item, 200, [], $binding);
     }
+    
+    /**
+     * Start building a response with simple array.
+     *
+     * @param array    $array
+     *
+     * @return \Dingo\Api\Http\Response
+     */
+    public function array(array $array): Response
+    {
+        return new Response($array);
+    }
 
     /**
      * Bind a paginator to a transformer and start building a response.
@@ -275,8 +287,6 @@ class Factory
         // Because PHP won't let us name the method "array" we'll simply watch for it
         // in here and return the new binding. Gross. This is now DEPRECATED and
         // should not be used. Just return an array or a new response instance.
-        } elseif ($method == 'array') {
-            return new Response($parameters[0]);
         }
 
         throw new ErrorException('Undefined method '.get_class($this).'::'.$method);
