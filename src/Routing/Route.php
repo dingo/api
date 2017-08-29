@@ -621,6 +621,17 @@ class Route
     }
 
     /**
+     * Get the domain defined for the route.
+     * Use in Laravel 5.5+.
+     *
+     * @return string|null
+     */
+    public function getDomain()
+    {
+        return Arr::get($this->action, 'domain');
+    }
+
+    /**
      * Get the original route.
      *
      * @return array|\Illuminate\Routing\Route
