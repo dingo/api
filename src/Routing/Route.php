@@ -622,7 +622,7 @@ class Route
 
     /**
      * Get the domain defined for the route.
-     * Use in Laravel 5.5+
+     * Use in Laravel 5.5+.
      *
      * @return string|null
      */
