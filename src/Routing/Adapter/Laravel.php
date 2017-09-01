@@ -123,7 +123,7 @@ class Laravel implements Adapter
             return [$route->uri(), $route->methods(), $route->getAction()];
         }
 
-        return [$route->getUri(), $route->getMethods(), $route->getAction()];
+        return [$route->uri(), $route->methods(), $route->getAction()];
     }
 
     /**
