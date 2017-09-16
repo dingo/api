@@ -2,12 +2,12 @@
 
 namespace Dingo\Api\Auth\Provider;
 
-use Dingo\Api\Routing\Route;
 use Exception;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\JWTAuth;
+use Dingo\Api\Routing\Route;
+use Illuminate\Http\Request;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class JWT extends Authorization
 {
