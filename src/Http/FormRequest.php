@@ -18,7 +18,9 @@ class FormRequest extends IlluminateFormRequest
      */
     protected function failedValidation(Validator $validator)
     {
-        if ($this->container['request'] instanceof Request) {
+        if ($this->container['request'] instanceof InternalRequest) {
+            // Do nothing and pass thru to the parent
+        } elseif ($this->container['request'] instanceof Request) {
             throw new ValidationHttpException($validator->errors());
         }
 
