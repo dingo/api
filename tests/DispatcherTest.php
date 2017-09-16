@@ -35,7 +35,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->transformerFactory = new TransformerFactory($this->container, new TransformerStub);
 
         $this->adapter = new RoutingAdapterStub;
-        $this->exception = m::mock('Dingo\Api\Exception\Handler');
+        $this->exception = m::mock(\Dingo\Api\Exception\Handler::class);
         $this->router = new Router($this->adapter, $this->exception, $this->container, null, null);
 
         $this->auth = new Auth($this->router, $this->container, []);
@@ -328,7 +328,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
 
         $response = $this->dispatcher->raw()->get('foo');
 
-        $this->assertInstanceOf('Dingo\Api\Http\Response', $response);
+        $this->assertInstanceOf(\Dingo\Api\Http\Response::class, $response);
         $this->assertSame('{"foo":"bar"}', $response->getContent());
         $this->assertSame(['foo' => 'bar'], $response->getOriginalContent());
     }
@@ -347,7 +347,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
 
         $response = $this->dispatcher->raw()->get('foo');
 
-        $this->assertInstanceOf('Dingo\Api\Http\Response', $response);
+        $this->assertInstanceOf(\Dingo\Api\Http\Response::class, $response);
         $this->assertSame('{"name":"Jason"}', $response->getContent());
         $this->assertSame($instance, $response->getOriginalContent());
     }
