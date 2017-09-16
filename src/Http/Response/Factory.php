@@ -3,12 +3,12 @@
 namespace Dingo\Api\Http\Response;
 
 use Closure;
-use Dingo\Api\Http\Response;
-use Dingo\Api\Transformer\Factory as TransformerFactory;
 use ErrorException;
-use Illuminate\Contracts\Pagination\Paginator;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Dingo\Api\Http\Response;
+use Illuminate\Support\Collection;
+use Illuminate\Contracts\Pagination\Paginator;
+use Dingo\Api\Transformer\Factory as TransformerFactory;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Factory
@@ -44,7 +44,7 @@ class Factory
         $response = new Response($content);
         $response->setStatusCode(201);
 
-        if (!is_null($location)) {
+        if (! is_null($location)) {
             $response->header('Location', $location);
         }
 
@@ -64,7 +64,7 @@ class Factory
         $response = new Response($content);
         $response->setStatusCode(202);
 
-        if (!is_null($location)) {
+        if (! is_null($location)) {
             $response->header('Location', $location);
         }
 
@@ -279,6 +279,6 @@ class Factory
             return new Response($parameters[0]);
         }
 
-        throw new ErrorException('Undefined method ' . get_class($this) . '::' . $method);
+        throw new ErrorException('Undefined method '.get_class($this).'::'.$method);
     }
 }
