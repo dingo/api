@@ -66,6 +66,17 @@
             }
         }
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Dingo\\Api\\Provider\\LaravelServiceProvider"
+            ],
+            "aliases": {
+                "API": "Dingo\\Api\\Facade\\API",
+                "Route": "Dingo\\Api\\Facade\\Route"
+            }
+        }
+    },
     "minimum-stability": "dev",
     "prefer-stable": true
 }
