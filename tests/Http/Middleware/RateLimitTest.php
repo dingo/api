@@ -2,7 +2,9 @@
 
 namespace Dingo\Api\Tests\Http\Middleware;
 
+use DateTimeZone;
 use Mockery as m;
+use Carbon\Carbon;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Route;
@@ -127,6 +129,8 @@ class RateLimitTest extends PHPUnit_Framework_TestCase
 
         $this->handler->extend(new ThrottleStub(['limit' => 0]));
 
+        Carbon::setTestNow(Carbon::create(2016, 10, 18, 12, 13, 15));
+
         try {
             $this->middleware->handle($request, function ($request) {
                 return new Response('foo');
@@ -137,11 +141,14 @@ class RateLimitTest extends PHPUnit_Framework_TestCase
             $this->assertSame('You have exceeded your rate limit.', $exception->getMessage());
 
             $headers = $exception->getHeaders();
-            $this->assertSame($headers['X-RateLimit-Reset'] - time(), $headers['Retry-After']);
+            $resetTimestamp = Carbon::now(new DateTimeZone('UCT'))->addSeconds($headers['Retry-After'])->getTimestamp();
+            $this->assertSame($headers['X-RateLimit-Reset'], $resetTimestamp);
             $this->assertArrayHasKey('X-RateLimit-Limit', $headers);
             $this->assertArrayHasKey('X-RateLimit-Remaining', $headers);
             $this->assertArrayHasKey('X-RateLimit-Reset', $headers);
         }
+
+        Carbon::setTestNow();
     }
 
     public function testRateLimitingWithLimitsSetOnRoute()
