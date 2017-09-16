@@ -3,6 +3,7 @@
 namespace Dingo\Api\Http;
 
 use ArrayObject;
+use Illuminate\Mail\Mailable;
 use UnexpectedValueException;
 use Illuminate\Http\JsonResponse;
 use Dingo\Api\Transformer\Binding;
@@ -134,6 +135,10 @@ class Response extends IlluminateResponse
         } elseif (is_array($this->content) || $this->content instanceof ArrayObject || $this->content instanceof Arrayable) {
             $this->content = $formatter->formatArray($this->content);
         } else {
+            if ($this->content instanceof Mailable) {
+                $this->content = $this->content->render();
+            }
+
             $this->headers->set('Content-Type', $defaultContentType);
         }
 
