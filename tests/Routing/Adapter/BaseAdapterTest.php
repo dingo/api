@@ -22,7 +22,7 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
         Http\Request::setAcceptParser(new Http\Parser\Accept('vnd', 'api', 'v1', 'json'));
 
         $this->adapter = $this->getAdapterInstance();
-        $this->exception = m::mock('Dingo\Api\Exception\Handler');
+        $this->exception = m::mock(\Dingo\Api\Exception\Handler::class);
         $this->router = new Router($this->adapter, $this->exception, $this->container, null, null);
 
         Http\Response::setFormatters(['json' => new Http\Response\Format\Json]);
@@ -185,7 +185,7 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
 
     public function testRoutingResources()
     {
-        $this->router->version('v1', ['namespace' => 'Dingo\Api\Tests\Stubs'], function () {
+        $this->router->version('v1', ['namespace' => \Dingo\Api\Tests\Stubs::class], function () {
             $this->router->resources([
                 'bar' => ['RoutingControllerStub', ['only' => ['index']]],
             ]);
@@ -198,7 +198,7 @@ abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
 
     public function testIterableRoutes()
     {
-        $this->router->version('v1', ['namespace' => 'Dingo\Api\Tests\Stubs'], function () {
+        $this->router->version('v1', ['namespace' => \Dingo\Api\Tests\Stubs::class], function () {
             $this->router->post('/', ['uses' => 'RoutingControllerStub@index']);
             $this->router->post('/find', ['uses' => 'RoutingControllerOtherStub@show']);
         });

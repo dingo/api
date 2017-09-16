@@ -22,7 +22,7 @@ class DingoServiceProvider extends ServiceProvider
     {
         $this->setResponseStaticInstances();
 
-        Request::setAcceptParser($this->app['Dingo\Api\Http\Parser\Accept']);
+        Request::setAcceptParser($this->app[\Dingo\Api\Http\Parser\Accept::class]);
 
         $this->app->rebinding('api.routes', function ($app, $routes) {
             $app['api.url']->setRouteCollections($routes);
@@ -63,8 +63,8 @@ class DingoServiceProvider extends ServiceProvider
 
         if (class_exists('Illuminate\Foundation\Application', false)) {
             $this->commands([
-                'Dingo\Api\Console\Command\Cache',
-                'Dingo\Api\Console\Command\Routes',
+                \Dingo\Api\Console\Command\Cache::class,
+                \Dingo\Api\Console\Command\Routes::class,
             ]);
         }
     }
@@ -91,17 +91,17 @@ class DingoServiceProvider extends ServiceProvider
     protected function registerClassAliases()
     {
         $aliases = [
-            'Dingo\Api\Http\Request' => 'Dingo\Api\Contract\Http\Request',
-            'api.dispatcher' => 'Dingo\Api\Dispatcher',
-            'api.http.validator' => 'Dingo\Api\Http\RequestValidator',
-            'api.http.response' => 'Dingo\Api\Http\Response\Factory',
-            'api.router' => 'Dingo\Api\Routing\Router',
-            'api.router.adapter' => 'Dingo\Api\Contract\Routing\Adapter',
-            'api.auth' => 'Dingo\Api\Auth\Auth',
-            'api.limiting' => 'Dingo\Api\Http\RateLimit\Handler',
-            'api.transformer' => 'Dingo\Api\Transformer\Factory',
-            'api.url' => 'Dingo\Api\Routing\UrlGenerator',
-            'api.exception' => ['Dingo\Api\Exception\Handler', 'Dingo\Api\Contract\Debug\ExceptionHandler'],
+            \Dingo\Api\Http\Request::class => \Dingo\Api\Contract\Http\Request::class,
+            'api.dispatcher' => \Dingo\Api\Dispatcher::class,
+            'api.http.validator' => \Dingo\Api\Http\RequestValidator::class,
+            'api.http.response' => \Dingo\Api\Http\Response\Factory::class,
+            'api.router' => \Dingo\Api\Routing\Router::class,
+            'api.router.adapter' => \Dingo\Api\Contract\Routing\Adapter::class,
+            'api.auth' => \Dingo\Api\Auth\Auth::class,
+            'api.limiting' => \Dingo\Api\Http\RateLimit\Handler::class,
+            'api.transformer' => \Dingo\Api\Transformer\Factory::class,
+            'api.url' => \Dingo\Api\Routing\UrlGenerator::class,
+            'api.exception' => [\Dingo\Api\Exception\Handler::class, \Dingo\Api\Contract\Debug\ExceptionHandler::class],
         ];
 
         foreach ($aliases as $key => $aliases) {
@@ -131,7 +131,7 @@ class DingoServiceProvider extends ServiceProvider
     public function registerDispatcher()
     {
         $this->app->singleton('api.dispatcher', function ($app) {
-            $dispatcher = new Dispatcher($app, $app['files'], $app['Dingo\Api\Routing\Router'], $app['Dingo\Api\Auth\Auth']);
+            $dispatcher = new Dispatcher($app, $app['files'], $app[\Dingo\Api\Routing\Router::class], $app[\Dingo\Api\Auth\Auth::class]);
 
             $dispatcher->setSubtype($this->config('subtype'));
             $dispatcher->setStandardsTree($this->config('standardsTree'));
@@ -152,7 +152,7 @@ class DingoServiceProvider extends ServiceProvider
     protected function registerAuth()
     {
         $this->app->singleton('api.auth', function ($app) {
-            return new Auth($app['Dingo\Api\Routing\Router'], $app, $this->config('auth'));
+            return new Auth($app[\Dingo\Api\Routing\Router::class], $app, $this->config('auth'));
         });
     }
 
@@ -175,16 +175,16 @@ class DingoServiceProvider extends ServiceProvider
      */
     protected function registerDocsCommand()
     {
-        $this->app->singleton('Dingo\Api\Console\Command\Docs', function ($app) {
+        $this->app->singleton(\Dingo\Api\Console\Command\Docs::class, function ($app) {
             return new Command\Docs(
-                $app['Dingo\Api\Routing\Router'],
-                $app['Dingo\Blueprint\Blueprint'],
-                $app['Dingo\Blueprint\Writer'],
+                $app[\Dingo\Api\Routing\Router::class],
+                $app[\Dingo\Blueprint\Blueprint::class],
+                $app[\Dingo\Blueprint\Writer::class],
                 $this->config('name'),
                 $this->config('version')
             );
         });
 
-        $this->commands(['Dingo\Api\Console\Command\Docs']);
+        $this->commands([\Dingo\Api\Console\Command\Docs::class]);
     }
 }

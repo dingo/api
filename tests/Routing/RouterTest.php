@@ -13,7 +13,7 @@ class RouterTest extends Adapter\BaseAdapterTest
 {
     public function getAdapterInstance()
     {
-        return $this->container->make('Dingo\Api\Tests\Stubs\RoutingAdapterStub');
+        return $this->container->make(\Dingo\Api\Tests\Stubs\RoutingAdapterStub::class);
     }
 
     public function getContainerInstance()
@@ -47,7 +47,7 @@ class RouterTest extends Adapter\BaseAdapterTest
         $request = $this->createRequest('baz', 'GET', ['accept' => 'application/vnd.api.v1+json']);
         $this->router->dispatch($request);
 
-        $this->router->version('v2', ['providers' => 'foo', 'throttle' => new ThrottleStub(['limit' => 10, 'expires' => 15]), 'namespace' => 'Dingo\Api\Tests'], function () {
+        $this->router->version('v2', ['providers' => 'foo', 'throttle' => new ThrottleStub(['limit' => 10, 'expires' => 15]), 'namespace' => \Dingo\Api\Tests::class], function () {
             $this->router->get('foo', 'Stubs\RoutingControllerStub@index');
         });
 
@@ -60,7 +60,7 @@ class RouterTest extends Adapter\BaseAdapterTest
         $this->assertSame(['foo', 'red', 'black'], $route->getAuthenticationProviders());
         $this->assertSame(10, $route->getRateLimit());
         $this->assertSame(20, $route->getRateLimitExpiration());
-        $this->assertInstanceOf('Dingo\Api\Tests\Stubs\BasicThrottleStub', $route->getThrottle());
+        $this->assertInstanceOf(\Dingo\Api\Tests\Stubs\BasicThrottleStub::class, $route->getThrottle());
     }
 
     public function testGroupAsPrefixesRouteAs()
@@ -73,7 +73,7 @@ class RouterTest extends Adapter\BaseAdapterTest
 
         $routes = $this->router->getRoutes('v1');
 
-        $this->assertInstanceOf('Dingo\Api\Routing\Route', $routes->getByName('api.users'));
+        $this->assertInstanceOf(\Dingo\Api\Routing\Route::class, $routes->getByName('api.users'));
     }
 
     /**
@@ -300,14 +300,14 @@ class RouterTest extends Adapter\BaseAdapterTest
 
         $request = $this->createRequest('foo', 'GET');
 
-        $this->exception->shouldReceive('handle')->with(m::type('Symfony\Component\HttpKernel\Exception\HttpException'))->andReturn(new Http\Response('Failed!'));
+        $this->exception->shouldReceive('handle')->with(m::type(\Symfony\Component\HttpKernel\Exception\HttpException::class))->andReturn(new Http\Response('Failed!'));
 
         $this->assertSame('Failed!', $this->router->dispatch($request)->getContent(), 'Router did not throw and handle a HttpException.');
     }
 
     public function testGroupNamespacesAreConcatenated()
     {
-        $this->router->version('v1', ['namespace' => 'Dingo\Api'], function () {
+        $this->router->version('v1', ['namespace' => \Dingo\Api::class], function () {
             $this->router->group(['namespace' => 'Tests\Stubs'], function () {
                 $this->router->get('foo', 'RoutingControllerStub@getIndex');
             });
@@ -339,7 +339,7 @@ class RouterTest extends Adapter\BaseAdapterTest
 
     public function testCurrentRouteAction()
     {
-        $this->router->version('v1', ['namespace' => 'Dingo\Api\Tests\Stubs'], function () {
+        $this->router->version('v1', ['namespace' => \Dingo\Api\Tests\Stubs::class], function () {
             $this->router->get('foo', 'RoutingControllerStub@getIndex');
         });
 
@@ -348,10 +348,10 @@ class RouterTest extends Adapter\BaseAdapterTest
         $this->router->dispatch($request);
 
         $this->assertFalse($this->router->currentRouteUses('foo'));
-        $this->assertTrue($this->router->currentRouteUses('Dingo\Api\Tests\Stubs\RoutingControllerStub@getIndex'));
+        $this->assertTrue($this->router->currentRouteUses(\Dingo\Api\Tests\Stubs\RoutingControllerStub::class.'@getIndex'));
         $this->assertFalse($this->router->uses('foo*'));
         $this->assertTrue($this->router->uses('*'));
-        $this->assertTrue($this->router->uses('Dingo\Api\Tests\Stubs\RoutingControllerStub@*'));
+        $this->assertTrue($this->router->uses(\Dingo\Api\Tests\Stubs\RoutingControllerStub::class.'@*'));
     }
 
     public function testRoutePatternsAreAppliedCorrectly()
@@ -368,8 +368,8 @@ class RouterTest extends Adapter\BaseAdapterTest
 
         $this->router->setConditionalRequest(false);
 
-        $this->exception->shouldReceive('report')->once()->with('Symfony\Component\HttpKernel\Exception\HttpException');
-        $this->exception->shouldReceive('handle')->with(m::type('Symfony\Component\HttpKernel\Exception\HttpException'))->andReturn(new Http\Response('Not Found!', 404));
+        $this->exception->shouldReceive('report')->once()->with(\Symfony\Component\HttpKernel\Exception\HttpException::class);
+        $this->exception->shouldReceive('handle')->with(m::type(\Symfony\Component\HttpKernel\Exception\HttpException::class))->andReturn(new Http\Response('Not Found!', 404));
 
         $response = $this->router->dispatch(
             $request = $this->createRequest('foo/abc', 'GET', ['accept' => 'application/vnd.api.v1+json'])

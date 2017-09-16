@@ -37,7 +37,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $this->exceptionHandler->register(function (HttpException $e) {
             //
         });
-        $this->assertArrayHasKey('Symfony\Component\HttpKernel\Exception\HttpException', $this->exceptionHandler->getHandlers());
+        $this->assertArrayHasKey(\Symfony\Component\HttpKernel\Exception\HttpException::class, $this->exceptionHandler->getHandlers());
     }
 
     public function testExceptionHandlerHandlesException()
