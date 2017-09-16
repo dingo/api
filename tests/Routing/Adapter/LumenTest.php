@@ -25,7 +25,9 @@ class LumenTest extends BaseAdapterTest
             $request->setRouteResolver($app[Request::class]->getRouteResolver());
         });
 
-        return new Lumen($this->container, new StdRouteParser, new GcbDataGenerator, GcbDispatcher::class);
+        return new Lumen($this->container, new StdRouteParser, new GcbDataGenerator, function ($routes) {
+            return new GcbDispatcher($routes->getData());
+        });
     }
 
     public function getContainerInstance()

@@ -38,11 +38,11 @@ class Lumen implements Adapter
     protected $generator;
 
     /**
-     * FastRoute dispatcher class name.
+     * FastRoute dispatcher resolver callback.
      *
-     * @var string
+     * @var callable
      */
-    protected $dispatcher;
+    protected $dispatcherResolver;
 
     /**
      * Array of registered routes.
@@ -64,16 +64,16 @@ class Lumen implements Adapter
      * @param \Laravel\Lumen\Application $app
      * @param \FastRoute\RouteParser     $parser
      * @param \FastRoute\DataGenerator   $generator
-     * @param string                     $dispatcher
+     * @param callable                   $dispatcherResolver
      *
      * @return void
      */
-    public function __construct(Application $app, RouteParser $parser, DataGenerator $generator, $dispatcher)
+    public function __construct(Application $app, RouteParser $parser, DataGenerator $generator, callable $dispatcherResolver)
     {
         $this->app = $app;
         $this->parser = $parser;
         $this->generator = $generator;
-        $this->dispatcher = $dispatcher;
+        $this->dispatcherResolver = $dispatcherResolver;
     }
 
     /**
@@ -92,11 +92,10 @@ class Lumen implements Adapter
 
         $this->removeMiddlewareFromApp();
 
-        $routes = $this->routes[$version];
+        $routeCollector = $this->routes[$version];
+        $dispatcher = call_user_func($this->dispatcherResolver, $routeCollector);
 
-        $this->app->setDispatcher(
-            new $this->dispatcher($routes->getData())
-        );
+        $this->app->setDispatcher($dispatcher);
 
         $this->normalizeRequestUri($request);
 
