@@ -10,6 +10,11 @@ use Dingo\Api\Tests\Stubs\MiddlewareStub;
 
 abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @var Router
+     */
+    protected $router;
+
     public function setUp()
     {
         $this->container = $this->getContainerInstance();
