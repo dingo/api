@@ -2,13 +2,13 @@
 
 namespace Dingo\Api\Auth\Provider;
 
+use Dingo\Api\Routing\Route;
 use Exception;
 use Illuminate\Http\Request;
-use Dingo\Api\Routing\Route;
-use League\OAuth2\Server\ResourceServer;
 use League\OAuth2\Server\Entity\AccessTokenEntity;
-use League\OAuth2\Server\Exception\OAuthException;
 use League\OAuth2\Server\Exception\InvalidScopeException;
+use League\OAuth2\Server\Exception\OAuthException;
+use League\OAuth2\Server\ResourceServer;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class OAuth2 extends Authorization
@@ -45,7 +45,7 @@ class OAuth2 extends Authorization
      * Create a new OAuth 2.0 provider instance.
      *
      * @param \League\OAuth2\Server\ResourceServer $resource
-     * @param bool                                 $httpHeadersOnly
+     * @param bool $httpHeadersOnly
      *
      * @return void
      */
@@ -71,7 +71,7 @@ class OAuth2 extends Authorization
         try {
             $this->validateAuthorizationHeader($request);
         } catch (Exception $exception) {
-            if (! $request->query('access_token', false)) {
+            if (!$request->query('access_token', false)) {
                 throw $exception;
             }
         }
@@ -115,7 +115,7 @@ class OAuth2 extends Authorization
      * Validate a route has any scopes.
      *
      * @param \League\OAuth2\Server\Entity\AccessTokenEntity $token
-     * @param \Dingo\Api\Routing\Route                       $route
+     * @param \Dingo\Api\Routing\Route $route
      *
      * @throws \League\OAuth2\Server\Exception\InvalidScopeException
      *
@@ -142,7 +142,7 @@ class OAuth2 extends Authorization
      * Validate a route has all scopes.
      *
      * @param \League\OAuth2\Server\Entity\AccessTokenEntity $token
-     * @param \Dingo\Api\Routing\Route                       $route
+     * @param \Dingo\Api\Routing\Route $route
      *
      * @throws \League\OAuth2\Server\Exception\InvalidScopeException
      *
@@ -153,7 +153,7 @@ class OAuth2 extends Authorization
         $scopes = $route->scopes();
 
         foreach ($scopes as $scope) {
-            if (! $token->hasScope($scope)) {
+            if (!$token->hasScope($scope)) {
                 throw new InvalidScopeException($scope);
             }
         }

@@ -3,14 +3,14 @@
 namespace Dingo\Api;
 
 use Dingo\Api\Auth\Auth;
+use Dingo\Api\Exception\InternalHttpException;
+use Dingo\Api\Http\InternalRequest;
 use Dingo\Api\Routing\Router;
 use Illuminate\Container\Container;
-use Dingo\Api\Http\InternalRequest;
 use Illuminate\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\Cookie;
-use Dingo\Api\Exception\InternalHttpException;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Illuminate\Support\Facades\Request as RequestFacade;
+use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class Dispatcher
@@ -165,10 +165,10 @@ class Dispatcher
     /**
      * Create a new dispatcher instance.
      *
-     * @param \Illuminate\Container\Container   $container
+     * @param \Illuminate\Container\Container $container
      * @param \Illuminate\Filesystem\Filesystem $files
-     * @param \Dingo\Api\Routing\Router         $router
-     * @param \Dingo\Api\Auth\Auth              $auth
+     * @param \Dingo\Api\Routing\Router $router
+     * @param \Dingo\Api\Auth\Auth $auth
      *
      * @return void
      */
@@ -208,7 +208,7 @@ class Dispatcher
                 $finfo = finfo_open(FILEINFO_MIME_TYPE);
 
                 $file = new UploadedFile($file, basename($file), finfo_file($finfo, $file), $this->files->size($file));
-            } elseif (! $file instanceof UploadedFile) {
+            } elseif (!$file instanceof UploadedFile) {
                 continue;
             }
 
@@ -348,7 +348,7 @@ class Dispatcher
     /**
      * Perform API GET request.
      *
-     * @param string       $uri
+     * @param string $uri
      * @param string|array $parameters
      *
      * @return mixed
@@ -361,9 +361,9 @@ class Dispatcher
     /**
      * Perform API POST request.
      *
-     * @param string       $uri
+     * @param string $uri
      * @param string|array $parameters
-     * @param string       $content
+     * @param string $content
      *
      * @return mixed
      */
@@ -375,9 +375,9 @@ class Dispatcher
     /**
      * Perform API PUT request.
      *
-     * @param string       $uri
+     * @param string $uri
      * @param string|array $parameters
-     * @param string       $content
+     * @param string $content
      *
      * @return mixed
      */
@@ -389,9 +389,9 @@ class Dispatcher
     /**
      * Perform API PATCH request.
      *
-     * @param string       $uri
+     * @param string $uri
      * @param string|array $parameters
-     * @param string       $content
+     * @param string $content
      *
      * @return mixed
      */
@@ -403,9 +403,9 @@ class Dispatcher
     /**
      * Perform API DELETE request.
      *
-     * @param string       $uri
+     * @param string $uri
      * @param string|array $parameters
-     * @param string       $content
+     * @param string $content
      *
      * @return mixed
      */
@@ -417,16 +417,16 @@ class Dispatcher
     /**
      * Queue up and dispatch a new request.
      *
-     * @param string       $verb
-     * @param string       $uri
+     * @param string $verb
+     * @param string $uri
      * @param string|array $parameters
-     * @param string       $content
+     * @param string $content
      *
      * @return mixed
      */
     protected function queueRequest($verb, $uri, $parameters, $content = '')
     {
-        if (! empty($content)) {
+        if (!empty($content)) {
             $this->content = $content;
         }
 
@@ -448,23 +448,23 @@ class Dispatcher
     /**
      * Create a new internal request from an HTTP verb and URI.
      *
-     * @param string       $verb
-     * @param string       $uri
+     * @param string $verb
+     * @param string $uri
      * @param string|array $parameters
      *
      * @return \Dingo\Api\Http\InternalRequest
      */
     protected function createRequest($verb, $uri, $parameters)
     {
-        $parameters = array_merge($this->parameters, (array) $parameters);
+        $parameters = array_merge($this->parameters, (array)$parameters);
 
         $uri = $this->addPrefixToUri($uri);
 
         // If the URI does not have a scheme then we can assume that there it is not an
         // absolute URI, in this case we'll prefix the root requests path to the URI.
         $rootUrl = $this->getRootRequest()->root();
-        if ((! parse_url($uri, PHP_URL_SCHEME)) && parse_url($rootUrl) !== false) {
-            $uri = rtrim($rootUrl, '/').'/'.ltrim($uri, '/');
+        if ((!parse_url($uri, PHP_URL_SCHEME)) && parse_url($rootUrl) !== false) {
+            $uri = rtrim($rootUrl, '/') . '/' . ltrim($uri, '/');
         }
 
         $request = InternalRequest::create(
@@ -497,7 +497,7 @@ class Dispatcher
      */
     protected function addPrefixToUri($uri)
     {
-        if (! isset($this->prefix)) {
+        if (!isset($this->prefix)) {
             return $uri;
         }
 
@@ -507,7 +507,7 @@ class Dispatcher
             return $uri;
         }
 
-        return rtrim('/'.trim($this->prefix, '/').'/'.$uri, '/');
+        return rtrim('/' . trim($this->prefix, '/') . '/' . $uri, '/');
     }
 
     /**
@@ -540,9 +540,9 @@ class Dispatcher
 
             $response = $this->router->dispatch($request);
 
-            if (! $response->isSuccessful() && ! $response->isRedirection()) {
+            if (!$response->isSuccessful() && !$response->isRedirection()) {
                 throw new InternalHttpException($response);
-            } elseif (! $this->raw) {
+            } elseif (!$this->raw) {
                 $response = $response->getOriginalContent();
             }
         } catch (HttpExceptionInterface $exception) {
@@ -567,7 +567,7 @@ class Dispatcher
      */
     protected function refreshRequestStack()
     {
-        if (! $this->persistAuthentication) {
+        if (!$this->persistAuthentication) {
             $this->auth->setUser(null);
 
             $this->persistAuthentication = true;

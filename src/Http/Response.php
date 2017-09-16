@@ -3,18 +3,18 @@
 namespace Dingo\Api\Http;
 
 use ArrayObject;
-use UnexpectedValueException;
-use Illuminate\Http\JsonResponse;
-use Dingo\Api\Transformer\Binding;
 use Dingo\Api\Event\ResponseIsMorphing;
 use Dingo\Api\Event\ResponseWasMorphed;
-use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Http\Response as IlluminateResponse;
-use Illuminate\Events\Dispatcher as EventDispatcher;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Dingo\Api\Transformer\Binding;
 use Dingo\Api\Transformer\Factory as TransformerFactory;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Illuminate\Events\Dispatcher as EventDispatcher;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response as IlluminateResponse;
 use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
+use UnexpectedValueException;
 
 class Response extends IlluminateResponse
 {
