@@ -8,7 +8,8 @@ use Dingo\Api\Contract\Http\Validator;
 
 class Domain implements Validator
 {
-    const PATTERN_STRIP_PROTOCOL = '/:\d*$/';
+    const PATTERN_STRIP_PORT = '/:\d*$/';
+    const PATTERN_STRIIP_PROTOCOL = '/[w]*:[\/]*/' ;
 
     /**
      * API domain.
@@ -50,8 +51,9 @@ class Domain implements Validator
      */
     protected function stripProtocol($domain)
     {
-        if (Str::contains($domain, '://')) {
-            $domain = substr($domain, strpos($domain, '://') + 3);
+        
+        if ($domainStrippedProtocol = preg_replace(self::PATTERN_STRIP_PROTOCOL, null, $domain)){
+            return $domainStrippedProtocol;
         }
 
         return $domain;
@@ -66,7 +68,7 @@ class Domain implements Validator
      */
     protected function stripPort($domain)
     {
-        if ($domainStripped = preg_replace(self::PATTERN_STRIP_PROTOCOL, null, $domain)) {
+        if ($domainStripped = preg_replace(self::PATTERN_STRIP_PORT, null, $domain)) {
             return $domainStripped;
         }
 
