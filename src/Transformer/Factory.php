@@ -247,7 +247,7 @@ class Factory
      * Pass unknown method calls through to the adapter.
      *
      * @param string $method
-     * @Param array  $parameters
+     * @param array  $parameters
      *
      * @return mixed
      */
