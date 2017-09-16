@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\Request as RequestFacade;
 
 class DispatcherTest extends PHPUnit_Framework_TestCase
 {
+    protected $container;
+
     public function setUp()
     {
         $this->container = new Container;

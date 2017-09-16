@@ -13,6 +13,9 @@ use League\OAuth2\Server\Entity\AccessTokenEntity;
 
 class OAuth2Test extends PHPUnit_Framework_TestCase
 {
+    protected $server;
+    protected $provider;
+
     public function setUp()
     {
         $this->server = m::mock(ResourceServer::class);
