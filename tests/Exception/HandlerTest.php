@@ -15,6 +15,9 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class HandlerTest extends PHPUnit_Framework_TestCase
 {
+    protected $parentHandler;
+    protected $exceptionHandler;
+
     public function setUp()
     {
         $this->parentHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler');

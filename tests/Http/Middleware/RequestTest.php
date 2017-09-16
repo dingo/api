@@ -21,6 +21,13 @@ use Dingo\Api\Http\Middleware\Request as RequestMiddleware;
 
 class RequestTest extends PHPUnit_Framework_TestCase
 {
+    protected $app;
+    protected $router;
+    protected $validator;
+    protected $handler;
+    protected $events;
+    protected $middleware;
+
     public function setUp()
     {
         $this->app = new ApplicationStub;

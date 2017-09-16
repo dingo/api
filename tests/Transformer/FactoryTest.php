@@ -13,6 +13,8 @@ use Dingo\Api\Tests\Stubs\UserTransformerStub;
 
 class FactoryTest extends PHPUnit_Framework_TestCase
 {
+    protected $factory;
+
     public function setUp()
     {
         $container = new Container;
