@@ -3,8 +3,8 @@
 namespace Dingo\Api\Auth\Provider;
 
 use Exception;
-use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
+use Illuminate\Http\Request;
 use League\OAuth2\Server\ResourceServer;
 use League\OAuth2\Server\Entity\AccessTokenEntity;
 use League\OAuth2\Server\Exception\OAuthException;
@@ -45,7 +45,7 @@ class OAuth2 extends Authorization
      * Create a new OAuth 2.0 provider instance.
      *
      * @param \League\OAuth2\Server\ResourceServer $resource
-     * @param bool                                 $httpHeadersOnly
+     * @param bool $httpHeadersOnly
      *
      * @return void
      */
@@ -115,7 +115,7 @@ class OAuth2 extends Authorization
      * Validate a route has any scopes.
      *
      * @param \League\OAuth2\Server\Entity\AccessTokenEntity $token
-     * @param \Dingo\Api\Routing\Route                       $route
+     * @param \Dingo\Api\Routing\Route $route
      *
      * @throws \League\OAuth2\Server\Exception\InvalidScopeException
      *
@@ -142,7 +142,7 @@ class OAuth2 extends Authorization
      * Validate a route has all scopes.
      *
      * @param \League\OAuth2\Server\Entity\AccessTokenEntity $token
-     * @param \Dingo\Api\Routing\Route                       $route
+     * @param \Dingo\Api\Routing\Route $route
      *
      * @throws \League\OAuth2\Server\Exception\InvalidScopeException
      *

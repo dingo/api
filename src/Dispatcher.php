@@ -4,8 +4,8 @@ namespace Dingo\Api;
 
 use Dingo\Api\Auth\Auth;
 use Dingo\Api\Routing\Router;
-use Illuminate\Container\Container;
 use Dingo\Api\Http\InternalRequest;
+use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Cookie;
 use Dingo\Api\Exception\InternalHttpException;
@@ -165,10 +165,10 @@ class Dispatcher
     /**
      * Create a new dispatcher instance.
      *
-     * @param \Illuminate\Container\Container   $container
+     * @param \Illuminate\Container\Container $container
      * @param \Illuminate\Filesystem\Filesystem $files
-     * @param \Dingo\Api\Routing\Router         $router
-     * @param \Dingo\Api\Auth\Auth              $auth
+     * @param \Dingo\Api\Routing\Router $router
+     * @param \Dingo\Api\Auth\Auth $auth
      *
      * @return void
      */
@@ -348,7 +348,7 @@ class Dispatcher
     /**
      * Perform API GET request.
      *
-     * @param string       $uri
+     * @param string $uri
      * @param string|array $parameters
      *
      * @return mixed
@@ -361,9 +361,9 @@ class Dispatcher
     /**
      * Perform API POST request.
      *
-     * @param string       $uri
+     * @param string $uri
      * @param string|array $parameters
-     * @param string       $content
+     * @param string $content
      *
      * @return mixed
      */
@@ -375,9 +375,9 @@ class Dispatcher
     /**
      * Perform API PUT request.
      *
-     * @param string       $uri
+     * @param string $uri
      * @param string|array $parameters
-     * @param string       $content
+     * @param string $content
      *
      * @return mixed
      */
@@ -389,9 +389,9 @@ class Dispatcher
     /**
      * Perform API PATCH request.
      *
-     * @param string       $uri
+     * @param string $uri
      * @param string|array $parameters
-     * @param string       $content
+     * @param string $content
      *
      * @return mixed
      */
@@ -403,9 +403,9 @@ class Dispatcher
     /**
      * Perform API DELETE request.
      *
-     * @param string       $uri
+     * @param string $uri
      * @param string|array $parameters
-     * @param string       $content
+     * @param string $content
      *
      * @return mixed
      */
@@ -417,10 +417,10 @@ class Dispatcher
     /**
      * Queue up and dispatch a new request.
      *
-     * @param string       $verb
-     * @param string       $uri
+     * @param string $verb
+     * @param string $uri
      * @param string|array $parameters
-     * @param string       $content
+     * @param string $content
      *
      * @return mixed
      */
@@ -448,8 +448,8 @@ class Dispatcher
     /**
      * Create a new internal request from an HTTP verb and URI.
      *
-     * @param string       $verb
-     * @param string       $uri
+     * @param string $verb
+     * @param string $uri
      * @param string|array $parameters
      *
      * @return \Dingo\Api\Http\InternalRequest
@@ -734,7 +734,7 @@ class Dispatcher
     }
 
     /**
-     * Set the defult format.
+     * Set the default format.
      *
      * @param string $format
      *

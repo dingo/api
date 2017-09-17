@@ -119,7 +119,7 @@ class LaravelServiceProvider extends DingoServiceProvider
     }
 
     /**
-     * Register a short-hand name for a middleware. For Compatability
+     * Register a short-hand name for a middleware. For compatibility
      * with Laravel < 5.4 check if aliasMiddleware exists since this
      * method has been renamed.
      *
