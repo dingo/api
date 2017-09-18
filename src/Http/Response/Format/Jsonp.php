@@ -58,18 +58,20 @@ class Jsonp extends Json
     }
 
     /**
-     * Encode the content to its JSON representation.
+     * Encode the content to its JSONP representation.
      *
-     * @param string $content
+     * @param mixed $content
      *
      * @return string
      */
     protected function encode($content)
     {
+        $jsonString = parent::encode($content);
+
         if ($this->hasValidCallback()) {
-            return sprintf('%s(%s);', $this->getCallback(), json_encode($content));
+            return sprintf('%s(%s);', $this->getCallback(), $jsonString);
         }
 
-        return parent::encode($content);
+        return $jsonString;
     }
 }
