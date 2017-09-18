@@ -60,11 +60,11 @@ class Jsonp extends Json
     /**
      * Encode the content to its JSONP representation.
      *
-     * @param array $content
+     * @param mixed $content
      *
      * @return string
      */
-    protected function encode(array $content)
+    protected function encode($content)
     {
         $jsonString = parent::encode($content);
 
