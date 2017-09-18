@@ -7,6 +7,13 @@ use Illuminate\Contracts\Support\Arrayable;
 
 class Json extends Format
 {
+    /*
+     * JSON format (as well as JSONP) uses JsonOptionalFormatting trait, which
+     * provides extra functionality for the process of encoding data to
+     * its JSON representation.
+     */
+    use JsonOptionalFormatting;
+
     /**
      * Format an Eloquent model.
      *
@@ -91,15 +98,29 @@ class Json extends Format
     /**
      * Encode the content to its JSON representation.
      *
-     * @param string $content
+     * @param mixed $content
      *
      * @return string
      */
     protected function encode($content)
     {
-        $encodedString = json_encode($content);
-        if ($encodedString === false) {
-            throw new \ErrorException('Error encoding data in JSON format: '.json_last_error());
+        $jsonEncodeOptions = [];
+
+        // Here is a place, where any available JSON encoding options, that
+        // deal with users' requirements to JSON response formatting and
+        // structure, can be conveniently applied to tweak the output.
+
+        if ($this->isJsonPrettyPrintEnabled()) {
+            $jsonEncodeOptions[] = JSON_PRETTY_PRINT;
+        }
+
+        $encodedString = $this->performJsonEncoding($content, $jsonEncodeOptions);
+
+        if ($this->isCustomIndentStyleRequired()) {
+            $encodedString = $this->indentPrettyPrintedJson(
+                $encodedString,
+                $this->options['indent_style']
+            );
         }
 
         return $encodedString;

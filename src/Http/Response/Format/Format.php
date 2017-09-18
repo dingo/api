@@ -18,6 +18,13 @@ abstract class Format
      */
     protected $response;
 
+    /*
+     * Array of formats' options.
+     *
+     * @var array
+     */
+    protected $options;
+
     /**
      * Set the request instance.
      *
@@ -42,6 +49,20 @@ abstract class Format
     public function setResponse($response)
     {
         $this->response = $response;
+
+        return $this;
+    }
+
+    /**
+     * Set the formats' options.
+     *
+     * @param array $options
+     *
+     * @return \Dingo\Api\Http\Response\Format\Format
+     */
+    public function setOptions(array $options)
+    {
+        $this->options = $options;
 
         return $this;
     }

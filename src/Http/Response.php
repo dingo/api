@@ -40,6 +40,13 @@ class Response extends IlluminateResponse
     protected static $formatters = [];
 
     /**
+     * Array of formats' options.
+     *
+     * @var array
+     */
+    protected static $formatsOptions = [];
+
+    /**
      * Transformer factory instance.
      *
      * @var \Dingo\Api\Transformer\TransformerFactory
@@ -129,6 +136,8 @@ class Response extends IlluminateResponse
         }
 
         $formatter = static::getFormatter($format);
+
+        $formatter->setOptions(static::getFormatsOptions($format));
 
         $defaultContentType = $this->headers->get('Content-Type');
 
@@ -247,6 +256,46 @@ class Response extends IlluminateResponse
     public static function setFormatters(array $formatters)
     {
         static::$formatters = $formatters;
+    }
+
+    /**
+     * Set the formats' options.
+     *
+     * @param array $formatsOptions
+     *
+     * @return void
+     */
+    public static function setFormatsOptions(array $formatsOptions)
+    {
+        static::$formatsOptions = $formatsOptions;
+    }
+
+    /**
+     * Get the format's options.
+     *
+     * @param string $format
+     *
+     * @return array
+     */
+    public static function getFormatsOptions($format)
+    {
+        if (! static::hasOptionsForFormat($format)) {
+            return [];
+        }
+
+        return static::$formatsOptions[$format];
+    }
+
+    /**
+     * Determine if any format's options were set.
+     *
+     * @param string $format
+     *
+     * @return bool
+     */
+    public static function hasOptionsForFormat($format)
+    {
+        return isset(static::$formatsOptions[$format]);
     }
 
     /**
