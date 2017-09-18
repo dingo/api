@@ -11,8 +11,8 @@ use Dingo\Api\Event\ResponseWasMorphed;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Events\Dispatcher as EventDispatcher;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Dingo\Api\Transformer\Factory as TransformerFactory;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 
@@ -95,7 +95,16 @@ class Response extends IlluminateResponse
      */
     public static function makeFromJson(JsonResponse $json)
     {
-        $new = static::create(json_decode($json->getContent(), true), $json->getStatusCode());
+        $content = $json->getContent();
+
+        // If the contents of the JsonResponse does not starts with /**/ (typical laravel jsonp response)
+        // we assume that it is a valid json response that can be decoded, or we just use the raw jsonp
+        // contents for building the response
+        if (! starts_with($json->getContent(), '/**/')) {
+            $content = json_decode($json->getContent(), true);
+        }
+
+        $new = static::create($content, $json->getStatusCode());
 
         $new->headers = $json->headers;
 
@@ -121,9 +130,9 @@ class Response extends IlluminateResponse
 
         $formatter = static::getFormatter($format);
 
-        $defaultContentType = $this->headers->get('content-type');
+        $defaultContentType = $this->headers->get('Content-Type');
 
-        $this->headers->set('content-type', $formatter->getContentType());
+        $this->headers->set('Content-Type', $formatter->getContentType());
 
         $this->fireMorphedEvent();
 
@@ -134,7 +143,7 @@ class Response extends IlluminateResponse
         } elseif (is_array($this->content) || $this->content instanceof ArrayObject || $this->content instanceof Arrayable) {
             $this->content = $formatter->formatArray($this->content);
         } else {
-            $this->headers->set('content-type', $defaultContentType);
+            $this->headers->set('Content-Type', $defaultContentType);
         }
 
         return $this;

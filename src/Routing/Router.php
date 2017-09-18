@@ -5,9 +5,9 @@ namespace Dingo\Api\Routing;
 use Closure;
 use Exception;
 use RuntimeException;
+use Dingo\Api\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Dingo\Api\Http\Request;
 use Dingo\Api\Http\Response;
 use Illuminate\Http\JsonResponse;
 use Dingo\Api\Http\InternalRequest;
@@ -93,7 +93,6 @@ class Router
      * Create a new router instance.
      *
      * @param \Dingo\Api\Contract\Routing\Adapter        $adapter
-     * @param \Dingo\Api\Http\Parser\Accept              $accept
      * @param \Dingo\Api\Contract\Debug\ExceptionHandler $exception
      * @param \Illuminate\Container\Container            $container
      * @param string                                     $domain
@@ -116,7 +115,7 @@ class Router
      * attributes and a required callback.
      *
      * This method can be called without the third parameter, however,
-     * the callback should always be the last paramter.
+     * the callback should always be the last parameter.
      *
      * @param string         $version
      * @param array|callable $second
@@ -312,74 +311,13 @@ class Router
      */
     public function resource($name, $controller, array $options = [])
     {
-        if ($this->container->bound('Dingo\Api\Routing\ResourceRegistrar')) {
-            $registrar = $this->container->make('Dingo\Api\Routing\ResourceRegistrar');
+        if ($this->container->bound(ResourceRegistrar::class)) {
+            $registrar = $this->container->make(ResourceRegistrar::class);
         } else {
             $registrar = new ResourceRegistrar($this);
         }
 
         $registrar->register($name, $controller, $options);
-    }
-
-    /**
-     * Register an array of controllers.
-     *
-     * @param array $controllers
-     *
-     * @return void
-     */
-    public function controllers(array $controllers)
-    {
-        foreach ($controllers as $uri => $controller) {
-            $this->controller($uri, $controller);
-        }
-    }
-
-    /**
-     * Register a controller.
-     *
-     * @param string $uri
-     * @param string $controller
-     * @param array  $names
-     *
-     * @return void
-     */
-    public function controller($uri, $controller, $names = [])
-    {
-        $routable = (new ControllerInspector)->getRoutable($this->addGroupNamespace($controller), $uri);
-
-        foreach ($routable as $method => $routes) {
-            if ($method == 'getMethodProperties') {
-                continue;
-            }
-
-            foreach ($routes as $route) {
-                $this->{$route['verb']}($route['uri'], [
-                    'uses' => $controller.'@'.$method,
-                    'as' => Arr::get($names, $method),
-                ]);
-            }
-        }
-    }
-
-    /**
-     * Add the group namespace to a controller.
-     *
-     * @param string $controller
-     *
-     * @return string
-     */
-    protected function addGroupNamespace($controller)
-    {
-        if (! empty($this->groupStack)) {
-            $group = end($this->groupStack);
-
-            if (isset($group['namespace']) && strpos($controller, '\\') !== 0) {
-                return $group['namespace'].'\\'.$controller;
-            }
-        }
-
-        return $controller;
     }
 
     /**
@@ -419,7 +357,7 @@ class Router
     /**
      * Add the controller preparation middleware to the beginning of the routes middleware.
      *
-     * @param array @action
+     * @param array $action
      *
      * @return array
      */
@@ -479,7 +417,7 @@ class Router
         $new['where'] = array_merge(Arr::get($old, 'where', []), Arr::get($new, 'where', []));
 
         if (isset($old['as'])) {
-            $new['as'] = $old['as'].Arr::get($new, 'as', '');
+            $new['as'] = trim($old['as'].'.'.Arr::get($new, 'as', ''), '.');
         }
 
         return array_merge_recursive(array_except($old, ['namespace', 'prefix', 'where', 'as']), $new);
@@ -566,7 +504,7 @@ class Router
     {
         $this->currentRoute = null;
 
-        $this->container->instance('Dingo\Api\Http\Request', $request);
+        $this->container->instance(Request::class, $request);
 
         $this->routesDispatched++;
 
@@ -622,7 +560,7 @@ class Router
 
         if ($response->isSuccessful() && $this->requestIsConditional()) {
             if (! $response->headers->has('ETag')) {
-                $response->setEtag(md5($response->getContent()));
+                $response->setEtag(sha1($response->getContent()));
             }
 
             $response->isNotModified($request);

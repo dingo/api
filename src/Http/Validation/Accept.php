@@ -45,7 +45,7 @@ class Accept implements Validator
      *
      * @param \Illuminate\Http\Request $request
      *
-     * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
+     * @throws \Exception|\Symfony\Component\HttpKernel\Exception\BadRequestHttpException
      *
      * @return bool
      */

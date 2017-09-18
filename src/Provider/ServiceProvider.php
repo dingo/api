@@ -18,7 +18,7 @@ abstract class ServiceProvider extends IlluminateServiceProvider
     /**
      * Retrieve and instantiate a config value if it exists and is a class.
      *
-     * @param string $key
+     * @param string $item
      * @param bool   $instantiate
      *
      * @return mixed

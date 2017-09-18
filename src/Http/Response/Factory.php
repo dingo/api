@@ -7,8 +7,8 @@ use ErrorException;
 use Illuminate\Support\Str;
 use Dingo\Api\Http\Response;
 use Illuminate\Support\Collection;
-use Dingo\Api\Transformer\Factory as TransformerFactory;
 use Illuminate\Contracts\Pagination\Paginator;
+use Dingo\Api\Transformer\Factory as TransformerFactory;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Factory
@@ -55,7 +55,7 @@ class Factory
      * Respond with an accepted response and associate a location and/or content if provided.
      *
      * @param null|string $location
-     * @param mixed       $content
+     * @param mixed $content
      *
      * @return \Dingo\Api\Http\Response
      */
@@ -87,18 +87,23 @@ class Factory
      * Bind a collection to a transformer and start building a response.
      *
      * @param \Illuminate\Support\Collection $collection
-     * @param object                         $transformer
-     * @param array                          $parameters
-     * @param \Closure                       $after
+     * @param object $transformer
+     * @param array|\Closure $parameters
+     * @param \Closure|null $after
      *
      * @return \Dingo\Api\Http\Response
      */
-    public function collection(Collection $collection, $transformer, array $parameters = [], Closure $after = null)
+    public function collection(Collection $collection, $transformer, $parameters = [], Closure $after = null)
     {
         if ($collection->isEmpty()) {
             $class = get_class($collection);
         } else {
             $class = get_class($collection->first());
+        }
+
+        if ($parameters instanceof \Closure) {
+            $after = $parameters;
+            $parameters = [];
         }
 
         $binding = $this->transformer->register($class, $transformer, $parameters, $after);
@@ -109,16 +114,21 @@ class Factory
     /**
      * Bind an item to a transformer and start building a response.
      *
-     * @param object   $item
-     * @param object   $transformer
-     * @param array    $parameters
+     * @param object $item
+     * @param object $transformer
+     * @param array $parameters
      * @param \Closure $after
      *
      * @return \Dingo\Api\Http\Response
      */
-    public function item($item, $transformer, array $parameters = [], Closure $after = null)
+    public function item($item, $transformer, $parameters = [], Closure $after = null)
     {
         $class = get_class($item);
+
+        if ($parameters instanceof \Closure) {
+            $after = $parameters;
+            $parameters = [];
+        }
 
         $binding = $this->transformer->register($class, $transformer, $parameters, $after);
 
@@ -129,9 +139,9 @@ class Factory
      * Bind a paginator to a transformer and start building a response.
      *
      * @param \Illuminate\Contracts\Pagination\Paginator $paginator
-     * @param object                                     $transformer
-     * @param array                                      $parameters
-     * @param \Closure                                   $after
+     * @param object $transformer
+     * @param array $parameters
+     * @param \Closure $after
      *
      * @return \Dingo\Api\Http\Response
      */
@@ -152,7 +162,7 @@ class Factory
      * Return an error response.
      *
      * @param string $message
-     * @param int    $statusCode
+     * @param int $statusCode
      *
      * @throws \Symfony\Component\HttpKernel\Exception\HttpException
      *
@@ -251,7 +261,7 @@ class Factory
      * Call magic methods beginning with "with".
      *
      * @param string $method
-     * @param array  $parameters
+     * @param array $parameters
      *
      * @throws \ErrorException
      *
@@ -262,9 +272,9 @@ class Factory
         if (Str::startsWith($method, 'with')) {
             return call_user_func_array([$this, Str::camel(substr($method, 4))], $parameters);
 
-        // Because PHP won't let us name the method "array" we'll simply watch for it
-        // in here and return the new binding. Gross. This is now DEPRECATED and
-        // should not be used. Just return an array or a new response instance.
+            // Because PHP won't let us name the method "array" we'll simply watch for it
+            // in here and return the new binding. Gross. This is now DEPRECATED and
+            // should not be used. Just return an array or a new response instance.
         } elseif ($method == 'array') {
             return new Response($parameters[0]);
         }

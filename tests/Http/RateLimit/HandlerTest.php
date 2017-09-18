@@ -8,9 +8,14 @@ use Illuminate\Cache\CacheManager;
 use Illuminate\Container\Container;
 use Dingo\Api\Http\RateLimit\Handler;
 use Dingo\Api\Tests\Stubs\ThrottleStub;
+use Dingo\Api\Http\RateLimit\Throttle\Route;
 
 class HandlerTest extends PHPUnit_Framework_TestCase
 {
+    protected $container;
+    protected $cache;
+    protected $limiter;
+
     public function setUp()
     {
         $this->container = new Container;
@@ -30,7 +35,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
 
         $throttle = $this->limiter->getThrottle();
 
-        $this->assertInstanceOf('Dingo\Api\Http\RateLimit\Throttle\Route', $throttle);
+        $this->assertInstanceOf(Route::class, $throttle);
         $this->assertSame(100, $throttle->getLimit());
         $this->assertSame(100, $throttle->getExpires());
     }
@@ -64,6 +69,6 @@ class HandlerTest extends PHPUnit_Framework_TestCase
     {
         $this->limiter->extend(new ThrottleStub(['limit' => 10, 'expires' => 200]));
         $this->limiter->rateLimitRequest(Request::create('test', 'GET'));
-        $this->assertEquals(9, $this->limiter->getRemainingLimit());
+        $this->assertSame(9, $this->limiter->getRemainingLimit());
     }
 }

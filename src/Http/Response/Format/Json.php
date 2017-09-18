@@ -97,6 +97,11 @@ class Json extends Format
      */
     protected function encode($content)
     {
-        return json_encode($content);
+        $encodedString = json_encode($content);
+        if ($encodedString === false) {
+            throw new \ErrorException('Error encoding data in JSON format: '.json_last_error());
+        }
+
+        return $encodedString;
     }
 }

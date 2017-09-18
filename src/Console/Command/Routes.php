@@ -75,6 +75,18 @@ class Routes extends RouteListCommand
     }
 
     /**
+     * Execute the console command.
+     *
+     * @return void
+     */
+    public function handle()
+    {
+        $this->routes = $this->router->getRoutes();
+
+        parent::handle();
+    }
+
+    /**
      * Compile the routes into a displayable format.
      *
      * @return array
@@ -86,15 +98,15 @@ class Routes extends RouteListCommand
         foreach ($this->router->getRoutes() as $collection) {
             foreach ($collection->getRoutes() as $route) {
                 $routes[] = $this->filterRoute([
-                    'host'      => $route->domain(),
-                    'method'    => implode('|', $route->methods()),
-                    'uri'       => $route->uri(),
-                    'name'      => $route->getName(),
-                    'action'    => $route->getActionName(),
+                    'host' => $route->domain(),
+                    'method' => implode('|', $route->methods()),
+                    'uri' => $route->uri(),
+                    'name' => $route->getName(),
+                    'action' => $route->getActionName(),
                     'protected' => $route->isProtected() ? 'Yes' : 'No',
-                    'versions'  => implode(', ', $route->versions()),
-                    'scopes'    => implode(', ', $route->scopes()),
-                    'rate'      => $this->routeRateLimit($route),
+                    'versions' => implode(', ', $route->versions()),
+                    'scopes' => implode(', ', $route->scopes()),
+                    'rate' => $this->routeRateLimit($route),
                 ]);
             }
         }

@@ -147,6 +147,9 @@ class Route
     /**
      * Setup the route properties.
      *
+     * @param Request $request
+     * @param $route
+     *
      * @return void
      */
     protected function setupRouteProperties(Request $request, $route)
@@ -155,7 +158,7 @@ class Route
 
         $this->versions = Arr::pull($this->action, 'version');
         $this->conditionalRequest = Arr::pull($this->action, 'conditionalRequest', true);
-        $this->middleware = Arr::pull($this->action, 'middleware', []);
+        $this->middleware = (array) Arr::pull($this->action, 'middleware', []);
         $this->throttle = Arr::pull($this->action, 'throttle');
         $this->scopes = Arr::pull($this->action, 'scopes', []);
         $this->authenticationProviders = Arr::pull($this->action, 'providers', []);
@@ -175,8 +178,6 @@ class Route
 
     /**
      * Merge the controller properties onto the route properties.
-     *
-     * @return void
      */
     protected function mergeControllerProperties()
     {
@@ -223,10 +224,9 @@ class Route
     /**
      * Find the controller options and whether or not it will apply to this routes controller method.
      *
-     * @param string   $option
-     * @param \Closure $callback
+     * @param string $name
      *
-     * @return void
+     * @return array
      */
     protected function findControllerPropertyOptions($name)
     {
@@ -300,7 +300,7 @@ class Route
             $traits = array_merge(class_uses($trait, false), $traits);
         }
 
-        return isset($traits['Dingo\Api\Routing\Helpers']);
+        return isset($traits[Helpers::class]);
     }
 
     /**
@@ -522,7 +522,7 @@ class Route
      */
     public function getActionName()
     {
-        return Arr::get($this->action, 'controller', 'Closure');
+        return Arr::get($this->action, 'controller', Arr::get($this->action, 'uses', 'Closure'));
     }
 
     /**
@@ -621,6 +621,17 @@ class Route
      * @return string|null
      */
     public function domain()
+    {
+        return Arr::get($this->action, 'domain');
+    }
+
+    /**
+     * Get the domain defined for the route.
+     * Use in Laravel 5.5+.
+     *
+     * @return string|null
+     */
+    public function getDomain()
     {
         return Arr::get($this->action, 'domain');
     }

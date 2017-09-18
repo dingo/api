@@ -2,6 +2,7 @@
 
 namespace Dingo\Api\Tests\Routing\Adapter;
 
+use Illuminate\Http\Request;
 use Laravel\Lumen\Application;
 use Dingo\Api\Routing\Adapter\Lumen;
 use FastRoute\RouteParser\Std as StdRouteParser;
@@ -21,10 +22,12 @@ class LumenTest extends BaseAdapterTest
         // from the Lumen request instance and set it on our request so we can fetch
         // the route properly.
         $this->container->rebinding('request', function ($app, $request) {
-            $request->setRouteResolver($app['Illuminate\Http\Request']->getRouteResolver());
+            $request->setRouteResolver($app[Request::class]->getRouteResolver());
         });
 
-        return new Lumen($this->container, new StdRouteParser, new GcbDataGenerator, GcbDispatcher::class);
+        return new Lumen($this->container, new StdRouteParser, new GcbDataGenerator, function ($routes) {
+            return new GcbDispatcher($routes->getData());
+        });
     }
 
     public function getContainerInstance()

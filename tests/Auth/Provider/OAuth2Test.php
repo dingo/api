@@ -3,15 +3,22 @@
 namespace Dingo\Api\Tests\Auth\Provider;
 
 use Mockery as m;
+use Dingo\Api\Routing\Route;
 use Illuminate\Http\Request;
 use PHPUnit_Framework_TestCase;
 use Dingo\Api\Auth\Provider\OAuth2;
+use League\OAuth2\Server\ResourceServer;
+use League\OAuth2\Server\Entity\SessionEntity;
+use League\OAuth2\Server\Entity\AccessTokenEntity;
 
 class OAuth2Test extends PHPUnit_Framework_TestCase
 {
+    protected $server;
+    protected $provider;
+
     public function setUp()
     {
-        $this->server = m::mock('League\OAuth2\Server\ResourceServer');
+        $this->server = m::mock(ResourceServer::class);
         $this->provider = new OAuth2($this->server, false);
     }
 
@@ -29,12 +36,12 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
 
         $this->server->shouldReceive('isValidRequest')->once()->andReturn(true);
 
-        $token = m::mock('League\OAuth2\Server\Entity\AccessTokenEntity');
+        $token = m::mock(AccessTokenEntity::class);
         $token->shouldReceive('hasScope')->once()->with('foo')->andReturn(false);
 
         $this->server->shouldReceive('getAccessToken')->once()->andReturn($token);
 
-        $route = m::mock('Dingo\Api\Routing\Route');
+        $route = m::mock(Route::class);
         $route->shouldReceive('scopes')->once()->andReturn(['foo']);
         $route->shouldReceive('scopeStrict')->once()->andReturn(false);
 
@@ -47,11 +54,11 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
 
         $this->server->shouldReceive('isValidRequest')->once()->andReturn(true);
 
-        $token = m::mock('League\OAuth2\Server\Entity\AccessTokenEntity');
+        $token = m::mock(AccessTokenEntity::class);
         $token->shouldReceive('hasScope')->once()->with('foo')->andReturn(true);
         $this->server->shouldReceive('getAccessToken')->once()->andReturn($token);
 
-        $session = m::mock('League\OAuth2\Server\Entity\SessionEntity');
+        $session = m::mock(SessionEntity::class);
         $token->shouldReceive('getSession')->once()->andReturn($session);
 
         $session->shouldReceive('getOwnerType')->once()->andReturn('client');
@@ -61,7 +68,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
             //
         });
 
-        $route = m::mock('Dingo\Api\Routing\Route');
+        $route = m::mock(Route::class);
         $route->shouldReceive('scopes')->once()->andReturn(['foo', 'bar']);
         $route->shouldReceive('scopeStrict')->once()->andReturn(false);
 
@@ -77,7 +84,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
 
         $this->server->shouldReceive('isValidRequest')->once()->andReturn(true);
 
-        $token = m::mock('League\OAuth2\Server\Entity\AccessTokenEntity');
+        $token = m::mock(AccessTokenEntity::class);
         $token->shouldReceive('hasScope')->once()->with('foo')->andReturn(true);
         $token->shouldReceive('hasScope')->once()->with('bar')->andReturn(false);
         $this->server->shouldReceive('getAccessToken')->once()->andReturn($token);
@@ -86,7 +93,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
             //
         });
 
-        $route = m::mock('Dingo\Api\Routing\Route');
+        $route = m::mock(Route::class);
         $route->shouldReceive('scopes')->once()->andReturn(['foo', 'bar']);
         $route->shouldReceive('scopeStrict')->once()->andReturn(true);
 
@@ -99,10 +106,10 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
 
         $this->server->shouldReceive('isValidRequest')->once()->andReturn(true);
 
-        $token = m::mock('League\OAuth2\Server\Entity\AccessTokenEntity');
+        $token = m::mock(AccessTokenEntity::class);
         $this->server->shouldReceive('getAccessToken')->once()->andReturn($token);
 
-        $session = m::mock('League\OAuth2\Server\Entity\SessionEntity');
+        $session = m::mock(SessionEntity::class);
         $token->shouldReceive('getSession')->once()->andReturn($session);
 
         $session->shouldReceive('getOwnerType')->once()->andReturn('client');
@@ -112,11 +119,11 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
             return 'foo';
         });
 
-        $route = m::mock('Dingo\Api\Routing\Route');
+        $route = m::mock(Route::class);
         $route->shouldReceive('scopes')->once()->andReturn([]);
         $route->shouldReceive('scopeStrict')->once()->andReturn(false);
 
-        $this->assertEquals('foo', $this->provider->authenticate($request, $route));
+        $this->assertSame('foo', $this->provider->authenticate($request, $route));
     }
 
     public function testUserIsResolved()
@@ -125,10 +132,10 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
 
         $this->server->shouldReceive('isValidRequest')->once()->andReturn(true);
 
-        $token = m::mock('League\OAuth2\Server\Entity\AccessTokenEntity');
+        $token = m::mock(AccessTokenEntity::class);
         $this->server->shouldReceive('getAccessToken')->once()->andReturn($token);
 
-        $session = m::mock('League\OAuth2\Server\Entity\SessionEntity');
+        $session = m::mock(SessionEntity::class);
         $token->shouldReceive('getSession')->once()->andReturn($session);
 
         $session->shouldReceive('getOwnerType')->once()->andReturn('user');
@@ -138,10 +145,10 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
             return 'foo';
         });
 
-        $route = m::mock('Dingo\Api\Routing\Route');
+        $route = m::mock(Route::class);
         $route->shouldReceive('scopes')->once()->andReturn([]);
         $route->shouldReceive('scopeStrict')->once()->andReturn(false);
 
-        $this->assertEquals('foo', $this->provider->authenticate($request, $route));
+        $this->assertSame('foo', $this->provider->authenticate($request, $route));
     }
 }
