@@ -98,11 +98,11 @@ class Json extends Format
     /**
      * Encode the content to its JSON representation.
      *
-     * @param array $content
+     * @param mixed $content
      *
      * @return string
      */
-    protected function encode(array $content)
+    protected function encode($content)
     {
         $jsonEncodeOptions = [];
 
