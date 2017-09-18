@@ -106,7 +106,6 @@ class Json extends Format
     {
         $jsonEncodeOptions = [];
 
-        // Tip:
         // Here is a place, where any available JSON encoding options, that
         // deal with users' requirements to JSON response formatting and
         // structure, can be conveniently applied to tweak the output.
@@ -115,12 +114,15 @@ class Json extends Format
             $jsonEncodeOptions[] = JSON_PRETTY_PRINT;
         }
 
-        $jsonString = $this->performJsonEncoding($content, $jsonEncodeOptions);
+        $encodedString = $this->performJsonEncoding($content, $jsonEncodeOptions);
 
         if ($this->isCustomIndentStyleRequired()) {
-            $jsonString = $this->indentPrettyPrintedJson($jsonString, $this->options['indent_style']);
+            $encodedString = $this->indentPrettyPrintedJson(
+                $encodedString,
+                $this->options['indent_style']
+            );
         }
 
-        return $jsonString;
+        return $encodedString;
     }
 }

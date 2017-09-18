@@ -247,7 +247,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
     }
 
     /**
-     * Recursirvely remove any empty replacement values in the response array.
+     * Recursively remove any empty replacement values in the response array.
      *
      * @param array $input
      *

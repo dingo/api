@@ -81,7 +81,11 @@ trait JsonOptionalFormatting
 
         $optionsBitmask = $this->calucateJsonEncodeOptionsBitmask($jsonEncodeOptions);
 
-        return json_encode($content, $optionsBitmask);
+        if (($encodedString = json_encode($content, $optionsBitmask)) === false) {
+            throw new \ErrorException('Error encoding data in JSON format: '.json_last_error());
+        }
+
+        return $encodedString;
     }
 
     /**

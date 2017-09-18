@@ -146,6 +146,11 @@ class Route
 
     /**
      * Setup the route properties.
+     *
+     * @param Request $request
+     * @param $route
+     *
+     * @return void
      */
     protected function setupRouteProperties(Request $request, $route)
     {
@@ -616,6 +621,17 @@ class Route
      * @return string|null
      */
     public function domain()
+    {
+        return Arr::get($this->action, 'domain');
+    }
+
+    /**
+     * Get the domain defined for the route.
+     * Use in Laravel 5.5+.
+     *
+     * @return string|null
+     */
+    public function getDomain()
     {
         return Arr::get($this->action, 'domain');
     }
