@@ -47,6 +47,18 @@ abstract class Format
     }
 
     /**
+     * Format other content.
+     *
+     * @param mixed $content
+     *
+     * @return mixed
+     */
+    public function formatOtherContent($content)
+    {
+        return $content;
+    }
+
+    /**
      * Format an Eloquent model.
      *
      * @param \Illuminate\Database\Eloquent\Model $model

@@ -144,6 +144,7 @@ class Response extends IlluminateResponse
             $this->content = $formatter->formatArray($this->content);
         } else {
             $this->headers->set('Content-Type', $defaultContentType);
+            $this->content = $formatter->formatOtherContent($this->content);
         }
 
         return $this;
