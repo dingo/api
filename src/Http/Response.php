@@ -95,7 +95,16 @@ class Response extends IlluminateResponse
      */
     public static function makeFromJson(JsonResponse $json)
     {
-        $new = static::create(json_decode($json->getContent(), true), $json->getStatusCode());
+        $content = $json->getContent();
+
+        // If the contents of the JsonResponse does not starts with /**/ (typical laravel jsonp response)
+        // we assume that it is a valid json response that can be decoded, or we just use the raw jsonp
+        // contents for building the response
+        if (! starts_with($json->getContent(), '/**/')) {
+            $content = json_decode($json->getContent(), true);
+        }
+
+        $new = static::create($content, $json->getStatusCode());
 
         $new->headers = $json->headers;
 
