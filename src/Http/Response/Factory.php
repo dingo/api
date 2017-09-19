@@ -55,7 +55,7 @@ class Factory
      * Respond with an accepted response and associate a location and/or content if provided.
      *
      * @param null|string $location
-     * @param mixed $content
+     * @param mixed       $content
      *
      * @return \Dingo\Api\Http\Response
      */
@@ -87,9 +87,9 @@ class Factory
      * Bind a collection to a transformer and start building a response.
      *
      * @param \Illuminate\Support\Collection $collection
-     * @param object $transformer
-     * @param array|\Closure $parameters
-     * @param \Closure|null $after
+     * @param object                         $transformer
+     * @param array|\Closure                 $parameters
+     * @param \Closure|null                  $after
      *
      * @return \Dingo\Api\Http\Response
      */
@@ -114,9 +114,9 @@ class Factory
     /**
      * Bind an item to a transformer and start building a response.
      *
-     * @param object $item
-     * @param object $transformer
-     * @param array $parameters
+     * @param object   $item
+     * @param object   $transformer
+     * @param array    $parameters
      * @param \Closure $after
      *
      * @return \Dingo\Api\Http\Response
@@ -139,9 +139,9 @@ class Factory
      * Bind a paginator to a transformer and start building a response.
      *
      * @param \Illuminate\Contracts\Pagination\Paginator $paginator
-     * @param object $transformer
-     * @param array $parameters
-     * @param \Closure $after
+     * @param object                                     $transformer
+     * @param array                                      $parameters
+     * @param \Closure                                   $after
      *
      * @return \Dingo\Api\Http\Response
      */
@@ -162,7 +162,7 @@ class Factory
      * Return an error response.
      *
      * @param string $message
-     * @param int $statusCode
+     * @param int    $statusCode
      *
      * @throws \Symfony\Component\HttpKernel\Exception\HttpException
      *
@@ -261,7 +261,7 @@ class Factory
      * Call magic methods beginning with "with".
      *
      * @param string $method
-     * @param array $parameters
+     * @param array  $parameters
      *
      * @throws \ErrorException
      *

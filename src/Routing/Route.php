@@ -2,7 +2,6 @@
 
 namespace Dingo\Api\Routing;
 
-use Closure;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -90,7 +89,6 @@ class Route extends \Illuminate\Routing\Route
      * @param \Illuminate\Container\Container     $container
      * @param \Illuminate\Http\Request            $request
      * @param array|\Illuminate\Routing\Route     $route
-     *
      */
     public function __construct(Adapter $adapter, Container $container, Request $request, $route)
     {
@@ -117,7 +115,7 @@ class Route extends \Illuminate\Routing\Route
 
         $this->versions = Arr::pull($this->action, 'version');
         $this->conditionalRequest = Arr::pull($this->action, 'conditionalRequest', true);
-        $this->middleware = (array)Arr::pull($this->action, 'middleware', []);
+        $this->middleware = (array) Arr::pull($this->action, 'middleware', []);
         $this->throttle = Arr::pull($this->action, 'throttle');
         $this->scopes = Arr::pull($this->action, 'scopes', []);
         $this->authenticationProviders = Arr::pull($this->action, 'providers', []);
@@ -147,7 +145,7 @@ class Route extends \Illuminate\Routing\Route
             $this->makeControllerInstance();
         }
 
-        if (!$this->controllerUsesHelpersTrait()) {
+        if (! $this->controllerUsesHelpersTrait()) {
             return;
         }
 
@@ -192,8 +190,8 @@ class Route extends \Illuminate\Routing\Route
     {
         $properties = [];
 
-        foreach ($this->getControllerInstance()->{'get' . ucfirst($name)}() as $property) {
-            if (isset($property['options']) && !$this->optionsApplyToControllerMethod($property['options'])) {
+        foreach ($this->getControllerInstance()->{'get'.ucfirst($name)}() as $property) {
+            if (isset($property['options']) && ! $this->optionsApplyToControllerMethod($property['options'])) {
                 continue;
             }
 
@@ -220,7 +218,7 @@ class Route extends \Illuminate\Routing\Route
                 $this->explodeOnPipes($options['only']))) {
             return true;
         } elseif (isset($options['except'])) {
-            return !in_array($this->controllerMethod, $this->explodeOnPipes($options['except']));
+            return ! in_array($this->controllerMethod, $this->explodeOnPipes($options['except']));
         } elseif (in_array($this->controllerMethod, $this->explodeOnPipes($options))) {
             return true;
         }
@@ -247,7 +245,7 @@ class Route extends \Illuminate\Routing\Route
      */
     protected function controllerUsesHelpersTrait()
     {
-        if (!$controller = $this->getControllerInstance()) {
+        if (! $controller = $this->getControllerInstance()) {
             return false;
         }
 
@@ -314,7 +312,7 @@ class Route extends \Illuminate\Routing\Route
      */
     public function hasThrottle()
     {
-        return !is_null($this->throttle);
+        return ! is_null($this->throttle);
     }
 
     /**
