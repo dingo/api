@@ -62,8 +62,7 @@
                 "Dingo\\Api\\Provider\\LaravelServiceProvider"
             ],
             "aliases": {
-                "API": "Dingo\\Api\\Facade\\API",
-                "Route": "Dingo\\Api\\Facade\\Route"
+                "API": "Dingo\\Api\\Facade\\API"
             }
         }
     },
