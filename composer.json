@@ -14,7 +14,7 @@
     }],
     "require": {
         "php": "^7.0",
-        "dingo/blueprint": "^0.3",
+        "dingo/blueprint": "^0.2",
         "illuminate/routing": "^5.1",
         "illuminate/support": "^5.1",
         "league/fractal": "^0.17"
