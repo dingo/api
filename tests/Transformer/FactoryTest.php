@@ -53,7 +53,7 @@ class FactoryTest extends PHPUnit_Framework_TestCase
         $this->assertSame(['foo' => 'bar'], $binding->getParameters());
 
         // Third parameter is callback and fourth is null.
-        $binding = $this->factory->register(\Dingo\Api\Tests\Stubs\UserStub::class, new UserTransformerStub, function ($foo) {
+        $binding = $this->factory->register(\Dingo\Api\Tests\Stubs\UserStub::class, new UserTransformerStub, [],function ($foo) {
             $this->assertSame('foo', $foo);
         });
 
