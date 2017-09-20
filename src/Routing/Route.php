@@ -59,7 +59,6 @@ class Route extends \Illuminate\Routing\Route
      */
     protected $throttle;
 
-
     /**
      * Controller class name.
      *
@@ -259,7 +258,7 @@ class Route extends \Illuminate\Routing\Route
             $traits = array_merge(class_uses($trait, false), $traits);
         }
 
-        return isset($traits[ Helpers::class ]);
+        return isset($traits[Helpers::class]);
     }
 
     /**
