@@ -51,25 +51,15 @@ class Factory
     /**
      * Register a transformer binding resolver for a class.
      *
-     * @param string                 $class
-     * @param string|callable|object $resolver
-     * @param array|\Closure         $third
-     * @param \Closure               $fourth
+     * @param               $class
+     * @param               $resolver
+     * @param array         $parameters
+     * @param \Closure|null $after
      *
      * @return \Dingo\Api\Transformer\Binding
      */
-    public function register($class, $resolver, $third = null, $fourth = null)
+    public function register($class, $resolver, array $parameters = [], Closure $after = null)
     {
-        if (func_num_args() == 4) {
-            list($parameters, $after) = array_slice(func_get_args(), 2);
-        } elseif (is_array($third)) {
-            list($parameters, $after) = [$third, null];
-        } elseif ($third instanceof Closure) {
-            list($parameters, $after) = [[], $third];
-        } else {
-            list($parameters, $after) = [[], null];
-        }
-
         return $this->bindings[$class] = $this->createBinding($resolver, $parameters, $after);
     }
 

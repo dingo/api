@@ -2,8 +2,8 @@
 
 namespace Dingo\Api\Tests\Transformer\Adapter;
 
-use PHPUnit_Framework_TestCase;
 use Dingo\Api\Http\Request;
+use PHPUnit_Framework_TestCase;
 use Dingo\Api\Transformer\Adapter\Fractal;
 use League\Fractal\Manager as FractalManager;
 
