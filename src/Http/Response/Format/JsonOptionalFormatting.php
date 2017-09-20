@@ -117,7 +117,7 @@ trait JsonOptionalFormatting
      *
      * @param string $jsonString
      * @param string $indentStyle
-     * @param int $defaultIndentSize
+     * @param int    $defaultIndentSize
      *
      * @return string
      */
@@ -179,10 +179,10 @@ trait JsonOptionalFormatting
      * Perform indentation for pretty printed JSON string with a given
      * indent char, repeated N times, as determined by indent size.
      *
-     * @param string  $jsonString     JSON string, which must be indented
-     * @param string  $indentChar     Char, used for indent (default is tab)
-     * @param int     $indentSize     Number of times to repeat indent char per one indent level
-     * @param int     $defaultSpaces  Default number of indent spaces after json_encode()
+     * @param string $jsonString    JSON string, which must be indented
+     * @param string $indentChar    Char, used for indent (default is tab)
+     * @param int    $indentSize    Number of times to repeat indent char per one indent level
+     * @param int    $defaultSpaces Default number of indent spaces after json_encode()
      *
      * @return string
      */

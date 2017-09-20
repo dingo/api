@@ -27,7 +27,7 @@ class Basic extends Authorization
      * Create a new basic provider instance.
      *
      * @param \Illuminate\Auth\AuthManager $auth
-     * @param string $identifier
+     * @param string                       $identifier
      *
      * @return void
      */
