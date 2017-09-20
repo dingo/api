@@ -1,0 +1,33 @@
+language: php
+
+sudo: false
+dist: trusty
+
+env:
+  global:
+    - setup=basic
+    - xdebug=true
+
+# HHVM is no longer supported on Ubuntu Precise. Please consider using Trusty with `dist: trusty`.
+dist: trusty
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+matrix:
+  include:
+    - php: 7.0
+    - php: 7.1
+      env: xdebug=false
+
+before_install:
+  - if [[ $xdebug = 'true' ]] ; then phpenv config-rm xdebug.ini; fi
+
+install:
+  - if [[ $setup = 'basic' ]]; then travis_retry composer install --prefer-dist --no-interaction --no-suggest; fi
+  - if [[ $setup = 'stable' ]]; then travis_retry composer update --prefer-dist --no-interaction --no-suggest --prefer-stable; fi
+  - if [[ $setup = 'lowest' ]]; then travis_retry composer update --prefer-dist --no-interaction --no-suggest --prefer-stable --prefer-lowest; fi
+
+script:
+  - vendor/bin/phpunit
