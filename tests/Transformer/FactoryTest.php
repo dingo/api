@@ -40,22 +40,25 @@ class FactoryTest extends PHPUnit_Framework_TestCase
     public function testRegisterParameterOrder()
     {
         // Third parameter is parameters and fourth is callback.
-        $binding = $this->factory->register(\Dingo\Api\Tests\Stubs\UserStub::class, new UserTransformerStub, ['foo' => 'bar'], function ($foo) {
-            $this->assertSame('foo', $foo);
-        });
+        $binding = $this->factory->register(\Dingo\Api\Tests\Stubs\UserStub::class, new UserTransformerStub,
+            ['foo' => 'bar'], function ($foo) {
+                $this->assertSame('foo', $foo);
+            });
 
         $binding->fireCallback('foo');
         $this->assertSame(['foo' => 'bar'], $binding->getParameters());
 
         // Third parameter is parameters and fourth is null.
-        $binding = $this->factory->register(\Dingo\Api\Tests\Stubs\UserStub::class, new UserTransformerStub, ['foo' => 'bar']);
+        $binding = $this->factory->register(\Dingo\Api\Tests\Stubs\UserStub::class, new UserTransformerStub,
+            ['foo' => 'bar']);
 
         $this->assertSame(['foo' => 'bar'], $binding->getParameters());
 
-        // Third parameter is callback and fourth is null.
-        $binding = $this->factory->register(\Dingo\Api\Tests\Stubs\UserStub::class, new UserTransformerStub, function ($foo) {
-            $this->assertSame('foo', $foo);
-        });
+        // Third parameter is an empty array and fourth is callback.
+        $binding = $this->factory->register(\Dingo\Api\Tests\Stubs\UserStub::class, new UserTransformerStub, [],
+            function ($foo) {
+                $this->assertSame('foo', $foo);
+            });
 
         $binding->fireCallback('foo');
     }
