@@ -67,7 +67,7 @@ class FactoryTest extends PHPUnit_Framework_TestCase
     {
         $this->assertFalse($this->factory->transformableType(['foo' => 'bar']));
         $this->assertTrue($this->factory->transformableType('Foo'));
-        $this->assertTrue($this->factory->transformableType((object)['foo' => 'bar']));
+        $this->assertTrue($this->factory->transformableType((object) ['foo' => 'bar']));
     }
 
     public function testTransformingResponse()
