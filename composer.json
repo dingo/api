@@ -30,14 +30,12 @@
         "illuminate/log": "^5.1",
         "illuminate/pagination": "^5.1",
         "laravel/lumen-framework": "^5.1",
-        "laravel/passport": "^4.0",
         "mockery/mockery": "~0.9",
         "phpunit/phpunit": "^4.8 || ^5.0",
         "squizlabs/php_codesniffer": "~2.0",
         "tymon/jwt-auth": "1.0.*"
     },
     "suggest": {
-        "laravel/passport": "Protect your API with OAuth 2.0.",
         "tymon/jwt-auth": "Protect your API with JSON Web Tokens."
     },
     "autoload": {
