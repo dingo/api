@@ -206,7 +206,7 @@ class Request
     /**
      * Set the middlewares.
      *
-     * @param array $middlewares
+     * @param array $middleware
      *
      * @return void
      */

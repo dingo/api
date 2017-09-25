@@ -2,8 +2,8 @@
 
 namespace Dingo\Api\Contract\Auth;
 
-use Illuminate\Http\Request;
 use Dingo\Api\Routing\Route;
+use Illuminate\Http\Request;
 
 interface Provider
 {

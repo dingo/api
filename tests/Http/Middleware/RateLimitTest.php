@@ -19,6 +19,12 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class RateLimitTest extends PHPUnit_Framework_TestCase
 {
+    protected $container;
+    protected $router;
+    protected $cache;
+    protected $handler;
+    protected $middleware;
+
     public function setUp()
     {
         $this->container = new Container;

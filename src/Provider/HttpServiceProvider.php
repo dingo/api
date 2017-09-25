@@ -4,8 +4,8 @@ namespace Dingo\Api\Provider;
 
 use Dingo\Api\Auth\Auth;
 use Dingo\Api\Routing\Router;
-use Dingo\Api\Http\Validation;
 use Dingo\Api\Http\Middleware;
+use Dingo\Api\Http\Validation;
 use Dingo\Api\Transformer\Factory;
 use Dingo\Api\Http\RequestValidator;
 use Dingo\Api\Http\RateLimit\Handler;

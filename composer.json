@@ -8,20 +8,19 @@
         "restful"
     ],
     "license": "BSD-3-Clause",
-    "authors": [
-        {
-            "name": "Jason Lewis",
-            "email": "jason.lewis1991@gmail.com"
-        }
-    ],
+    "authors": [{
+        "name": "Jason Lewis",
+        "email": "jason.lewis1991@gmail.com"
+    }],
     "require": {
-        "php": "^5.5.9 || ^7.0",
-        "dingo/blueprint": "0.2.*",
+        "php": "^7.0",
+        "dingo/blueprint": "^0.2",
         "illuminate/routing": "^5.1",
         "illuminate/support": "^5.1",
-        "league/fractal": ">=0.12.0"
+        "league/fractal": "^0.17"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "~2",
         "illuminate/auth": "^5.1",
         "illuminate/cache": "^5.1",
         "illuminate/console": "^5.1",
@@ -30,15 +29,13 @@
         "illuminate/filesystem": "^5.1",
         "illuminate/log": "^5.1",
         "illuminate/pagination": "^5.1",
-        "laravel/lumen-framework": "5.1.* || 5.2.*",
-        "lucadegasperi/oauth2-server-laravel": "5.0.*",
+        "laravel/lumen-framework": "^5.1",
         "mockery/mockery": "~0.9",
         "phpunit/phpunit": "^4.8 || ^5.0",
         "squizlabs/php_codesniffer": "~2.0",
         "tymon/jwt-auth": "1.0.*"
     },
     "suggest": {
-        "lucadegasperi/oauth2-server-laravel": "Protect your API with OAuth 2.0.",
         "tymon/jwt-auth": "Protect your API with JSON Web Tokens."
     },
     "autoload": {
@@ -56,8 +53,19 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0-dev"
+            "dev-master": "2.0-dev"
+        },
+        "laravel": {
+            "providers": [
+                "Dingo\\Api\\Provider\\LaravelServiceProvider"
+            ],
+            "aliases": {
+                "API": "Dingo\\Api\\Facade\\API"
+            }
         }
+    },
+    "config": {
+        "sort-packages": true
     },
     "minimum-stability": "dev",
     "prefer-stable": true

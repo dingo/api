@@ -16,6 +16,12 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class AuthTest extends PHPUnit_Framework_TestCase
 {
+    protected $container;
+    protected $adapter;
+    protected $router;
+    protected $auth;
+    protected $middleware;
+
     public function setUp()
     {
         $this->container = new Container;

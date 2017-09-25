@@ -2,7 +2,6 @@
 
 namespace Dingo\Api\Tests;
 
-use Dingo\Api\Exception\ValidationHttpException;
 use Mockery as m;
 use Dingo\Api\Http;
 use Dingo\Api\Auth\Auth;
@@ -16,13 +15,16 @@ use Illuminate\Filesystem\Filesystem;
 use Dingo\Api\Tests\Stubs\MiddlewareStub;
 use Dingo\Api\Tests\Stubs\TransformerStub;
 use Dingo\Api\Tests\Stubs\RoutingAdapterStub;
-use Dingo\Api\Tests\Stubs\UserTransformerStub;
 use Dingo\Api\Exception\InternalHttpException;
+use Dingo\Api\Tests\Stubs\UserTransformerStub;
+use Dingo\Api\Exception\ValidationHttpException;
 use Dingo\Api\Transformer\Factory as TransformerFactory;
 use Illuminate\Support\Facades\Request as RequestFacade;
 
 class DispatcherTest extends PHPUnit_Framework_TestCase
 {
+    protected $container;
+
     public function setUp()
     {
         $this->container = new Container;
@@ -35,7 +37,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         $this->transformerFactory = new TransformerFactory($this->container, new TransformerStub);
 
         $this->adapter = new RoutingAdapterStub;
-        $this->exception = m::mock('Dingo\Api\Exception\Handler');
+        $this->exception = m::mock(\Dingo\Api\Exception\Handler::class);
         $this->router = new Router($this->adapter, $this->exception, $this->container, null, null);
 
         $this->auth = new Auth($this->router, $this->container, []);
@@ -328,7 +330,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
 
         $response = $this->dispatcher->raw()->get('foo');
 
-        $this->assertInstanceOf('Dingo\Api\Http\Response', $response);
+        $this->assertInstanceOf(\Dingo\Api\Http\Response::class, $response);
         $this->assertSame('{"foo":"bar"}', $response->getContent());
         $this->assertSame(['foo' => 'bar'], $response->getOriginalContent());
     }
@@ -347,7 +349,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
 
         $response = $this->dispatcher->raw()->get('foo');
 
-        $this->assertInstanceOf('Dingo\Api\Http\Response', $response);
+        $this->assertInstanceOf(\Dingo\Api\Http\Response::class, $response);
         $this->assertSame('{"name":"Jason"}', $response->getContent());
         $this->assertSame($instance, $response->getOriginalContent());
     }

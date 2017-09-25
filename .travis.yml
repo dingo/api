@@ -1,11 +1,15 @@
 language: php
 
 sudo: false
+dist: trusty
 
 env:
   global:
     - setup=basic
     - xdebug=true
+
+# HHVM is no longer supported on Ubuntu Precise. Please consider using Trusty with `dist: trusty`.
+dist: trusty
 
 cache:
   directories:
@@ -13,16 +17,8 @@ cache:
 
 matrix:
   include:
-    - php: 5.5.9
-      env: setup=lowest
-    - php: 5.5.9
-      env: setup=stable
-    - php: 5.5
-    - php: 5.6
     - php: 7.0
     - php: 7.1
-      env: xdebug=false
-    - php: hhvm
       env: xdebug=false
 
 before_install:
