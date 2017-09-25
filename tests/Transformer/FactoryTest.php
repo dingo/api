@@ -6,17 +6,19 @@ use Mockery;
 use PHPUnit_Framework_TestCase;
 use Dingo\Api\Transformer\Factory;
 use Illuminate\Support\Collection;
-use Illuminate\Container\Container;
 use Dingo\Api\Tests\Stubs\UserStub;
+use Illuminate\Container\Container;
 use Dingo\Api\Tests\Stubs\TransformerStub;
 use Dingo\Api\Tests\Stubs\UserTransformerStub;
 
 class FactoryTest extends PHPUnit_Framework_TestCase
 {
+    protected $factory;
+
     public function setUp()
     {
         $container = new Container;
-        $container['request'] = Mockery::mock('Dingo\Api\Http\Request');
+        $container['request'] = Mockery::mock(\Dingo\Api\Http\Request::class);
 
         $this->factory = new Factory($container, new TransformerStub);
     }
@@ -30,7 +32,7 @@ class FactoryTest extends PHPUnit_Framework_TestCase
     {
         $this->assertFalse($this->factory->transformableResponse(new UserStub('Jason'), new UserTransformerStub));
 
-        $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub);
+        $this->factory->register(\Dingo\Api\Tests\Stubs\UserStub::class, new UserTransformerStub);
 
         $this->assertTrue($this->factory->transformableResponse(new UserStub('Jason'), new UserTransformerStub));
     }
@@ -38,22 +40,25 @@ class FactoryTest extends PHPUnit_Framework_TestCase
     public function testRegisterParameterOrder()
     {
         // Third parameter is parameters and fourth is callback.
-        $binding = $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub, ['foo' => 'bar'], function ($foo) {
-            $this->assertSame('foo', $foo);
-        });
+        $binding = $this->factory->register(\Dingo\Api\Tests\Stubs\UserStub::class, new UserTransformerStub,
+            ['foo' => 'bar'], function ($foo) {
+                $this->assertSame('foo', $foo);
+            });
 
         $binding->fireCallback('foo');
         $this->assertSame(['foo' => 'bar'], $binding->getParameters());
 
         // Third parameter is parameters and fourth is null.
-        $binding = $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub, ['foo' => 'bar']);
+        $binding = $this->factory->register(\Dingo\Api\Tests\Stubs\UserStub::class, new UserTransformerStub,
+            ['foo' => 'bar']);
 
         $this->assertSame(['foo' => 'bar'], $binding->getParameters());
 
-        // Third parameter is callback and fourth is null.
-        $binding = $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub, function ($foo) {
-            $this->assertSame('foo', $foo);
-        });
+        // Third parameter is an empty array and fourth is callback.
+        $binding = $this->factory->register(\Dingo\Api\Tests\Stubs\UserStub::class, new UserTransformerStub, [],
+            function ($foo) {
+                $this->assertSame('foo', $foo);
+            });
 
         $binding->fireCallback('foo');
     }
@@ -67,7 +72,7 @@ class FactoryTest extends PHPUnit_Framework_TestCase
 
     public function testTransformingResponse()
     {
-        $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub);
+        $this->factory->register(\Dingo\Api\Tests\Stubs\UserStub::class, new UserTransformerStub);
 
         $response = $this->factory->transform(new UserStub('Jason'));
 
@@ -76,7 +81,7 @@ class FactoryTest extends PHPUnit_Framework_TestCase
 
     public function testTransformingCollectionResponse()
     {
-        $this->factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub);
+        $this->factory->register(\Dingo\Api\Tests\Stubs\UserStub::class, new UserTransformerStub);
 
         $response = $this->factory->transform(new Collection([new UserStub('Jason'), new UserStub('Bob')]));
 
@@ -90,7 +95,7 @@ class FactoryTest extends PHPUnit_Framework_TestCase
 
         $factory = new Factory($container, new TransformerStub);
 
-        $factory->register('Dingo\Api\Tests\Stubs\UserStub', new UserTransformerStub);
+        $factory->register(\Dingo\Api\Tests\Stubs\UserStub::class, new UserTransformerStub);
 
         $response = $factory->transform(new UserStub('Jason'));
 

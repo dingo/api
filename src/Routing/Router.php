@@ -5,9 +5,9 @@ namespace Dingo\Api\Routing;
 use Closure;
 use Exception;
 use RuntimeException;
+use Dingo\Api\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Dingo\Api\Http\Request;
 use Dingo\Api\Http\Response;
 use Illuminate\Http\JsonResponse;
 use Dingo\Api\Http\InternalRequest;
@@ -93,7 +93,6 @@ class Router
      * Create a new router instance.
      *
      * @param \Dingo\Api\Contract\Routing\Adapter        $adapter
-     * @param \Dingo\Api\Http\Parser\Accept              $accept
      * @param \Dingo\Api\Contract\Debug\ExceptionHandler $exception
      * @param \Illuminate\Container\Container            $container
      * @param string                                     $domain
@@ -116,7 +115,7 @@ class Router
      * attributes and a required callback.
      *
      * This method can be called without the third parameter, however,
-     * the callback should always be the last paramter.
+     * the callback should always be the last parameter.
      *
      * @param string         $version
      * @param array|callable $second

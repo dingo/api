@@ -7,8 +7,8 @@ use ErrorException;
 use Illuminate\Support\Str;
 use Dingo\Api\Http\Response;
 use Illuminate\Support\Collection;
-use Dingo\Api\Transformer\Factory as TransformerFactory;
 use Illuminate\Contracts\Pagination\Paginator;
+use Dingo\Api\Transformer\Factory as TransformerFactory;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Factory
@@ -272,9 +272,9 @@ class Factory
         if (Str::startsWith($method, 'with')) {
             return call_user_func_array([$this, Str::camel(substr($method, 4))], $parameters);
 
-        // Because PHP won't let us name the method "array" we'll simply watch for it
-        // in here and return the new binding. Gross. This is now DEPRECATED and
-        // should not be used. Just return an array or a new response instance.
+            // Because PHP won't let us name the method "array" we'll simply watch for it
+            // in here and return the new binding. Gross. This is now DEPRECATED and
+            // should not be used. Just return an array or a new response instance.
         } elseif ($method == 'array') {
             return new Response($parameters[0]);
         }

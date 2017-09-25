@@ -2,19 +2,22 @@
 
 namespace Dingo\Api\Tests\Exception;
 
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Mockery as m;
 use RuntimeException;
 use Illuminate\Http\Response;
 use PHPUnit_Framework_TestCase;
 use Dingo\Api\Exception\Handler;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Dingo\Api\Http\Request as ApiRequest;
 use Dingo\Api\Exception\ResourceException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class HandlerTest extends PHPUnit_Framework_TestCase
 {
+    protected $parentHandler;
+    protected $exceptionHandler;
+
     public function setUp()
     {
         $this->parentHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler');
@@ -37,7 +40,7 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $this->exceptionHandler->register(function (HttpException $e) {
             //
         });
-        $this->assertArrayHasKey('Symfony\Component\HttpKernel\Exception\HttpException', $this->exceptionHandler->getHandlers());
+        $this->assertArrayHasKey(\Symfony\Component\HttpKernel\Exception\HttpException::class, $this->exceptionHandler->getHandlers());
     }
 
     public function testExceptionHandlerHandlesException()
