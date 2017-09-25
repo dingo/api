@@ -52,6 +52,20 @@ class Lumen implements Adapter
     protected $routes = [];
 
     /**
+     * Array of merged old routes and API routes.
+     *
+     * @var array
+     */
+    protected $mergedRoutes = [];
+
+    /**
+     * Routes already defined on the router.
+     *
+     * @var \Illuminate\Routing\RouteCollection
+     */
+    protected $oldRoutes;
+
+    /**
      * Indicates if the middleware has been removed from the application instance.
      *
      * @var bool
@@ -92,7 +106,7 @@ class Lumen implements Adapter
 
         $this->removeMiddlewareFromApp();
 
-        $routes = $this->routes[$version];
+        $routes = $this->mergeOldRoutes($version);
 
         $this->app->setDispatcher(
             new $this->dispatcher($routes->getData())
@@ -101,6 +115,27 @@ class Lumen implements Adapter
         $this->normalizeRequestUri($request);
 
         return $this->app->dispatch($request);
+    }
+
+    /**
+     * Merge the old application routes with the API routes.
+     *
+     * @param string $version
+     *
+     * @return array
+     */
+    protected function mergeOldRoutes($version)
+    {
+        if (! isset($this->oldRoutes)) {
+            $this->oldRoutes = $this->app->getRoutes();
+        }
+        if (! isset($this->mergedRoutes[$version])) {
+            $this->mergedRoutes[$version] = $this->routes[$version];
+            foreach ($this->oldRoutes as $route) {
+                $this->mergedRoutes[$version]->addRoute($route['method'], $route['uri'], $route['action']);
+            }
+        }
+        return $this->mergedRoutes[$version];
     }
 
     /**
