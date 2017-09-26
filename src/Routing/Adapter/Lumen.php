@@ -6,9 +6,9 @@ use ArrayIterator;
 use ReflectionClass;
 use FastRoute\Dispatcher;
 use FastRoute\RouteParser;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use FastRoute\DataGenerator;
+use Illuminate\Http\Request;
 use FastRoute\RouteCollector;
 use Laravel\Lumen\Application;
 use Dingo\Api\Contract\Routing\Adapter;
@@ -134,7 +134,7 @@ class Lumen implements Adapter
                 $this->mergedRoutes[$version]->addRoute($route['method'], $route['uri'], $route['action']);
             }
         }
-      
+
         return $this->mergedRoutes[$version];
     }
 
