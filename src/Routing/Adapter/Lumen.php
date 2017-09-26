@@ -11,7 +11,6 @@ use Illuminate\Support\Str;
 use FastRoute\DataGenerator;
 use FastRoute\RouteCollector;
 use Laravel\Lumen\Application;
-use Laravel\Lumen\Routing\Router;
 use Dingo\Api\Contract\Routing\Adapter;
 use Dingo\Api\Exception\UnknownVersionException;
 
