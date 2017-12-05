@@ -402,6 +402,10 @@ class Router
             $new[$option] = $this->formatArrayBasedOption($option, $new);
         }
 
+        if (isset($new['version'])) {
+            unset($old['version']);
+        }
+
         if (isset($new['domain'])) {
             unset($old['domain']);
         }
@@ -588,7 +592,7 @@ class Router
      */
     protected function requestIsConditional()
     {
-        return $this->getCurrentRoute()->requestIsConditional();
+        return ($r = $this->getCurrentRoute()) ? $r->requestIsConditional() : false;
     }
 
     /**
