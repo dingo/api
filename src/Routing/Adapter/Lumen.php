@@ -107,7 +107,6 @@ class Lumen implements Adapter
         $this->removeMiddlewareFromApp();
 
         $routeCollector = $this->mergeOldRoutes($version);
-
         $dispatcher = call_user_func($this->dispatcherResolver, $routeCollector);
 
         $this->app->setDispatcher($dispatcher);
