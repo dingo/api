@@ -225,9 +225,14 @@ class Lumen implements Adapter
         $reflection = new ReflectionClass($this->app);
         $property = $reflection->getProperty('middleware');
         $property->setAccessible(true);
-
-        $property->setValue($this->app, []);
-
+        $oldMiddlewares = $property->getValue($this->app);
+        $newMiddlewares = [];
+        foreach ($oldMiddlewares as $middle) {
+            if ((new ReflectionClass($middle))->hasMethod('terminate') && $middle != 'Dingo\Api\Http\Middleware\Request') {
+                $newMiddlewares = array_merge($newMiddlewares, [$middle]);
+            }
+        }
+        $property->setValue($this->app, $newMiddlewares);
         $property->setAccessible(false);
     }
 
