@@ -154,7 +154,7 @@ class DispatcherTest extends TestCase
         try {
             $this->dispatcher->get('test');
         } catch (InternalHttpException $exception) {
-            $this->assertInstanceOf('Illuminate\Http\Response', $exception->getResponse());
+            $this->assertInstanceOf(\Illuminate\Http\Response::class, $exception->getResponse());
             $this->assertSame('test', $exception->getResponse()->getContent());
         }
     }
@@ -381,7 +381,7 @@ class DispatcherTest extends TestCase
         });
 
         $response = $this->dispatcher->get('redirect');
-        $this->assertInstanceOf('Illuminate\Http\RedirectResponse', $response);
+        $this->assertInstanceOf(\Illuminate\Http\RedirectResponse::class, $response);
         $this->assertSame('redirect-test', $response->getTargetUrl());
     }
 

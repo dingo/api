@@ -67,7 +67,7 @@ class HandlerTest extends TestCase
 
         $response = $this->exceptionHandler->handle($exception);
 
-        $this->assertInstanceOf('Illuminate\Http\Response', $response);
+        $this->assertInstanceOf(Response::class, $response);
         $this->assertSame('foo', $response->getContent());
         $this->assertSame(404, $response->getStatusCode());
     }
@@ -82,7 +82,7 @@ class HandlerTest extends TestCase
 
         $response = $this->exceptionHandler->handle($exception);
 
-        $this->assertInstanceOf('Illuminate\Http\RedirectResponse', $response);
+        $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertSame('foo', $response->getTargetUrl());
         $this->assertSame(302, $response->getStatusCode());
     }
@@ -97,7 +97,7 @@ class HandlerTest extends TestCase
 
         $response = $this->exceptionHandler->handle($exception);
 
-        $this->assertInstanceOf('Illuminate\Http\JsonResponse', $response);
+        $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertSame('{"foo":"bar"}', $response->getContent());
         $this->assertSame(404, $response->getStatusCode());
     }
@@ -108,7 +108,7 @@ class HandlerTest extends TestCase
 
         $response = $this->exceptionHandler->handle($exception);
 
-        $this->assertInstanceOf('Illuminate\Http\Response', $response);
+        $this->assertInstanceOf(Response::class, $response);
         $this->assertSame('{"message":"bar","status_code":404}', $response->getContent());
         $this->assertSame(404, $response->getStatusCode());
     }
@@ -129,7 +129,7 @@ class HandlerTest extends TestCase
 
         $response = $this->exceptionHandler->handle($exception);
 
-        $this->assertInstanceOf('Illuminate\Http\Response', $response);
+        $this->assertInstanceOf(Response::class, $response);
         $this->assertSame('{"error":{"message":"bar","status_code":404}}', $response->getContent());
         $this->assertSame(404, $response->getStatusCode());
     }
@@ -150,7 +150,7 @@ class HandlerTest extends TestCase
 
         $response = $this->exceptionHandler->handle($exception);
 
-        $this->assertInstanceOf('Illuminate\Http\Response', $response);
+        $this->assertInstanceOf(Response::class, $response);
         $this->assertSame('{"message":"bar","errors":{"foo":["bar"]},"code":10,"status_code":422}', $response->getContent());
         $this->assertSame(422, $response->getStatusCode());
     }
@@ -174,7 +174,7 @@ class HandlerTest extends TestCase
 
         $response = $this->exceptionHandler->handle($exception);
 
-        $this->assertInstanceOf('Illuminate\Http\Response', $response);
+        $this->assertInstanceOf(Response::class, $response);
         $this->assertSame('{"message":"404 Not Found","status_code":404}', $response->getContent());
         $this->assertSame(404, $response->getStatusCode());
     }

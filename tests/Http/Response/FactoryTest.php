@@ -86,13 +86,13 @@ class FactoryTest extends TestCase
             return $param instanceof \Closure;
         }));
 
-        $this->assertInstanceOf('Illuminate\Support\Collection', $this->factory->collection(new Collection([new UserStub('Jason')]), 'test', function ($resource, $fractal) {
-            $this->assertInstanceOf('League\Fractal\Resource\Collection', $resource);
-            $this->assertInstanceOf('League\Fractal\Manager', $fractal);
+        $this->assertInstanceOf(Collection::class, $this->factory->collection(new Collection([new UserStub('Jason')]), 'test', function ($resource, $fractal) {
+            $this->assertInstanceOf(\League\Fractal\Resource\Collection::class, $resource);
+            $this->assertInstanceOf(\League\Fractal\Manager::class, $fractal);
         })->getOriginalContent());
-        $this->assertInstanceOf('Illuminate\Support\Collection', $this->factory->withCollection(new Collection([new UserStub('Jason')]), 'test', function ($resource, $fractal) {
-            $this->assertInstanceOf('League\Fractal\Resource\Collection', $resource);
-            $this->assertInstanceOf('League\Fractal\Manager', $fractal);
+        $this->assertInstanceOf(Collection::class, $this->factory->withCollection(new Collection([new UserStub('Jason')]), 'test', function ($resource, $fractal) {
+            $this->assertInstanceOf(\League\Fractal\Resource\Collection::class, $resource);
+            $this->assertInstanceOf(\League\Fractal\Manager::class, $fractal);
         })->getOriginalContent());
     }
 
@@ -111,12 +111,12 @@ class FactoryTest extends TestCase
         }));
 
         $this->assertInstanceOf(\Dingo\Api\Tests\Stubs\UserStub::class, $this->factory->item(new UserStub('Jason'), 'test', function ($resource, $fractal) {
-            $this->assertInstanceOf('League\Fractal\Resource\Item', $resource);
-            $this->assertInstanceOf('League\Fractal\Manager', $fractal);
+            $this->assertInstanceOf(\League\Fractal\Resource\Item::class, $resource);
+            $this->assertInstanceOf(\League\Fractal\Manager::class, $fractal);
         })->getOriginalContent());
         $this->assertInstanceOf(\Dingo\Api\Tests\Stubs\UserStub::class, $this->factory->withItem(new UserStub('Jason'), 'test', function ($resource, $fractal) {
-            $this->assertInstanceOf('League\Fractal\Resource\Item', $resource);
-            $this->assertInstanceOf('League\Fractal\Manager', $fractal);
+            $this->assertInstanceOf(\League\Fractal\Resource\Item::class, $resource);
+            $this->assertInstanceOf(\League\Fractal\Manager::class, $fractal);
         })->getOriginalContent());
     }
 
