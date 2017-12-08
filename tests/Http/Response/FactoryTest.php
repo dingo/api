@@ -3,14 +3,14 @@
 namespace Dingo\Api\Tests\Http\Response;
 
 use Mockery;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Illuminate\Support\Collection;
 use Dingo\Api\Tests\Stubs\UserStub;
 use Dingo\Api\Http\Response\Factory;
 use Illuminate\Pagination\Paginator;
 use Dingo\Api\Transformer\Factory as TransformerFactory;
 
-class FactoryTest extends PHPUnit_Framework_TestCase
+class FactoryTest extends TestCase
 {
     protected $transformer;
     protected $factory;

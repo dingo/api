@@ -3,10 +3,10 @@
 namespace Dingo\Api\Tests\Http\Validation;
 
 use Illuminate\Http\Request;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Dingo\Api\Http\Validation\Domain;
 
-class DomainTest extends PHPUnit_Framework_TestCase
+class DomainTest extends TestCase
 {
     public function testValidationFailsWithInvalidOrNullDomain()
     {

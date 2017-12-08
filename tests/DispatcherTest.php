@@ -8,7 +8,7 @@ use Dingo\Api\Auth\Auth;
 use Dingo\Api\Dispatcher;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Router;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Dingo\Api\Tests\Stubs\UserStub;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
@@ -21,7 +21,7 @@ use Dingo\Api\Exception\ValidationHttpException;
 use Dingo\Api\Transformer\Factory as TransformerFactory;
 use Illuminate\Support\Facades\Request as RequestFacade;
 
-class DispatcherTest extends PHPUnit_Framework_TestCase
+class DispatcherTest extends TestCase
 {
     protected $container;
 

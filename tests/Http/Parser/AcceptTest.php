@@ -3,10 +3,10 @@
 namespace Dingo\Api\Tests\Http\Parser;
 
 use Dingo\Api\Http\Request;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Dingo\Api\Http\Parser\Accept;
 
-class AcceptTest extends PHPUnit_Framework_TestCase
+class AcceptTest extends TestCase
 {
     public function testParsingInvalidAcceptReturnsDefaults()
     {
