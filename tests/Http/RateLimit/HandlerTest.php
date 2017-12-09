@@ -3,14 +3,14 @@
 namespace Dingo\Api\Tests\Http\RateLimit;
 
 use Dingo\Api\Http\Request;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Container\Container;
 use Dingo\Api\Http\RateLimit\Handler;
 use Dingo\Api\Tests\Stubs\ThrottleStub;
 use Dingo\Api\Http\RateLimit\Throttle\Route;
 
-class HandlerTest extends PHPUnit_Framework_TestCase
+class HandlerTest extends TestCase
 {
     protected $container;
     protected $cache;

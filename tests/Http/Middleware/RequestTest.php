@@ -6,7 +6,7 @@ use Mockery as m;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Routing\Router;
 use Dingo\Api\Http\Validation;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Dingo\Api\Exception\Handler;
 use Dingo\Api\Http\RequestValidator;
 use Dingo\Api\Http\Validation\Accept;
@@ -19,7 +19,7 @@ use Illuminate\Events\Dispatcher as EventDispatcher;
 use Dingo\Api\Contract\Http\Request as RequestContract;
 use Dingo\Api\Http\Middleware\Request as RequestMiddleware;
 
-class RequestTest extends PHPUnit_Framework_TestCase
+class RequestTest extends TestCase
 {
     protected $app;
     protected $router;

@@ -4,11 +4,11 @@ namespace Dingo\Api\Tests\Auth\Provider;
 
 use Mockery as m;
 use Illuminate\Http\Request;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Dingo\Api\Auth\Provider\JWT;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
-class JWTTest extends PHPUnit_Framework_TestCase
+class JWTTest extends TestCase
 {
     protected $auth;
     protected $provider;

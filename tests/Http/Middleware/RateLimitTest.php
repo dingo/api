@@ -7,7 +7,7 @@ use Dingo\Api\Http\Request;
 use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Route;
 use Dingo\Api\Routing\Router;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Illuminate\Cache\CacheManager;
 use Dingo\Api\Http\InternalRequest;
 use Illuminate\Container\Container;
@@ -17,7 +17,7 @@ use Dingo\Api\Http\Middleware\RateLimit;
 use Dingo\Api\Exception\RateLimitExceededException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class RateLimitTest extends PHPUnit_Framework_TestCase
+class RateLimitTest extends TestCase
 {
     protected $container;
     protected $router;
