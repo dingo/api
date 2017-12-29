@@ -20,6 +20,7 @@
         "league/fractal": "^0.17"
     },
     "require-dev": {
+        "phpdocumentor/reflection-docblock": "3.3.2",
         "friendsofphp/php-cs-fixer": "~2",
         "illuminate/auth": "^5.1",
         "illuminate/cache": "^5.1",
