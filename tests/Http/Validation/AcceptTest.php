@@ -3,11 +3,11 @@
 namespace Dingo\Api\Tests\Http\Validation;
 
 use Illuminate\Http\Request;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Dingo\Api\Http\Parser\Accept as AcceptParser;
 use Dingo\Api\Http\Validation\Accept as AcceptValidator;
 
-class AcceptTest extends PHPUnit_Framework_TestCase
+class AcceptTest extends TestCase
 {
     public function testValidationPassesForStrictModeAndOptionsRequests()
     {

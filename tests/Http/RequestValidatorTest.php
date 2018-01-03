@@ -3,13 +3,13 @@
 namespace Dingo\Api\Tests\Http;
 
 use Illuminate\Http\Request;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Illuminate\Container\Container;
 use Dingo\Api\Http\RequestValidator;
 use Dingo\Api\Tests\Stubs\HttpValidatorStub;
 use Dingo\Api\Http\Parser\Accept as AcceptParser;
 
-class RequestValidatorTest extends PHPUnit_Framework_TestCase
+class RequestValidatorTest extends TestCase
 {
     protected $container;
 
