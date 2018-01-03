@@ -8,7 +8,7 @@ use Dingo\Api\Auth\Auth;
 use Dingo\Api\Dispatcher;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Router;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Dingo\Api\Tests\Stubs\UserStub;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
@@ -21,7 +21,7 @@ use Dingo\Api\Exception\ValidationHttpException;
 use Dingo\Api\Transformer\Factory as TransformerFactory;
 use Illuminate\Support\Facades\Request as RequestFacade;
 
-class DispatcherTest extends PHPUnit_Framework_TestCase
+class DispatcherTest extends TestCase
 {
     protected $container;
 
@@ -154,7 +154,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         try {
             $this->dispatcher->get('test');
         } catch (InternalHttpException $exception) {
-            $this->assertInstanceOf('Illuminate\Http\Response', $exception->getResponse());
+            $this->assertInstanceOf(\Illuminate\Http\Response::class, $exception->getResponse());
             $this->assertSame('test', $exception->getResponse()->getContent());
         }
     }
@@ -381,7 +381,7 @@ class DispatcherTest extends PHPUnit_Framework_TestCase
         });
 
         $response = $this->dispatcher->get('redirect');
-        $this->assertInstanceOf('Illuminate\Http\RedirectResponse', $response);
+        $this->assertInstanceOf(\Illuminate\Http\RedirectResponse::class, $response);
         $this->assertSame('redirect-test', $response->getTargetUrl());
     }
 

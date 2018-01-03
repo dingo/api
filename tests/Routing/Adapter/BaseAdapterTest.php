@@ -5,10 +5,10 @@ namespace Dingo\Api\Tests\Routing\Adapter;
 use Mockery as m;
 use Dingo\Api\Http;
 use Dingo\Api\Routing\Router;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Dingo\Api\Tests\Stubs\MiddlewareStub;
 
-abstract class BaseAdapterTest extends PHPUnit_Framework_TestCase
+abstract class BaseAdapterTest extends TestCase
 {
     protected $container;
     protected $adapter;
