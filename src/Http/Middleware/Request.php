@@ -122,7 +122,7 @@ class Request
     {
         $this->app->instance('request', $request);
 
-        return (new Pipeline($this->app))->send($request)->then(function ($request) {
+        return (new Pipeline($this->app))->send($request)->through($this->middleware)->then(function ($request) {
             return $this->router->dispatch($request);
         });
     }
