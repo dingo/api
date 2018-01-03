@@ -510,10 +510,6 @@ class Router
 
         try {
             $response = $this->adapter->dispatch($request, $request->version());
-
-            if (property_exists($response, 'exception') && $response->exception instanceof Exception) {
-                throw $response->exception;
-            }
         } catch (Exception $exception) {
             if ($request instanceof InternalRequest) {
                 throw $exception;
