@@ -242,35 +242,6 @@ class Lumen implements Adapter
     }
 
     /**
-     * Remove the global application middleware as it's run from this packages
-     * Request middleware. Lumen runs middleware later in its life cycle
-     * which results in some middleware being executed twice.
-     *
-     * @return void
-     */
-    protected function removeMiddlewareFromApp()
-    {
-        if ($this->middlewareRemoved) {
-            return;
-        }
-
-        $this->middlewareRemoved = true;
-
-        $reflection = new ReflectionClass($this->app);
-        $property = $reflection->getProperty('middleware');
-        $property->setAccessible(true);
-        $oldMiddlewares = $property->getValue($this->app);
-        $newMiddlewares = [];
-        foreach ($oldMiddlewares as $middle) {
-            if ((new ReflectionClass($middle))->hasMethod('terminate') && $middle != 'Dingo\Api\Http\Middleware\Request') {
-                $newMiddlewares = array_merge($newMiddlewares, [$middle]);
-            }
-        }
-        $property->setValue($this->app, $newMiddlewares);
-        $property->setAccessible(false);
-    }
-
-    /**
      * Get all routes or only for a specific version.
      *
      * @param string $version
