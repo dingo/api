@@ -3,7 +3,6 @@
 namespace Dingo\Api\Routing\Adapter;
 
 use ArrayIterator;
-use ReflectionClass;
 use FastRoute\Dispatcher;
 use FastRoute\RouteParser;
 use Illuminate\Support\Str;
