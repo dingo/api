@@ -3,7 +3,6 @@
 namespace Dingo\Api\Routing\Adapter;
 
 use ArrayIterator;
-use ReflectionClass;
 use FastRoute\Dispatcher;
 use FastRoute\RouteParser;
 use Illuminate\Support\Str;
@@ -103,8 +102,6 @@ class Lumen implements Adapter
         if (! isset($this->routes[$version])) {
             throw new UnknownVersionException;
         }
-
-        $this->removeMiddlewareFromApp();
 
         $routeCollector = $this->mergeOldRoutes($version);
         $dispatcher = call_user_func($this->dispatcherResolver, $routeCollector);
@@ -241,35 +238,6 @@ class Lumen implements Adapter
                 $this->routes[$version] = new RouteCollector($this->parser, clone $this->generator);
             }
         }
-    }
-
-    /**
-     * Remove the global application middleware as it's run from this packages
-     * Request middleware. Lumen runs middleware later in its life cycle
-     * which results in some middleware being executed twice.
-     *
-     * @return void
-     */
-    protected function removeMiddlewareFromApp()
-    {
-        if ($this->middlewareRemoved) {
-            return;
-        }
-
-        $this->middlewareRemoved = true;
-
-        $reflection = new ReflectionClass($this->app);
-        $property = $reflection->getProperty('middleware');
-        $property->setAccessible(true);
-        $oldMiddlewares = $property->getValue($this->app);
-        $newMiddlewares = [];
-        foreach ($oldMiddlewares as $middle) {
-            if ((new ReflectionClass($middle))->hasMethod('terminate') && $middle != 'Dingo\Api\Http\Middleware\Request') {
-                $newMiddlewares = array_merge($newMiddlewares, [$middle]);
-            }
-        }
-        $property->setValue($this->app, $newMiddlewares);
-        $property->setAccessible(false);
     }
 
     /**
