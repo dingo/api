@@ -93,9 +93,6 @@ class Handler
         // If the throttle instance is already set then we'll just carry on as
         // per usual.
         if ($this->throttle instanceof Throttle) {
-            if ($this->throttle instanceof HasRateLimiter) {
-                $this->setRateLimiter([$this->throttle, 'getRateLimiter']);
-            }
 
             // If the developer specified a certain amount of requests or expiration
         // time on a specific route then we'll always use the route specific
@@ -116,6 +113,10 @@ class Handler
 
         if (is_null($this->throttle)) {
             return;
+        }
+
+        if ($this->throttle instanceof HasRateLimiter) {
+            $this->setRateLimiter([$this->throttle, 'getRateLimiter']);
         }
 
         $this->prepareCacheStore();
