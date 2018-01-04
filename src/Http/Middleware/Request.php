@@ -125,6 +125,7 @@ class Request
         if (str_contains(get_class($this->app), 'Lumen')) {
             $this->middleware = [];
         }
+        
         return (new Pipeline($this->app))->send($request)->through($this->middleware)->then(function ($request) {
             return $this->router->dispatch($request);
         });
