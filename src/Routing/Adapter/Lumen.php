@@ -104,8 +104,6 @@ class Lumen implements Adapter
             throw new UnknownVersionException;
         }
 
-        $this->removeMiddlewareFromApp();
-
         $routeCollector = $this->mergeOldRoutes($version);
         $dispatcher = call_user_func($this->dispatcherResolver, $routeCollector);
 
