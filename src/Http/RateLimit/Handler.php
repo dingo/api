@@ -102,7 +102,7 @@ class Handler
 
             $this->keyPrefix = sha1($request->path());
 
-            // Otherwise we'll use the throttle that gives the consumer the largest
+        // Otherwise we'll use the throttle that gives the consumer the largest
         // amount of requests. If no matching throttle is found then rate
         // limiting will not be imposed for the request.
         } else {
