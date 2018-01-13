@@ -10,6 +10,7 @@ use Dingo\Api\Contract\Debug\MessageBagErrors;
 use Symfony\Component\HttpFoundation\Response as BaseResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Illuminate\Contracts\Debug\ExceptionHandler as IlluminateExceptionHandler;
+use Illuminate\Validation\ValidationException;
 
 class Handler implements ExceptionHandler, IlluminateExceptionHandler
 {
@@ -216,6 +217,10 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
 
         if ($exception instanceof MessageBagErrors && $exception->hasErrors()) {
             $replacements[':errors'] = $exception->getErrors();
+        }
+
+        if ($exception instanceof ValidationException) {
+            $replacements[':errors'] = $exception->errors();
         }
 
         if ($code = $exception->getCode()) {
