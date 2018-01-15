@@ -155,7 +155,7 @@ class Factory
 
         $binding = $this->transformer->register($class, $transformer, $parameters, $after);
 
-        return new Response($paginator, 200, [], $binding);
+        return new Response($paginator->toJson(), 200, [], $binding);
     }
 
     /**
