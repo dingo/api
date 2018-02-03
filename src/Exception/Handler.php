@@ -221,6 +221,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
 
         if ($exception instanceof ValidationException) {
             $replacements[':errors'] = $exception->errors();
+            $replacements[':status_code'] = $exception->status;
         }
 
         if ($code = $exception->getCode()) {
