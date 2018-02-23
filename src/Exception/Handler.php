@@ -7,6 +7,7 @@ use ReflectionFunction;
 use Illuminate\Http\Response;
 use Dingo\Api\Contract\Debug\ExceptionHandler;
 use Dingo\Api\Contract\Debug\MessageBagErrors;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response as BaseResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Illuminate\Contracts\Debug\ExceptionHandler as IlluminateExceptionHandler;
@@ -216,6 +217,11 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
 
         if ($exception instanceof MessageBagErrors && $exception->hasErrors()) {
             $replacements[':errors'] = $exception->getErrors();
+        }
+
+        if ($exception instanceof ValidationException) {
+            $replacements[':errors'] = $exception->errors();
+            $replacements[':status_code'] = $exception->status;
         }
 
         if ($code = $exception->getCode()) {
