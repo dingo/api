@@ -99,7 +99,6 @@ class Handler
         // throttle with the given values.
         } elseif ($limit > 0 || $expires > 0) {
             $this->throttle = new Route(['limit' => $limit, 'expires' => $expires]);
-
             $this->keyPrefix = sha1($request->path());
 
         // Otherwise we'll use the throttle that gives the consumer the largest
@@ -172,7 +171,7 @@ class Handler
      */
     protected function key($key)
     {
-        return sprintf('dingo.api.%s.%s.%s', $this->keyPrefix, $key, $this->getRateLimiter());
+        return sprintf('dingo.api.%s.%s', $key, $this->getRateLimiter());
     }
 
     /**
