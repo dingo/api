@@ -183,7 +183,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
         if ($exception instanceof ValidationException) {
             return $exception->status;
         }
-        
+
         return $exception instanceof HttpExceptionInterface ? $exception->getStatusCode() : 500;
     }
 
