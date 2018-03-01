@@ -2,17 +2,17 @@
 
 namespace Dingo\Api\Http;
 
+use Dingo\Api\Exception\ValidationHttpException;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Laravel\Lumen\Http\Redirector;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Validation\Validator;
-use Dingo\Api\Exception\ValidationHttpException;
 use Illuminate\Validation\ValidatesWhenResolvedTrait;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Contracts\Validation\ValidatesWhenResolved;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class FormRequest extends Request implements ValidatesWhenResolved
 {
@@ -67,7 +67,7 @@ class FormRequest extends Request implements ValidatesWhenResolved
      */
     protected $dontFlash = [
         'password',
-        'password_confirmation',
+        'password_confirmation'
     ];
 
     /**
@@ -114,7 +114,6 @@ class FormRequest extends Request implements ValidatesWhenResolved
      * Create the default validator instance.
      *
      * @param  \Illuminate\Contracts\Validation\Factory  $factory
-     *
      * @return \Illuminate\Contracts\Validation\Validator
      */
     protected function createDefaultValidator(ValidationFactory $factory)
@@ -141,8 +140,8 @@ class FormRequest extends Request implements ValidatesWhenResolved
      * Handle a failed validation attempt.
      *
      * @param  \Illuminate\Contracts\Validation\Validator  $validator
-     *
      * @return void
+     *
      */
     protected function failedValidation(Validator $validator)
     {
@@ -157,7 +156,6 @@ class FormRequest extends Request implements ValidatesWhenResolved
      * Get the proper failed validation response for the request.
      *
      * @param  array  $errors
-     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function response(array $errors)
@@ -175,7 +173,6 @@ class FormRequest extends Request implements ValidatesWhenResolved
      * Format the errors from the given Validator instance.
      *
      * @param  \Illuminate\Contracts\Validation\Validator  $validator
-     *
      * @return array
      */
     protected function formatErrors(Validator $validator)
@@ -221,6 +218,7 @@ class FormRequest extends Request implements ValidatesWhenResolved
      * Handle a failed authorization attempt.
      *
      * @return void
+     *
      */
     protected function failedAuthorization()
     {
@@ -255,7 +253,6 @@ class FormRequest extends Request implements ValidatesWhenResolved
      * Set the Redirector instance.
      *
      * @param Redirector $redirector
-     *
      * @return $this
      */
     public function setRedirector(Redirector $redirector)
@@ -269,7 +266,6 @@ class FormRequest extends Request implements ValidatesWhenResolved
      * Set the container implementation.
      *
      * @param  \Illuminate\Contracts\Container\Container  $container
-     *
      * @return $this
      */
     public function setContainer(Container $container)

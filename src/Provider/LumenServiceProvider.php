@@ -2,6 +2,10 @@
 
 namespace Dingo\Api\Provider;
 
+use Dingo\Api\Http\FormRequest;
+use Illuminate\Contracts\Validation\ValidatesWhenResolved;
+use Laravel\Lumen\Application;
+use Laravel\Lumen\Http\Redirector;
 use ReflectionClass;
 use Laravel\Lumen\Application;
 use Dingo\Api\Http\FormRequest;
@@ -25,6 +29,7 @@ class LumenServiceProvider extends DingoServiceProvider
      * @throws \ReflectionException
      *
      * @return void
+     * @throws \ReflectionException
      */
     public function boot()
     {
@@ -153,7 +158,6 @@ class LumenServiceProvider extends DingoServiceProvider
      *
      * @param FormRequest $form
      * @param IlluminateRequest $current
-     *
      * @return void
      */
     protected function initializeRequest(FormRequest $form, IlluminateRequest $current)
