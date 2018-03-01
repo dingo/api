@@ -9,7 +9,6 @@ use Laravel\Lumen\Http\Redirector;
 use Dingo\Api\Http\Middleware\Auth;
 use Dingo\Api\Http\Middleware\Request;
 use Dingo\Api\Http\Middleware\RateLimit;
-
 use FastRoute\RouteParser\Std as StdRouteParser;
 use Illuminate\Http\Request as IlluminateRequest;
 use Dingo\Api\Routing\Adapter\Lumen as LumenAdapter;
