@@ -2,10 +2,6 @@
 
 namespace Dingo\Api\Provider;
 
-use Dingo\Api\Http\FormRequest;
-use Illuminate\Contracts\Validation\ValidatesWhenResolved;
-use Laravel\Lumen\Application;
-use Laravel\Lumen\Http\Redirector;
 use ReflectionClass;
 use Laravel\Lumen\Application;
 use Dingo\Api\Http\FormRequest;
@@ -13,8 +9,7 @@ use Laravel\Lumen\Http\Redirector;
 use Dingo\Api\Http\Middleware\Auth;
 use Dingo\Api\Http\Middleware\Request;
 use Dingo\Api\Http\Middleware\RateLimit;
-use FastRoute\Dispatcher\GroupCountBased;
-use Dingo\Api\Http\Middleware\PrepareController;
+
 use FastRoute\RouteParser\Std as StdRouteParser;
 use Illuminate\Http\Request as IlluminateRequest;
 use Dingo\Api\Routing\Adapter\Lumen as LumenAdapter;
@@ -29,6 +24,7 @@ class LumenServiceProvider extends DingoServiceProvider
      * @throws \ReflectionException
      *
      * @return void
+     *
      * @throws \ReflectionException
      */
     public function boot()
@@ -158,6 +154,7 @@ class LumenServiceProvider extends DingoServiceProvider
      *
      * @param FormRequest $form
      * @param IlluminateRequest $current
+     *
      * @return void
      */
     protected function initializeRequest(FormRequest $form, IlluminateRequest $current)
