@@ -24,8 +24,6 @@ class LumenServiceProvider extends DingoServiceProvider
      * @throws \ReflectionException
      *
      * @return void
-     *
-     * @throws \ReflectionException
      */
     public function boot()
     {

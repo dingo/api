@@ -143,7 +143,6 @@ class FormRequest extends Request implements ValidatesWhenResolved
      * @param  \Illuminate\Contracts\Validation\Validator  $validator
      *
      * @return void
-     *
      */
     protected function failedValidation(Validator $validator)
     {
@@ -158,6 +157,7 @@ class FormRequest extends Request implements ValidatesWhenResolved
      * Get the proper failed validation response for the request.
      *
      * @param  array  $errors
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function response(array $errors)
@@ -175,6 +175,7 @@ class FormRequest extends Request implements ValidatesWhenResolved
      * Format the errors from the given Validator instance.
      *
      * @param  \Illuminate\Contracts\Validation\Validator  $validator
+     *
      * @return array
      */
     protected function formatErrors(Validator $validator)
