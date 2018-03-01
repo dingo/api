@@ -2,6 +2,10 @@
 
 namespace Dingo\Api\Provider;
 
+use Dingo\Api\Http\FormRequest;
+use Illuminate\Contracts\Validation\ValidatesWhenResolved;
+use Laravel\Lumen\Application;
+use Laravel\Lumen\Http\Redirector;
 use ReflectionClass;
 use Dingo\Api\Http\Middleware\Auth;
 use Dingo\Api\Http\Middleware\Request;
@@ -19,6 +23,7 @@ class LumenServiceProvider extends DingoServiceProvider
      * Boot the service provider.
      *
      * @return void
+     * @throws \ReflectionException
      */
     public function boot()
     {
@@ -46,6 +51,16 @@ class LumenServiceProvider extends DingoServiceProvider
 
                 return $property->getValue($app);
             });
+        });
+
+        $this->app->afterResolving(ValidatesWhenResolved::class, function ($resolved) {
+            $resolved->validate();
+        });
+
+        $this->app->resolving(FormRequest::class, function (FormRequest $request, Application $app) {
+            $this->initializeRequest($request, $app['request']);
+
+            $request->setContainer($app)->setRedirector($app->make(Redirector::class));
         });
 
         $this->app->routeMiddleware([
@@ -130,5 +145,39 @@ class LumenServiceProvider extends DingoServiceProvider
         $middleware = $property->getValue($this->app);
 
         return $middleware;
+    }
+
+    /**
+     * Initialize the form request with data from the given request.
+     *
+     * @param FormRequest $form
+     * @param IlluminateRequest $current
+     * @return void
+     */
+    protected function initializeRequest(FormRequest $form, IlluminateRequest $current)
+    {
+        $files = $current->files->all();
+
+        $files = is_array($files) ? array_filter($files) : $files;
+
+        $form->initialize(
+            $current->query->all(),
+            $current->request->all(),
+            $current->attributes->all(),
+            $current->cookies->all(),
+            $files,
+            $current->server->all(),
+            $current->getContent()
+        );
+
+        $form->setJson($current->json());
+
+        if ($session = $current->getSession()) {
+            $form->setLaravelSession($session);
+        }
+
+        $form->setUserResolver($current->getUserResolver());
+
+        $form->setRouteResolver($current->getRouteResolver());
     }
 }
