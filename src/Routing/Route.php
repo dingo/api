@@ -533,4 +533,14 @@ class Route extends \Illuminate\Routing\Route
     {
         return in_array('https', $this->action, true);
     }
+
+    /**
+     * Return the middlewares for this route.
+     *
+     * @return array
+     */
+    public function getMiddleware()
+    {
+        return $this->middleware;
+    }
 }
