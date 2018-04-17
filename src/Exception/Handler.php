@@ -227,7 +227,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
             if (method_exists($exception, 'errors')) {
                 $replacements[':errors'] = $exception->errors();
             } else {
-                $replacements[':errors'] = $this->validator->errors()->messages();
+                $replacements[':errors'] = $exception->validator->errors()->messages();
             }
 
         }
