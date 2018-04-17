@@ -180,7 +180,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
      */
     protected function getStatusCode(Exception $exception)
     {
-        if ($exception instanceof ValidationException) {
+        if ($exception instanceof ValidationException && property_exists($exception, 'status')) {
             return $exception->status;
         }
 
@@ -224,8 +224,12 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
         }
 
         if ($exception instanceof ValidationException) {
-            $replacements[':errors'] = $exception->errors();
-            $replacements[':status_code'] = $exception->status;
+            if (method_exists($exception, 'errors')) {
+                $replacements[':errors'] = $exception->errors();
+            } else {
+                $replacements[':errors'] = $this->validator->errors()->messages();
+            }
+
         }
 
         if ($code = $exception->getCode()) {
