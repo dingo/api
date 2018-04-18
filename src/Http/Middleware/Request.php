@@ -90,6 +90,12 @@ class Request
      */
     public function handle($request, Closure $next)
     {
+        $prefix = config('api.prefix');
+
+        if( false === strpos($request->getRequestUri(), '/' . $prefix) ) {
+            return $next( $request );
+        }
+
         try {
             if ($this->validator->validateRequest($request)) {
                 $this->app->singleton(LaravelExceptionHandler::class, function ($app) {
