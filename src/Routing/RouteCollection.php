@@ -34,13 +34,15 @@ class RouteCollection implements Countable, IteratorAggregate
      *
      * @param \Dingo\Api\Routing\Route $route
      *
-     * @return void
+     * @return \Dingo\Api\Routing\Route
      */
     public function add(Route $route)
     {
         $this->routes[] = $route;
 
         $this->addLookups($route);
+
+        return $route;
     }
 
     /**
