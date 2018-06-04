@@ -9,6 +9,7 @@ use Dingo\Api\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Contracts\Pagination\Paginator;
 use Dingo\Api\Transformer\Factory as TransformerFactory;
+use Dingo\Api\Exception\ValidationHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Factory
@@ -255,6 +256,20 @@ class Factory
     public function errorMethodNotAllowed($message = 'Method Not Allowed')
     {
         $this->error($message, 405);
+    }
+    
+    /**
+     * Return a 422 unprocessable entity exception
+     *
+     * @param string $message
+     *
+     * @throws Dingo\Api\Exception\ValidationHttpException
+     *
+     * @return void
+     */
+    public function unprocessableEntity($message = "Unprocessable Entity")
+    {
+       throw new ValidationHttpException($message); 
     }
 
     /**
