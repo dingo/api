@@ -60,18 +60,21 @@ class Accept implements Parser
      *
      * @param \Illuminate\Http\Request $request
      * @param bool                     $strict
+     * @param null                     $strictSpecUrl
      *
      * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
      *
      * @return array
      */
-    public function parse(Request $request, $strict = false)
+    public function parse(Request $request, $strict = false, $strictSpecUrl = null)
     {
         $pattern = '/application\/'.$this->standardsTree.'\.('.$this->subtype.')\.([\w\d\.\-]+)\+([\w]+)/';
 
         if (! preg_match($pattern, $request->header('accept'), $matches)) {
             if ($strict) {
-                throw new BadRequestHttpException('Accept header could not be properly parsed because of a strict matching process.');
+                if (is_null($strictSpecUrl) || $request->is($strictSpecUrl)) {
+                    throw new BadRequestHttpException('Accept header could not be properly parsed because of a strict matching process.');
+                }
             }
 
             $default = 'application/'.$this->standardsTree.'.'.$this->subtype.'.'.$this->version.'+'.$this->format;

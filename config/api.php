@@ -113,6 +113,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Strict Mode only for specific URLs
+    |--------------------------------------------------------------------------
+    |
+    | Enabling strict mode for specific URLs only if API_STRICT=true.
+    | For example: API_STRICT_SPEC_URL=api/*
+    | used $request->is pattern.
+    |
+    */
+
+    'strictSpecUrl' => env('API_STRICT_SPEC_URL', null),
+
+    /*
+    |--------------------------------------------------------------------------
     | Debug Mode
     |--------------------------------------------------------------------------
     |
