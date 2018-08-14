@@ -25,13 +25,14 @@ class ResourceRegistrar extends IlluminateResourceRegistrar
     {
         $this->router = $router;
     }
-    
+
     /**
      * Route a resource to a controller.
      *
      * @param  string  $name
      * @param  string  $controller
      * @param  array   $options
+     *
      * @return void
      */
     public function register($name, $controller, array $options = [])
