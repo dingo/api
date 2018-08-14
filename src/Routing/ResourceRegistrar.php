@@ -2,6 +2,7 @@
 
 namespace Dingo\Api\Routing;
 
+use Illuminate\Support\Str;
 use Illuminate\Routing\ResourceRegistrar as IlluminateResourceRegistrar;
 
 class ResourceRegistrar extends IlluminateResourceRegistrar
