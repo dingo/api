@@ -54,6 +54,10 @@ class RoutingServiceProvider extends ServiceProvider
 
             $url->setRouteCollections($app[Router::class]->getRoutes());
 
+            $url->setKeyResolver(function () {
+                return config('app.key');
+            });
+
             return $url;
         });
     }
