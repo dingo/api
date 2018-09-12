@@ -197,7 +197,7 @@ class Fractal implements Adapter
         foreach ($includes as $key => $value) {
             $eagerLoads[] = is_string($key) ? $key : $value;
         }
-        
+
         if (property_exists($transformer, 'lazyLoadedIncludes')) {
             $eagerLoads = array_diff($eagerLoads, $transformer->lazyLoadedIncludes);
         }
