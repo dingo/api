@@ -1,6 +1,5 @@
 preset: laravel
 
-
 enabled:
   - phpdoc_order
   - phpdoc_separation
