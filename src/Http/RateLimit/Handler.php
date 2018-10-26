@@ -57,7 +57,7 @@ class Handler
     /**
      * A callback used to define the limiter.
      *
-     * @var callback
+     * @var callable
      */
     protected $limiter;
 

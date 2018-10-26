@@ -4,7 +4,6 @@ namespace Dingo\Api\Http;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Laravel\Lumen\Http\Redirector;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Validation\Validator;
 use Dingo\Api\Exception\ValidationHttpException;
@@ -254,11 +253,11 @@ class FormRequest extends Request implements ValidatesWhenResolved
     /**
      * Set the Redirector instance.
      *
-     * @param Redirector $redirector
+     * @param \Laravel\Lumen\Http\Redirector|\Illuminate\Routing\Redirector $redirector
      *
      * @return $this
      */
-    public function setRedirector(Redirector $redirector)
+    public function setRedirector($redirector)
     {
         $this->redirector = $redirector;
 
