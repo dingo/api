@@ -9,9 +9,9 @@ use Dingo\Api\Contract\Debug\ExceptionHandler;
 use Dingo\Api\Contract\Debug\MessageBagErrors;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response as BaseResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Illuminate\Contracts\Debug\ExceptionHandler as IlluminateExceptionHandler;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler implements ExceptionHandler, IlluminateExceptionHandler
 {
@@ -247,12 +247,12 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
             ];
 
             // Attach trace of previous exception, if exists
-            if (!is_null($exception->getPrevious())) {
+            if (! is_null($exception->getPrevious())) {
                 $currentTrace = $replacements[':debug']['trace'];
 
                 $replacements[':debug']['trace'] = [
                     'previous' => explode("\n", $exception->getPrevious()->getTraceAsString()),
-                    'current'  => $currentTrace,
+                    'current' => $currentTrace,
                 ];
             }
         }
