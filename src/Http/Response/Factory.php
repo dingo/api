@@ -267,7 +267,7 @@ class Factory
      *
      * @return void
      */
-    public function unprocessableEntity($message = "Unprocessable Entity")
+    public function errorUnprocessableEntity($message = "Unprocessable Entity")
     {
        throw new ValidationHttpException($message); 
     }
