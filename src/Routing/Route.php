@@ -280,8 +280,10 @@ class Route extends \Illuminate\Routing\Route
     {
         list($this->controllerClass, $this->controllerMethod) = explode('@', $this->action['uses']);
 
-        $this->container->instance($this->controllerClass,
-            $this->controller = $this->container->make($this->controllerClass));
+        if (!$this->container->resolved($this->controllerClass)) {
+            $this->container->instance($this->controllerClass,
+                $this->controller = $this->container->make($this->controllerClass));
+        }
 
         return $this->controller;
     }
