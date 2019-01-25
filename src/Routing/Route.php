@@ -283,6 +283,8 @@ class Route extends \Illuminate\Routing\Route
         if (!$this->container->resolved($this->controllerClass)) {
             $this->container->instance($this->controllerClass,
                 $this->controller = $this->container->make($this->controllerClass));
+        } else {
+            $this->controller = $this->container->make($this->controllerClass);
         }
 
         return $this->controller;
