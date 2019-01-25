@@ -10,9 +10,9 @@ use Dingo\Api\Event\ResponseIsMorphing;
 use Dingo\Api\Event\ResponseWasMorphed;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Response as IlluminateResponse;
-use Illuminate\Events\Dispatcher as EventDispatcher;
 use Dingo\Api\Transformer\Factory as TransformerFactory;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 
@@ -56,7 +56,7 @@ class Response extends IlluminateResponse
     /**
      * Event dispatcher instance.
      *
-     * @var \Illuminate\Events\Dispatcher
+     * @var \Illuminate\Contracts\Events\Dispatcher
      */
     protected static $events;
 
@@ -169,7 +169,7 @@ class Response extends IlluminateResponse
             return;
         }
 
-        static::$events->fire(new ResponseWasMorphed($this, $this->content));
+        static::$events->dispatch(new ResponseWasMorphed($this, $this->content));
     }
 
     /**
@@ -183,7 +183,7 @@ class Response extends IlluminateResponse
             return;
         }
 
-        static::$events->fire(new ResponseIsMorphing($this, $this->content));
+        static::$events->dispatch(new ResponseIsMorphing($this, $this->content));
     }
 
     /**
@@ -207,7 +207,7 @@ class Response extends IlluminateResponse
     /**
      * Set the event dispatcher instance.
      *
-     * @param \Illuminate\Events\Dispatcher $events
+     * @param \Illuminate\Contracts\Events\Dispatcher $events
      *
      * @return void
      */
