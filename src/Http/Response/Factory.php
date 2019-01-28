@@ -9,6 +9,7 @@ use Dingo\Api\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Contracts\Pagination\Paginator;
 use Dingo\Api\Transformer\Factory as TransformerFactory;
+use Dingo\Api\Exception\ValidationHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Factory
@@ -258,6 +259,20 @@ class Factory
     }
 
     /**
+     * Return a 422 unprocessable entity exception
+     *
+     * @param string $message
+     *
+     * @throws Dingo\Api\Exception\ValidationHttpException
+     *
+     * @return void
+     */
+    public function errorUnprocessableEntity($message = "Unprocessable Entity")
+    {
+        throw new ValidationHttpException($message);
+    }
+
+    /**
      * Call magic methods beginning with "with".
      *
      * @param string $method
@@ -272,7 +287,7 @@ class Factory
         if (Str::startsWith($method, 'with')) {
             return call_user_func_array([$this, Str::camel(substr($method, 4))], $parameters);
 
-        // Because PHP won't let us name the method "array" we'll simply watch for it
+            // Because PHP won't let us name the method "array" we'll simply watch for it
             // in here and return the new binding. Gross. This is now DEPRECATED and
             // should not be used. Just return an array or a new response instance.
         } elseif ($method == 'array') {
