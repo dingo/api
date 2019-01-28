@@ -1,7 +1,5 @@
 preset: laravel
 
-linting: true
-
 enabled:
   - phpdoc_order
   - phpdoc_separation
