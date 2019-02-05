@@ -556,7 +556,7 @@ class Router
 
         if ($response->isSuccessful() && $this->requestIsConditional()) {
             if (! $response->headers->has('ETag')) {
-                $response->setEtag(sha1($response->getContent()));
+                $response->setEtag(sha1($response->getContent() ?: ''));
             }
 
             $response->isNotModified($request);

@@ -12,8 +12,8 @@ use Dingo\Api\Event\RequestWasMatched;
 use Dingo\Api\Http\Request as HttpRequest;
 use Illuminate\Contracts\Container\Container;
 use Dingo\Api\Contract\Debug\ExceptionHandler;
-use Illuminate\Events\Dispatcher as EventDispatcher;
 use Dingo\Api\Contract\Http\Request as RequestContract;
+use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
 use Illuminate\Contracts\Debug\ExceptionHandler as LaravelExceptionHandler;
 
 class Request
@@ -49,7 +49,7 @@ class Request
     /**
      * Event dispatcher instance.
      *
-     * @var \Illuminate\Events\Dispatcher
+     * @var \Illuminate\Contracts\Events\Dispatcher
      */
     protected $events;
 
@@ -67,7 +67,7 @@ class Request
      * @param \Dingo\Api\Contract\Debug\ExceptionHandler   $exception
      * @param \Dingo\Api\Routing\Router                    $router
      * @param \Dingo\Api\Http\RequestValidator             $validator
-     * @param \Illuminate\Events\Dispatcher                $events
+     * @param \Illuminate\Contracts\Events\Dispatcher      $events
      *
      * @return void
      */
@@ -98,7 +98,7 @@ class Request
 
                 $request = $this->app->make(RequestContract::class)->createFromIlluminate($request);
 
-                $this->events->fire(new RequestWasMatched($request, $this->app));
+                $this->events->dispatch(new RequestWasMatched($request, $this->app));
 
                 return $this->sendRequestThroughRouter($request);
             }
