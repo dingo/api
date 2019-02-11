@@ -2,9 +2,10 @@
 
 namespace Dingo\Api\Console\Command;
 
+use Dingo\Api\Routing\Router;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Contracts\Console\Kernel;
+use Dingo\Api\Contract\Routing\Adapter;
 
 class Cache extends Command
 {
@@ -30,15 +31,33 @@ class Cache extends Command
     protected $files;
 
     /**
+     * Router instance.
+     *
+     * @var \Dingo\Api\Routing\Router
+     */
+    private $router;
+
+    /**
+     * Adapter instance.
+     *
+     * @var \Dingo\Api\Contract\Routing\Adapter
+     */
+    private $adapter;
+
+    /**
      * Create a new cache command instance.
      *
-     * @param \Illuminate\Filesystem\Filesystem $files
+     * @param \Illuminate\Filesystem\Filesystem   $files
+     * @param \Dingo\Api\Routing\Router           $router
+     * @param \Dingo\Api\Contract\Routing\Adapter $adapter
      *
      * @return void
      */
-    public function __construct(Filesystem $files)
+    public function __construct(Filesystem $files, Router $router, Adapter $adapter)
     {
         $this->files = $files;
+        $this->router = $router;
+        $this->adapter = $adapter;
 
         parent::__construct();
     }
@@ -52,15 +71,13 @@ class Cache extends Command
     {
         $this->callSilent('route:clear');
 
-        $app = $this->getFreshApplication();
-
         $this->call('route:cache');
 
-        $routes = $app['api.router']->getAdapterRoutes();
+        $routes = $this->router->getAdapterRoutes();
 
         foreach ($routes as $collection) {
             foreach ($collection as $route) {
-                $app['api.router.adapter']->prepareRouteForSerialization($route);
+                $this->adapter->prepareRouteForSerialization($route);
             }
         }
 
@@ -75,23 +92,5 @@ class Cache extends Command
             $path,
             str_replace('{{routes}}', base64_encode(serialize($routes)), $stub)
         );
-    }
-
-    /**
-     * Get a fresh application instance.
-     *
-     * @return \Illuminate\Contracts\Container\Container
-     */
-    protected function getFreshApplication()
-    {
-        if (method_exists($this->laravel, 'bootstrapPath')) {
-            $app = require $this->laravel->bootstrapPath().'/app.php';
-        } else {
-            $app = require $this->laravel->basePath().'/bootstrap/app.php';
-        }
-
-        $app->make(Kernel::class)->bootstrap();
-
-        return $app;
     }
 }
