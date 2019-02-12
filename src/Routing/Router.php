@@ -15,8 +15,8 @@ use Illuminate\Container\Container;
 use Dingo\Api\Contract\Routing\Adapter;
 use Dingo\Api\Contract\Debug\ExceptionHandler;
 use Illuminate\Http\Response as IlluminateResponse;
-use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 
 class Router
 {
@@ -859,6 +859,7 @@ class Router
      * Add the necessary where clauses to the route based on its initial registration.
      *
      * @param  \Illuminate\Routing\Route  $route
+     *
      * @return \Illuminate\Routing\Route
      */
     protected function addWhereClausesToRoute($route)
