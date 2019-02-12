@@ -29,6 +29,7 @@ abstract class BaseAdapterTest extends TestCase
         $this->adapter = $this->getAdapterInstance();
         $this->exception = m::mock(\Dingo\Api\Exception\Handler::class);
         $this->router = new Router($this->adapter, $this->exception, $this->container, null, null);
+        app()->instance(\Illuminate\Routing\Router::class, $this->adapter, true);
 
         Http\Response::setFormatters(['json' => new Http\Response\Format\Json]);
     }

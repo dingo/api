@@ -43,6 +43,8 @@ class DispatcherTest extends TestCase
         $this->auth = new Auth($this->router, $this->container, []);
         $this->dispatcher = new Dispatcher($this->container, new Filesystem, $this->router, $this->auth);
 
+        app()->instance(\Illuminate\Routing\Router::class, $this->adapter, true);
+
         $this->dispatcher->setSubtype('api');
         $this->dispatcher->setStandardsTree('vnd');
         $this->dispatcher->setDefaultVersion('v1');

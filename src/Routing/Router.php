@@ -14,6 +14,7 @@ use Dingo\Api\Http\InternalRequest;
 use Illuminate\Container\Container;
 use Dingo\Api\Contract\Routing\Adapter;
 use Dingo\Api\Contract\Debug\ExceptionHandler;
+use Illuminate\Routing\Route as IlluminateRoute;
 use Illuminate\Http\Response as IlluminateResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
@@ -624,12 +625,14 @@ class Router
         }
 
         // We need to recompile the route, adding the where clause (for pattern restrictions) and check again
-        $route->compiled = false;
-        $this->addWhereClausesToRoute($route);
+        if (is_object($route) && $route instanceof IlluminateRoute) {
+            $route->compiled = false;
+            $this->addWhereClausesToRoute($route);
 
-        // If the matching fails, it would be due to a parameter format validation check fail
-        if (! $route->matches($this->container['request'])) {
-            throw new NotFoundHttpException();
+            // If the matching fails, it would be due to a parameter format validation check fail
+            if (! $route->matches($this->container['request'])) {
+                throw new NotFoundHttpException('Not Found!');
+            }
         }
 
         return $this->currentRoute = $this->createRoute($route);
