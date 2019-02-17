@@ -4,6 +4,7 @@ namespace Dingo\Api\Transformer\Adapter;
 
 use Dingo\Api\Http\Request;
 use Dingo\Api\Transformer\Binding;
+use League\Fractal\TransformerAbstract;
 use Dingo\Api\Contract\Transformer\Adapter;
 use League\Fractal\Manager as FractalManager;
 use League\Fractal\Resource\Item as FractalItem;
@@ -64,10 +65,10 @@ class Fractal implements Adapter
     /**
      * Transform a response with a transformer.
      *
-     * @param mixed                          $response
-     * @param object                         $transformer
-     * @param \Dingo\Api\Transformer\Binding $binding
-     * @param \Dingo\Api\Http\Request        $request
+     * @param mixed                                     $response
+     * @param League\Fractal\TransformerAbstract|object $transformer
+     * @param \Dingo\Api\Transformer\Binding            $binding
+     * @param \Dingo\Api\Http\Request                   $request
      *
      * @return array
      */
@@ -88,6 +89,11 @@ class Fractal implements Adapter
 
         if ($this->shouldEagerLoad($response)) {
             $eagerLoads = $this->mergeEagerLoads($transformer, $this->fractal->getRequestedIncludes());
+
+            if ($transformer instanceof TransformerAbstract) {
+                // Only eager load the items in available includes
+                $eagerLoads = array_intersect($eagerLoads, $transformer->getAvailableIncludes());
+            }
 
             $response->load($eagerLoads);
         }
