@@ -111,6 +111,11 @@ class RoutingAdapterStub implements Adapter
         $this->patterns[$key] = $pattern;
     }
 
+    public function getPatterns()
+    {
+        return $this->patterns;
+    }
+
     protected function createRouteCollections(array $versions)
     {
         foreach ($versions as $version) {

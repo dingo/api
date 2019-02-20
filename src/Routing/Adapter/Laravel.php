@@ -47,6 +47,13 @@ class Laravel implements Adapter
     protected $oldRoutes;
 
     /**
+     * The globally available parameter patterns.
+     *
+     * @var array
+     */
+    protected $patterns = [];
+
+    /**
      * Create a new laravel routing adapter instance.
      *
      * @param \Illuminate\Routing\Router $router
@@ -244,5 +251,15 @@ class Laravel implements Adapter
     public function getRouter()
     {
         return $this->router;
+    }
+
+    /**
+     * Get the global "where" patterns.
+     *
+     * @return array
+     */
+    public function getPatterns()
+    {
+        return $this->patterns;
     }
 }
