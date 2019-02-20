@@ -25,9 +25,13 @@ This package provides tools for the following, and more:
 
 Please refer to our extensive [Wiki documentation](https://github.com/dingo/api/wiki) for more information.
 
+## API Boilerplate
+
+If you are looking to start a new project from scratch, consider using the [Laravel 5 API Boilerplate](https://github.com/specialtactics/laravel5-api-boilerplate), which builds on top of the dingo-api package, and adds a lot of great features.
+
 ## Support
 
-For answers you may not find in the Wiki, avoid posting issues. Feel free to ask for support on the dedicated [Slack](https://larachat.slack.com/messages/api/) room. Make sure to mention **@jasonlewis** so he is notified.
+For answers you may not find in the Wiki, avoid posting issues. Feel free to ask for support on the dedicated [Slack](https://larachat.slack.com/messages/api/) room. Make sure to mention **specialtactics** / **@jasonlewis** so he is notified.
 
 ## License
 
