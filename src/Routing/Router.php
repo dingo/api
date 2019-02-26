@@ -119,7 +119,7 @@ class Router
      * This method can be called without the third parameter, however,
      * the callback should always be the last parameter.
      *
-     * @param string         $version
+     * @param array|string   $version
      * @param array|callable $second
      * @param callable       $third
      *
