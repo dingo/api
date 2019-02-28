@@ -59,7 +59,7 @@ class Application58Stub extends Container implements Application
 
     public function runningUnitTests()
     {
-      // TODO: Implement runningUnitTests() method.
+        // TODO: Implement runningUnitTests() method.
     }
 
     public function isDownForMaintenance()
@@ -84,7 +84,7 @@ class Application58Stub extends Container implements Application
 
     public function resolveProvider($provider)
     {
-      //
+        //
     }
 
     public function boot()
@@ -104,32 +104,32 @@ class Application58Stub extends Container implements Application
 
     public function bootstrapWith(array $bootstrappers)
     {
-      //
+        //
     }
 
     public function configurationIsCached()
     {
-      //
+        //
     }
 
     public function detectEnvironment(\Closure $callback)
     {
-      //
+        //
     }
 
     public function environmentFile()
     {
-      //
+        //
     }
 
     public function environmentFilePath()
     {
-      //
+        //
     }
 
     public function getCachedConfigPath()
     {
-      //
+        //
     }
 
     public function getCachedServicesPath()
@@ -144,57 +144,56 @@ class Application58Stub extends Container implements Application
 
     public function getCachedRoutesPath()
     {
-      //
+        //
     }
 
     public function getLocale()
     {
-      //
+        //
     }
 
     public function getNamespace()
     {
-      //
+        //
     }
 
     public function getProviders($provider)
     {
-      //
+        //
     }
 
     public function hasBeenBootstrapped()
     {
-      //
+        //
     }
 
     public function loadDeferredProviders()
     {
-      //
+        //
     }
 
     public function loadEnvironmentFrom($file)
     {
-      //
+        //
     }
 
     public function routesAreCached()
     {
-      //
+        //
     }
 
     public function setLocale($locale)
     {
-      //
+        //
     }
 
     public function shouldSkipMiddleware()
     {
-      //
+        //
     }
 
     public function terminate()
     {
-      //
+        //
     }
-
 }
