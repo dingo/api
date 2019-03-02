@@ -79,6 +79,18 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
     }
 
     /**
+     * Determine if the exception should be reported.
+     *
+     * @param  \Exception  $e
+     *
+     * @return bool
+     */
+    public function shouldReport(Exception $e)
+    {
+        return true;
+    }
+
+    /**
      * Render an exception into an HTTP response.
      *
      * @param \Dingo\Api\Http\Request $request
