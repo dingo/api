@@ -19,6 +19,7 @@
     <testsuites>
         <testsuite name="API Test Suite">
             <directory suffix="Test.php">./tests</directory>
+            <exclude>./tests/Routing/Adapter/LumenTest.php</exclude>
         </testsuite>
     </testsuites>
     <filter>
