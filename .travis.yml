@@ -17,8 +17,11 @@ cache:
 
 matrix:
   include:
-    - php: 7.0
     - php: 7.1
+      env: xdebug=false
+    - php: 7.2
+      env: xdebug=false
+    - php: 7.3
       env: xdebug=false
 
 before_install:
