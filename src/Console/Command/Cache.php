@@ -71,13 +71,15 @@ class Cache extends Command
     {
         $this->callSilent('route:clear');
 
+        $app = $this->getFreshApplication();
+
         $this->call('route:cache');
 
-        $routes = $this->router->getAdapterRoutes();
+        $routes = $app['api.router']->getAdapterRoutes();
 
         foreach ($routes as $collection) {
             foreach ($collection as $route) {
-                $this->adapter->prepareRouteForSerialization($route);
+                $app['api.router.adapter']->prepareRouteForSerialization($route);
             }
         }
 
@@ -92,5 +94,23 @@ class Cache extends Command
             $path,
             str_replace('{{routes}}', base64_encode(serialize($routes)), $stub)
         );
+    }
+
+    /**
+     * Get a fresh application instance.
+     *
+     * @return \Illuminate\Contracts\Container\Container
+     */
+    protected function getFreshApplication()
+    {
+        if (method_exists($this->laravel, 'bootstrapPath')) {
+            $app = require $this->laravel->bootstrapPath().'/app.php';
+        } else {
+            $app = require $this->laravel->basePath().'/bootstrap/app.php';
+        }
+
+        $app->make(Kernel::class)->bootstrap();
+
+        return $app;
     }
 }
