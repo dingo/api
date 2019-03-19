@@ -9,6 +9,7 @@ use Illuminate\Container\Container;
 use Dingo\Api\Http\RateLimit\Throttle\Route;
 use Dingo\Api\Contract\Http\RateLimit\Throttle;
 use Dingo\Api\Contract\Http\RateLimit\HasRateLimiter;
+use Illuminate\Support\Facades\Date;
 
 class Handler
 {
@@ -185,7 +186,7 @@ class Handler
      */
     protected function cache($key, $value, $minutes)
     {
-        $this->cache->add($this->key($key), $value, now()->addMinutes($minutes));
+        $this->cache->add($this->key($key), $value, Date::now()->addMinutes($minutes));
     }
 
     /**
