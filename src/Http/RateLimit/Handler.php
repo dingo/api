@@ -185,7 +185,7 @@ class Handler
      */
     protected function cache($key, $value, $minutes)
     {
-        $this->cache->add($this->key($key), $value, $minutes);
+        $this->cache->add($this->key($key), $value, now()->addMinutes($minutes));
     }
 
     /**
