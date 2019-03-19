@@ -3,8 +3,8 @@
 namespace Dingo\Api\Http\RateLimit;
 
 use Dingo\Api\Http\Request;
-use Illuminate\Cache\CacheManager;
 use Illuminate\Support\Carbon;
+use Illuminate\Cache\CacheManager;
 use Illuminate\Support\Collection;
 use Illuminate\Container\Container;
 use Dingo\Api\Http\RateLimit\Throttle\Route;
