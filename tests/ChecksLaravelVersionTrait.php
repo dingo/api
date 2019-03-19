@@ -32,12 +32,15 @@ trait ChecksLaravelVersionTrait
         if ('dev-master' === $version) {
             $version = $this->current_release;
         }
-        $compared_versions = version_compare('5.8', $version);
-        // If comparison is Less Than, or Equal To, provide the 5.8 stub.
-        if ($compared_versions === -1 || $compared_versions === 0) {
-            return new Application58Stub;
-        }
 
-        return new ApplicationStub;
+        // Remove the 'v' in for example 'v5.8.3'
+        $version = str_replace('v', '', $version);
+
+        // Return the version stub for the right version
+        if (version_compare($version, '5.8.0', '>=')) {
+            return new Application58Stub;
+        } else {
+            return new ApplicationStub;
+        }
     }
 }
