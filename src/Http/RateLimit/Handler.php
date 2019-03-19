@@ -4,9 +4,9 @@ namespace Dingo\Api\Http\RateLimit;
 
 use Dingo\Api\Http\Request;
 use Illuminate\Cache\CacheManager;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Container\Container;
-use Illuminate\Support\Facades\Date;
 use Dingo\Api\Http\RateLimit\Throttle\Route;
 use Dingo\Api\Contract\Http\RateLimit\Throttle;
 use Dingo\Api\Contract\Http\RateLimit\HasRateLimiter;
@@ -186,7 +186,7 @@ class Handler
      */
     protected function cache($key, $value, $minutes)
     {
-        $this->cache->add($this->key($key), $value, Date::now()->addMinutes($minutes));
+        $this->cache->add($this->key($key), $value, Carbon::now()->addMinutes($minutes));
     }
 
     /**
