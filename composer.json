@@ -17,8 +17,7 @@
         "dingo/blueprint": "^0.2",
         "illuminate/routing": "^5.5",
         "illuminate/support": "^5.5",
-        "league/fractal": "^0.17",
-        "laravel/framework": "^5.5"
+        "league/fractal": "^0.17"
     },
     "require-dev": {
         "phpdocumentor/reflection-docblock": "3.3.2",
