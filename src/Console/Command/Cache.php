@@ -6,6 +6,7 @@ use Dingo\Api\Routing\Router;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Dingo\Api\Contract\Routing\Adapter;
+use Illuminate\Contracts\Console\Kernel;
 
 class Cache extends Command
 {
