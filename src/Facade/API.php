@@ -97,7 +97,7 @@ class API extends Facade
      *
      * @param string $routeName
      * @param string $apiVersion
-     * 
+     *
      * @return string
      */
     public static function route($routeName, $apiVersion = 'v1')
