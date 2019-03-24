@@ -91,4 +91,17 @@ class API extends Facade
     {
         return static::$app['api.router'];
     }
+
+    /**
+     * Get the API route of the given name, and optionally specify the API version.
+     *
+     * @param string $routeName
+     * @param string $apiVersion
+     *
+     * @return string
+     */
+    public static function route($routeName, $apiVersion = 'v1')
+    {
+        return static::$app['api.url']->version($apiVersion)->route($routeName);
+    }
 }
