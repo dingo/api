@@ -54,6 +54,7 @@ class LumenServiceProvider extends DingoServiceProvider
             });
         });
 
+        // Validate FormRequest after resolving
         $this->app->afterResolving(ValidatesWhenResolved::class, function ($resolved) {
             $resolved->validateResolved();
         });
