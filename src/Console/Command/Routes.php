@@ -144,7 +144,7 @@ class Routes extends RouteListCommand
      */
     protected function routeRateLimit($route)
     {
-        list($limit, $expires) = [$route->getRateLimit(), $route->getRateLimitExpiration()];
+        [$limit, $expires] = [$route->getRateLimit(), $route->getRateLimitExpiration()];
 
         if ($limit && $expires) {
             return sprintf('%s req/s', round($limit / ($expires * 60), 2));

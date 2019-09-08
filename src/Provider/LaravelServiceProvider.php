@@ -15,6 +15,7 @@ use Illuminate\Routing\ControllerDispatcher;
 use Dingo\Api\Http\Middleware\PrepareController;
 use Illuminate\Http\Request as IlluminateRequest;
 use Dingo\Api\Routing\Adapter\Laravel as LaravelAdapter;
+use Illuminate\Contracts\Validation\ValidatesWhenResolved;
 
 class LaravelServiceProvider extends DingoServiceProvider
 {
@@ -41,6 +42,11 @@ class LaravelServiceProvider extends DingoServiceProvider
             $this->replaceRouteDispatcher();
 
             $this->updateRouterBindings();
+        });
+
+        // Validate FormRequest after resolving
+        $this->app->afterResolving(ValidatesWhenResolved::class, function ($resolved) {
+            $resolved->validateResolved();
         });
 
         $this->app->resolving(FormRequest::class, function (FormRequest $request, Application $app) {

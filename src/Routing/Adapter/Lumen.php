@@ -322,7 +322,7 @@ class Lumen implements Adapter
                 }
 
                 foreach ($routes as $data) {
-                    foreach ($data['routeMap'] as list($route, $parameters)) {
+                    foreach ($data['routeMap'] as [$route, $parameters]) {
                         $route['methods'] = $this->setRouteMethods($route, $method);
 
                         $iterable[$version][] = $route;
