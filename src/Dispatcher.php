@@ -7,6 +7,7 @@ use Dingo\Api\Routing\Router;
 use Dingo\Api\Http\InternalRequest;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Cookie;
 use Dingo\Api\Exception\InternalHttpException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -503,7 +504,7 @@ class Dispatcher
 
         $uri = trim($uri, '/');
 
-        if (starts_with($uri, $this->prefix)) {
+        if (Str::startsWith($uri, $this->prefix)) {
             return $uri;
         }
 
