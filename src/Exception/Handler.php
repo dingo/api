@@ -3,8 +3,8 @@
 namespace Dingo\Api\Exception;
 
 use Exception;
-use Illuminate\Support\Str;
 use ReflectionFunction;
+use Illuminate\Support\Str;
 use Illuminate\Http\Response;
 use Dingo\Api\Contract\Debug\ExceptionHandler;
 use Dingo\Api\Contract\Debug\MessageBagErrors;

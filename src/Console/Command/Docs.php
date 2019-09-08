@@ -2,10 +2,10 @@
 
 namespace Dingo\Api\Console\Command;
 
-use Illuminate\Support\Str;
 use ReflectionClass;
 use Dingo\Blueprint\Writer;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Dingo\Api\Routing\Router;
 use Dingo\Blueprint\Blueprint;
 use Illuminate\Console\Command;

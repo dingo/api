@@ -3,11 +3,11 @@
 namespace Dingo\Api;
 
 use Dingo\Api\Auth\Auth;
+use Illuminate\Support\Str;
 use Dingo\Api\Routing\Router;
 use Dingo\Api\Http\InternalRequest;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Cookie;
 use Dingo\Api\Exception\InternalHttpException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
