@@ -3,6 +3,7 @@
 namespace Dingo\Api\Http;
 
 use ArrayObject;
+use Illuminate\Support\Str;
 use UnexpectedValueException;
 use Illuminate\Http\JsonResponse;
 use Dingo\Api\Transformer\Binding;
@@ -107,7 +108,7 @@ class Response extends IlluminateResponse
         // If the contents of the JsonResponse does not starts with /**/ (typical laravel jsonp response)
         // we assume that it is a valid json response that can be decoded, or we just use the raw jsonp
         // contents for building the response
-        if (! starts_with($json->getContent(), '/**/')) {
+        if (! Str::startsWith($json->getContent(), '/**/')) {
             $content = json_decode($json->getContent(), true);
         }
 

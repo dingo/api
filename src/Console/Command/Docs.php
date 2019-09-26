@@ -5,6 +5,7 @@ namespace Dingo\Api\Console\Command;
 use ReflectionClass;
 use Dingo\Blueprint\Writer;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Dingo\Api\Routing\Router;
 use Dingo\Blueprint\Blueprint;
 use Illuminate\Console\Command;
@@ -205,7 +206,7 @@ class Docs extends Command
         $reflection = new ReflectionClass($controller);
 
         $interface = Arr::first($reflection->getInterfaces(), function ($key, $value) {
-            return ends_with($key, 'Docs');
+            return Str::endsWith($key, 'Docs');
         });
 
         if ($interface) {
