@@ -162,8 +162,8 @@ class RateLimitTest extends TestCase
         $this->assertArrayHasKey('x-ratelimit-limit', $response->headers->all());
         $this->assertArrayHasKey('x-ratelimit-remaining', $response->headers->all());
         $this->assertArrayHasKey('x-ratelimit-reset', $response->headers->all());
-        $this->assertSame(4, $response->headers->get('x-ratelimit-remaining'));
-        $this->assertSame(5, $response->headers->get('x-ratelimit-limit'));
+        $this->assertEquals(4, $response->headers->get('x-ratelimit-remaining'));
+        $this->assertEquals(5, $response->headers->get('x-ratelimit-limit'));
     }
 
     public function testRateLimitingWithRouteThrottle()
@@ -185,7 +185,7 @@ class RateLimitTest extends TestCase
         $this->assertArrayHasKey('x-ratelimit-limit', $response->headers->all());
         $this->assertArrayHasKey('x-ratelimit-remaining', $response->headers->all());
         $this->assertArrayHasKey('x-ratelimit-reset', $response->headers->all());
-        $this->assertSame(9, $response->headers->get('x-ratelimit-remaining'));
-        $this->assertSame(10, $response->headers->get('x-ratelimit-limit'));
+        $this->assertEquals(9, $response->headers->get('x-ratelimit-remaining'));
+        $this->assertEquals(10, $response->headers->get('x-ratelimit-limit'));
     }
 }

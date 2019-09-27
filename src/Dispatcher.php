@@ -3,6 +3,7 @@
 namespace Dingo\Api;
 
 use Dingo\Api\Auth\Auth;
+use Illuminate\Support\Str;
 use Dingo\Api\Routing\Router;
 use Dingo\Api\Http\InternalRequest;
 use Illuminate\Container\Container;
@@ -503,7 +504,7 @@ class Dispatcher
 
         $uri = trim($uri, '/');
 
-        if (starts_with($uri, $this->prefix)) {
+        if (Str::startsWith($uri, $this->prefix)) {
             return $uri;
         }
 
