@@ -40,8 +40,7 @@ trait ChecksLaravelVersionTrait
         // Return the version stub for the right version
         if (version_compare($version, '6.0.0', '>=')) {
             return new Application6Stub;
-        }
-        else if (version_compare($version, '5.8.0', '>=')) {
+        } elseif (version_compare($version, '5.8.0', '>=')) {
             return new Application58Stub;
         } else {
             return new ApplicationStub;
