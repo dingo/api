@@ -1,5 +1,5 @@
 {
-    "name": "dingo/api",
+    "name": "reallyli/dingo-api-plus",
     "description": "A RESTful API package for the Laravel and Lumen frameworks.",
     "keywords": [
         "api",
@@ -9,8 +9,8 @@
     ],
     "license": "BSD-3-Clause",
     "authors": [{
-        "name": "Jason Lewis",
-        "email": "jason.lewis1991@gmail.com"
+        "name": "reallyli",
+        "email": "zlisreallyli@outlook.com"
     }],
     "require": {
         "php": "^7.1",

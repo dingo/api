@@ -110,6 +110,16 @@ class FormRequest extends Request implements ValidatesWhenResolved
     }
 
     /**
+     * Get the validated data from the request.
+     *
+     * @return array
+     */
+    public function validated()
+    {
+        return $this->getValidatorInstance()->validated();
+    }
+
+    /**
      * Create the default validator instance.
      *
      * @param  \Illuminate\Contracts\Validation\Factory  $factory
