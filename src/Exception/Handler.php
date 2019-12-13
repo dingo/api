@@ -157,11 +157,11 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
                     $response = new Response($response, $this->getExceptionStatusCode($exception));
                 }
 
-                return $response;
+                return $response->withException($exception);
             }
         }
 
-        return $this->genericResponse($exception);
+        return $this->genericResponse($exception)->withException($exception);
     }
 
     /**
