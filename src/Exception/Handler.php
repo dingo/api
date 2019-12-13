@@ -2,17 +2,17 @@
 
 namespace Dingo\Api\Exception;
 
-use Exception;
-use ReflectionFunction;
-use Illuminate\Support\Str;
-use Illuminate\Http\Response;
 use Dingo\Api\Contract\Debug\ExceptionHandler;
 use Dingo\Api\Contract\Debug\MessageBagErrors;
-use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpFoundation\Response as BaseResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Exception;
 use Illuminate\Contracts\Debug\ExceptionHandler as IlluminateExceptionHandler;
+use Illuminate\Http\Response;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use ReflectionFunction;
+use Symfony\Component\HttpFoundation\Response as BaseResponse;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler implements ExceptionHandler, IlluminateExceptionHandler
 {

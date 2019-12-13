@@ -2,15 +2,15 @@
 
 namespace Dingo\Api\Tests\Exception;
 
-use Mockery as m;
-use RuntimeException;
-use Illuminate\Http\Response;
-use PHPUnit\Framework\TestCase;
 use Dingo\Api\Exception\Handler;
+use Dingo\Api\Exception\ResourceException;
+use Dingo\Api\Http\Request as ApiRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Dingo\Api\Http\Request as ApiRequest;
-use Dingo\Api\Exception\ResourceException;
+use Illuminate\Http\Response;
+use Mockery as m;
+use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class HandlerTest extends TestCase
