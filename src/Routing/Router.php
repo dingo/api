@@ -3,21 +3,21 @@
 namespace Dingo\Api\Routing;
 
 use Closure;
-use Exception;
-use RuntimeException;
+use Dingo\Api\Contract\Debug\ExceptionHandler;
+use Dingo\Api\Contract\Routing\Adapter;
+use Dingo\Api\Http\InternalRequest;
 use Dingo\Api\Http\Request;
+use Dingo\Api\Http\Response;
+use Exception;
+use Illuminate\Container\Container;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response as IlluminateResponse;
+use Illuminate\Routing\Route as IlluminateRoute;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Dingo\Api\Http\Response;
-use Illuminate\Http\JsonResponse;
-use Dingo\Api\Http\InternalRequest;
-use Illuminate\Container\Container;
-use Dingo\Api\Contract\Routing\Adapter;
-use Dingo\Api\Contract\Debug\ExceptionHandler;
-use Illuminate\Routing\Route as IlluminateRoute;
-use Illuminate\Http\Response as IlluminateResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use RuntimeException;
 use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Router
 {
@@ -338,8 +338,8 @@ class Router
         } elseif ($action instanceof Closure) {
             $action = [$action];
         } elseif (is_array($action)) {
-            if (is_string(Arr::first($action)) && class_exists(Arr::first($action)) && sizeof($action) == 2) {
-                $action = implode("@", $action);
+            if (is_string(Arr::first($action)) && class_exists(Arr::first($action)) && count($action) == 2) {
+                $action = implode('@', $action);
                 $action = ['uses' => $action, 'controller' => $action];
             }
         }
