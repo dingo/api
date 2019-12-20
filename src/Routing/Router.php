@@ -337,6 +337,11 @@ class Router
             $action = ['uses' => $action, 'controller' => $action];
         } elseif ($action instanceof Closure) {
             $action = [$action];
+        } elseif (is_array($action)) {
+            if (is_string(Arr::first($action)) && class_exists(Arr::first($action)) && sizeof($action) == 2) {
+                $action = implode("@", $action);
+                $action = ['uses' => $action, 'controller' => $action];
+            }
         }
 
         $action = $this->mergeLastGroupAttributes($action);
