@@ -147,6 +147,9 @@ class Laravel implements Adapter
     {
         $this->createRouteCollections($versions);
 
+        // Add where-patterns from original laravel router
+        $action['where'] = array_merge($this->router->getPatterns(), $action['where'] ?? []);
+
         $route = new Route($methods, $uri, $action);
         $route->where($action['where']);
 
