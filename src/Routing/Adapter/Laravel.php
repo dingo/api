@@ -111,6 +111,9 @@ class Laravel implements Adapter
             foreach ($this->oldRoutes as $route) {
                 $this->mergedRoutes[$version]->add($route);
             }
+
+            $this->mergedRoutes[$version]->refreshNameLookups();
+            $this->mergedRoutes[$version]->refreshActionLookups();
         }
 
         return $this->mergedRoutes[$version];
