@@ -43,6 +43,7 @@ trait JsonOptionalFormatting
      */
     protected $jsonEncodeOptionsWhitelist = [
         JSON_PRETTY_PRINT,
+        JSON_UNESCAPED_UNICODE,
     ];
 
     /**
