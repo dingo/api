@@ -1,5 +1,8 @@
 preset: laravel
 
+disabled:
+  - length_ordered_imports
+
 enabled:
   - phpdoc_order
   - phpdoc_separation
