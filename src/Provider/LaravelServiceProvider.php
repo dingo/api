@@ -44,10 +44,14 @@ class LaravelServiceProvider extends DingoServiceProvider
             $this->updateRouterBindings();
         });
 
-        // Validate FormRequest after resolving
+        // Originally Validate FormRequest after resolving
+        /* This casues the prepareForValidation() function to be called twice, and seemingly has no other benefit, see discussion at
+        https://github.com/dingo/api/issues/1668
+        This is already done by laravel service provider, and works with Dingo router
         $this->app->afterResolving(ValidatesWhenResolved::class, function ($resolved) {
             $resolved->validateResolved();
         });
+        */
 
         $this->app->resolving(FormRequest::class, function (FormRequest $request, Application $app) {
             $this->initializeRequest($request, $app['request']);
