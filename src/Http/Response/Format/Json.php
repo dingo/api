@@ -112,6 +112,7 @@ class Json extends Format
 
         if ($this->isJsonPrettyPrintEnabled()) {
             $jsonEncodeOptions[] = JSON_PRETTY_PRINT;
+            $jsonEncodeOptions[] = JSON_UNESCAPED_UNICODE;
         }
 
         $encodedString = $this->performJsonEncoding($content, $jsonEncodeOptions);
