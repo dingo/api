@@ -112,8 +112,6 @@ class Factory
             $binding = $this->transformer->getBinding($collection);
         }
 
-        $binding = $this->transformer->register($class, $transformer, $parameters, $after);
-
         return new Response($collection, 200, [], $binding);
     }
 
