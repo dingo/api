@@ -106,7 +106,7 @@ class Factory
             $parameters = [];
         }
 
-        if($transformer !== null) {
+        if ($transformer !== null) {
             $binding = $this->transformer->register($class, $transformer, $parameters, $after);
         } else {
             $binding = $this->transformer->getBinding($collection);
@@ -136,7 +136,7 @@ class Factory
             $parameters = [];
         }
 
-        if($transformer !== null) {
+        if ($transformer !== null) {
             $binding = $this->transformer->register($class, $transformer, $parameters, $after);
         } else {
             $binding = $this->transformer->getBinding($item);
@@ -163,7 +163,7 @@ class Factory
             $class = get_class($paginator->first());
         }
 
-        if($transformer !== null) {
+        if ($transformer !== null) {
             $binding = $this->transformer->register($class, $transformer, $parameters, $after);
         } else {
             $binding = $this->transformer->getBinding($paginator->first());
