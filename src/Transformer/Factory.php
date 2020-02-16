@@ -110,7 +110,7 @@ class Factory
      *
      * @return \Dingo\Api\Transformer\Binding
      */
-    protected function getBinding($class)
+    public function getBinding($class)
     {
         if ($this->isCollection($class) && ! $class->isEmpty()) {
             return $this->getBindingFromCollection($class);
