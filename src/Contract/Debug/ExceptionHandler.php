@@ -2,16 +2,16 @@
 
 namespace Dingo\Api\Contract\Debug;
 
-use Exception;
+use Throwable;
 
 interface ExceptionHandler
 {
     /**
      * Handle an exception.
      *
-     * @param \Exception $exception
+     * @param \Throwable $exception
      *
      * @return \Illuminate\Http\Response
      */
-    public function handle(Exception $exception);
+    public function handle(Throwable $exception);
 }
