@@ -11,7 +11,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class AuthorizationTest extends BaseTestCase
 {
-
     public function testExceptionThrownWhenAuthorizationHeaderIsInvalid()
     {
         $this->expectException(BadRequestHttpException::class);

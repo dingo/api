@@ -3,7 +3,6 @@
 namespace Dingo\Api\Tests\Http\Middleware;
 
 use Dingo\Api\Auth\Auth;
-use Dingo\Api\Exception\InternalHttpException;
 use Dingo\Api\Http\Middleware\Auth as AuthMiddleware;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Routing\Route;

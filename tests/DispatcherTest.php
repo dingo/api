@@ -56,7 +56,6 @@ class DispatcherTest extends BaseTestCase
      */
     protected $auth;
 
-
     public function setUp(): void
     {
         $this->container = new Container;

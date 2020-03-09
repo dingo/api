@@ -1,4 +1,5 @@
 <?php
+
 namespace Dingo\Api\Tests;
 
 use Dingo\Api\Http\Response;
@@ -7,7 +8,6 @@ use PHPUnit\Framework\TestCase;
 
 class BaseTestCase extends TestCase
 {
-
     public function tearDown(): void
     {
         parent::tearDown();
