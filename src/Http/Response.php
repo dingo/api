@@ -196,7 +196,7 @@ class Response extends IlluminateResponse
         // then we most likely have an object that cannot be type cast. In that
         // case we'll simply leave the content as null and set the original
         // content value and continue.
-        if (!empty($content) && is_object($content) && !$this->shouldBeJson($content)) {
+        if (! empty($content) && is_object($content) && ! $this->shouldBeJson($content)) {
             $this->original = $content;
             return $this;
         }

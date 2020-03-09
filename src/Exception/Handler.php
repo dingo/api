@@ -101,9 +101,9 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
      * @param Request $request
      * @param Throwable $exception
      *
-     * @return mixed
-     *@throws Exception
+     * @throws Exception
      *
+     * @return mixed
      */
     public function render($request, Throwable $exception)
     {
@@ -173,9 +173,8 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
      *
      * @param Throwable $exception
      *
+     * @throws Throwable
      * @return Response
-     *@throws Throwable
-     *
      */
     protected function genericResponse(Throwable $exception)
     {
