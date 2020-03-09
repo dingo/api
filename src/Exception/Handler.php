@@ -174,6 +174,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
      * @param Throwable $exception
      *
      * @throws Throwable
+     *
      * @return Response
      */
     protected function genericResponse(Throwable $exception)

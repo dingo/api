@@ -198,6 +198,7 @@ class Response extends IlluminateResponse
         // content value and continue.
         if (! empty($content) && is_object($content) && ! $this->shouldBeJson($content)) {
             $this->original = $content;
+
             return $this;
         }
 
@@ -205,6 +206,7 @@ class Response extends IlluminateResponse
             return parent::setContent($content);
         } catch (UnexpectedValueException $exception) {
             $this->original = $content;
+
             return $this;
         }
     }
