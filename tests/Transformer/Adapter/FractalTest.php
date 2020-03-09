@@ -3,15 +3,15 @@
 namespace Dingo\Api\Tests\Transformer\Adapter;
 
 use Dingo\Api\Http\Request;
-use PHPUnit\Framework\TestCase;
+use Dingo\Api\Tests\BaseTestCase;
 use Dingo\Api\Transformer\Adapter\Fractal;
 use League\Fractal\Manager as FractalManager;
 
-class FractalTest extends TestCase
+class FractalTest extends BaseTestCase
 {
     protected $fractal;
 
-    protected function setUp()
+    public function setUp(): void
     {
         $this->fractal = new Fractal(new FractalManager());
     }

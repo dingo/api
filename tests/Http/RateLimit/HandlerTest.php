@@ -2,21 +2,30 @@
 
 namespace Dingo\Api\Tests\Http\RateLimit;
 
+use Dingo\Api\Http\RateLimit\Handler;
+use Dingo\Api\Http\RateLimit\Throttle\Route;
 use Dingo\Api\Http\Request;
-use PHPUnit\Framework\TestCase;
+use Dingo\Api\Tests\BaseTestCase;
+use Dingo\Api\Tests\Stubs\ThrottleStub;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Container\Container;
-use Dingo\Api\Http\RateLimit\Handler;
-use Dingo\Api\Tests\Stubs\ThrottleStub;
-use Dingo\Api\Http\RateLimit\Throttle\Route;
 
-class HandlerTest extends TestCase
+class HandlerTest extends BaseTestCase
 {
+    /**
+     * @var Container
+     */
     protected $container;
+    /**
+     * @var CacheManager
+     */
     protected $cache;
+    /**
+     * @var Handler
+     */
     protected $limiter;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->container = new Container;
         $this->container['config'] = ['cache.default' => 'array', 'cache.stores.array' => ['driver' => 'array']];

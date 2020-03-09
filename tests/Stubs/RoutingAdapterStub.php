@@ -3,14 +3,15 @@
 namespace Dingo\Api\Tests\Stubs;
 
 use Closure;
-use Dingo\Api\Http\Response;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Pipeline\Pipeline;
-use Illuminate\Container\Container;
 use Dingo\Api\Contract\Routing\Adapter;
-use Illuminate\Routing\Route as IlluminateRoute;
+use Dingo\Api\Http\Response;
+use Illuminate\Container\Container;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response as IlluminateResponse;
+use Illuminate\Pipeline\Pipeline;
+use Illuminate\Routing\Route as IlluminateRoute;
+use Illuminate\Routing\RouteCollection;
 
 class RoutingAdapterStub implements Adapter
 {
@@ -120,7 +121,7 @@ class RoutingAdapterStub implements Adapter
     {
         foreach ($versions as $version) {
             if (! isset($this->routes[$version])) {
-                $this->routes[$version] = new \Illuminate\Routing\RouteCollection;
+                $this->routes[$version] = new RouteCollection;
             }
         }
     }

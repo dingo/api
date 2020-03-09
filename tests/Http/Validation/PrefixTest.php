@@ -2,11 +2,11 @@
 
 namespace Dingo\Api\Tests\Http\Validation;
 
-use Illuminate\Http\Request;
-use PHPUnit\Framework\TestCase;
 use Dingo\Api\Http\Validation\Prefix;
+use Dingo\Api\Tests\BaseTestCase;
+use Illuminate\Http\Request;
 
-class PrefixTest extends TestCase
+class PrefixTest extends BaseTestCase
 {
     public function testValidationFailsWithInvalidOrNullPrefix()
     {

@@ -2,9 +2,9 @@
 
 namespace Dingo\Api\Tests;
 
-use Dingo\Api\Tests\Stubs\ApplicationStub;
-use Dingo\Api\Tests\Stubs\Application6Stub;
 use Dingo\Api\Tests\Stubs\Application58Stub;
+use Dingo\Api\Tests\Stubs\Application6Stub;
+use Dingo\Api\Tests\Stubs\ApplicationStub;
 
 trait ChecksLaravelVersionTrait
 {

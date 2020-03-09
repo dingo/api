@@ -2,11 +2,12 @@
 
 namespace Dingo\Api\Tests\Http\Parser;
 
-use Dingo\Api\Http\Request;
-use PHPUnit\Framework\TestCase;
 use Dingo\Api\Http\Parser\Accept;
+use Dingo\Api\Http\Request;
+use Dingo\Api\Tests\BaseTestCase;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class AcceptTest extends TestCase
+class AcceptTest extends BaseTestCase
 {
     public function testParsingInvalidAcceptReturnsDefaults()
     {
@@ -19,12 +20,11 @@ class AcceptTest extends TestCase
         $this->assertSame('json', $accept['format']);
     }
 
-    /**
-     * @expectedException \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
-     * @expectedMessage Accept header could not be properly parsed because of a strict matching process.
-     */
     public function testStrictlyParsingInvalidAcceptHeaderThrowsException()
     {
+        $this->expectException(BadRequestHttpException::class);
+        $this->expectExceptionMessage('Accept header could not be properly parsed because of a strict matching process.');
+
         $parser = new Accept('vnd', 'api', 'v1', 'json');
 
         $parser->parse($this->createRequest('foo', 'GET', ['accept' => 'application/vnd.foo.v2+xml']), true);

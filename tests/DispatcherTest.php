@@ -2,30 +2,62 @@
 
 namespace Dingo\Api\Tests;
 
-use Mockery as m;
-use Dingo\Api\Http;
 use Dingo\Api\Auth\Auth;
 use Dingo\Api\Dispatcher;
-use Illuminate\Http\Request;
+use Dingo\Api\Exception\Handler;
+use Dingo\Api\Exception\InternalHttpException;
+use Dingo\Api\Exception\ValidationHttpException;
+use Dingo\Api\Http;
+use Dingo\Api\Http\Response;
 use Dingo\Api\Routing\Router;
-use PHPUnit\Framework\TestCase;
+use Dingo\Api\Tests\Stubs\MiddlewareStub;
+use Dingo\Api\Tests\Stubs\RoutingAdapterStub;
+use Dingo\Api\Tests\Stubs\TransformerStub;
 use Dingo\Api\Tests\Stubs\UserStub;
+use Dingo\Api\Tests\Stubs\UserTransformerStub;
+use Dingo\Api\Transformer\Factory as TransformerFactory;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;
-use Dingo\Api\Tests\Stubs\MiddlewareStub;
-use Dingo\Api\Tests\Stubs\TransformerStub;
-use Dingo\Api\Tests\Stubs\RoutingAdapterStub;
-use Dingo\Api\Exception\InternalHttpException;
-use Dingo\Api\Tests\Stubs\UserTransformerStub;
-use Dingo\Api\Exception\ValidationHttpException;
-use Dingo\Api\Transformer\Factory as TransformerFactory;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Request as RequestFacade;
+use Mockery as m;
+use Symfony\Component\HttpKernel\Exception\GoneHttpException;
 
-class DispatcherTest extends TestCase
+class DispatcherTest extends BaseTestCase
 {
+    /**
+     * @var Container
+     */
     protected $container;
+    /**
+     * @var TransformerFactory
+     */
+    protected $transformerFactory;
+    /**
+     * @var Dispatcher
+     */
+    protected $dispatcher;
+    /**
+     * @var RoutingAdapterStub
+     */
+    protected $adapter;
+    /**
+     * @var Handler|m\LegacyMockInterface|m\MockInterface
+     */
+    protected $exception;
+    /**
+     * @var Router
+     */
+    protected $router;
+    /**
+     * @var Auth
+     */
+    protected $auth;
 
-    public function setUp()
+
+    public function setUp(): void
     {
         $this->container = new Container;
         $this->container['request'] = Request::create('/', 'GET');
@@ -37,26 +69,21 @@ class DispatcherTest extends TestCase
         $this->transformerFactory = new TransformerFactory($this->container, new TransformerStub);
 
         $this->adapter = new RoutingAdapterStub;
-        $this->exception = m::mock(\Dingo\Api\Exception\Handler::class);
+        $this->exception = m::mock(Handler::class);
         $this->router = new Router($this->adapter, $this->exception, $this->container, null, null);
 
         $this->auth = new Auth($this->router, $this->container, []);
         $this->dispatcher = new Dispatcher($this->container, new Filesystem, $this->router, $this->auth);
 
-        app()->instance(\Illuminate\Routing\Router::class, $this->adapter, true);
+        app()->instance(\Illuminate\Routing\Router::class, $this->adapter);
 
         $this->dispatcher->setSubtype('api');
         $this->dispatcher->setStandardsTree('vnd');
         $this->dispatcher->setDefaultVersion('v1');
         $this->dispatcher->setDefaultFormat('json');
 
-        Http\Response::setFormatters(['json' => new Http\Response\Format\Json]);
-        Http\Response::setTransformer($this->transformerFactory);
-    }
-
-    public function tearDown()
-    {
-        m::close();
+        Response::setFormatters(['json' => new Http\Response\Format\Json]);
+        Response::setTransformer($this->transformerFactory);
     }
 
     public function testInternalRequests()
@@ -131,11 +158,10 @@ class DispatcherTest extends TestCase
         $this->assertSame('test', $this->dispatcher->get('test'));
     }
 
-    /**
-     * @expectedException \Dingo\Api\Exception\InternalHttpException
-     */
     public function testInternalRequestThrowsExceptionWhenResponseIsNotOkay()
     {
+        $this->expectException(InternalHttpException::class);
+
         $this->router->version('v1', function () {
             $this->router->get('test', function () {
                 return new \Illuminate\Http\Response('test', 403);
@@ -165,7 +191,7 @@ class DispatcherTest extends TestCase
     {
         $this->router->version('v1', function () {
             $this->router->get('test', function () {
-                throw new \Symfony\Component\HttpKernel\Exception\GoneHttpException;
+                throw new GoneHttpException;
             });
         });
 
@@ -173,7 +199,7 @@ class DispatcherTest extends TestCase
 
         try {
             $this->dispatcher->get('test');
-        } catch (\Symfony\Component\HttpKernel\Exception\GoneHttpException $exception) {
+        } catch (GoneHttpException $exception) {
             $passed = true;
         }
 
@@ -332,7 +358,7 @@ class DispatcherTest extends TestCase
 
         $response = $this->dispatcher->raw()->get('foo');
 
-        $this->assertInstanceOf(\Dingo\Api\Http\Response::class, $response);
+        $this->assertInstanceOf(Response::class, $response);
         $this->assertSame('{"foo":"bar"}', $response->getContent());
         $this->assertSame(['foo' => 'bar'], $response->getOriginalContent());
     }
@@ -351,7 +377,7 @@ class DispatcherTest extends TestCase
 
         $response = $this->dispatcher->raw()->get('foo');
 
-        $this->assertInstanceOf(\Dingo\Api\Http\Response::class, $response);
+        $this->assertInstanceOf(Response::class, $response);
         $this->assertSame('{"name":"Jason"}', $response->getContent());
         $this->assertSame($instance, $response->getOriginalContent());
     }
@@ -378,34 +404,32 @@ class DispatcherTest extends TestCase
     {
         $this->router->version('v1', function () {
             $this->router->get('redirect', function () {
-                return new \Illuminate\Http\RedirectResponse('redirect-test');
+                return new RedirectResponse('redirect-test');
             });
         });
 
         $response = $this->dispatcher->get('redirect');
-        $this->assertInstanceOf(\Illuminate\Http\RedirectResponse::class, $response);
+        $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertSame('redirect-test', $response->getTargetUrl());
     }
 
-    /**
-     * @expectedException \Dingo\Api\Exception\InternalHttpException
-     */
     public function testNotOkJsonResponseThrowsException()
     {
+        $this->expectException(InternalHttpException::class);
+
         $this->router->version('v1', function () {
             $this->router->get('json', function () {
-                return new \Illuminate\Http\JsonResponse(['is' => 'json'], 422);
+                return new JsonResponse(['is' => 'json'], 422);
             });
         });
 
         $this->dispatcher->get('json');
     }
 
-    /**
-     * @expectedException \Dingo\Api\Exception\ValidationHttpException
-     */
     public function testFormRequestValidationFailureThrowsValidationException()
     {
+        $this->expectException(ValidationHttpException::class);
+
         $this->router->version('v1', function () {
             $this->router->get('fail', function () {
                 //Mocking the form validation call is challenging at the moment, so next best thing
