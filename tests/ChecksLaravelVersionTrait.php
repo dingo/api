@@ -2,6 +2,7 @@
 
 namespace Dingo\Api\Tests;
 
+use Dingo\Api\Tests\Stubs\Application7Stub;
 use Dingo\Api\Tests\Stubs\ApplicationStub;
 use Dingo\Api\Tests\Stubs\Application6Stub;
 use Dingo\Api\Tests\Stubs\Application58Stub;
@@ -9,7 +10,7 @@ use Dingo\Api\Tests\Stubs\Application58Stub;
 trait ChecksLaravelVersionTrait
 {
     public $installed_file_path = __DIR__.'/../vendor/composer/installed.json';
-    public $current_release = '5.8';
+    public $current_release = '7.0';
 
     private function getFrameworkVersion()
     {
@@ -38,7 +39,9 @@ trait ChecksLaravelVersionTrait
         $version = str_replace('v', '', $version);
 
         // Return the version stub for the right version
-        if (version_compare($version, '6.0.0', '>=')) {
+        if (version_compare($version, '7.0.0', '>=')) {
+            return new Application7Stub;
+        } else if (version_compare($version, '6.0.0', '>=')) {
             return new Application6Stub;
         } elseif (version_compare($version, '5.8.0', '>=')) {
             return new Application58Stub;
