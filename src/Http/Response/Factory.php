@@ -129,8 +129,7 @@ class Factory
         } else {
             $class = \StdClass::class;
         }
-
-
+        
         if ($parameters instanceof \Closure) {
             $after = $parameters;
             $parameters = [];
