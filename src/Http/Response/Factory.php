@@ -123,7 +123,12 @@ class Factory
      */
     public function item($item, $transformer, $parameters = [], Closure $after = null)
     {
-        $class = get_class($item);
+        // Check for $item being null
+        if (! is_null($item)) {
+            $class = get_class($item);
+        } else {
+            $class = \StdClass::class;
+        }
 
         if ($parameters instanceof \Closure) {
             $after = $parameters;
