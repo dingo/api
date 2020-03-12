@@ -36,6 +36,7 @@ class Factory
      * Respond with a created response and associate a location if provided.
      *
      * @param null|string $location
+     * @param mixed       $content
      *
      * @return \Dingo\Api\Http\Response
      */
