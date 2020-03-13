@@ -2,32 +2,22 @@
 
 namespace Dingo\Api\Tests\Http\Response\Format;
 
-use Mockery;
 use Dingo\Api\Http\Response;
-use Illuminate\Http\Request;
-use PHPUnit\Framework\TestCase;
-use Illuminate\Support\MessageBag;
 use Dingo\Api\Http\Response\Format\Jsonp;
+use Dingo\Api\Tests\BaseTestCase;
 use Dingo\Api\Tests\Stubs\EloquentModelStub;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
+use Illuminate\Support\MessageBag;
 
-class JsonpTest extends TestCase
+class JsonpTest extends BaseTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $formatter = new Jsonp;
         $formatter->setRequest(Request::create('GET', '/', ['callback' => 'foo']));
 
         Response::setFormatters(['json' => $formatter]);
-    }
-
-    public function tearDown()
-    {
-        Mockery::close();
-
-        Response::setFormatters([]);
-
-        Response::setFormatsOptions([]);
     }
 
     /*

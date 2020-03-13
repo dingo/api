@@ -2,36 +2,45 @@
 
 namespace Dingo\Api\Tests\Auth;
 
-use Mockery as m;
 use Dingo\Api\Auth\Auth;
+use Dingo\Api\Contract\Auth\Provider;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Routing\Route;
 use Dingo\Api\Routing\Router;
-use PHPUnit\Framework\TestCase;
+use Dingo\Api\Tests\BaseTestCase;
 use Illuminate\Container\Container;
-use Dingo\Api\Contract\Auth\Provider;
+use Mockery as m;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class AuthTest extends TestCase
+class AuthTest extends BaseTestCase
 {
-    public function setUp()
+    /**
+     * @var Container
+     */
+    protected $container;
+    /**
+     * @var Router|m\LegacyMockInterface|m\MockInterface
+     */
+    protected $router;
+    /**
+     * @var Auth
+     */
+    protected $auth;
+
+    public function setUp(): void
     {
+        parent::setUp();
+
         $this->container = new Container;
         $this->router = m::mock(Router::class);
         $this->auth = new Auth($this->router, $this->container, []);
     }
 
-    public function tearDown()
-    {
-        m::close();
-    }
-
-    /**
-     * @expectedException \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
-     */
     public function testExceptionThrownWhenAuthorizationHeaderNotSet()
     {
+        $this->expectException(UnauthorizedHttpException::class);
+
         $this->router->shouldReceive('getCurrentRoute')->once()->andReturn($route = m::mock(Route::class));
         $this->router->shouldReceive('getCurrentRequest')->once()->andReturn($request = Request::create('foo', 'GET'));
 
@@ -43,11 +52,10 @@ class AuthTest extends TestCase
         $this->auth->authenticate();
     }
 
-    /**
-     * @expectedException \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
-     */
     public function testExceptionThrownWhenProviderFailsToAuthenticate()
     {
+        $this->expectException(UnauthorizedHttpException::class);
+
         $this->router->shouldReceive('getCurrentRoute')->once()->andReturn($route = m::mock(Route::class));
         $this->router->shouldReceive('getCurrentRequest')->once()->andReturn($request = Request::create('foo', 'GET'));
 

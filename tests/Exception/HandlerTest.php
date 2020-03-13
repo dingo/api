@@ -5,20 +5,20 @@ namespace Dingo\Api\Tests\Exception;
 use Dingo\Api\Exception\Handler;
 use Dingo\Api\Exception\ResourceException;
 use Dingo\Api\Http\Request as ApiRequest;
+use Dingo\Api\Tests\BaseTestCase;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Mockery as m;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class HandlerTest extends TestCase
+class HandlerTest extends BaseTestCase
 {
     protected $parentHandler;
     protected $exceptionHandler;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->parentHandler = m::mock('Illuminate\Contracts\Debug\ExceptionHandler');
         $this->exceptionHandler = new Handler($this->parentHandler, [
@@ -30,17 +30,12 @@ class HandlerTest extends TestCase
         ], false);
     }
 
-    public function tearDown()
-    {
-        m::close();
-    }
-
     public function testRegisterExceptionHandler()
     {
         $this->exceptionHandler->register(function (HttpException $e) {
             //
         });
-        $this->assertArrayHasKey(\Symfony\Component\HttpKernel\Exception\HttpException::class, $this->exceptionHandler->getHandlers());
+        $this->assertArrayHasKey(HttpException::class, $this->exceptionHandler->getHandlers());
     }
 
     public function testExceptionHandlerHandlesException()

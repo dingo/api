@@ -2,35 +2,35 @@
 
 namespace Dingo\Api\Tests\Http;
 
-use StdClass;
-use Mockery as m;
-use Dingo\Api\Http\Response;
-use PHPUnit\Framework\TestCase;
-use Dingo\Api\Transformer\Binding;
-use Illuminate\Container\Container;
 use Dingo\Api\Event\ResponseIsMorphing;
 use Dingo\Api\Event\ResponseWasMorphed;
+use Dingo\Api\Http\Response;
 use Dingo\Api\Http\Response\Format\Json;
+use Dingo\Api\Tests\BaseTestCase;
+use Dingo\Api\Transformer\Binding;
+use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher as EventDispatcher;
+use Mockery as m;
+use StdClass;
+use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 
-class ResponseTest extends TestCase
+class ResponseTest extends BaseTestCase
 {
-    public function setUp()
+    /**
+     * @var EventDispatcher
+     */
+    protected $events;
+
+    public function setUp(): void
     {
         Response::setEventDispatcher($this->events = new EventDispatcher);
     }
 
-    public function tearDown()
-    {
-        m::close();
-    }
-
-    /**
-     * @expectedException \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException
-     * @expectedExceptionMessage Unable to format response according to Accept header.
-     */
     public function testGettingInvalidFormatterThrowsException()
     {
+        $this->expectException(NotAcceptableHttpException::class);
+        $this->expectExceptionMessage('Unable to format response according to Accept header.');
+
         Response::getFormatter('json');
     }
 

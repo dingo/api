@@ -2,9 +2,9 @@
 
 namespace Dingo\Api\Tests\Stubs;
 
+use Dingo\Api\Auth\Provider\Authorization;
 use Dingo\Api\Routing\Route;
 use Illuminate\Http\Request;
-use Dingo\Api\Auth\Provider\Authorization;
 
 class AuthorizationProviderStub extends Authorization
 {

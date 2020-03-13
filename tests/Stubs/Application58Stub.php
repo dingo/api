@@ -2,6 +2,7 @@
 
 namespace Dingo\Api\Tests\Stubs;
 
+use Closure;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Foundation\Application;
 
@@ -112,7 +113,7 @@ class Application58Stub extends Container implements Application
         //
     }
 
-    public function detectEnvironment(\Closure $callback)
+    public function detectEnvironment(Closure $callback)
     {
         //
     }

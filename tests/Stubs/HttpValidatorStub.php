@@ -2,8 +2,8 @@
 
 namespace Dingo\Api\Tests\Stubs;
 
-use Illuminate\Http\Request;
 use Dingo\Api\Contract\Http\Validator;
+use Illuminate\Http\Request;
 
 class HttpValidatorStub implements Validator
 {

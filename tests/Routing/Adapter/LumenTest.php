@@ -2,12 +2,12 @@
 
 namespace Dingo\Api\Tests\Routing\Adapter;
 
+use Dingo\Api\Routing\Adapter\Lumen;
+use FastRoute\DataGenerator\GroupCountBased as GcbDataGenerator;
+use FastRoute\Dispatcher\GroupCountBased as GcbDispatcher;
+use FastRoute\RouteParser\Std as StdRouteParser;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Application;
-use Dingo\Api\Routing\Adapter\Lumen;
-use FastRoute\RouteParser\Std as StdRouteParser;
-use FastRoute\Dispatcher\GroupCountBased as GcbDispatcher;
-use FastRoute\DataGenerator\GroupCountBased as GcbDataGenerator;
 
 class LumenTest extends BaseAdapterTest
 {

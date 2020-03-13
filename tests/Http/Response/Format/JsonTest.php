@@ -2,30 +2,25 @@
 
 namespace Dingo\Api\Tests\Http\Response\Format;
 
-use Mockery;
 use Dingo\Api\Http\Response;
-use PHPUnit\Framework\TestCase;
-use Illuminate\Support\MessageBag;
 use Dingo\Api\Http\Response\Format\Json;
+use Dingo\Api\Tests\BaseTestCase;
 use Dingo\Api\Tests\Stubs\EloquentModelStub;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\MessageBag;
 
-class JsonTest extends TestCase
+class JsonTest extends BaseTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         Response::setFormatters(['json' => new Json]);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
-        Mockery::close();
+        parent::tearDown();
 
         EloquentModelStub::$snakeAttributes = true;
-
-        Response::setFormatters([]);
-
-        Response::setFormatsOptions([]);
     }
 
     /*

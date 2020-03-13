@@ -2,20 +2,37 @@
 
 namespace Dingo\Api\Tests\Routing\Adapter;
 
-use Mockery as m;
+use Dingo\Api\Exception\Handler;
 use Dingo\Api\Http;
+use Dingo\Api\Routing\Adapter\Laravel;
+use Dingo\Api\Routing\Adapter\Lumen;
 use Dingo\Api\Routing\Router;
-use PHPUnit\Framework\TestCase;
+use Dingo\Api\Tests\BaseTestCase;
 use Dingo\Api\Tests\Stubs\MiddlewareStub;
+use Illuminate\Contracts\Container\Container;
+use Laravel\Lumen\Application;
+use Mockery as m;
 
-abstract class BaseAdapterTest extends TestCase
+abstract class BaseAdapterTest extends BaseTestCase
 {
+    /**
+     * @var Container|Application
+     */
     protected $container;
+    /**
+     * @var Laravel|Lumen
+     */
     protected $adapter;
+    /**
+     * @var Handler
+     */
     protected $exception;
+    /**
+     * @var Router
+     */
     protected $router;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->container = $this->getContainerInstance();
         $this->container['Illuminate\Container\Container'] = $this->container;
@@ -27,20 +44,21 @@ abstract class BaseAdapterTest extends TestCase
         Http\Request::setAcceptParser(new Http\Parser\Accept('vnd', 'api', 'v1', 'json'));
 
         $this->adapter = $this->getAdapterInstance();
-        $this->exception = m::mock(\Dingo\Api\Exception\Handler::class);
+        $this->exception = m::mock(Handler::class);
         $this->router = new Router($this->adapter, $this->exception, $this->container, null, null);
         app()->instance(\Illuminate\Routing\Router::class, $this->adapter, true);
 
         Http\Response::setFormatters(['json' => new Http\Response\Format\Json]);
     }
 
-    public function tearDown()
-    {
-        m::close();
-    }
-
+    /**
+     * @return Container|Application
+     */
     abstract public function getContainerInstance();
 
+    /**
+     * @return Laravel|Lumen
+     */
     abstract public function getAdapterInstance();
 
     protected function createRequest($uri, $method, array $headers = [])
@@ -191,7 +209,7 @@ abstract class BaseAdapterTest extends TestCase
 
     public function testRoutingResources()
     {
-        $this->router->version('v1', ['namespace' => \Dingo\Api\Tests\Stubs::class], function () {
+        $this->router->version('v1', ['namespace' => '\Dingo\Api\Tests\Stubs'], function () {
             $this->router->resources([
                 'bar' => ['RoutingControllerStub', ['only' => ['index']]],
             ]);
@@ -204,7 +222,7 @@ abstract class BaseAdapterTest extends TestCase
 
     public function testIterableRoutes()
     {
-        $this->router->version('v1', ['namespace' => \Dingo\Api\Tests\Stubs::class], function () {
+        $this->router->version('v1', ['namespace' => '\Dingo\Api\Tests\Stubs'], function () {
             $this->router->post('/', ['uses' => 'RoutingControllerStub@index']);
             $this->router->post('/find', ['uses' => 'RoutingControllerOtherStub@show']);
         });
