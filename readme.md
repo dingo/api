@@ -27,11 +27,11 @@ Please refer to our extensive [Wiki documentation](https://github.com/dingo/api/
 
 ## API Boilerplate
 
-If you are looking to start a new project from scratch, consider using the [Laravel 5 API Boilerplate](https://github.com/specialtactics/laravel5-api-boilerplate), which builds on top of the dingo-api package, and adds a lot of great features.
+If you are looking to start a new project from scratch, consider using the [Laravel API Boilerplate](https://github.com/specialtactics/laravel-api-boilerplate), which builds on top of the dingo-api package, and adds a lot of great features.
 
 ## Support
 
-For answers you may not find in the Wiki, avoid posting issues. Feel free to ask for support on the dedicated [Slack](https://larachat.slack.com/messages/api/) room. Make sure to mention **specialtactics** / **@jasonlewis** so he is notified.
+For answers you may not find in the Wiki, avoid posting issues. Feel free to ask for support on the dedicated [Slack](https://larachat.slack.com/messages/api/) room. Make sure to mention **specialtactics** so he is notified.
 
 ## License
 
