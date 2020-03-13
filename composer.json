@@ -17,7 +17,7 @@
         "dingo/blueprint": "^0.4",
         "illuminate/routing": "^7.0",
         "illuminate/support": "^7.0",
-        "league/fractal": "^0.17"
+        "league/fractal": "^0.19"
     },
     "require-dev": {
         "phpdocumentor/reflection-docblock": "3.3.2",
