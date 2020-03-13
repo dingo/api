@@ -50,6 +50,7 @@ class HandlerTest extends BaseTestCase
 
         $this->assertSame('foo', $response->getContent());
         $this->assertSame(404, $response->getStatusCode());
+        $this->assertSame($exception, $response->exception);
     }
 
     public function testExceptionHandlerHandlesExceptionAndCreatesNewResponse()
@@ -137,6 +138,7 @@ class HandlerTest extends BaseTestCase
 
         $this->assertSame('{"message":"Uh oh","status_code":500}', $response->getContent());
         $this->assertSame(500, $response->getStatusCode());
+        $this->assertSame($exception, $response->exception);
     }
 
     public function testResourceExceptionErrorsAreIncludedInResponse()
