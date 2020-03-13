@@ -2,17 +2,21 @@
 
 namespace Dingo\Api\Exception;
 
+use Dingo\Api\Http\Request;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Str;
+use Illuminate\Http\Response;
 use Dingo\Api\Contract\Debug\ExceptionHandler;
 use Dingo\Api\Contract\Debug\MessageBagErrors;
-use Exception;
 use Illuminate\Contracts\Debug\ExceptionHandler as IlluminateExceptionHandler;
-use Illuminate\Http\Response;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use ReflectionFunction;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\Response as BaseResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Throwable;
 
 class Handler implements ExceptionHandler, IlluminateExceptionHandler
 {
@@ -47,14 +51,14 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
     /**
      * The parent Illuminate exception handler instance.
      *
-     * @var \Illuminate\Contracts\Debug\ExceptionHandler
+     * @var IlluminateExceptionHandler
      */
     protected $parentHandler;
 
     /**
      * Create a new exception handler instance.
      *
-     * @param \Illuminate\Contracts\Debug\ExceptionHandler $parentHandler
+     * @param IlluminateExceptionHandler $parentHandler
      * @param array                                        $format
      * @param bool                                         $debug
      *
@@ -70,23 +74,23 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
     /**
      * Report or log an exception.
      *
-     * @param \Exception $exception
+     * @param Throwable $exception
      *
      * @return void
      */
-    public function report(Exception $exception)
+    public function report(Throwable $throwable)
     {
-        $this->parentHandler->report($exception);
+        $this->parentHandler->report($throwable);
     }
 
     /**
      * Determine if the exception should be reported.
      *
-     * @param  \Exception  $e
+     * @param Throwable $e
      *
      * @return bool
      */
-    public function shouldReport(Exception $e)
+    public function shouldReport(Throwable $e)
     {
         return true;
     }
@@ -94,14 +98,14 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param \Dingo\Api\Http\Request $request
-     * @param \Exception              $exception
+     * @param Request $request
+     * @param Throwable $exception
      *
-     * @throws \Exception
+     * @throws Exception
      *
      * @return mixed
      */
-    public function render($request, Exception $exception)
+    public function render($request, Throwable $exception)
     {
         return $this->handle($exception);
     }
@@ -109,12 +113,12 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
     /**
      * Render an exception to the console.
      *
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     * @param \Exception                                        $exception
+     * @param OutputInterface $output
+     * @param Throwable $exception
      *
      * @return mixed
      */
-    public function renderForConsole($output, Exception $exception)
+    public function renderForConsole($output, Throwable $exception)
     {
         return $this->parentHandler->renderForConsole($output, $exception);
     }
@@ -136,14 +140,14 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
     /**
      * Handle an exception if it has an existing handler.
      *
-     * @param \Exception $exception
+     * @param Throwable|Exception $exception
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
-    public function handle(Exception $exception)
+    public function handle($exception)
     {
         // Convert Eloquent's 500 ModelNotFoundException into a 404 NotFoundHttpException
-        if ($exception instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
+        if ($exception instanceof ModelNotFoundException) {
             $exception = new NotFoundHttpException($exception->getMessage(), $exception);
         }
 
@@ -167,13 +171,13 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
     /**
      * Handle a generic error response if there is no handler available.
      *
-     * @param \Exception $exception
+     * @param Throwable $exception
      *
-     * @throws \Exception
+     * @throws Throwable
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
-    protected function genericResponse(Exception $exception)
+    protected function genericResponse(Throwable $exception)
     {
         $replacements = $this->prepareReplacements($exception);
 
@@ -193,11 +197,11 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
     /**
      * Get the status code from the exception.
      *
-     * @param \Exception $exception
+     * @param Throwable $exception
      *
      * @return int
      */
-    protected function getStatusCode(Exception $exception)
+    protected function getStatusCode(Throwable $exception)
     {
         if ($exception instanceof ValidationException) {
             return $exception->status;
@@ -209,11 +213,11 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
     /**
      * Get the headers from the exception.
      *
-     * @param \Exception $exception
+     * @param Throwable $exception
      *
      * @return array
      */
-    protected function getHeaders(Exception $exception)
+    protected function getHeaders(Throwable $exception)
     {
         return $exception instanceof HttpExceptionInterface ? $exception->getHeaders() : [];
     }
@@ -221,11 +225,11 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
     /**
      * Prepare the replacements array by gathering the keys and values.
      *
-     * @param \Exception $exception
+     * @param Throwable $exception
      *
      * @return array
      */
-    protected function prepareReplacements(Exception $exception)
+    protected function prepareReplacements(Throwable $exception)
     {
         $statusCode = $this->getStatusCode($exception);
 
@@ -322,7 +326,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
     /**
      * Get the exception status code.
      *
-     * @param \Exception $exception
+     * @param Exception $exception
      * @param int        $defaultStatusCode
      *
      * @return int

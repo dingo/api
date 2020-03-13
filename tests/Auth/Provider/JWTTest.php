@@ -2,49 +2,47 @@
 
 namespace Dingo\Api\Tests\Auth\Provider;
 
-use Mockery as m;
-use Illuminate\Http\Request;
-use PHPUnit\Framework\TestCase;
 use Dingo\Api\Auth\Provider\JWT;
+use Dingo\Api\Routing\Route;
+use Dingo\Api\Tests\BaseTestCase;
+use Illuminate\Http\Request;
+use Mockery as m;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
-class JWTTest extends TestCase
+class JWTTest extends BaseTestCase
 {
     protected $auth;
     protected $provider;
 
-    public function setUp()
+    public function setUp(): void
     {
+        parent::setUp();
+
         $this->auth = m::mock('Tymon\JWTAuth\JWTAuth');
         $this->provider = new JWT($this->auth);
     }
 
-    public function tearDown()
-    {
-        m::close();
-    }
-
-    /**
-     * @expectedException \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
-     */
     public function testValidatingAuthorizationHeaderFailsAndThrowsException()
     {
+        $this->expectException(BadRequestHttpException::class);
+
         $request = Request::create('foo', 'GET');
-        $this->provider->authenticate($request, m::mock(\Dingo\Api\Routing\Route::class));
+        $this->provider->authenticate($request, m::mock(Route::class));
     }
 
-    /**
-     * @expectedException \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
-     */
     public function testAuthenticatingFailsAndThrowsException()
     {
+        $this->expectException(UnauthorizedHttpException::class);
+
         $request = Request::create('foo', 'GET');
         $request->headers->set('authorization', 'Bearer foo');
 
         $this->auth->shouldReceive('setToken')->with('foo')->andReturn(m::self());
         $this->auth->shouldReceive('authenticate')->once()->andThrow(new JWTException('foo'));
 
-        $this->provider->authenticate($request, m::mock(\Dingo\Api\Routing\Route::class));
+        $this->provider->authenticate($request, m::mock(Route::class));
     }
 
     public function testAuthenticatingSucceedsAndReturnsUserObject()
@@ -55,7 +53,7 @@ class JWTTest extends TestCase
         $this->auth->shouldReceive('setToken')->with('foo')->andReturn(m::self());
         $this->auth->shouldReceive('authenticate')->once()->andReturn((object) ['id' => 1]);
 
-        $this->assertSame(1, $this->provider->authenticate($request, m::mock(\Dingo\Api\Routing\Route::class))->id);
+        $this->assertSame(1, $this->provider->authenticate($request, m::mock(Route::class))->id);
     }
 
     public function testAuthenticatingWithQueryStringSucceedsAndReturnsUserObject()
@@ -65,6 +63,6 @@ class JWTTest extends TestCase
         $this->auth->shouldReceive('setToken')->with('foo')->andReturn(m::self());
         $this->auth->shouldReceive('authenticate')->once()->andReturn((object) ['id' => 1]);
 
-        $this->assertSame(1, $this->provider->authenticate($request, m::mock(\Dingo\Api\Routing\Route::class))->id);
+        $this->assertSame(1, $this->provider->authenticate($request, m::mock(Route::class))->id);
     }
 }

@@ -87,7 +87,7 @@ class Response extends IlluminateResponse
      */
     public static function makeFromExisting(IlluminateResponse $old)
     {
-        $new = static::create($old->getOriginalContent(), $old->getStatusCode());
+        $new = new static($old->getOriginalContent(), $old->getStatusCode());
 
         $new->headers = $old->headers;
 
@@ -112,7 +112,7 @@ class Response extends IlluminateResponse
             $content = json_decode($json->getContent(), true);
         }
 
-        $new = static::create($content, $json->getStatusCode());
+        $new = new static($content, $json->getStatusCode());
 
         $new->headers = $json->headers;
 
@@ -196,6 +196,12 @@ class Response extends IlluminateResponse
         // then we most likely have an object that cannot be type cast. In that
         // case we'll simply leave the content as null and set the original
         // content value and continue.
+        if (! empty($content) && is_object($content) && ! $this->shouldBeJson($content)) {
+            $this->original = $content;
+
+            return $this;
+        }
+
         try {
             return parent::setContent($content);
         } catch (UnexpectedValueException $exception) {

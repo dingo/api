@@ -2,27 +2,42 @@
 
 namespace Dingo\Api\Tests\Http\Middleware;
 
-use Mockery as m;
 use Dingo\Api\Auth\Auth;
+use Dingo\Api\Http\Middleware\Auth as AuthMiddleware;
 use Dingo\Api\Http\Request;
 use Dingo\Api\Routing\Route;
 use Dingo\Api\Routing\Router;
-use PHPUnit\Framework\TestCase;
-use Illuminate\Container\Container;
+use Dingo\Api\Tests\BaseTestCase;
 use Dingo\Api\Tests\Stubs\RoutingAdapterStub;
+use Illuminate\Container\Container;
 use Illuminate\Routing\Route as IlluminateRoute;
-use Dingo\Api\Http\Middleware\Auth as AuthMiddleware;
+use Mockery as m;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-class AuthTest extends TestCase
+class AuthTest extends BaseTestCase
 {
+    /**
+     * @var Container
+     */
     protected $container;
+    /**
+     * @var RoutingAdapterStub
+     */
     protected $adapter;
+    /**
+     * @var Router|m\LegacyMockInterface|m\MockInterface
+     */
     protected $router;
+    /**
+     * @var Auth|m\LegacyMockInterface|m\MockInterface
+     */
     protected $auth;
+    /**
+     * @var AuthMiddleware
+     */
     protected $middleware;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->container = new Container;
         $this->adapter = new RoutingAdapterStub;
@@ -66,11 +81,10 @@ class AuthTest extends TestCase
         });
     }
 
-    /**
-     * @expectedException \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
-     */
     public function testAuthenticationFailsAndExceptionIsThrown()
     {
+        $this->expectException(UnauthorizedHttpException::class);
+
         $exception = new UnauthorizedHttpException('test');
 
         $request = Request::create('test', 'GET');

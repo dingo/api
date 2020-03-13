@@ -2,36 +2,56 @@
 
 namespace Dingo\Api\Tests\Http\Middleware;
 
-use Mockery as m;
-use Dingo\Api\Http\Request;
-use Dingo\Api\Routing\Router;
-use Dingo\Api\Http\Validation;
-use PHPUnit\Framework\TestCase;
+use Dingo\Api\Contract\Http\Request as RequestContract;
 use Dingo\Api\Exception\Handler;
+use Dingo\Api\Http\Middleware\Request as RequestMiddleware;
+use Dingo\Api\Http\Parser\Accept as AcceptParser;
+use Dingo\Api\Http\Request;
 use Dingo\Api\Http\RequestValidator;
+use Dingo\Api\Http\Validation;
 use Dingo\Api\Http\Validation\Accept;
 use Dingo\Api\Http\Validation\Domain;
 use Dingo\Api\Http\Validation\Prefix;
+use Dingo\Api\Routing\Router;
+use Dingo\Api\Tests\BaseTestCase;
 use Dingo\Api\Tests\ChecksLaravelVersionTrait;
-use Dingo\Api\Http\Parser\Accept as AcceptParser;
-use Illuminate\Http\Request as IlluminateRequest;
 use Illuminate\Events\Dispatcher as EventDispatcher;
-use Dingo\Api\Contract\Http\Request as RequestContract;
-use Dingo\Api\Http\Middleware\Request as RequestMiddleware;
+use Illuminate\Http\Request as IlluminateRequest;
+use Mockery as m;
 
-class RequestTest extends TestCase
+class RequestTest extends BaseTestCase
 {
+    /**
+     * @var \Dingo\Api\Tests\Stubs\Application58Stub|\Dingo\Api\Tests\Stubs\Application6Stub|\Dingo\Api\Tests\Stubs\ApplicationStub
+     */
     protected $app;
+    /**
+     * @var Router|m\LegacyMockInterface|m\MockInterface
+     */
     protected $router;
+    /**
+     * @var RequestValidator
+     */
     protected $validator;
+    /**
+     * @var Handler|m\LegacyMockInterface|m\MockInterface
+     */
     protected $handler;
+    /**
+     * @var EventDispatcher
+     */
     protected $events;
+    /**
+     * @var RequestMiddleware
+     */
     protected $middleware;
 
     use ChecksLaravelVersionTrait;
 
-    public function setUp()
+    public function setUp(): void
     {
+        parent::setUp();
+
         $this->app = $this->getApplicationStub();
         $this->router = m::mock(Router::class);
         $this->validator = new RequestValidator($this->app);
@@ -41,11 +61,6 @@ class RequestTest extends TestCase
         $this->app->alias(Request::class, RequestContract::class);
 
         $this->middleware = new RequestMiddleware($this->app, $this->handler, $this->router, $this->validator, $this->events);
-    }
-
-    public function tearDown()
-    {
-        m::close();
     }
 
     public function testNoPrefixOrDomainDoesNotMatch()

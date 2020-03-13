@@ -8,20 +8,17 @@ env:
     - setup=basic
     - xdebug=true
 
-# HHVM is no longer supported on Ubuntu Precise. Please consider using Trusty with `dist: trusty`.
-dist: trusty
-
 cache:
   directories:
     - $HOME/.composer/cache
 
 matrix:
   include:
-    - php: 7.1
-      env: xdebug=false
     - php: 7.2
       env: xdebug=false
     - php: 7.3
+      env: xdebug=false
+    - php: 7.4
       env: xdebug=false
 
 before_install:

@@ -2,13 +2,13 @@
 
 namespace Dingo\Api\Tests\Http\RateLimit\Throttle;
 
-use Mockery;
 use Dingo\Api\Auth\Auth;
-use PHPUnit\Framework\TestCase;
-use Illuminate\Container\Container;
 use Dingo\Api\Http\RateLimit\Throttle\Authenticated;
+use Dingo\Api\Tests\BaseTestCase;
+use Illuminate\Container\Container;
+use Mockery;
 
-class AuthenticatedTest extends TestCase
+class AuthenticatedTest extends BaseTestCase
 {
     public function testThrottleMatchesCorrectly()
     {
