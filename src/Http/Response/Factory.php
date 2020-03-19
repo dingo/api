@@ -141,12 +141,13 @@ class Factory
     }
 
     /**
-     * Bind an arbitrary array to a transformer and start building a response
+     * Bind an arbitrary array to a transformer and start building a response.
      *
      * @param array $array
      * @param $transformer
      * @param array $parameters
      * @param Closure|null $after
+     *
      * @return Response
      */
     public function array(array $array, $transformer, $parameters = [], Closure $after = null)
@@ -154,7 +155,7 @@ class Factory
         // Use the PHP stdClass for this purpose, as a work-around, since we need to register a class binding
         $class = 'stdClass';
         // This will convert the array into an stdClass
-        $array = (object)$array;
+        $array = (object) $array;
 
         if ($parameters instanceof \Closure) {
             $after = $parameters;
@@ -162,7 +163,7 @@ class Factory
         }
 
         $binding = $this->transformer->register($class, $transformer, $parameters, $after);
-        
+
         return new Response($array, 200, [], $binding);
     }
 
