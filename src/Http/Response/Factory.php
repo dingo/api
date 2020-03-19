@@ -150,19 +150,24 @@ class Factory
      *
      * @return Response
      */
-    public function array(array $array, $transformer, $parameters = [], Closure $after = null)
+    public function array(array $array, $transformer = null, $parameters = [], Closure $after = null)
     {
-        // Use the PHP stdClass for this purpose, as a work-around, since we need to register a class binding
-        $class = 'stdClass';
-        // This will convert the array into an stdClass
-        $array = (object) $array;
-
         if ($parameters instanceof \Closure) {
             $after = $parameters;
             $parameters = [];
         }
 
-        $binding = $this->transformer->register($class, $transformer, $parameters, $after);
+        // For backwards compatibility, allow no transformer
+        if ($transformer) {
+            // Use the PHP stdClass for this purpose, as a work-around, since we need to register a class binding
+            $class = 'stdClass';
+            // This will convert the array into an stdClass
+            $array = (object) $array;
+
+            $binding = $this->transformer->register($class, $transformer, $parameters, $after);
+        } else {
+            $binding = null;
+        }
 
         return new Response($array, 200, [], $binding);
     }
