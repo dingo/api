@@ -93,7 +93,7 @@ class Factory
      *
      * @return \Dingo\Api\Http\Response
      */
-    public function collection(Collection $collection, $transformer, $parameters = [], Closure $after = null)
+    public function collection(Collection $collection, $transformer = null, $parameters = [], Closure $after = null)
     {
         if ($collection->isEmpty()) {
             $class = get_class($collection);
@@ -106,7 +106,11 @@ class Factory
             $parameters = [];
         }
 
-        $binding = $this->transformer->register($class, $transformer, $parameters, $after);
+        if ($transformer !== null) {
+            $binding = $this->transformer->register($class, $transformer, $parameters, $after);
+        } else {
+            $binding = $this->transformer->getBinding($collection);
+        }
 
         return new Response($collection, 200, [], $binding);
     }
@@ -135,7 +139,11 @@ class Factory
             $parameters = [];
         }
 
-        $binding = $this->transformer->register($class, $transformer, $parameters, $after);
+        if ($transformer !== null) {
+            $binding = $this->transformer->register($class, $transformer, $parameters, $after);
+        } else {
+            $binding = $this->transformer->getBinding($item);
+        }
 
         return new Response($item, 200, [], $binding);
     }
@@ -158,7 +166,11 @@ class Factory
             $class = get_class($paginator->first());
         }
 
-        $binding = $this->transformer->register($class, $transformer, $parameters, $after);
+        if ($transformer !== null) {
+            $binding = $this->transformer->register($class, $transformer, $parameters, $after);
+        } else {
+            $binding = $this->transformer->getBinding($paginator->first());
+        }
 
         return new Response($paginator, 200, [], $binding);
     }
