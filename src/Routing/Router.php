@@ -146,23 +146,23 @@ class Router
      */
     public function group(array $attributes, $callback)
     {
-        if (!isset($attributes['conditionalRequest'])) {
+        if (! isset($attributes['conditionalRequest'])) {
             $attributes['conditionalRequest'] = $this->conditionalRequest;
         }
 
         $attributes = $this->mergeLastGroupAttributes($attributes);
 
-        if (!isset($attributes['version'])) {
+        if (! isset($attributes['version'])) {
             throw new RuntimeException('A version is required for an API group definition.');
         } else {
             $attributes['version'] = (array) $attributes['version'];
         }
 
-        if ((!isset($attributes['prefix']) || empty($attributes['prefix'])) && isset($this->prefix)) {
+        if ((! isset($attributes['prefix']) || empty($attributes['prefix'])) && isset($this->prefix)) {
             $attributes['prefix'] = $this->prefix;
         }
 
-        if ((!isset($attributes['domain']) || empty($attributes['domain'])) && isset($this->domain)) {
+        if ((! isset($attributes['domain']) || empty($attributes['domain'])) && isset($this->domain)) {
             $attributes['domain'] = $this->domain;
         }
 
@@ -357,7 +357,7 @@ class Router
 
         $uri = $uri === '/' ? $uri : '/'.trim($uri, '/');
 
-        if (!empty($action['prefix'])) {
+        if (! empty($action['prefix'])) {
             $uri = '/'.ltrim(rtrim(trim($action['prefix'], '/').'/'.trim($uri, '/'), '/'), '/');
 
             unset($action['prefix']);
@@ -569,7 +569,7 @@ class Router
         }
 
         if ($response->isSuccessful() && $this->requestIsConditional()) {
-            if (!$response->headers->has('ETag')) {
+            if (! $response->headers->has('ETag')) {
                 $response->setEtag(sha1($response->getContent() ?: ''));
             }
 
@@ -632,7 +632,7 @@ class Router
     {
         if (isset($this->currentRoute)) {
             return $this->currentRoute;
-        } elseif (!$this->hasDispatchedRoutes() || !$route = $this->container['request']->route()) {
+        } elseif (! $this->hasDispatchedRoutes() || ! $route = $this->container['request']->route()) {
             return;
         }
 
@@ -710,7 +710,7 @@ class Router
     {
         $routes = $this->adapter->getIterableRoutes($version);
 
-        if (!is_null($version)) {
+        if (! is_null($version)) {
             $routes = [$version => $routes];
         }
 
@@ -820,7 +820,7 @@ class Router
      */
     public function currentRouteAction()
     {
-        if (!$route = $this->current()) {
+        if (! $route = $this->current()) {
             return;
         }
 
