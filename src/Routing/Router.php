@@ -510,9 +510,9 @@ class Router
      *
      * @param  \Dingo\Api\Http\Request  $request
      *
-     * @return \Dingo\Api\Http\Response
      * @throws \Exception
      *
+     * @return \Dingo\Api\Http\Response
      */
     public function dispatch(Request $request)
     {
@@ -680,7 +680,7 @@ class Router
      */
     public function hasGroupStack()
     {
-        return !empty($this->groupStack);
+        return ! empty($this->groupStack);
     }
 
     /**
