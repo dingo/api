@@ -92,11 +92,11 @@ class Router
     /**
      * Create a new router instance.
      *
-     * @param \Dingo\Api\Contract\Routing\Adapter        $adapter
-     * @param \Dingo\Api\Contract\Debug\ExceptionHandler $exception
-     * @param \Illuminate\Container\Container            $container
-     * @param string                                     $domain
-     * @param string                                     $prefix
+     * @param  \Dingo\Api\Contract\Routing\Adapter  $adapter
+     * @param  \Dingo\Api\Contract\Debug\ExceptionHandler  $exception
+     * @param  \Illuminate\Container\Container  $container
+     * @param  string  $domain
+     * @param  string  $prefix
      *
      * @return void
      */
@@ -117,9 +117,9 @@ class Router
      * This method can be called without the third parameter, however,
      * the callback should always be the last parameter.
      *
-     * @param array|string   $version
-     * @param array|callable $second
-     * @param callable       $third
+     * @param  array|string  $version
+     * @param  array|callable  $second
+     * @param  callable  $third
      *
      * @return void
      */
@@ -139,30 +139,30 @@ class Router
     /**
      * Create a new route group.
      *
-     * @param array    $attributes
-     * @param callable $callback
+     * @param  array  $attributes
+     * @param  callable  $callback
      *
      * @return void
      */
     public function group(array $attributes, $callback)
     {
-        if (! isset($attributes['conditionalRequest'])) {
+        if (!isset($attributes['conditionalRequest'])) {
             $attributes['conditionalRequest'] = $this->conditionalRequest;
         }
 
         $attributes = $this->mergeLastGroupAttributes($attributes);
 
-        if (! isset($attributes['version'])) {
+        if (!isset($attributes['version'])) {
             throw new RuntimeException('A version is required for an API group definition.');
         } else {
             $attributes['version'] = (array) $attributes['version'];
         }
 
-        if ((! isset($attributes['prefix']) || empty($attributes['prefix'])) && isset($this->prefix)) {
+        if ((!isset($attributes['prefix']) || empty($attributes['prefix'])) && isset($this->prefix)) {
             $attributes['prefix'] = $this->prefix;
         }
 
-        if ((! isset($attributes['domain']) || empty($attributes['domain'])) && isset($this->domain)) {
+        if ((!isset($attributes['domain']) || empty($attributes['domain'])) && isset($this->domain)) {
             $attributes['domain'] = $this->domain;
         }
 
@@ -176,8 +176,8 @@ class Router
     /**
      * Create a new GET route.
      *
-     * @param string                $uri
-     * @param array|string|callable $action
+     * @param  string  $uri
+     * @param  array|string|callable  $action
      *
      * @return mixed
      */
@@ -189,8 +189,8 @@ class Router
     /**
      * Create a new POST route.
      *
-     * @param string                $uri
-     * @param array|string|callable $action
+     * @param  string  $uri
+     * @param  array|string|callable  $action
      *
      * @return mixed
      */
@@ -202,8 +202,8 @@ class Router
     /**
      * Create a new PUT route.
      *
-     * @param string                $uri
-     * @param array|string|callable $action
+     * @param  string  $uri
+     * @param  array|string|callable  $action
      *
      * @return mixed
      */
@@ -215,8 +215,8 @@ class Router
     /**
      * Create a new PATCH route.
      *
-     * @param string                $uri
-     * @param array|string|callable $action
+     * @param  string  $uri
+     * @param  array|string|callable  $action
      *
      * @return mixed
      */
@@ -228,8 +228,8 @@ class Router
     /**
      * Create a new DELETE route.
      *
-     * @param string                $uri
-     * @param array|string|callable $action
+     * @param  string  $uri
+     * @param  array|string|callable  $action
      *
      * @return mixed
      */
@@ -241,8 +241,8 @@ class Router
     /**
      * Create a new OPTIONS route.
      *
-     * @param string                $uri
-     * @param array|string|callable $action
+     * @param  string  $uri
+     * @param  array|string|callable  $action
      *
      * @return mixed
      */
@@ -254,8 +254,8 @@ class Router
     /**
      * Create a new route that responding to all verbs.
      *
-     * @param string                $uri
-     * @param array|string|callable $action
+     * @param  string  $uri
+     * @param  array|string|callable  $action
      *
      * @return mixed
      */
@@ -269,9 +269,9 @@ class Router
     /**
      * Create a new route with the given verbs.
      *
-     * @param array|string          $methods
-     * @param string                $uri
-     * @param array|string|callable $action
+     * @param  array|string  $methods
+     * @param  string  $uri
+     * @param  array|string|callable  $action
      *
      * @return mixed
      */
@@ -283,7 +283,7 @@ class Router
     /**
      * Register an array of resources.
      *
-     * @param array $resources
+     * @param  array  $resources
      *
      * @return void
      */
@@ -303,9 +303,9 @@ class Router
     /**
      * Register a resource controller.
      *
-     * @param string $name
-     * @param string $controller
-     * @param array  $options
+     * @param  string  $name
+     * @param  string  $controller
+     * @param  array  $options
      *
      * @return void
      */
@@ -323,9 +323,9 @@ class Router
     /**
      * Add a route to the routing adapter.
      *
-     * @param string|array          $methods
-     * @param string                $uri
-     * @param string|array|callable $action
+     * @param  string|array  $methods
+     * @param  string  $uri
+     * @param  string|array|callable  $action
      *
      * @return mixed
      */
@@ -341,6 +341,14 @@ class Router
                 $action = implode('@', $action);
                 $action = ['uses' => $action, 'controller' => $action];
             }
+
+            // For named routes and syntax:
+            // $api->post('login', ['uses' => [LoginController::class, 'login'], 'as' => 'login']
+            if (isset($action['uses']) && isset($action['as'])) {
+                $route_name = $action['as'];
+                $action = implode('@', $action['uses']);
+                $action = ['uses' => $action, 'controller' => $action, 'as' => $route_name];
+            }
         }
 
         $action = $this->mergeLastGroupAttributes($action);
@@ -349,7 +357,7 @@ class Router
 
         $uri = $uri === '/' ? $uri : '/'.trim($uri, '/');
 
-        if (! empty($action['prefix'])) {
+        if (!empty($action['prefix'])) {
             $uri = '/'.ltrim(rtrim(trim($action['prefix'], '/').'/'.trim($uri, '/'), '/'), '/');
 
             unset($action['prefix']);
@@ -363,7 +371,7 @@ class Router
     /**
      * Add the controller preparation middleware to the beginning of the routes middleware.
      *
-     * @param array $action
+     * @param  array  $action
      *
      * @return array
      */
@@ -377,7 +385,7 @@ class Router
     /**
      * Merge the last groups attributes.
      *
-     * @param array $attributes
+     * @param  array  $attributes
      *
      * @return array
      */
@@ -393,8 +401,8 @@ class Router
     /**
      * Merge the given group attributes.
      *
-     * @param array $new
-     * @param array $old
+     * @param  array  $new
+     * @param  array  $old
      *
      * @return array
      */
@@ -432,8 +440,8 @@ class Router
     /**
      * Format an array based option in a route action.
      *
-     * @param string $option
-     * @param array  $new
+     * @param  string  $option
+     * @param  array  $new
      *
      * @return array
      */
@@ -447,8 +455,8 @@ class Router
     /**
      * Format the uses key in a route action.
      *
-     * @param array $new
-     * @param array $old
+     * @param  array  $new
+     * @param  array  $old
      *
      * @return string
      */
@@ -464,8 +472,8 @@ class Router
     /**
      * Format the namespace for the new group attributes.
      *
-     * @param array $new
-     * @param array $old
+     * @param  array  $new
+     * @param  array  $old
      *
      * @return string
      */
@@ -483,8 +491,8 @@ class Router
     /**
      * Format the prefix for the new group attributes.
      *
-     * @param array $new
-     * @param array $old
+     * @param  array  $new
+     * @param  array  $old
      *
      * @return string
      */
@@ -500,11 +508,11 @@ class Router
     /**
      * Dispatch a request via the adapter.
      *
-     * @param \Dingo\Api\Http\Request $request
-     *
-     * @throws \Exception
+     * @param  \Dingo\Api\Http\Request  $request
      *
      * @return \Dingo\Api\Http\Response
+     * @throws \Exception
+     *
      */
     public function dispatch(Request $request)
     {
@@ -532,9 +540,9 @@ class Router
     /**
      * Prepare a response by transforming and formatting it correctly.
      *
-     * @param mixed                   $response
-     * @param \Dingo\Api\Http\Request $request
-     * @param string                  $format
+     * @param  mixed  $response
+     * @param  \Dingo\Api\Http\Request  $request
+     * @param  string  $format
      *
      * @return \Dingo\Api\Http\Response
      */
@@ -561,7 +569,7 @@ class Router
         }
 
         if ($response->isSuccessful() && $this->requestIsConditional()) {
-            if (! $response->headers->has('ETag')) {
+            if (!$response->headers->has('ETag')) {
                 $response->setEtag(sha1($response->getContent() ?: ''));
             }
 
@@ -574,7 +582,7 @@ class Router
     /**
      * Gather the middleware for the given route.
      *
-     * @param mixed $route
+     * @param  mixed  $route
      *
      * @return array
      */
@@ -596,7 +604,7 @@ class Router
     /**
      * Set the conditional request.
      *
-     * @param bool $conditionalRequest
+     * @param  bool  $conditionalRequest
      *
      * @return void
      */
@@ -624,7 +632,7 @@ class Router
     {
         if (isset($this->currentRoute)) {
             return $this->currentRoute;
-        } elseif (! $this->hasDispatchedRoutes() || ! $route = $this->container['request']->route()) {
+        } elseif (!$this->hasDispatchedRoutes() || !$route = $this->container['request']->route()) {
             return;
         }
 
@@ -644,7 +652,7 @@ class Router
     /**
      * Create a new route instance from an adapter route.
      *
-     * @param array|\Illuminate\Routing\Route $route
+     * @param  array|\Illuminate\Routing\Route  $route
      *
      * @return \Dingo\Api\Routing\Route
      */
@@ -656,7 +664,7 @@ class Router
     /**
      * Set the current route instance.
      *
-     * @param \Dingo\Api\Routing\Route $route
+     * @param  \Dingo\Api\Routing\Route  $route
      *
      * @return void
      */
@@ -672,7 +680,7 @@ class Router
      */
     public function hasGroupStack()
     {
-        return ! empty($this->groupStack);
+        return !empty($this->groupStack);
     }
 
     /**
@@ -694,7 +702,7 @@ class Router
     /**
      * Get all routes registered on the adapter.
      *
-     * @param string $version
+     * @param  string  $version
      *
      * @return mixed
      */
@@ -702,7 +710,7 @@ class Router
     {
         $routes = $this->adapter->getIterableRoutes($version);
 
-        if (! is_null($version)) {
+        if (!is_null($version)) {
             $routes = [$version => $routes];
         }
 
@@ -734,7 +742,7 @@ class Router
     /**
      * Set the raw adapter routes.
      *
-     * @param array $routes
+     * @param  array  $routes
      *
      * @return void
      */
@@ -778,7 +786,7 @@ class Router
     /**
      * Alias for the "currentRouteNamed" method.
      *
-     * @param mixed string
+     * @param  mixed string
      *
      * @return bool
      */
@@ -796,7 +804,7 @@ class Router
     /**
      * Determine if the current route matches a given name.
      *
-     * @param string $name
+     * @param  string  $name
      *
      * @return bool
      */
@@ -812,7 +820,7 @@ class Router
      */
     public function currentRouteAction()
     {
-        if (! $route = $this->current()) {
+        if (!$route = $this->current()) {
             return;
         }
 
@@ -842,7 +850,7 @@ class Router
     /**
      * Determine if the current route action matches a given action.
      *
-     * @param string $action
+     * @param  string  $action
      *
      * @return bool
      */
