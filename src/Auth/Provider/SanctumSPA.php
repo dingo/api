@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Dingo\Api\Auth\Provider;
 
 use Dingo\Api\Contract\Auth\Provider;
@@ -22,6 +21,7 @@ class SanctumSPA implements Provider
      * Create a new basic provider instance.
      *
      * @param \Illuminate\Auth\AuthManager $auth
+     *
      * @return void
      */
     public function __construct(AuthManager $auth)
