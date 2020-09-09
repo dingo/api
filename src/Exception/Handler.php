@@ -183,7 +183,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
 
         $response = $this->newResponseArray();
 
-        array_walk_recursive($response, function (&$value, $key) use ($exception, $replacements) {
+        array_walk_recursive($response, function (&$value, $key) use ($replacements) {
             if (Str::startsWith($value, ':') && isset($replacements[$value])) {
                 $value = $replacements[$value];
             }
@@ -203,11 +203,23 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
      */
     protected function getStatusCode(Throwable $exception)
     {
+        $statusCode = null;
+
         if ($exception instanceof ValidationException) {
-            return $exception->status;
+            $statusCode = $exception->status;
+        } elseif ($exception instanceof HttpExceptionInterface) {
+            $statusCode = $exception->getStatusCode();
+        } else {
+            // By default throw 500
+            $statusCode = 500;
         }
 
-        return $exception instanceof HttpExceptionInterface ? $exception->getStatusCode() : 500;
+        // Be extra defensive
+        if ($statusCode < 100 || $statusCode > 500) {
+            $statusCode = 500;
+        }
+
+        return $statusCode;
     }
 
     /**
