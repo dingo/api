@@ -215,7 +215,7 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
         }
 
         // Be extra defensive
-        if ($statusCode < 100 || $statusCode > 500) {
+        if ($statusCode < 100 || $statusCode > 599) {
             $statusCode = 500;
         }
 
