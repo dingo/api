@@ -95,13 +95,13 @@ class Fractal implements Adapter
                 $eagerLoads = array_intersect($eagerLoads, $transformer->getAvailableIncludes());
             }
 
-            if (!empty($eagerLoads)) {
+            if (! empty($eagerLoads)) {
                 // Only load includes which correspond to actual relationships
                 $item = $response->first();
 
                 if ($item) {
                     foreach ($eagerLoads as $key => $eagerLoad) {
-                        if (!method_exists($item, $eagerLoad)) {
+                        if (! method_exists($item, $eagerLoad)) {
                             unset($eagerLoads[$key]);
                         }
                     }
