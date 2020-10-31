@@ -3,33 +3,20 @@ language: php
 sudo: false
 dist: trusty
 
+php:
+  - 7.3
+  - 7.4
+
 env:
   global:
     - setup=basic
-    - xdebug=true
+    - xdebug=false
+  - LARAVEL_VERSION=8.*
+  - LARAVEL_VERSION=7.*
 
 cache:
   directories:
     - $HOME/.composer/cache
-
-matrix:
-  include:
-    - php: 7.3
-      env:
-      - xdebug=false
-      - LARAVEL_VERSION=8.*
-    - php: 7.4
-      env:
-      - xdebug=false
-      - LARAVEL_VERSION=8.*
-    - php: 7.3
-      env:
-        - xdebug=false
-        - LARAVEL_VERSION=7.*
-    - php: 7.4
-      env:
-        - xdebug=false
-        - LARAVEL_VERSION=7.*
 
 before_install:
   - if [[ $xdebug = 'true' ]] ; then phpenv config-rm xdebug.ini; fi
