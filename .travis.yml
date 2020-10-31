@@ -28,6 +28,7 @@ install:
 
 before_script:
   - travis_retry composer self-update
+  - travis_retry composer self-update --2
   - travis_retry composer install --prefer-source --no-interaction
   - if [ "$LARAVEL_VERSION" != "" ]; then composer require --dev "illuminate/routing:${LARAVEL_VERSION}" --no-update; fi;
   - if [ "$LARAVEL_VERSION" != "" ]; then composer require --dev "illuminate/support:${LARAVEL_VERSION}" --no-update; fi;
