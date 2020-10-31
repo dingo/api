@@ -8,11 +8,11 @@ php:
   - 7.4
 
 env:
+  - LARAVEL_VERSION=8.*
+  - LARAVEL_VERSION=7.*
   global:
     - setup=basic
     - xdebug=false
-  - LARAVEL_VERSION=8.*
-  - LARAVEL_VERSION=7.*
 
 cache:
   directories:
