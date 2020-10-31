@@ -20,6 +20,7 @@ cache:
 
 before_install:
   - if [[ $xdebug = 'true' ]] ; then phpenv config-rm xdebug.ini; fi
+  - composer self-update --2
 
 install:
   - if [[ $setup = 'basic' ]]; then travis_retry composer install --prefer-dist --no-interaction --no-suggest; fi
@@ -27,8 +28,6 @@ install:
   - if [[ $setup = 'lowest' ]]; then travis_retry composer update --prefer-dist --no-interaction --no-suggest --prefer-stable --prefer-lowest; fi
 
 before_script:
-  - travis_retry composer self-update
-  - travis_retry composer self-update --2
   - travis_retry composer install --prefer-source --no-interaction
   - if [ "$LARAVEL_VERSION" != "" ]; then composer require --dev "illuminate/routing:${LARAVEL_VERSION}" --no-update; fi;
   - if [ "$LARAVEL_VERSION" != "" ]; then composer require --dev "illuminate/support:${LARAVEL_VERSION}" --no-update; fi;
