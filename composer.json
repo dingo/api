@@ -1,5 +1,5 @@
 {
-    "name": "dingo/api",
+    "name": "spinyman/api",
     "description": "A RESTful API package for the Laravel and Lumen frameworks.",
     "keywords": [
         "api",
