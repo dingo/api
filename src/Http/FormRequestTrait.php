@@ -12,7 +12,7 @@ use Illuminate\Validation\ValidatesWhenResolvedTrait;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-trait RequestTrait
+trait FormRequestTrait
 {
     use ValidatesWhenResolvedTrait;
 

@@ -2,20 +2,20 @@
 
 namespace Dingo\Api\Provider;
 
-use ReflectionClass;
-use Laravel\Lumen\Application;
-use Dingo\Api\Http\FormRequest;
-use Laravel\Lumen\Http\Redirector;
+use Dingo\Api\Http\LumenFormRequest;
 use Dingo\Api\Http\Middleware\Auth;
-use Dingo\Api\Http\Middleware\Request;
-use Dingo\Api\Http\Middleware\RateLimit;
-use FastRoute\Dispatcher\GroupCountBased;
 use Dingo\Api\Http\Middleware\PrepareController;
-use FastRoute\RouteParser\Std as StdRouteParser;
-use Illuminate\Http\Request as IlluminateRequest;
+use Dingo\Api\Http\Middleware\RateLimit;
+use Dingo\Api\Http\Middleware\Request;
 use Dingo\Api\Routing\Adapter\Lumen as LumenAdapter;
-use Illuminate\Contracts\Validation\ValidatesWhenResolved;
 use FastRoute\DataGenerator\GroupCountBased as GcbDataGenerator;
+use FastRoute\Dispatcher\GroupCountBased;
+use FastRoute\RouteParser\Std as StdRouteParser;
+use Illuminate\Contracts\Validation\ValidatesWhenResolved;
+use Illuminate\Http\Request as IlluminateRequest;
+use Laravel\Lumen\Application;
+use Laravel\Lumen\Http\Redirector;
+use ReflectionClass;
 
 class LumenServiceProvider extends DingoServiceProvider
 {
@@ -54,12 +54,12 @@ class LumenServiceProvider extends DingoServiceProvider
             });
         });
 
-        // Validate FormRequest after resolving
+        // Validate LumenFormRequest after resolving
         $this->app->afterResolving(ValidatesWhenResolved::class, function ($resolved) {
             $resolved->validateResolved();
         });
 
-        $this->app->resolving(FormRequest::class, function (FormRequest $request, Application $app) {
+        $this->app->resolving(LumenFormRequest::class, function (LumenFormRequest $request, Application $app) {
             $this->initializeRequest($request, $app['request']);
 
             $request->setContainer($app)->setRedirector($app->make(Redirector::class));
@@ -152,12 +152,12 @@ class LumenServiceProvider extends DingoServiceProvider
     /**
      * Initialize the form request with data from the given request.
      *
-     * @param FormRequest $form
+     * @param LumenFormRequest $form
      * @param IlluminateRequest $current
      *
      * @return void
      */
-    protected function initializeRequest(FormRequest $form, IlluminateRequest $current)
+    protected function initializeRequest(LumenFormRequest $form, IlluminateRequest $current)
     {
         $files = $current->files->all();
 

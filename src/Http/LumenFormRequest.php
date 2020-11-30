@@ -7,5 +7,5 @@ use Laravel\Lumen\Http\Request as LumenRequest;
 
 class LumenFormRequest extends LumenRequest implements ValidatesWhenResolved
 {
-    use RequestTrait;
+    use FormRequestTrait;
 }

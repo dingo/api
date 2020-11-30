@@ -7,5 +7,5 @@ use Illuminate\Contracts\Validation\ValidatesWhenResolved;
 
 class FormRequest extends Request implements ValidatesWhenResolved
 {
-    use RequestTrait;
+    use FormRequestTrait;
 }
