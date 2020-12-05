@@ -13,7 +13,7 @@
         "email": "jason.lewis1991@gmail.com"
     }],
     "require": {
-        "php": "^7.2.5",
+        "php": ">=7.2.5",
         "dingo/blueprint": "^0.4",
         "illuminate/routing": "^7.0|^8.0",
         "illuminate/support": "^7.0|^8.0",
