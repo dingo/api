@@ -1,5 +1,5 @@
 {
-    "name": "dingo/api",
+    "name": "soitpl/dingo-api",
     "description": "A RESTful API package for the Laravel and Lumen frameworks.",
     "keywords": [
         "api",
@@ -13,7 +13,7 @@
         "email": "jason.lewis1991@gmail.com"
     }],
     "require": {
-        "php": "^7.2.5",
+        "php": "^7.2.5|^8.0",
         "dingo/blueprint": "^0.4",
         "illuminate/routing": "^7.0|^8.0",
         "illuminate/support": "^7.0|^8.0",
