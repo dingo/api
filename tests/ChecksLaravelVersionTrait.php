@@ -33,7 +33,7 @@ trait ChecksLaravelVersionTrait
         });
 
         if (empty($just_laravel)) {
-            die (PHP_EOL . 'No Laravel version detected, please do a "composer require laravel/framework:x" prior to testing' . PHP_EOL);
+            exit(PHP_EOL.'No Laravel version detected, please do a "composer require laravel/framework:x" prior to testing'.PHP_EOL);
         }
 
         $laravelVersion = array_map(function ($val) {
@@ -56,7 +56,7 @@ trait ChecksLaravelVersionTrait
         // Return the version stub for the right version
         if (version_compare($version, '8.0.0', '>=')) {
             return new Application8Stub;
-        } else if (version_compare($version, '7.0.0', '>=')) {
+        } elseif (version_compare($version, '7.0.0', '>=')) {
             return new Application7Stub;
         } elseif (version_compare($version, '6.0.0', '>=')) {
             return new Application6Stub;
