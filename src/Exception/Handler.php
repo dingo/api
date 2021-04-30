@@ -370,8 +370,15 @@ class Handler implements ExceptionHandler, IlluminateExceptionHandler
         $reflection = new ReflectionFunction($callback);
 
         $exception = $reflection->getParameters()[0];
+        $reflectionType = $exception->getType();
 
-        return $exception->getClass()->getName();
+        if ($reflectionType && ! $reflectionType->isBuiltin()) {
+            if ($reflectionType instanceof \ReflectionNamedType) {
+                return $reflectionType->getName();
+            }
+        }
+
+        return '';
     }
 
     /**
