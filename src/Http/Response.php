@@ -144,7 +144,7 @@ class Response extends IlluminateResponse
 
         // If we have no content, we don't want to set this header, as it will be blank
         $contentType = $formatter->getContentType();
-        if (!empty($contentType)) {
+        if (! empty($contentType)) {
             $this->headers->set('Content-Type', $formatter->getContentType());
         }
 
@@ -157,7 +157,7 @@ class Response extends IlluminateResponse
         } elseif (is_array($this->content) || $this->content instanceof ArrayObject || $this->content instanceof Arrayable) {
             $this->content = $formatter->formatArray($this->content);
         } else {
-            if (!empty($defaultContentType)) {
+            if (! empty($defaultContentType)) {
                 $this->headers->set('Content-Type', $defaultContentType);
             }
         }
