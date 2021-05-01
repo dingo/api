@@ -13,14 +13,13 @@
         "email": "jason.lewis1991@gmail.com"
     }],
     "require": {
-        "php": "^7.2.5",
+        "php": "^7.2.5|^8.0",
         "dingo/blueprint": "^0.4",
         "illuminate/routing": "^7.0|^8.0",
         "illuminate/support": "^7.0|^8.0",
         "league/fractal": "^0.19"
     },
     "require-dev": {
-        "phpdocumentor/reflection-docblock": "3.3.2",
         "friendsofphp/php-cs-fixer": "~2",
         "illuminate/auth": "^7.0|^8.0",
         "illuminate/cache": "^7.0|^8.0",
