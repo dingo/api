@@ -24,17 +24,26 @@ class Basic extends Authorization
     protected $identifier;
 
     /**
+     * Extra conditions.
+     *
+     * @var array
+     */
+    private $extraConditions;
+
+    /**
      * Create a new basic provider instance.
      *
      * @param \Illuminate\Auth\AuthManager $auth
      * @param string                       $identifier
+     * @param array                        $extraConditions
      *
      * @return void
      */
-    public function __construct(AuthManager $auth, $identifier = 'email')
+    public function __construct(AuthManager $auth, $identifier = 'email', $extraConditions = [])
     {
         $this->auth = $auth;
         $this->identifier = $identifier;
+        $this->extraConditions = $extraConditions;
     }
 
     /**
@@ -49,7 +58,7 @@ class Basic extends Authorization
     {
         $this->validateAuthorizationHeader($request);
 
-        if (($response = $this->auth->onceBasic($this->identifier)) && $response->getStatusCode() === 401) {
+        if (($response = $this->auth->onceBasic($this->identifier, $this->extraConditions)) && $response->getStatusCode() === 401) {
             throw new UnauthorizedHttpException('Basic', 'Invalid authentication credentials.');
         }
 
