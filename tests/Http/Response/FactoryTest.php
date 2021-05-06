@@ -75,6 +75,7 @@ class FactoryTest extends BaseTestCase
         $response = $this->factory->noContent();
         $this->assertSame(204, $response->getStatusCode());
         $this->assertSame('', $response->getContent());
+        $this->assertNull($response->headers->get('Content-Type'));
     }
 
     public function testMakingCollectionRegistersUnderlyingClassWithTransformer()
