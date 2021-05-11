@@ -154,7 +154,8 @@ return [
     */
 
     'middleware' => [
-
+        // If you are using sanctum spa authentication, please turn off the Comment.
+        // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class
     ],
 
     /*
