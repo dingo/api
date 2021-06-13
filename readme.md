@@ -21,7 +21,7 @@ This package provides tools for the following, and more:
 - Internal Requests
 - API Blueprint Documentation
 
-## Documentation
+## Documentations
 
 Please refer to our extensive [Wiki documentation](https://github.com/dingo/api/wiki) for more information.
 
