@@ -104,6 +104,8 @@ class RouteCollection implements Countable, IteratorAggregate
      *
      * @return \ArrayIterator
      */
+    
+    #[\ReturnTypeWillChange] 
     public function getIterator()
     {
         return new ArrayIterator($this->getRoutes());
@@ -114,6 +116,8 @@ class RouteCollection implements Countable, IteratorAggregate
      *
      * @return int
      */
+    
+    #[\ReturnTypeWillChange] 
     public function count()
     {
         return count($this->getRoutes());
