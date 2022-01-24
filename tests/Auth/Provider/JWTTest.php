@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Mockery as m;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Tymon\JWTAuth\Exceptions\JWTException;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 
 class JWTTest extends BaseTestCase
 {
@@ -20,7 +20,7 @@ class JWTTest extends BaseTestCase
     {
         parent::setUp();
 
-        $this->auth = m::mock('Tymon\JWTAuth\JWTAuth');
+        $this->auth = m::mock('PHPOpenSourceSaver\JWTAuth\JWTAuth');
         $this->provider = new JWT($this->auth);
     }
 
