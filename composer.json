@@ -33,10 +33,10 @@
         "mockery/mockery": "~1.0",
         "phpunit/phpunit": "^8.5|^9.0",
         "squizlabs/php_codesniffer": "~2.0",
-        "tymon/jwt-auth": "1.0.*"
+        "php-open-source-saver/jwt-auth": "^1.4",
     },
     "suggest": {
-        "tymon/jwt-auth": "Protect your API with JSON Web Tokens."
+        "php-open-source-saver/jwt-auth": "Protect your API with JSON Web Tokens."
     },
     "autoload": {
         "psr-4": {
