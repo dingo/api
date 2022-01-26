@@ -14,12 +14,12 @@ cache:
 
 matrix:
   include:
-    - php: 7.2
-      env: xdebug=false
-    - php: 7.3
-      env: xdebug=false
     - php: 7.4
       env: xdebug=false
+#    - php: 8.0
+#      env: xdebug=false
+#    - php: 8.1
+#      env: xdebug=false
 
 before_install:
   - if [[ $xdebug = 'true' ]] ; then phpenv config-rm xdebug.ini; fi
