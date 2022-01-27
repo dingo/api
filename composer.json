@@ -38,6 +38,7 @@
     "suggest": {
         "tymon/jwt-auth": "Protect your API with JSON Web Tokens."
     },
+    "abandoned": "api-ecosystem-for-laravel/dingo-api",
     "autoload": {
         "psr-4": {
             "Dingo\\Api\\": "src/"
