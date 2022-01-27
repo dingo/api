@@ -1,3 +1,8 @@
+# Move repositories notice
+Unfortunately this package cannot be maintained at this location anymore due to broken CI integrations, and travis-ci likely can't be used much longer either due to their change to paid plans. This project is still being actively maintained, we ask you to please switch to the following repository: https://github.com/api-ecosystem-for-laravel/dingo-api
+
+---
+
 ![](https://cloud.githubusercontent.com/assets/829059/9216039/82be51cc-40f6-11e5-88f5-f0cbd07bcc39.png)
 
 The Dingo API package is meant to provide you, the developer, with a set of tools to help you easily and quickly build your own API. While the goal of this package is to remain as flexible as possible it still won't cover all situations and solve all problems.
