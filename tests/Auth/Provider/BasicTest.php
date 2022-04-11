@@ -29,7 +29,7 @@ class BasicTest extends BaseTestCase
 
         $request = Request::create('GET', '/', [], [], [], ['HTTP_AUTHORIZATION' => 'Basic 12345']);
 
-        $this->auth->shouldReceive('onceBasic')->once()->with('email')->andReturn(new Response('', 401));
+        $this->auth->shouldReceive('onceBasic')->once()->with('email', [])->andReturn(new Response('', 401));
 
         $this->provider->authenticate($request, m::mock(Route::class));
     }
@@ -38,7 +38,7 @@ class BasicTest extends BaseTestCase
     {
         $request = Request::create('GET', '/', [], [], [], ['HTTP_AUTHORIZATION' => 'Basic 12345']);
 
-        $this->auth->shouldReceive('onceBasic')->once()->with('email')->andReturn(null);
+        $this->auth->shouldReceive('onceBasic')->once()->with('email', [])->andReturn(null);
         $this->auth->shouldReceive('user')->once()->andReturn('foo');
 
         $this->assertSame('foo', $this->provider->authenticate($request, m::mock(Route::class)));
